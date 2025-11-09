@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Cookies from 'js-cookie';
+import { authServiceNew } from '@/services/authServiceNew';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,13 +33,14 @@ import {
   Briefcase,
   Clock
 } from "lucide-react";
+import QRCode from "qrcode";
 import Logo from '@/components/Logo';
-import MatrizRisco from "@/components/prg/MatrizRisco";
-import GraficoDistribuicaoRiscos from "@/components/prg/GraficoDistribuicaoRiscos";
-import GraficoRadarDimensoes from "@/components/prg/GraficoRadarDimensoes";
-import GraficoParliament from "@/components/prg/GraficoParliament";
-import GraficoSankey from "@/components/prg/GraficoSankey";
-import AreasPrioritarias from "@/components/prg/AreasPrioritarias";
+import MatrizRisco from "@/components/pgr/MatrizRisco";
+import GraficoDistribuicaoRiscos from "@/components/pgr/GraficoDistribuicaoRiscos";
+import GraficoRadarDimensoes from "@/components/pgr/GraficoRadarDimensoes";
+import GraficoParliament from "@/components/pgr/GraficoParliament";
+import GraficoSankey from "@/components/pgr/GraficoSankey";
+import AreasPrioritarias from "@/components/pgr/AreasPrioritarias";
 import RiskGauge from "@/components/RiskGauge";
 
 interface EmpresaData {
@@ -125,21 +128,38 @@ export default function EmpresaPRG() {
   const [empresaData, setEmpresaData] = useState<EmpresaData | null>(null);
   const [recomendacoesExpandidas, setRecomendacoesExpandidas] = useState<Set<number>>(new Set());
 
-  // Buscar dados do PRG ao carregar a página
+  // Buscar dados do PGR ao carregar a página
   useEffect(() => {
     const fetchPRGData = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        const token = localStorage.getItem('authToken');
+        // Preferir token via serviço centralizado; fallback para cookies/localStorage
+        const token = authServiceNew.getToken() || Cookies.get('authToken') || localStorage.getItem('authToken');
         if (!token) {
           throw new Error('Token de autenticação não encontrado');
         }
 
-        console.log('📊 [PRG Frontend] Buscando dados do PRG...');
+        console.log('📊 [PGR Frontend] Buscando dados do PGR...');
+
+        // Validação prévia do token para evitar 403 na rota /pgr
+        try {
+          const checkResp = await fetch('/api/auth/check', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+          });
+          if (!checkResp.ok) {
+            console.warn('⚠️ [PGR Frontend] Token inválido/expirado. Limpando sessão...');
+            await authServiceNew.logout();
+            throw new Error('Sessão expirada ou inválida. Faça login novamente.');
+          }
+        } catch (checkErr) {
+          console.error('❌ [PGR Frontend] Falha ao validar token:', checkErr);
+          throw checkErr instanceof Error ? checkErr : new Error('Falha ao validar token');
+        }
         
-        const response = await fetch('/api/empresas/prg', {
+        const response = await fetch('/api/empresas/pgr', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -152,16 +172,16 @@ export default function EmpresaPRG() {
         }
 
         const data = await response.json();
-        console.log('✅ [PRG Frontend] Dados recebidos COMPLETOS:', JSON.stringify(data, null, 2));
-        console.log('✅ [PRG Frontend] data.empresa existe?', !!data.empresa);
-        console.log('✅ [PRG Frontend] data.prg existe?', !!data.prg);
-        console.log('✅ [PRG Frontend] Chaves do objeto data:', Object.keys(data));
+        console.log('✅ [PGR Frontend] Dados recebidos COMPLETOS:', JSON.stringify(data, null, 2));
+        console.log('✅ [PGR Frontend] data.empresa existe?', !!data.empresa);
+        console.log('✅ [PGR Frontend] data.prg existe?', !!data.prg);
+        console.log('✅ [PGR Frontend] Chaves do objeto data:', Object.keys(data));
         
         setPrgData(data.prg);
         setEmpresaData(data.empresa);
-        console.log('✅ [PRG Frontend] Estados atualizados');
+        console.log('✅ [PGR Frontend] Estados atualizados');
       } catch (err) {
-        console.error('❌ [PRG Frontend] Erro:', err);
+        console.error('❌ [PGR Frontend] Erro:', err);
         setError(err instanceof Error ? err.message : 'Erro desconhecido');
       } finally {
         setLoading(false);
@@ -202,6 +222,13 @@ export default function EmpresaPRG() {
   const handleExportarPlanoAcao = () => {
     if (!prgData) return;
 
+    // Calcular total de colaboradores avaliados (exclui "Não Avaliado")
+    const totalAvaliadosPlano = Array.isArray(prgData?.dadosParliament)
+      ? prgData.dadosParliament
+          .filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado')
+          .reduce((acc, d) => acc + (d?.quantidade || 0), 0)
+      : 0;
+
     // Gerar documento HTML completo com todas as recomendações
     const htmlContent = `
 <!DOCTYPE html>
@@ -209,7 +236,7 @@ export default function EmpresaPRG() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plano de Ação - PRG HumaniQ</title>
+  <title>Plano de Ação - PGR HumaniQ</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -383,15 +410,15 @@ export default function EmpresaPRG() {
 
   <div class="metrics">
     <div class="metric-card">
-      <div class="metric-label">Colaboradores</div>
-      <div class="metric-value">${prgData.totalColaboradores}</div>
+      <div class="metric-label">Colaboradores Avaliados</div>
+      <div class="metric-value">${totalAvaliadosPlano}</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Testes Realizados</div>
       <div class="metric-value">${prgData.totalTestes}</div>
     </div>
     <div class="metric-card">
-      <div class="metric-label">Índice Global PRG</div>
+      <div class="metric-label">Índice Global PGR</div>
       <div class="metric-value">${prgData.indiceGlobal}%</div>
     </div>
   </div>
@@ -432,7 +459,7 @@ export default function EmpresaPRG() {
 
   <div class="footer">
     <p><strong>HumaniQ</strong> - Plataforma de Avaliação Psicológica</p>
-    <p>Documento gerado automaticamente pelo sistema PRG</p>
+    <p>Documento gerado automaticamente pelo sistema PGR</p>
   </div>
 </body>
 </html>
@@ -443,7 +470,7 @@ export default function EmpresaPRG() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Plano-de-Acao-PRG-${new Date().toISOString().split('T')[0]}.html`;
+    a.download = `Plano-de-Acao-PGR-${new Date().toISOString().split('T')[0]}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -460,7 +487,7 @@ export default function EmpresaPRG() {
     csv += `Clima Positivo,${prgData.kpis.climaPositivo}%,${getStatusBadge(prgData.kpis.climaPositivo).label}\n`;
     csv += `Satisfação com Chefia,${prgData.kpis.satisfacaoChefia}%,${getStatusBadge(prgData.kpis.satisfacaoChefia).label}\n`;
     csv += `Risco de Burnout,${prgData.kpis.riscoBurnout}%,${getStatusBadge(prgData.kpis.riscoBurnout).label}\n`;
-    csv += `Maturidade PRG,${prgData.kpis.maturidadePRG}%,${getStatusBadge(prgData.kpis.maturidadePRG).label}\n`;
+    csv += `Maturidade PGR,${prgData.kpis.maturidadePRG}%,${getStatusBadge(prgData.kpis.maturidadePRG).label}\n`;
     csv += `Segurança Psicológica,${prgData.kpis.segurancaPsicologica}%,${getStatusBadge(prgData.kpis.segurancaPsicologica).label}\n`;
     
     // Criar blob e download
@@ -468,7 +495,7 @@ export default function EmpresaPRG() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `prg_relatorio_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `pgr_relatorio_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -483,7 +510,7 @@ export default function EmpresaPRG() {
     
     if (!prgData || !empresaData) {
       console.error('❌ [PDF] Dados faltando! prgData:', !!prgData, 'empresaData:', !!empresaData);
-      alert('Erro: Dados da empresa ou PRG não carregados. Por favor, recarregue a página.');
+      alert('Erro: Dados da empresa ou PGR não carregados. Por favor, recarregue a página.');
       return;
     }
 
@@ -491,6 +518,13 @@ export default function EmpresaPRG() {
     const dataAtual = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     const dataInicial = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR');
     const dataFinal = new Date().toLocaleDateString('pt-BR');
+
+    // Calcular total de colaboradores avaliados (exclui "Não Avaliado") para uso consistente no PDF
+    const totalAvaliadosPDF = Array.isArray(prgData?.dadosParliament)
+      ? prgData.dadosParliament
+          .filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado')
+          .reduce((acc, d) => acc + (d?.quantidade || 0), 0)
+      : 0;
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -735,7 +769,7 @@ export default function EmpresaPRG() {
     
     <div class="grid-3">
       <div class="kpi-card">
-        <div class="kpi-label">Índice Global PRG</div>
+        <div class="kpi-label">Índice Global PGR</div>
         <div class="kpi-value">${prgData.indiceGlobal}%</div>
         <div class="kpi-status ${prgData.indiceGlobal >= 80 ? 'status-saudavel' : prgData.indiceGlobal >= 60 ? 'status-atencao' : 'status-critico'}">
           ${prgData.indiceGlobal >= 80 ? 'Saudável' : prgData.indiceGlobal >= 60 ? 'Atenção' : 'Crítico'}
@@ -743,8 +777,8 @@ export default function EmpresaPRG() {
       </div>
       
       <div class="kpi-card">
-        <div class="kpi-label">Total de Colaboradores</div>
-        <div class="kpi-value">${prgData.totalColaboradores}</div>
+        <div class="kpi-label">Total de Colaboradores Avaliados</div>
+        <div class="kpi-value">${(Array.isArray(prgData.dadosParliament) ? prgData.dadosParliament.reduce((acc, d) => acc + (d?.quantidade || 0), 0) : 0) - (Array.isArray(prgData.dadosParliament) ? (prgData.dadosParliament.find((d) => (d.categoria || d.label) === 'Não Avaliado')?.quantidade || 0) : 0)}</div>
         <div class="kpi-status status-saudavel">Avaliados</div>
       </div>
       
@@ -828,7 +862,7 @@ export default function EmpresaPRG() {
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-label">📈 Maturidade do PRG</div>
+        <div class="kpi-label">📈 Maturidade do PGR</div>
         <div class="kpi-value">${prgData.kpis.maturidadePRG}%</div>
         <div class="kpi-status ${prgData.kpis.maturidadePRG >= 80 ? 'status-saudavel' : prgData.kpis.maturidadePRG >= 60 ? 'status-atencao' : 'status-critico'}">
           ${prgData.kpis.maturidadePRG >= 80 ? 'Maduro' : prgData.kpis.maturidadePRG >= 60 ? 'Em Desenvolvimento' : 'Inicial'}
@@ -861,13 +895,16 @@ export default function EmpresaPRG() {
     <div style="text-align: center; margin: 40px 0;">
       <svg width="100%" height="350" viewBox="0 0 500 300" style="max-width: 700px; margin: 0 auto;">
         ${(() => {
-          const total = prgData.dadosParliament.reduce((acc, d) => acc + d.quantidade, 0);
+          const categoriasValidas = Array.isArray(prgData.dadosParliament)
+            ? prgData.dadosParliament.filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado')
+            : [];
+          const totalAvaliados = categoriasValidas.reduce((acc, d) => acc + (d?.quantidade || 0), 0);
           let currentIndex = 0;
           const circles: string[] = [];
           
-          prgData.dadosParliament.forEach(categoria => {
-            for (let i = 0; i < categoria.quantidade; i++) {
-              const angle = Math.PI - (currentIndex / total) * Math.PI;
+          categoriasValidas.forEach(categoria => {
+            for (let i = 0; i < (categoria.quantidade || 0); i++) {
+              const angle = totalAvaliados > 0 ? Math.PI - (currentIndex / totalAvaliados) * Math.PI : Math.PI;
               const radius = 120 + (Math.floor(currentIndex / 15) * 20);
               const x = 250 + radius * Math.cos(angle);
               const y = 240 - radius * Math.sin(angle);
@@ -877,7 +914,7 @@ export default function EmpresaPRG() {
           });
           
           return circles.join('') + `
-            <text x="250" y="230" text-anchor="middle" font-size="48" font-weight="900" fill="#667eea">${total}</text>
+            <text x="250" y="230" text-anchor="middle" font-size="48" font-weight="900" fill="#667eea">${totalAvaliados}</text>
             <text x="250" y="255" text-anchor="middle" font-size="14" fill="#666">colaboradores avaliados</text>
           `;
         })()}
@@ -885,12 +922,12 @@ export default function EmpresaPRG() {
     </div>
 
     <div class="grid-2" style="margin-top: 30px;">
-      ${prgData.dadosParliament.map(cat => `
+      ${(Array.isArray(prgData.dadosParliament) ? prgData.dadosParliament.filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado') : []).map(cat => `
         <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f9fafb; border-radius: 8px;">
           <div style="width: 16px; height: 16px; border-radius: 50%; background: ${cat.cor};"></div>
           <div style="flex: 1;">
             <div style="font-weight: 600; color: #1e293b;">${cat.label || cat.categoria}</div>
-            <div style="font-size: 13px; color: #64748b;">${cat.quantidade} colaboradores (${((cat.quantidade / prgData.dadosParliament.reduce((acc, d) => acc + d.quantidade, 0)) * 100).toFixed(1)}%)</div>
+            <div style="font-size: 13px; color: #64748b;">${cat.quantidade} colaboradores (${((cat.quantidade / ((Array.isArray(prgData.dadosParliament) ? prgData.dadosParliament.filter(c => (c.categoria || c.label) !== 'Não Avaliado') : []).reduce((acc, d) => acc + (d?.quantidade || 0), 0) || 1)) * 100).toFixed(1)}%)</div>
           </div>
         </div>
       `).join('')}
@@ -1140,7 +1177,7 @@ export default function EmpresaPRG() {
         <p style="color: #555; line-height: 1.8;">
           Este relatório está em conformidade com a NR-01, atualizada pela Portaria MTP n.º 6.730/2020, 
           que estabelece as diretrizes para o gerenciamento de riscos ocupacionais, incluindo os riscos psicossociais. 
-          O PRG (Programa de Gestão de Riscos Psicossociais) integra o PGR (Programa de Gerenciamento de Riscos) 
+          O PGR (Programa de Gestão de Riscos Psicossociais) integra o PGR (Programa de Gerenciamento de Riscos) 
           da organização, conforme determinado pela legislação brasileira.
         </p>
       </div>
@@ -1170,7 +1207,7 @@ export default function EmpresaPRG() {
       <ul style="margin-left: 24px; color: #555; line-height: 2;">
         <li>Este relatório deve ser revisado periodicamente (mínimo semestral)</li>
         <li>As recomendações devem ser implementadas conforme cronograma estabelecido</li>
-        <li>É fundamental o envolvimento da alta gestão na execução do PRG</li>
+        <li>É fundamental o envolvimento da alta gestão na execução do PGR</li>
         <li>Recomenda-se comunicar os resultados de forma transparente aos colaboradores</li>
         <li>Mantenha registros de todas as ações implementadas para auditorias futuras</li>
       </ul>
@@ -1233,8 +1270,8 @@ export default function EmpresaPRG() {
     <div style="background: #f8f9fa; padding: 24px; border-radius: 12px; margin-top: 24px; border: 2px solid #e0e0e0;">
       <p style="font-size: 14px; color: #666; line-height: 1.8; margin: 0;">
         <strong>Nota Técnica:</strong> Este relatório foi gerado automaticamente pelo sistema HumaniQ AI através da 
-        análise integrada de ${prgData.totalTestes} avaliações psicossociais realizadas com ${prgData.totalColaboradores} 
-        colaboradores, utilizando algoritmos de inteligência artificial validados cientificamente e processamento 
+        análise integrada de ${prgData.totalTestes} avaliações psicossociais realizadas com ${totalAvaliadosPDF} 
+        colaboradores avaliados, utilizando algoritmos de inteligência artificial validados cientificamente e processamento 
         estatístico avançado. Os resultados refletem o estado psicossocial atual da organização com base nos dados 
         coletados no período de análise especificado.
       </p>
@@ -1244,7 +1281,7 @@ export default function EmpresaPRG() {
   <!-- FOOTER -->
   <div class="footer">
     <p style="font-weight: 600; margin-bottom: 8px;">HumaniQ AI - Plataforma de Avaliação Psicológica</p>
-    <p>Programa de Gestão de Riscos Psicossociais (PRG)</p>
+    <p>Programa de Gerenciamento de Riscos (PGR)</p>
     <p style="margin-top: 16px; font-size: 12px;">
       Relatório gerado automaticamente em ${new Date().toLocaleDateString('pt-BR', { 
         day: '2-digit', 
@@ -1267,18 +1304,45 @@ export default function EmpresaPRG() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Relatorio-PRG-Completo-${new Date().toISOString().split('T')[0]}.html`;
+    a.download = `Relatorio-PGR-Completo-${new Date().toISOString().split('T')[0]}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
+  // Resolve uma URL base pública adequada para compartilhamento
+  // Preferindo variável de ambiente e, em dev, IP local para acesso via celular
+  const resolvePublicBaseUrl = (): string => {
+    const envBase = (import.meta.env.VITE_PUBLIC_BASE_URL as string | undefined)?.trim();
+    const localIpBase = (import.meta.env.VITE_LOCAL_IP_BASE_URL as string | undefined)?.trim();
+    const origin = window.location.origin;
+
+    if (envBase) return envBase;
+
+    const isLocalhost = /localhost|127\.0\.0\.1/i.test(origin);
+    if (isLocalhost && localIpBase) return localIpBase;
+
+    return origin;
+  };
+
   const handleGerarQRCode = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      // Garantir token válido usando serviço centralizado com fallback
+      const token = authServiceNew.getToken() || Cookies.get('authToken') || localStorage.getItem('authToken');
       if (!token) {
         alert('Erro: Token de autenticação não encontrado');
+        return;
+      }
+
+      // Validação prévia do token
+      const checkResp = await fetch('/api/auth/check', {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!checkResp.ok) {
+        await authServiceNew.logout();
+        alert('Sessão expirada ou inválida. Faça login novamente.');
         return;
       }
 
@@ -1298,36 +1362,65 @@ export default function EmpresaPRG() {
       const empresaData = await empresaResponse.json();
       const empresaId = empresaData.empresa.id;
 
-      // Gerar token compartilhável: empresaId-timestamp
-      const shareToken = `${empresaId}-${Date.now()}`;
+      // Gerar token compartilhável: empresaId-timestamp com validação de formato
+      const rawToken = `${empresaId}-${Date.now()}`;
+      const tokenRegex = /^[A-Za-z0-9_-]+-\d+$/; // empresaId + timestamp
+      const shareToken = tokenRegex.test(rawToken)
+        ? rawToken
+        : `${String(empresaId).replace(/[^A-Za-z0-9_-]/g, '')}-${Date.now()}`;
       
-      // URL pública para compartilhamento
-      const publicUrl = `${window.location.origin}/prg/compartilhado/${shareToken}`;
-      
-      // Gerar QR Code
-      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(publicUrl)}`;
+      // URL pública para compartilhamento (dev/prod, corrige localhost quando possível)
+      const baseUrl = resolvePublicBaseUrl();
+      const publicUrl = `${baseUrl}/pgr/compartilhado/${encodeURIComponent(shareToken)}`;
+
+      // Gerar QR Code client-side com alta correção de erro e alto contraste (melhor para câmeras móveis)
+      const qrCodeDataUrl = await QRCode.toDataURL(publicUrl, {
+        width: 384, // bom equilíbrio entre nitidez e tamanho em telas móveis
+        margin: 2,
+        errorCorrectionLevel: 'H',
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      });
       
       const modal = document.createElement('div');
-      modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+      modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 12px;';
       
       const content = document.createElement('div');
-      content.style.cssText = 'background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 90%; max-height: 90%; overflow: auto;';
+      content.style.cssText = 'background: white; padding: 20px; border-radius: 16px; text-align: center; width: 100%; max-width: 560px; max-height: 90%; overflow: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);';
+
+      const copyBtnId = `copy-${Date.now()}`;
+      const openBtnId = `open-${Date.now()}`;
+      const isLocalBase = /localhost|127\.0\.0\.1/i.test(baseUrl);
+      const warningHtml = isLocalBase
+        ? `<div style="margin-bottom: 10px; background: #fff3cd; color: #7c5400; padding: 10px; border-radius: 8px; font-size: 14px;">
+             <strong>⚠️ Atenção:</strong> A URL base atual é <em>localhost</em>. Celulares não acessam <em>localhost</em>.
+             Configure <code style="background:#0000000a; padding:2px 6px; border-radius:6px;">VITE_LOCAL_IP_BASE_URL</code> com seu IP local (ex.: <em>http://192.168.x.x:5000</em>) para escanear via câmera.
+           </div>`
+        : '';
       content.innerHTML = `
-        <h2 style="color: #667eea; margin-bottom: 12px;">📱 QR Code - Dashboard PRG Público</h2>
-        <p style="color: #10b981; margin-bottom: 16px; font-weight: 600; background: #d4edda; padding: 12px; border-radius: 8px;">
-          ✓ Acesso LIVRE sem login - Somente via QR Code
+        <h2 style="color: #1f2937; margin-bottom: 8px; font-weight: 700; font-size: 20px;">📱 QR Code - Dashboard PGR Público</h2>
+        <p style="color: #065f46; margin-bottom: 12px; font-weight: 600; background: #d1fae5; padding: 10px; border-radius: 8px;">
+          ✓ Acesso livre sem login — visualize pelo QR ou link
         </p>
-        <p style="color: #666; margin-bottom: 20px;">
-          Compartilhe este QR Code para visualização pública do dashboard PRG
+        ${warningHtml}
+        <p style="color: #4b5563; margin-bottom: 16px; font-size: 14px;">
+          Dica: aproxime a câmera e garanta boa iluminação.
         </p>
-        <img src="${qrCodeUrl}" alt="QR Code" style="max-width: 400px; width: 100%; border: 8px solid #f0f0f0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
-        <div style="margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
-          <p style="color: #666; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Link de Acesso Público:</p>
-          <p style="color: #667eea; font-size: 12px; word-break: break-all; font-family: monospace;">${publicUrl}</p>
+        <img src="${qrCodeDataUrl}" alt="QR Code para acesso ao PGR" style="width: min(80vw, 360px); border: 6px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); image-rendering: crisp-edges;" />
+        <div style="margin-top: 16px; padding: 14px; background: #f3f4f6; border-radius: 8px; text-align: left;">
+          <p style="color: #374151; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Link de acesso público</p>
+          <a href="${publicUrl}" target="_blank" rel="noopener" style="color: #2563eb; font-size: 12px; word-break: break-all; font-family: monospace; text-decoration: underline;">${publicUrl}</a>
+          <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+            <button id="${copyBtnId}" style="padding: 8px 14px; background: #111827; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600;">Copiar link</button>
+            <button id="${openBtnId}" style="padding: 8px 14px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600;">Abrir no navegador</button>
+          </div>
+          <p style="color: #6b7280; font-size: 12px; margin-top: 8px;">Se houver falha ao escanear, toque em "Abrir" ou copie o link.</p>
         </div>
-        <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-          <button onclick="this.parentElement.parentElement.parentElement.remove()" style="padding: 12px 30px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 600;">Fechar</button>
-          <a href="${qrCodeUrl}" download="QRCode-PRG-Publico.png" style="display: inline-block; padding: 12px 30px; background: #10b981; color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600;">Baixar QR Code</a>
+        <div style="margin-top: 18px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button onclick="this.parentElement.parentElement.parentElement.remove()" style="padding: 10px 22px; background: #6b7280; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; font-weight: 600;">Fechar</button>
+          <a href="${qrCodeDataUrl}" download="QRCode-PGR-Publico.png" style="display: inline-block; padding: 10px 22px; background: #10b981; color: white; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600;">Baixar QR Code</a>
         </div>
       `;
       
@@ -1335,8 +1428,44 @@ export default function EmpresaPRG() {
       document.body.appendChild(modal);
       modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
 
+      // Ações de copiar/abrir link com fallback para navegadores móveis
+      const copyBtn = content.querySelector(`#${copyBtnId}`) as HTMLButtonElement | null;
+      const openBtn = content.querySelector(`#${openBtnId}`) as HTMLButtonElement | null;
+      if (copyBtn) {
+        copyBtn.onclick = async () => {
+          try {
+            if (navigator.clipboard?.writeText) {
+              await navigator.clipboard.writeText(publicUrl);
+              copyBtn.textContent = 'Copiado!';
+              setTimeout(() => { copyBtn.textContent = 'Copiar link'; }, 1500);
+            } else {
+              const ta = document.createElement('textarea');
+              ta.value = publicUrl;
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand('copy');
+              document.body.removeChild(ta);
+              copyBtn.textContent = 'Copiado!';
+              setTimeout(() => { copyBtn.textContent = 'Copiar link'; }, 1500);
+            }
+          } catch {
+            alert('Não foi possível copiar. Copie manualmente do texto.');
+          }
+        };
+      }
+      if (openBtn) {
+        openBtn.onclick = () => {
+          try {
+            window.open(publicUrl, '_blank', 'noopener');
+          } catch {
+            location.href = publicUrl;
+          }
+        };
+      }
+
       console.log('✅ [QR Code] Token de compartilhamento gerado:', shareToken);
-      console.log('✅ [QR Code] URL pública:', publicUrl);
+      console.log('✅ [QR Code] Base utilizada:', baseUrl);
+      console.log('✅ [QR Code] URL pública completa:', publicUrl);
       
     } catch (error) {
       console.error('❌ [QR Code] Erro ao gerar QR Code:', error);
@@ -1360,7 +1489,7 @@ export default function EmpresaPRG() {
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-purple-950 p-6 flex items-center justify-center">
         <div className="text-center space-y-4">
           <Loader2 className="h-12 w-12 animate-spin text-blue-400 mx-auto" />
-          <p className="text-white/70 text-lg">Carregando dados do PRG...</p>
+          <p className="text-white/70 text-lg">Carregando dados do PGR...</p>
         </div>
       </div>
     );
@@ -1418,7 +1547,7 @@ export default function EmpresaPRG() {
       bgColor: prgData.kpis.riscoBurnout >= 60 ? "bg-red-500/10" : "bg-yellow-500/10"
     },
     {
-      titulo: "Maturidade do PRG",
+      titulo: "Maturidade do PGR",
       valor: prgData.kpis.maturidadePRG,
       icon: TrendingUp,
       color: "text-blue-500",
@@ -1450,7 +1579,7 @@ export default function EmpresaPRG() {
                   </div>
                 </div>
                 <Badge className="bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border-white/20">
-                  Relatório PRG
+                  Relatório PGR
                 </Badge>
               </div>
             </CardContent>
@@ -1479,7 +1608,7 @@ export default function EmpresaPRG() {
                     <div>
                       <div className="flex items-center gap-3 mb-2">
                         <h1 className="text-4xl font-black text-white" data-testid="text-page-title">
-                          PRG
+                          PGR
                         </h1>
                         <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 backdrop-blur-xl">
                           <Sparkles className="h-3 w-3 mr-1" />
@@ -1696,7 +1825,7 @@ export default function EmpresaPRG() {
                 <p className="text-white text-2xl font-bold">{prgData?.cobertura || 0}%</p>
               </div>
               <div className="bg-white/5 backdrop-blur-xl rounded-xl p-3 border border-white/10">
-                <p className="text-white/70 text-xs font-medium mb-1">Índice Global PRG</p>
+                <p className="text-white/70 text-xs font-medium mb-1">Índice Global PGR</p>
                 <p className={`text-2xl font-bold ${prgData && prgData.indiceGlobal < 40 ? 'text-red-400' : prgData && prgData.indiceGlobal < 60 ? 'text-yellow-400' : 'text-green-400'}`}>
                   {prgData?.indiceGlobal || 0}%
                 </p>
@@ -2367,7 +2496,7 @@ export default function EmpresaPRG() {
                 A <strong>HumaniQ AI</strong> é uma plataforma inteligente especializada na análise e gestão de riscos psicossociais e ocupacionais, 
                 desenvolvida com base na NR-01 e demais normativas vigentes de Saúde e Segurança do Trabalho (SST). 
                 Utilizando inteligência artificial e metodologia científica, a HumaniQ AI realiza diagnósticos automatizados, 
-                cruzamento de dados de testes psicossociais e comportamentais, e gera relatórios técnicos que subsidiam a construção do PRG 
+                cruzamento de dados de testes psicossociais e comportamentais, e gera relatórios técnicos que subsidiam a construção do PGR 
                 – Programa de Gerenciamento de Riscos, de forma precisa, ética e em conformidade com os princípios da prevenção e melhoria contínua.
               </p>
               <p className="text-white/90 text-xs">
