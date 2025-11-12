@@ -1,5 +1,5 @@
 import express from 'express';
-import { db } from '../db';
+import { db } from '../db-config';
 import { cursoDisponibilidade, cursoAvaliacoes, colaboradores, insertCursoDisponibilidadeSchema, updateCursoDisponibilidadeSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest, requireEmpresa, requireColaborador } from '../middleware/auth';
 import { eq, and, desc } from 'drizzle-orm';

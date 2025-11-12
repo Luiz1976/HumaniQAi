@@ -47,6 +47,14 @@ export async function generatePsychosocialAnalysis(data: AnalysisData): Promise<
 }> {
   try {
     console.log('🧠 [IA] Iniciando análise psicossocial com Google Gemini...');
+
+    // Validar chave de API antes de usar o cliente Gemini
+    const apiKey = process.env.GOOGLE_API_KEY;
+    if (!apiKey || apiKey.trim().length < 20) {
+      console.warn('⚠️ [IA] GOOGLE_API_KEY ausente ou inválida. Ativando fallback.');
+      // Dispara fallback tratado pelo catch abaixo
+      throw new Error('GOOGLE_API_KEY ausente ou inválida');
+    }
     
     // Se não há dados suficientes, retornar recomendações padrão
     if (data.totalTestesRealizados === 0) {

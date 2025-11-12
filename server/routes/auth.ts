@@ -1,5 +1,6 @@
 import express from 'express';
-import { db } from '../db';
+import { db } from '../db-config';
+import logger from '../utils/logger';
 import { admins, empresas, colaboradores, insertAdminSchema, insertEmpresaSchema } from '../../shared/schema';
 import { hashPassword, comparePassword, generateToken } from '../utils/auth';
 import { eq } from 'drizzle-orm';
@@ -23,6 +24,7 @@ const authenticateToken = (req: any, res: any, next: any) => {
     req.user = decoded;
     next();
   } catch (error) {
+    logger.warn('❌ [AUTH] Token inválido', { error });
     return res.status(403).json({ error: 'Token inválido' });
   }
 };
@@ -64,7 +66,7 @@ router.post('/login', async (req, res) => {
       user = empresa;
       role = 'empresa';
       empresaId = empresa.id;
-      console.log('✅ [AUTH/LOGIN] Role selecionado: empresa', { email, empresaId });
+      logger.info('✅ [AUTH/LOGIN] Role selecionado: empresa', { email, empresaId });
     } else {
       const [colaborador] = await db.select().from(colaboradores).where(eq(colaboradores.email, email)).limit(1);
       if (colaborador) {
@@ -76,7 +78,7 @@ router.post('/login', async (req, res) => {
         role = 'colaborador';
         empresaId = colaborador.empresaId || undefined;
         colaboradorId = colaborador.id;
-        console.log('✅ [AUTH/LOGIN] Role selecionado: colaborador', { email, empresaId, colaboradorId });
+        logger.info('✅ [AUTH/LOGIN] Role selecionado: colaborador', { email, empresaId, colaboradorId });
       } else {
         const [admin] = await db.select().from(admins).where(eq(admins.email, email)).limit(1);
         if (admin) {
@@ -86,7 +88,7 @@ router.post('/login', async (req, res) => {
           }
           user = admin;
           role = 'admin';
-          console.log('✅ [AUTH/LOGIN] Role selecionado: admin', { email });
+          logger.info('✅ [AUTH/LOGIN] Role selecionado: admin', { email });
         } else {
           return res.status(401).json({ error: 'Invalid credentials' });
         }
@@ -115,7 +117,7 @@ router.post('/login', async (req, res) => {
       },
     });
   } catch (error: any) {
-    console.error('❌ [AUTH/LOGIN] Erro interno durante login', {
+    logger.error('❌ [AUTH/LOGIN] Erro interno durante login', {
       email: req.body?.email,
       code: error?.code,
       name: error?.name,
@@ -145,32 +147,26 @@ router.post('/register/admin', async (req, res) => {
 
     const hashedPassword = await hashPassword(senha);
 
-    // Inserção compatível com SQLite: gerar id no Node e usar SQL nativo quando em dev
-    const generatedId = randomUUID();
-    // Considerar SQLite sempre que não estivermos em produção (independente de DATABASE_URL setada)
-    const isSQLite = process.env.NODE_ENV !== 'production';
-
+    // Inserção compatível com Postgres (UUID default) e SQLite (UUID manual)
     try {
-      if (isSQLite) {
-        console.log('ℹ️ [AUTH/REGISTER] Usando inserção direta SQLite (better-sqlite3)');
-        // Inserir via better-sqlite3 para evitar defaults do Postgres (gen_random_uuid)
-        const { sqlite } = require('../db-sqlite');
-        const stmt = sqlite.prepare('INSERT INTO admins (id, email, nome, senha) VALUES (?, ?, ?, ?)');
-        stmt.run(generatedId, email, nome, hashedPassword);
+      const isSqlite = process.env.DATABASE_URL ? false : true;
+      if (isSqlite) {
+        const id = randomUUID();
+        await db.insert(admins).values({
+          id: id as any,
+          email,
+          nome,
+          senha: hashedPassword,
+        });
       } else {
-        console.log('ℹ️ [AUTH/REGISTER] Usando Drizzle/Postgres para inserção');
-        // Postgres em produção via Drizzle
-        await db
-          .insert(admins)
-          .values({
-            id: generatedId as any,
-            email,
-            nome,
-            senha: hashedPassword,
-          });
+        await db.insert(admins).values({
+          email,
+          nome,
+          senha: hashedPassword,
+        });
       }
     } catch (e: any) {
-      console.error('❌ [AUTH/REGISTER] Erro ao inserir admin', {
+      logger.error('❌ [AUTH/REGISTER] Erro ao inserir admin', {
         code: e?.code,
         name: e?.name,
         message: e?.message,
@@ -200,7 +196,7 @@ router.post('/register/admin', async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    logger.error('Registration error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -231,14 +227,14 @@ router.post('/recuperar-senha', async (req, res) => {
     }
 
     if (userExists) {
-      console.log(`Solicitação de recuperação de senha para: ${email}`);
+      logger.info(`Solicitação de recuperação de senha para: ${email}`);
     }
 
     res.json({ 
       message: 'Se o email existir em nossa base, você receberá instruções para redefinir sua senha.' 
     });
   } catch (error) {
-    console.error('Erro ao processar recuperação de senha:', error);
+    logger.error('Erro ao processar recuperação de senha:', error);
     res.status(500).json({ error: 'Erro ao processar solicitação' });
   }
 });
@@ -263,28 +259,17 @@ router.post('/register/empresa', async (req, res) => {
         return res.status(409).json({ error: 'Email already exists' });
       }
     } catch (e) {
-      // Fallback SQLite direto
-      try {
-        const { sqlite } = require('../db-sqlite');
-        const countStmt = sqlite.prepare('SELECT COUNT(1) as c FROM empresas WHERE email_contato = ?');
-        const exists = countStmt.get(emailContato) as { c: number } | undefined;
-        if (exists && exists.c > 0) {
-          return res.status(409).json({ error: 'Email already exists' });
-        }
-      } catch (ee) {
-        console.warn('⚠️ Falha ao verificar existência de empresa (SQLite):', (ee as any)?.message);
-      }
+      logger.error('❌ [AUTH/REGISTER] Erro ao verificar existência de empresa', e);
+      return res.status(500).json({ error: 'Internal server error' });
     }
 
     const hashedPassword = await hashPassword(senha);
-    const generatedId = randomUUID();
+    // Usar default gen_random_uuid() do Postgres
 
     try {
-      // Tentar via ORM primeiro
       await db
         .insert(empresas)
         .values({
-          id: generatedId as any,
           nomeEmpresa,
           emailContato,
           senha: hashedPassword,
@@ -293,49 +278,20 @@ router.post('/register/empresa', async (req, res) => {
           ativa: typeof ativa === 'boolean' ? ativa : true,
         });
     } catch (e: any) {
-      console.warn('⚠️ [AUTH/REGISTER] Falha ORM, tentando SQLite direto...', {
+      logger.error('❌ [AUTH/REGISTER] Erro ao inserir empresa', {
         code: e?.code,
         name: e?.name,
         message: e?.message,
       });
-      try {
-        const { sqlite } = require('../db-sqlite');
-        const stmt = sqlite.prepare(`
-          INSERT INTO empresas (id, nome_empresa, email_contato, senha, admin_id, configuracoes, ativa)
-          VALUES (?, ?, ?, ?, ?, ?, ?)
-        `);
-        stmt.run(
-          generatedId,
-          nomeEmpresa,
-          emailContato,
-          hashedPassword,
-          adminId || null,
-          JSON.stringify(configuracoes || {}),
-          typeof ativa === 'boolean' ? (ativa ? 1 : 0) : 1
-        );
-      } catch (ee: any) {
-        console.error('❌ [AUTH/REGISTER] Erro ao inserir empresa (SQLite)', {
-          code: ee?.code,
-          name: ee?.name,
-          message: ee?.message,
-        });
-        return res.status(500).json({ error: 'Internal server error' });
-      }
+      return res.status(500).json({ error: 'Internal server error' });
     }
 
     let novaEmpresa: any;
     try {
       [novaEmpresa] = await db.select().from(empresas).where(eq(empresas.emailContato, emailContato)).limit(1);
-    } catch (_) {
-      const { sqlite } = require('../db-sqlite');
-      const getStmt = sqlite.prepare('SELECT * FROM empresas WHERE email_contato = ? LIMIT 1');
-      novaEmpresa = getStmt.get(emailContato);
-      if (novaEmpresa) {
-        // Normalizar campos para resposta
-        novaEmpresa.id = novaEmpresa.id;
-        (novaEmpresa as any).emailContato = novaEmpresa.email_contato;
-        (novaEmpresa as any).nomeEmpresa = novaEmpresa.nome_empresa;
-      }
+    } catch (e) {
+      logger.error('❌ [AUTH/REGISTER] Erro ao buscar empresa recém-criada', e);
+      return res.status(500).json({ error: 'Internal server error' });
     }
     if (!novaEmpresa) {
       return res.status(500).json({ error: 'Falha ao criar empresa' });
@@ -359,7 +315,7 @@ router.post('/register/empresa', async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Registration error (empresa):', error);
+    logger.error('Registration error (empresa):', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

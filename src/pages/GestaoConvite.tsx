@@ -146,10 +146,13 @@ const GestaoConvite = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Simular dados iniciais (será substituído por dados reais)
+  // Carregar somente dados reais do serviço
   useEffect(() => {
-    // Aguardando integração com dados reais
-    setConvites([]);
+    const carregar = async () => {
+      const lista = await conviteService.listarConvites();
+      setConvites(lista as any);
+    };
+    carregar();
   }, []);
 
   const gerarCodigoUnico = () => {

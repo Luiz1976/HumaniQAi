@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { db } from '../db';
+import { db } from '../db-config';
 import { colaboradores, convitesColaborador } from '../../shared/schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import logger from '../utils/logger';
 
 const router = Router();
 
@@ -224,7 +225,7 @@ router.post('/login-and-fetch', async (req, res) => {
       });
 
     } catch (fetchError: any) {
-      console.error('Erro ao buscar colaboradores do ERP:', fetchError);
+      logger.error('Erro ao buscar colaboradores do ERP:', fetchError);
       
       if (fetchError.name === 'AbortError') {
         return res.status(504).json({
@@ -250,7 +251,7 @@ router.post('/login-and-fetch', async (req, res) => {
       });
     }
 
-    console.error('Erro no login ERP:', error);
+    logger.error('Erro no login ERP:', error);
     return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor',
@@ -334,7 +335,7 @@ router.post('/bulk-invite', async (req, res) => {
         });
 
       } catch (error: any) {
-        console.error(`Erro ao criar convite para ${colaborador.email}:`, error);
+        logger.error(`Erro ao criar convite para ${colaborador.email}:`, error);
         results.errors++;
         results.details.push({
           email: colaborador.email,
@@ -359,7 +360,7 @@ router.post('/bulk-invite', async (req, res) => {
       });
     }
 
-    console.error('Erro ao criar convites em massa:', error);
+    logger.error('Erro ao criar convites em massa:', error);
     return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor',
@@ -388,7 +389,7 @@ router.get('/config-info', async (req, res) => {
       },
     });
   } catch (error: any) {
-    console.error('Erro ao obter configurações ERP:', error);
+    logger.error('Erro ao obter configurações ERP:', error);
     return res.status(500).json({
       success: false,
       error: 'Erro ao obter configurações',
@@ -403,7 +404,7 @@ router.get('/test-connections', async (req, res) => {
     const testResults: any[] = [];
     const erpTypes = Object.keys(ERP_API_URLS);
 
-    console.log('🧪 Iniciando testes de conexão com ERPs...');
+    logger.info('🧪 Iniciando testes de conexão com ERPs...');
 
     for (const erpType of erpTypes) {
       const startTime = Date.now();
@@ -425,7 +426,7 @@ router.get('/test-connections', async (req, res) => {
       };
 
       try {
-        console.log(`🔍 Testando ${erpType} em ${apiUrl}...`);
+        logger.info(`🔍 Testando ${erpType} em ${apiUrl}...`);
         
         const response = await fetch(testEndpoint, {
           method: 'GET',
@@ -443,22 +444,22 @@ router.get('/test-connections', async (req, res) => {
         if (response.ok) {
           result.status = 'online';
           result.message = 'Conexão estabelecida com sucesso';
-          console.log(`✅ ${erpType}: ONLINE (${result.responseTime}ms)`);
+          logger.info(`✅ ${erpType}: ONLINE (${result.responseTime}ms)`);
         } else if (response.status === 401 || response.status === 403) {
           result.status = 'autenticação_necessária';
           result.message = 'API acessível, mas requer autenticação';
           result.details = `Status ${response.status} - Autenticação necessária`;
-          console.log(`🔐 ${erpType}: REQUER AUTH (${result.responseTime}ms)`);
+          logger.info(`🔐 ${erpType}: REQUER AUTH (${result.responseTime}ms)`);
         } else if (response.status === 404) {
           result.status = 'endpoint_não_encontrado';
           result.message = 'URL configurada, mas endpoint de teste não existe';
           result.details = 'Pode ser necessário ajustar o endpoint de teste';
-          console.log(`❓ ${erpType}: ENDPOINT NÃO ENCONTRADO (${result.responseTime}ms)`);
+          logger.info(`❓ ${erpType}: ENDPOINT NÃO ENCONTRADO (${result.responseTime}ms)`);
         } else {
           result.status = 'erro_http';
           result.message = `Erro HTTP ${response.status}`;
           result.details = response.statusText;
-          console.log(`⚠️ ${erpType}: ERRO HTTP ${response.status} (${result.responseTime}ms)`);
+          logger.warn(`⚠️ ${erpType}: ERRO HTTP ${response.status} (${result.responseTime}ms)`);
         }
 
       } catch (error: any) {
@@ -469,22 +470,22 @@ router.get('/test-connections', async (req, res) => {
           result.status = 'timeout';
           result.message = 'Tempo limite excedido (5s)';
           result.details = 'Servidor não respondeu no tempo esperado';
-          console.log(`⏱️ ${erpType}: TIMEOUT (${result.responseTime}ms)`);
+          logger.warn(`⏱️ ${erpType}: TIMEOUT (${result.responseTime}ms)`);
         } else if (error.cause?.code === 'ENOTFOUND') {
           result.status = 'dns_falhou';
           result.message = 'Domínio não encontrado';
           result.details = 'DNS não conseguiu resolver o domínio';
-          console.log(`🌐 ${erpType}: DNS FALHOU`);
+          logger.warn(`🌐 ${erpType}: DNS FALHOU`);
         } else if (error.cause?.code === 'ECONNREFUSED') {
           result.status = 'conexão_recusada';
           result.message = 'Conexão recusada pelo servidor';
           result.details = 'Servidor pode estar offline ou com firewall';
-          console.log(`🚫 ${erpType}: CONEXÃO RECUSADA`);
+          logger.warn(`🚫 ${erpType}: CONEXÃO RECUSADA`);
         } else {
           result.status = 'erro';
           result.message = 'Erro ao tentar conectar';
           result.details = error.message || 'Erro desconhecido';
-          console.log(`❌ ${erpType}: ERRO - ${error.message}`);
+          logger.error(`❌ ${erpType}: ERRO - ${error.message}`);
         }
       }
 
@@ -505,17 +506,17 @@ router.get('/test-connections', async (req, res) => {
       tempoMedio: Math.round(testResults.reduce((acc, r) => acc + r.responseTime, 0) / testResults.length),
     };
 
-    console.log('📊 Relatório Final:');
-    console.log(`   Total: ${stats.total} ERPs testados`);
-    console.log(`   ✅ Online: ${stats.online}`);
-    console.log(`   🔐 Requer Auth: ${stats.autenticação_necessária}`);
-    console.log(`   ❓ Endpoint não encontrado: ${stats.endpoint_não_encontrado}`);
-    console.log(`   ⏱️ Timeout: ${stats.timeout}`);
-    console.log(`   🌐 DNS Falhou: ${stats.dns_falhou}`);
-    console.log(`   🚫 Conexão Recusada: ${stats.conexão_recusada}`);
-    console.log(`   ⚠️ Erro HTTP: ${stats.erro_http}`);
-    console.log(`   ❌ Outros Erros: ${stats.erro}`);
-    console.log(`   ⚡ Tempo Médio: ${stats.tempoMedio}ms`);
+    logger.info('📊 Relatório Final:');
+    logger.info(`   Total: ${stats.total} ERPs testados`);
+    logger.info(`   ✅ Online: ${stats.online}`);
+    logger.info(`   🔐 Requer Auth: ${stats.autenticação_necessária}`);
+    logger.info(`   ❓ Endpoint não encontrado: ${stats.endpoint_não_encontrado}`);
+    logger.info(`   ⏱️ Timeout: ${stats.timeout}`);
+    logger.info(`   🌐 DNS Falhou: ${stats.dns_falhou}`);
+    logger.info(`   🚫 Conexão Recusada: ${stats.conexão_recusada}`);
+    logger.info(`   ⚠️ Erro HTTP: ${stats.erro_http}`);
+    logger.info(`   ❌ Outros Erros: ${stats.erro}`);
+    logger.info(`   ⚡ Tempo Médio: ${stats.tempoMedio}ms`);
 
     return res.json({
       success: true,
@@ -526,7 +527,7 @@ router.get('/test-connections', async (req, res) => {
     });
 
   } catch (error: any) {
-    console.error('❌ Erro ao testar conexões ERP:', error);
+    logger.error('❌ Erro ao testar conexões ERP:', error);
     return res.status(500).json({
       success: false,
       error: 'Erro ao executar testes de conexão',

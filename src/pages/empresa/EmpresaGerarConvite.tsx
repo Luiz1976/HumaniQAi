@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Mail, Calendar, Clock, CheckCircle, AlertTriangle, Copy, Send, Eye, Trash2, Plus, Database, Upload, FileSpreadsheet, Link as LinkIcon, Download } from 'lucide-react';
+import { UserPlus, Mail, Calendar, Clock, CheckCircle, AlertTriangle, Copy, Send, Eye, Trash2, Plus, Upload, FileSpreadsheet, Link as LinkIcon, Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+// Dialog imports removed - ERP functionality deleted
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from 'sonner';
 import { hybridInvitationService } from '../../services/invitationServiceHybrid';
+import { apiService } from '@/services/apiService';
 import { useAuth } from '../../hooks/AuthContext';
 import { StatusConvite } from '../../lib/enums';
 
@@ -25,22 +26,16 @@ interface ConviteColaborador {
   created_at: string;
 }
 
-interface ErpColaborador {
-  nome: string;
-  email: string;
-  cargo?: string;
-  departamento?: string;
-  sexo?: string;
-  selected?: boolean;
-}
+// ERP interfaces removed - functionality deleted
 
-interface ColaboradorPlanilha {
-  nome: string;
-  cargo: string;
-  setor: string;
-  idade: number;
-  sexo: string;
-}
+  interface ColaboradorPlanilha {
+    nome: string;
+    cargo: string;
+    setor: string;
+    idade: number;
+    sexo: string;
+    email: string;
+  }
 
 interface ConviteGerado {
   nome: string;
@@ -65,169 +60,46 @@ const EmpresaGerarConvite: React.FC = () => {
   const [enviandoConvite, setEnviandoConvite] = useState(false);
   const { user } = useAuth();
   
-  const [showErpLoginModal, setShowErpLoginModal] = useState(false);
-  const [erpLoginForm, setErpLoginForm] = useState({
-    erpType: 'TOTVS',
-    username: '',
-    password: '',
-    customUrl: '', // URL customizada para Oracle, Microsoft, Benner, etc.
-  });
-  const [erpColaboradores, setErpColaboradores] = useState<ErpColaborador[]>([]);
-  const [showColaboradoresTable, setShowColaboradoresTable] = useState(false);
-  const [fetchingColaboradores, setFetchingColaboradores] = useState(false);
-  const [generatingInvites, setGeneratingInvites] = useState(false);
-  
   // Estados para importação via Excel
   const [processandoPlanilha, setProcessandoPlanilha] = useState(false);
   const [convitesGerados, setConvitesGerados] = useState<ConviteGerado[]>([]);
   const [showConvitesGerados, setShowConvitesGerados] = useState(false);
+  const [metricas, setMetricas] = useState<{ limiteTotal: number; criados: number; usados: number; disponiveis: number; pendentes: number; cancelados: number } | null>(null);
 
   useEffect(() => {
     carregarConvites();
+    carregarMetricas();
   }, []);
 
-  const fazerLoginERP = async () => {
+  const carregarMetricas = async () => {
     try {
-      setFetchingColaboradores(true);
-      
-      if (!user?.empresaId) {
-        toast.error('ID da empresa não encontrado');
-        return;
-      }
-
-      if (!erpLoginForm.username || !erpLoginForm.password) {
-        toast.error('Preencha todos os campos obrigatórios');
-        return;
-      }
-
-      const response = await fetch('/api/erp/login-and-fetch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          erpType: erpLoginForm.erpType,
-          username: erpLoginForm.username,
-          password: erpLoginForm.password,
-          empresaId: user.empresaId,
-          ...(erpLoginForm.customUrl && { customUrl: erpLoginForm.customUrl }), // Envia URL customizada se fornecida
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        const colaboradoresComSelecao = data.data.colaboradores.map((col: ErpColaborador) => ({
-          ...col,
-          selected: true,
-        }));
-        
-        setErpColaboradores(colaboradoresComSelecao);
-        setShowErpLoginModal(false);
-        setShowColaboradoresTable(true);
-        
-        toast.success(`${data.data.totalColaboradores} colaboradores encontrados!`, {
-          description: 'Selecione quais deseja convidar',
-        });
-      } else {
-        toast.error('Erro ao conectar com o ERP', {
-          description: data.error || 'Verifique suas credenciais',
-        });
+      const resposta = await apiService.obterMetricasConvitesEmpresa();
+      if (resposta?.success && resposta?.data) {
+        setMetricas(resposta.data);
       }
     } catch (error) {
-      console.error('Erro ao fazer login no ERP:', error);
-      toast.error('Erro ao conectar com o ERP');
-    } finally {
-      setFetchingColaboradores(false);
+      console.error('❌ Erro ao carregar métricas de convites da empresa:', error);
     }
   };
 
-  const gerarConvitesEmMassa = async () => {
-    try {
-      setGeneratingInvites(true);
-      
-      if (!user?.empresaId) {
-        toast.error('ID da empresa não encontrado');
-        return;
-      }
+  // ERP functionality removed - ERP login function deleted
 
-      const selecionados = erpColaboradores.filter(col => col.selected);
-      
-      if (selecionados.length === 0) {
-        toast.error('Selecione pelo menos um colaborador');
-        return;
-      }
+  // ERP functionality removed - bulk invite function deleted
 
-      const response = await fetch('/api/erp/bulk-invite', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          empresaId: user.empresaId,
-          colaboradores: selecionados,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success('Convites gerados com sucesso!', {
-          description: `${data.data.invited} convites criados, ${data.data.skipped} ignorados`,
-        });
-        
-        setShowColaboradoresTable(false);
-        setErpColaboradores([]);
-        setErpLoginForm({
-          erpType: 'TOTVS',
-          username: '',
-          password: '',
-          customUrl: '',
-        });
-        
-        carregarConvites();
-      } else {
-        toast.error('Erro ao gerar convites', {
-          description: data.error,
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao gerar convites em massa:', error);
-      toast.error('Erro ao gerar convites');
-    } finally {
-      setGeneratingInvites(false);
-    }
-  };
-
-  const toggleColaboradorSelecao = (email: string) => {
-    setErpColaboradores(prev => 
-      prev.map(col => 
-        col.email === email ? { ...col, selected: !col.selected } : col
-      )
-    );
-  };
-
-  const toggleTodosColaboradores = () => {
-    const todosSelecionados = erpColaboradores.every(col => col.selected);
-    setErpColaboradores(prev => 
-      prev.map(col => ({ ...col, selected: !todosSelecionados }))
-    );
-  };
+  // ERP functionality removed - selection toggle functions deleted
 
   // Funções para importação via Excel
   const baixarModeloPlanilha = () => {
-    // Criar dados de exemplo para o modelo
-    const dadosModelo = [
-      { Nome: 'João Silva', Cargo: 'Analista de TI', Setor: 'Tecnologia', Idade: 30, Sexo: 'Masculino' },
-      { Nome: 'Maria Santos', Cargo: 'Gerente de RH', Setor: 'Recursos Humanos', Idade: 35, Sexo: 'Feminino' },
-      { Nome: 'Pedro Oliveira', Cargo: 'Contador', Setor: 'Financeiro', Idade: 28, Sexo: 'Masculino' },
-    ];
+    // Baixar modelo XLSX estático hospedado em /public
+    const url = '/modelo_convites_colaboradores.xlsx';
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'modelo_convites_colaboradores.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
-    // Criar workbook e worksheet
-    const ws = XLSX.utils.json_to_sheet(dadosModelo);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Colaboradores');
-
-    // Baixar arquivo
-    XLSX.writeFile(wb, 'modelo_convites_colaboradores.xlsx');
-    
-    toast.success('Modelo baixado com sucesso!', {
+    toast.success('Modelo Excel baixado com sucesso!', {
       description: 'Preencha a planilha e faça o upload',
     });
   };
@@ -262,16 +134,35 @@ const EmpresaGerarConvite: React.FC = () => {
 
       // Validar colunas
       const primeiraLinha = jsonData[0];
-      const colunasEsperadas = ['Nome', 'Cargo', 'Setor', 'Idade', 'Sexo'];
-      const colunasFaltando = colunasEsperadas.filter(col => !primeiraLinha.hasOwnProperty(col));
+      // Campos essenciais: Nome, Cargo, Setor (Departamento) e Email
+      const colunasObrigatorias = ['Nome', 'Cargo', 'Setor', 'Email'];
+      const colunasFaltando = colunasObrigatorias.filter(col => !primeiraLinha.hasOwnProperty(col));
 
       console.log('📋 [EXCEL] Colunas encontradas:', Object.keys(primeiraLinha));
-      console.log('📋 [EXCEL] Colunas esperadas:', colunasEsperadas);
+      console.log('📋 [EXCEL] Colunas obrigatórias:', colunasObrigatorias);
 
       if (colunasFaltando.length > 0) {
         console.error('❌ [EXCEL] Colunas faltando:', colunasFaltando);
         toast.error('Planilha inválida', {
           description: `Colunas faltando: ${colunasFaltando.join(', ')}`,
+        });
+        return;
+      }
+
+      // Validar presença e formato de Email em todas as linhas
+      const linhasSemEmail = jsonData.filter(linha => !linha.Email || String(linha.Email).trim() === '');
+      if (linhasSemEmail.length > 0) {
+        toast.error('Planilha inválida', {
+          description: 'A coluna Email é obrigatória em todas as linhas',
+        });
+        return;
+      }
+
+      const isValidEmail = (email: string) => /.+@.+\..+/.test(email);
+      const linhasEmailInvalido = jsonData.filter(linha => !isValidEmail(String(linha.Email).trim()));
+      if (linhasEmailInvalido.length > 0) {
+        toast.error('Emails inválidos na planilha', {
+          description: 'Corrija os emails inválidos antes de continuar',
         });
         return;
       }
@@ -285,16 +176,16 @@ const EmpresaGerarConvite: React.FC = () => {
 
       console.log('🏢 [EXCEL] ID da empresa:', user.empresaId);
 
+      // Ignorar Idade/Sexo da planilha; processar apenas os essenciais
       const convitesParaGerar = jsonData.map((linha: any) => ({
         nome: String(linha.Nome || '').trim(),
         cargo: String(linha.Cargo || '').trim(),
         setor: String(linha.Setor || '').trim(),
-        idade: parseInt(linha.Idade) || 0,
-        sexo: String(linha.Sexo || '').trim(),
+        email: String(linha.Email || '').trim(),
       }));
 
       // Filtrar linhas vazias
-      const colaboradoresValidos = convitesParaGerar.filter(c => c.nome && c.cargo && c.setor);
+      const colaboradoresValidos = convitesParaGerar.filter(c => c.nome && c.cargo && c.setor && c.email && isValidEmail(c.email));
 
       console.log(`✅ [EXCEL] Colaboradores válidos: ${colaboradoresValidos.length} de ${convitesParaGerar.length}`);
 
@@ -309,27 +200,48 @@ const EmpresaGerarConvite: React.FC = () => {
       const convitesComLinks: ConviteGerado[] = [];
       const erros: string[] = [];
 
-      for (const colaborador of colaboradoresValidos) {
+      // Verificar limite antes de processar em massa
+      // Bloquear apenas quando há limite configurado (> 0) e não há disponíveis
+      if (metricas && metricas.limiteTotal > 0 && metricas.disponiveis <= 0) {
+        toast.error('Limite de convites atingido', {
+          description: `Limite contratado: ${metricas.limiteTotal}. Importação bloqueada.`
+        });
+        return;
+      }
+
+      // Calcular o máximo a criar: se limiteTotal = 0 (não definido/sem limite), permitir todos os válidos
+      const limiteTotal = metricas?.limiteTotal ?? 0;
+      const disponiveisAgora = metricas?.disponiveis ?? undefined;
+      const semLimite = limiteTotal <= 0;
+      const maxCriar = semLimite ? colaboradoresValidos.length : Math.max(0, disponiveisAgora || 0);
+      const colaboradoresParaCriar = colaboradoresValidos.slice(0, maxCriar);
+
+      for (const colaborador of colaboradoresParaCriar) {
         try {
           console.log(`📤 [EXCEL] Gerando convite para: ${colaborador.nome}`);
           
+          const authToken = localStorage.getItem('authToken');
+          console.log('🔐 [EXCEL] Token presente?', !!authToken, 'len:', authToken?.length || 0);
+
           const response = await fetch('/api/convites/colaborador', {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+              ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
             },
             body: JSON.stringify({
               nome: colaborador.nome,
-              email: `${colaborador.nome.toLowerCase().replace(/\s+/g, '.')}@temp.com`,
+              email: colaborador.email,
               cargo: colaborador.cargo,
               departamento: colaborador.setor,
               diasValidade: 30,
             }),
           });
 
-          const data = await response.json();
-          console.log(`📥 [EXCEL] Resposta para ${colaborador.nome}:`, data);
+          const rawText = await response.text();
+          console.log(`📥 [EXCEL] HTTP ${response.status} para ${colaborador.nome}:`, rawText);
+          let data: any;
+          try { data = JSON.parse(rawText); } catch { data = { error: rawText }; }
 
           if (data.success && data.data?.token) {
             const linkConvite = `${window.location.origin}/convite/colaborador/${data.data.token}`;
@@ -362,7 +274,7 @@ const EmpresaGerarConvite: React.FC = () => {
 
       if (convitesComLinks.length > 0) {
         toast.success('Convites gerados!', {
-          description: `${convitesComLinks.length} de ${colaboradoresValidos.length} convites criados${erros.length > 0 ? ` (${erros.length} falhas)` : ''}`,
+          description: `${convitesComLinks.length} de ${colaboradoresValidos.length} convites processados${erros.length > 0 ? ` (${erros.length} falhas)` : ''}`,
         });
       } else {
         toast.error('Nenhum convite foi criado', {
@@ -376,6 +288,7 @@ const EmpresaGerarConvite: React.FC = () => {
       // Recarregar lista de convites
       if (convitesComLinks.length > 0) {
         carregarConvites();
+        carregarMetricas();
       }
     } catch (error) {
       console.error('❌ [EXCEL] Erro fatal ao processar planilha:', error);
@@ -401,6 +314,9 @@ const EmpresaGerarConvite: React.FC = () => {
       description: `${convitesGerados.length} links copiados para área de transferência`,
     });
   };
+
+  // Tokens cancelados localmente (para ocultar no grid mesmo após reload)
+  const [tokensCancelados, setTokensCancelados] = useState<string[]>([]);
 
   const carregarConvites = async () => {
     try {
@@ -449,9 +365,15 @@ const EmpresaGerarConvite: React.FC = () => {
         return;
       }
 
+      const authToken = localStorage.getItem('authToken');
+      console.log('🔐 [UI] Token presente?', !!authToken, 'len:', authToken?.length || 0);
+
       const response = await fetch('/api/convites/colaborador', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+        },
         body: JSON.stringify({
           nome: novoConvite.nome,
           email: novoConvite.email,
@@ -462,7 +384,10 @@ const EmpresaGerarConvite: React.FC = () => {
         }),
       });
 
-      const data = await response.json();
+      const rawText = await response.text();
+      console.log('📥 [UI] HTTP', response.status, 'body:', rawText);
+      let data: any;
+      try { data = JSON.parse(rawText); } catch { data = { error: rawText }; }
 
       if (data.success) {
         toast.success('Convite criado com sucesso!', {
@@ -477,6 +402,7 @@ const EmpresaGerarConvite: React.FC = () => {
           dias_expiracao: 7
         });
         carregarConvites();
+        carregarMetricas();
       } else {
         toast.error('Erro ao criar convite', {
           description: data.message || 'Erro desconhecido'
@@ -500,37 +426,46 @@ const EmpresaGerarConvite: React.FC = () => {
     });
   };
 
-  const handleDeletarConvite = async (id: string) => {
+  const handleDeletarConvite = async (token: string) => {
     try {
-      const response = await fetch(`/api/convites/colaborador/${id}`, {
-        method: 'DELETE',
-      });
-      const data = await response.json();
-      
-      if (data.success) {
-        toast.success('Convite deletado com sucesso');
-        carregarConvites();
+      console.log('[UI] [Delete] Clique na lixeira. Token:', token);
+      const antes = convites.length;
+      console.log('[UI] [Delete] Convites antes:', antes, 'preview primeiros:', convites.slice(0,3).map(c=>({id:c.id,token:c.token,status:c.status})));
+
+      const response = await hybridInvitationService.cancelarConvite(token, 'colaborador');
+      console.log('[UI] [Delete] Resposta cancelarConvite:', response);
+
+      if (response.success) {
+        toast.success('Convite cancelado e excluído com sucesso');
+        // Remoção otimista imediata pelo token
+        setConvites(prev => {
+          const filtrados = prev.filter(c => c.token !== token);
+          console.log('[UI] [Delete] Remoção otimista. Antes:', prev.length, 'Depois:', filtrados.length);
+          return filtrados;
+        });
+        // Marcar token como cancelado para ocultar mesmo após reload
+        setTokensCancelados(prev => [...prev, token]);
+        // Sincronizar com backend em background (não reexibir o item se voltar)
+        void carregarConvites();
       } else {
-        toast.error('Erro ao deletar convite');
+        toast.error(response.message || 'Erro ao cancelar convite');
       }
     } catch (error) {
-      console.error('Erro ao deletar convite:', error);
-      toast.error('Erro ao deletar convite');
+      console.error('[UI] [Delete] Erro ao cancelar convite:', error);
+      toast.error('Erro ao cancelar convite');
     }
   };
 
   const getStatusConvite = (convite: ConviteColaborador): StatusConvite => {
-    if (convite.status === StatusConvite.ACEITO) {
-      return StatusConvite.ACEITO;
-    }
-    
+    // Tratar estados explícitos vindos do backend
+    if (convite.status === StatusConvite.CANCELADO) return StatusConvite.CANCELADO;
+    if (convite.status === StatusConvite.ACEITO) return StatusConvite.ACEITO;
+
+    // Derivar expiração pela validade
     const agora = new Date();
     const validade = new Date(convite.validade);
-    
-    if (agora > validade) {
-      return StatusConvite.EXPIRADO;
-    }
-    
+    if (agora > validade) return StatusConvite.EXPIRADO;
+
     return StatusConvite.PENDENTE;
   };
 
@@ -554,8 +489,11 @@ const EmpresaGerarConvite: React.FC = () => {
     
     const status = getStatusConvite(convite);
     const matchStatus = statusFiltro === 'todos' || status === statusFiltro;
-    
-    return matchFiltro && matchStatus;
+    // Ocultar sempre convites cancelados (não há filtro para eles neste componente)
+    const naoCancelado = status !== StatusConvite.CANCELADO;
+    // Também ocultar tokens marcados localmente como cancelados
+    const naoTokenCanceladoLocal = !tokensCancelados.includes(convite.token);
+    return matchFiltro && matchStatus && naoCancelado && naoTokenCanceladoLocal;
   });
 
   if (loading) {
@@ -596,8 +534,10 @@ const EmpresaGerarConvite: React.FC = () => {
           </p>
         </div>
 
-        {/* Seção destacando as 3 formas */}
-        <div className="grid md:grid-cols-3 gap-6 mb-6">
+        {/* Seção numerada integrada diretamente acima de cada método */}
+
+        <div className="space-y-6 mb-8">
+          {/* Número 1 - acima do Card Individual */}
           <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-6 text-center backdrop-blur-sm hover:scale-105 transition-transform duration-300">
             <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
               <span className="text-3xl font-bold text-white">1</span>
@@ -605,25 +545,6 @@ const EmpresaGerarConvite: React.FC = () => {
             <h3 className="text-white font-bold text-lg mb-2">Convite Individual</h3>
             <p className="text-white/60 text-sm">Personalização total para colaboradores específicos</p>
           </div>
-          
-          <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-2xl p-6 text-center backdrop-blur-sm hover:scale-105 transition-transform duration-300">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-3xl font-bold text-white">2</span>
-            </div>
-            <h3 className="text-white font-bold text-lg mb-2">Integração ERP</h3>
-            <p className="text-white/60 text-sm">Importação automática e sincronizada</p>
-          </div>
-          
-          <div className="bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-500/20 rounded-2xl p-6 text-center backdrop-blur-sm hover:scale-105 transition-transform duration-300">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-3xl font-bold text-white">3</span>
-            </div>
-            <h3 className="text-white font-bold text-lg mb-2">Importação Excel</h3>
-            <p className="text-white/60 text-sm">Escala e praticidade em segundos</p>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
           {/* CARD 1: Convites Individuais */}
           <Card className="border-0 bg-white/10 backdrop-blur-xl shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 group">
             <CardHeader className="border-b border-white/10 bg-gradient-to-br from-blue-500/5 to-purple-500/5">
@@ -645,23 +566,82 @@ const EmpresaGerarConvite: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <Dialog open={showNovoConviteModal} onOpenChange={setShowNovoConviteModal}>
-                <DialogTrigger asChild>
-                  <Button 
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-purple-500/50 mb-6 font-semibold text-base py-6 transition-all duration-300"
-                    data-testid="button-novo-convite"
-                  >
-                    <Plus className="h-5 w-5 mr-2" />
-                    Criar Convite Agora
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Criar Novo Convite</DialogTitle>
-                    <DialogDescription>
-                      Preencha os dados do colaborador para gerar o convite
-                    </DialogDescription>
-                  </DialogHeader>
+              {/* Painel de Métricas */}
+              {metricas && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <CheckCircle className="h-5 w-5 text-green-400" />
+                      <span className="text-white/80 text-sm">Convites disponíveis</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-white">{metricas.disponiveis}</span>
+                      <span className="text-xs text-white/50">Limite: {metricas.limiteTotal > 0 ? metricas.limiteTotal : 'não definido'}</span>
+                    </div>
+                    <div className="mt-3">
+                      <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-2 bg-green-500"
+                          style={{ width: `${Math.min(100, (metricas.disponiveis / (metricas.limiteTotal || 1)) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Mail className="h-5 w-5 text-blue-400" />
+                      <span className="text-white/80 text-sm">Convites criados</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-white">{metricas.criados}</span>
+                      <span className="text-xs text-white/50">de {metricas.limiteTotal > 0 ? metricas.limiteTotal : 'sem limite'}</span>
+                    </div>
+                    <div className="mt-3">
+                      <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-2 bg-blue-500"
+                          style={{ width: `${Math.min(100, (metricas.criados / (metricas.limiteTotal || 1)) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <CheckCircle className="h-5 w-5 text-emerald-400" />
+                      <span className="text-white/80 text-sm">Convites utilizados</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-white">{metricas.usados}</span>
+                      <span className="text-xs text-white/50">pendentes: {metricas.pendentes}</span>
+                    </div>
+                    <div className="mt-3">
+                      <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-2 bg-emerald-500"
+                          style={{ width: `${Math.min(100, (metricas.usados / (metricas.criados || 1)) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <Button 
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-purple-500/50 mb-6 font-semibold text-base py-6 transition-all duration-300"
+                data-testid="button-novo-convite"
+                onClick={() => setShowNovoConviteModal(true)}
+                disabled={metricas ? (metricas.limiteTotal > 0 && metricas.disponiveis <= 0) : false}
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Criar Convite Agora
+              </Button>
+
+              {showNovoConviteModal && (
+                <div className="sm:max-w-md w-full rounded-xl border border-white/20 bg-black/30 backdrop-blur p-6">
+                  <div className="mb-4">
+                    <h2 className="text-lg font-semibold text-white">Criar Novo Convite</h2>
+                    <p className="text-sm text-white/70">Preencha os dados do colaborador para gerar o convite</p>
+                  </div>
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="nome">Nome Completo *</Label>
@@ -729,8 +709,8 @@ const EmpresaGerarConvite: React.FC = () => {
                       </Button>
                     </div>
                   </div>
-                </DialogContent>
-              </Dialog>
+                </div>
+              )}
 
               <div className="grid grid-cols-4 gap-3">
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
@@ -758,261 +738,15 @@ const EmpresaGerarConvite: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* CARD 2: Integração com ERP */}
-          <Card className="border-0 bg-white/10 backdrop-blur-xl shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 group">
-            <CardHeader className="border-b border-white/10 bg-gradient-to-br from-emerald-500/5 to-teal-500/5">
-              <div className="flex items-start gap-4">
-                <div className="p-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Database className="h-7 w-7 text-white" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CardTitle className="text-xl text-white" data-testid="text-card-erp-title">Conexão ERP</CardTitle>
-                    <Badge className="bg-emerald-500/20 text-emerald-300 text-xs">Método 2</Badge>
-                  </div>
-                  <CardDescription className="text-white/70 leading-relaxed">
-                    <strong className="text-emerald-300">Automação inteligente,</strong> zero esforço manual.
-                    <br />
-                    Sincronize com TOTVS, SAP, Senior e mais.
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              {showColaboradoresTable ? (
-                <div className="space-y-4">
-                  {/* Header com seleção e botão */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        checked={erpColaboradores.every(col => col.selected)}
-                        onCheckedChange={toggleTodosColaboradores}
-                        data-testid="checkbox-select-all"
-                      />
-                      <span className="text-white text-sm">
-                        {erpColaboradores.filter(col => col.selected).length} de {erpColaboradores.length} selecionados
-                      </span>
-                    </div>
-                    <Button
-                      onClick={() => {
-                        setShowColaboradoresTable(false);
-                        setErpColaboradores([]);
-                      }}
-                      variant="ghost"
-                      className="text-white/60 hover:text-white"
-                      size="sm"
-                    >
-                      Cancelar
-                    </Button>
-                  </div>
-
-                  {/* Tabela de colaboradores */}
-                  <div className="bg-white/5 border border-white/10 rounded-lg max-h-96 overflow-y-auto">
-                    {erpColaboradores.map((col, index) => (
-                      <div 
-                        key={col.email}
-                        className="flex items-center gap-3 p-3 border-b border-white/5 last:border-0 hover:bg-white/5"
-                        data-testid={`colaborador-row-${index}`}
-                      >
-                        <Checkbox
-                          checked={col.selected}
-                          onCheckedChange={() => toggleColaboradorSelecao(col.email)}
-                          data-testid={`checkbox-${col.email}`}
-                        />
-                        <div className="flex-1">
-                          <p className="text-white font-medium">{col.nome}</p>
-                          <p className="text-white/60 text-sm">{col.email}</p>
-                          {(col.cargo || col.departamento) && (
-                            <p className="text-white/40 text-xs mt-1">
-                              {[col.cargo, col.departamento].filter(Boolean).join(' • ')}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Botão de ação */}
-                  <Button
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg"
-                    onClick={gerarConvitesEmMassa}
-                    disabled={generatingInvites || erpColaboradores.filter(col => col.selected).length === 0}
-                    data-testid="button-gerar-convites-massa"
-                  >
-                    {generatingInvites ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                        Gerando Convites...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4 mr-2" />
-                        Gerar {erpColaboradores.filter(col => col.selected).length} Convites
-                      </>
-                    )}
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* Informativo */}
-                  <Alert className="bg-emerald-500/10 border-emerald-500/20">
-                    <Database className="h-4 w-4 text-emerald-400" />
-                    <AlertDescription className="text-white/70">
-                      <strong className="text-white">Faça login no seu ERP</strong> e importe colaboradores automaticamente.
-                    </AlertDescription>
-                  </Alert>
-
-                  {/* Features */}
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3 p-3 bg-white/5 rounded-lg border border-white/10">
-                      <LinkIcon className="h-5 w-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium text-white">Login Direto</h4>
-                        <p className="text-sm text-white/60">Use suas credenciais habituais do ERP</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 bg-white/5 rounded-lg border border-white/10">
-                      <Upload className="h-5 w-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium text-white">Importação em Lote</h4>
-                        <p className="text-sm text-white/60">Busque e selecione múltiplos colaboradores</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 bg-white/5 rounded-lg border border-white/10">
-                      <CheckCircle className="h-5 w-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium text-white">Validação Automática</h4>
-                        <p className="text-sm text-white/60">Verifica duplicatas e dados inválidos</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* CTA */}
-                  <Dialog open={showErpLoginModal} onOpenChange={setShowErpLoginModal}>
-                    <DialogTrigger asChild>
-                      <Button 
-                        className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg hover:shadow-emerald-500/50 font-semibold text-base py-6 transition-all duration-300"
-                        data-testid="button-conectar-erp"
-                      >
-                        <Database className="h-5 w-5 mr-2" />
-                        Conectar Agora
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Login no ERP</DialogTitle>
-                        <DialogDescription>
-                          Entre com suas credenciais do sistema ERP
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label>Tipo de ERP</Label>
-                          <Select 
-                            value={erpLoginForm.erpType} 
-                            onValueChange={(value) => setErpLoginForm(prev => ({ 
-                              ...prev, 
-                              erpType: value,
-                              customUrl: '' // Limpa URL ao trocar de ERP
-                            }))}
-                          >
-                            <SelectTrigger data-testid="select-tipo-erp">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="TOTVS">✅ TOTVS (Protheus/RM/Datasul)</SelectItem>
-                              <SelectItem value="SAP">✅ SAP (S/4HANA/Business One)</SelectItem>
-                              <SelectItem value="SENIOR">🔐 Senior Sistemas</SelectItem>
-                              <SelectItem value="SANKHYA">🔐 Sankhya</SelectItem>
-                              <SelectItem value="MICROSOFT">⚙️ Microsoft Dynamics 365</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {/* Campo de URL Customizada - Apenas para Microsoft */}
-                        {erpLoginForm.erpType === 'MICROSOFT' && (
-                          <div className="space-y-2">
-                            <Label>URL do Tenant Dynamics 365 *</Label>
-                            <Input
-                              placeholder="https://suaorg.crm4.dynamics.com"
-                              value={erpLoginForm.customUrl}
-                              onChange={(e) => setErpLoginForm(prev => ({ ...prev, customUrl: e.target.value }))}
-                              data-testid="input-custom-url"
-                            />
-                            <Alert className="bg-blue-50 border-blue-200">
-                              <AlertDescription className="text-sm text-blue-800">
-                                <strong>Como obter a URL Dynamics 365:</strong>
-                                <br />
-                                1. Faça login no Dynamics 365
-                                <br />
-                                2. A URL no navegador é algo como: <code className="bg-blue-100 px-1 rounded">https://contoso.crm4.dynamics.com</code>
-                                <br />
-                                3. Copie até <code className="bg-blue-100 px-1 rounded">.dynamics.com</code>
-                                <br />
-                                <br />
-                                <strong>Formato:</strong> <code className="bg-blue-100 px-1 rounded">https://{'{'}{'{'}organização{'}'}.{'{'}{'{'}região{'}'}.dynamics.com</code>
-                                <br />
-                                <strong>Regiões:</strong> crm (EUA), crm2 (América do Sul), crm4 (EMEA), crm5 (Ásia)
-                              </AlertDescription>
-                            </Alert>
-                          </div>
-                        )}
-
-                        <div className="space-y-2">
-                          <Label>Usuário</Label>
-                          <Input
-                            placeholder="Seu usuário do ERP"
-                            value={erpLoginForm.username}
-                            onChange={(e) => setErpLoginForm(prev => ({ ...prev, username: e.target.value }))}
-                            data-testid="input-username"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Senha</Label>
-                          <Input
-                            type="password"
-                            placeholder="Sua senha do ERP"
-                            value={erpLoginForm.password}
-                            onChange={(e) => setErpLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                            data-testid="input-password"
-                          />
-                        </div>
-                        <div className="flex justify-end gap-2 pt-4">
-                          <Button variant="outline" onClick={() => setShowErpLoginModal(false)}>
-                            Cancelar
-                          </Button>
-                          <Button 
-                            onClick={fazerLoginERP}
-                            disabled={
-                              fetchingColaboradores || 
-                              !erpLoginForm.username || 
-                              !erpLoginForm.password ||
-                              // Requer URL customizada para Microsoft
-                              (erpLoginForm.erpType === 'MICROSOFT' && !erpLoginForm.customUrl)
-                            }
-                            data-testid="button-login-erp"
-                          >
-                            {fetchingColaboradores ? (
-                              <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                                Conectando...
-                              </>
-                            ) : (
-                              <>
-                                <Database className="h-4 w-4 mr-2" />
-                                Conectar e Buscar
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* CARD REMOVIDO: ERP - Funcionalidade removida conforme documentação */}
+          {/* Número 2 - acima do Card Excel */}
+          <div className="bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-500/20 rounded-2xl p-6 text-center backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <span className="text-3xl font-bold text-white">2</span>
+            </div>
+            <h3 className="text-white font-bold text-lg mb-2">Importação Excel</h3>
+            <p className="text-white/60 text-sm">Escala e praticidade em segundos</p>
+          </div>
 
           {/* CARD 3: Importação via Planilha Excel */}
           <Card className="border-0 bg-white/10 backdrop-blur-xl shadow-2xl hover:shadow-orange-500/20 transition-all duration-300 group">
@@ -1024,7 +758,7 @@ const EmpresaGerarConvite: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <CardTitle className="text-xl text-white" data-testid="text-card-excel-title">Importação em Massa</CardTitle>
-                    <Badge className="bg-orange-500/20 text-orange-300 text-xs">Método 3</Badge>
+                    <Badge className="bg-orange-500/20 text-orange-300 text-xs">Método 2</Badge>
                   </div>
                   <CardDescription className="text-white/70 leading-relaxed">
                     <strong className="text-orange-300">Escala total,</strong> centenas em minutos.
@@ -1117,7 +851,7 @@ const EmpresaGerarConvite: React.FC = () => {
                       <Download className="h-5 w-5 mr-2" />
                       Baixar Modelo Excel
                     </Button>
-                    <p className="text-white/50 text-xs text-center">Arquivo .XLSX com 5 colunas prontas</p>
+                    <p className="text-white/50 text-xs text-center">Arquivo .XLSX com 6 colunas prontas</p>
                   </div>
 
                   {/* Divisor */}
@@ -1277,26 +1011,24 @@ const EmpresaGerarConvite: React.FC = () => {
                             </p>
                           </div>
                           <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleCopiarLink(convite.token)}
-                              className="bg-white/5 border-white/20 hover:bg-white/10 text-white"
-                              data-testid={`button-copiar-${convite.id}`}
-                            >
-                              <Copy className="h-4 w-4" />
-                            </Button>
-                            {status === StatusConvite.PENDENTE && (
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleDeletarConvite(convite.id)}
+                                onClick={() => handleCopiarLink(convite.token)}
+                                className="bg-white/5 border-white/20 hover:bg-white/10 text-white"
+                                data-testid={`button-copiar-${convite.id}`}
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDeletarConvite(convite.token)}
                                 className="bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-400"
                                 data-testid={`button-deletar-${convite.id}`}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
-                            )}
                           </div>
                         </div>
                       </div>

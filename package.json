@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "start": "npm run server & npm run dev",
+    "start": "npm run server & npm run dev:strict",
     "start:prod": "NODE_ENV=production tsx server/index.ts",
     "dev": "vite --port 5000 --host 0.0.0.0",
+    "dev:strict": "vite --port 5000 --host 0.0.0.0",
+    "dev:ps": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1",
     "server": "tsx server/index.ts",
     "build": "vite build",
     "build:dev": "vite build --mode development",

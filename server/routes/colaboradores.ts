@@ -1,10 +1,11 @@
 import express from 'express';
-import { db } from '../db';
+import { db } from '../db-config';
 import { colaboradores, cursoProgresso, cursoCertificados, cursoDisponibilidade } from '../../shared/schema';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { eq, and } from 'drizzle-orm';
 import { z } from 'zod';
 import { cursos } from '../../src/data/cursosData';
+import logger from '../utils/logger';
 
 const router = express.Router();
 
@@ -63,7 +64,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
     // Colaborador: acesso negado para listar todos
     return res.status(403).json({ error: 'Acesso negado. Apenas empresa/admin podem listar colaboradores.' });
   } catch (error) {
-    console.error('Erro ao listar colaboradores:', error);
+    logger.error('Erro ao listar colaboradores:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -99,7 +100,7 @@ router.get('/me', authenticateToken, async (req: AuthRequest, res) => {
 
     res.json({ colaborador });
   } catch (error) {
-    console.error('Erro ao buscar dados do colaborador:', error);
+    logger.error('Erro ao buscar dados do colaborador:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -156,7 +157,7 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res) => {
       }
     });
   } catch (error) {
-    console.error('Erro ao atualizar colaborador:', error);
+    logger.error('Erro ao atualizar colaborador:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -241,7 +242,7 @@ router.get('/:id/cursos-detalhes', authenticateToken, async (req: AuthRequest, r
       }
     });
   } catch (error) {
-    console.error('Erro ao buscar cursos do colaborador:', error);
+    logger.error('Erro ao buscar cursos do colaborador:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -284,7 +285,7 @@ router.get('/:id/certificado/:cursoSlug', authenticateToken, async (req: AuthReq
 
     res.json(certificado);
   } catch (error) {
-    console.error('Erro ao buscar certificado do colaborador:', error);
+    logger.error('Erro ao buscar certificado do colaborador:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

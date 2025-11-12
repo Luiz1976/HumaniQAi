@@ -1,5 +1,5 @@
 import express from 'express';
-import { db } from '../../db';
+import { db } from './server/db-config';
 import { convitesEmpresa, convitesColaborador, empresas, colaboradores, insertConviteEmpresaSchema, insertConviteColaboradorSchema, insertEmpresaSchema, insertColaboradorSchema } from '../../shared/schema';
 import { hashPassword, generateInviteToken } from '../utils/auth';
 import { authenticateToken, requireAdmin, requireEmpresa, AuthRequest } from '../middleware/auth';

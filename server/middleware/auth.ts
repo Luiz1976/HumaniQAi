@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken, JWTPayload } from '../utils/auth';
-import { db } from '../../db';
+import { db } from '../db-config';
 import { empresas, colaboradores } from '../../shared/schema';
 import { eq } from 'drizzle-orm';
 

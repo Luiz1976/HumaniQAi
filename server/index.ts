@@ -8,8 +8,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { db } from '../db';
-import winston from 'winston';
+import { db, runMigrations } from './db-config';
+import logger, { logRequest } from './utils/logger';
 
 // Importar rotas
 import authRoutes from './routes/auth';
@@ -18,13 +18,20 @@ import empresasRoutes from './routes/empresas';
 import colaboradoresRoutes from './routes/colaboradores';
 import convitesRoutes from './routes/convites';
 import adminRoutes from './routes/admin';
+import adminIndicadoresRoutes from './routes/admin-indicadores';
 import chatbotRoutes from './routes/chatbot';
 import stripeRoutes from './routes/stripe';
-import erpRoutes from './routes/erp';
+// import erpRoutes from './routes/erp'; // ERP functionality removed
 import testeDisponibilidadeRoutes from './routes/teste-disponibilidade';
 import cursoDisponibilidadeRoutes from './routes/curso-disponibilidade';
 import cursosRoutes from './routes/cursos';
 import emailTestRoutes from './routes/email-test';
+import analyticsRoutes from './routes/analytics';
+import notificationsRoutes from './routes/notifications';
+import exportRoutes from './routes/export';
+import { scheduleBackupFromEnv } from './utils/backup';
+import { cacheMiddleware } from './utils/cache';
+import requireApiKey from './middleware/apiKey';
 
 
 
@@ -32,24 +39,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// Configurar logger
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.errors({ stack: true }),
-    winston.format.json()
-  ),
-  defaultMeta: { service: 'humaniq-backend' },
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    })
-  ]
-});
+// Logger centralizado
 
 // Configurar rate limiting
 const limiter = rateLimit({
@@ -60,20 +50,23 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Rate limiting específico para ERP (parametrizado por ambiente)
+const ERP_RATE_LIMIT_WINDOW_MS = process.env.ERP_RATE_LIMIT_WINDOW_MS
+  ? Number(process.env.ERP_RATE_LIMIT_WINDOW_MS)
+  : 60_000; // 1 minuto padrão
+const ERP_RATE_LIMIT_MAX = process.env.ERP_RATE_LIMIT_MAX
+  ? Number(process.env.ERP_RATE_LIMIT_MAX)
+  : 60; // 60 req/min por IP
+const erpLimiter = rateLimit({
+  windowMs: ERP_RATE_LIMIT_WINDOW_MS,
+  max: ERP_RATE_LIMIT_MAX,
+  message: 'Limite de requisições ao ERP excedido. Tente novamente em breve.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware de segurança
-// Executar migrações SQLite automaticamente em desenvolvimento
-if (NODE_ENV !== 'production') {
-  try {
-    // Import dinâmico para evitar carregar em produção
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { runMigrations } = require('./db-sqlite');
-    Promise.resolve(runMigrations()).catch((err: any) => {
-      console.error('❌ Erro ao executar migrações SQLite:', err);
-    });
-  } catch (err) {
-    console.warn('⚠️ Módulo de migrações SQLite não disponível:', err);
-  }
-}
+// Migrações serão disparadas uma vez no final do arquivo para evitar duplicidade
 
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
@@ -139,14 +132,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Middleware de logging
-app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.path}`, {
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
-    timestamp: new Date().toISOString()
-  });
-  next();
-});
+app.use(logRequest);
 
 // Health check endpoint
 // Health check endpoint
@@ -192,18 +178,23 @@ app.get('/', (req, res) => {
 
 // Configurar rotas da API
 app.use('/api/auth', authRoutes);
-app.use('/api/testes', testesRoutes);
+app.use('/api/testes', cacheMiddleware(30), testesRoutes);
 app.use('/api/empresas', empresasRoutes);
 app.use('/api/colaboradores', colaboradoresRoutes);
-app.use('/api/convites', convitesRoutes);
+app.use('/api/convites', cacheMiddleware(15), convitesRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/admin', adminIndicadoresRoutes);
+app.use('/api/chatbot', cacheMiddleware(10), chatbotRoutes);
 app.use('/api/stripe', stripeRoutes);
-app.use('/api/erp', erpRoutes);
+// ERP functionality removed - routes disabled
+// app.use('/api/erp', requireApiKey, erpLimiter, cacheMiddleware(15), erpRoutes);
 app.use('/api/teste-disponibilidade', testeDisponibilidadeRoutes);
 app.use('/api/curso-disponibilidade', cursoDisponibilidadeRoutes);
-app.use('/api/cursos', cursosRoutes);
+app.use('/api/cursos', cacheMiddleware(20), cursosRoutes);
 app.use('/api/email-test', emailTestRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/export', exportRoutes);
 
 // Middleware para rotas não encontradas (sem wildcard inválido)
 app.use((req, res) => {
@@ -237,9 +228,16 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   logger.info(`🚀 HumaniQ Backend iniciado com sucesso!`);
   logger.info(`📍 Servidor rodando em: http://0.0.0.0:${PORT}`);
   logger.info(`📊 Ambiente: ${NODE_ENV}`);
-  logger.info(`🗄️ Banco de dados: ${process.env.DATABASE_URL ? 'PostgreSQL (Neon)' : 'SQLite (local)'}`);
+  logger.info(`🗄️ Banco de dados: ${process.env.DATABASE_URL ? 'PostgreSQL (Neon)' : 'DESCONHECIDO'}`);
   logger.info(`🔒 CORS configurado para: ${process.env.CORS_ORIGIN || 'localhost:5000'}`);
   logger.info(`⚡ Rate limiting: 100 req/15min por IP`);
+  // Agendar backup se habilitado via env
+  try {
+    scheduleBackupFromEnv();
+    logger.info('🗂️ Backup agendado conforme configuração de ambiente.');
+  } catch (backupErr) {
+    logger.error('Erro ao agendar backups:', backupErr);
+  }
 });
 
 // Graceful shutdown
@@ -270,3 +268,12 @@ process.on('uncaughtException', (error) => {
 });
 
 export default app;
+// Executar migrações na inicialização (SQLite em dev cria tabelas e seed)
+try {
+  // Não bloquear o startup; apenas registrar falhas
+  runMigrations()?.catch((err) => {
+    logger.error('Falha ao executar migrações no startup:', err);
+  });
+} catch (err) {
+  logger.error('Erro inesperado ao iniciar migrações:', err);
+}

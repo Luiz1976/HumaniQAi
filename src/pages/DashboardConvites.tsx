@@ -85,12 +85,12 @@ const DashboardConvites = () => {
         conviteService.verificarConvitesProximosVencimento(7)
       ]);
 
-      // Simular dados de tendência
+      // Remover simulação: série mensal baseada apenas em dados reais
       const tendencias = metricas.convitesPorMes.map(item => ({
         mes: item.mes,
         convites: item.quantidade,
-        colaboradores: Math.floor(item.quantidade * 15 + Math.random() * 10),
-        taxa: Math.floor(Math.random() * 30 + 60)
+        colaboradores: 0,
+        taxa: 0
       }));
 
       setDashboardData({
@@ -312,11 +312,10 @@ const DashboardConvites = () => {
 
         {/* Tabs com Gráficos e Análises */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-            <TabsTrigger value="trends">Tendências</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="details">Detalhes</TabsTrigger>
+            <TabsTrigger value="series">Série Mensal</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -397,73 +396,32 @@ const DashboardConvites = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="trends" className="space-y-6">
+          {/* Série Mensal baseada em convites por mês (dados reais) */}
+          <TabsContent value="series" className="space-y-6">
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Tendências de Participação
+                  Série Mensal de Convites
                 </CardTitle>
                 <CardDescription>
-                  Análise temporal da participação dos colaboradores
+                  Evolução real de convites criados por mês
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={tendencias}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="mes" />
-                      <YAxis />
-                      <Tooltip />
-                      <Area 
-                        type="monotone" 
-                        dataKey="colaboradores" 
-                        stackId="1"
-                        stroke={COLORS.success} 
-                        fill={COLORS.success}
-                        fillOpacity={0.6}
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="convites" 
-                        stackId="2"
-                        stroke={COLORS.primary} 
-                        fill={COLORS.primary}
-                        fillOpacity={0.6}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="performance" className="space-y-6">
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5" />
-                  Taxa de Utilização por Mês
-                </CardTitle>
-                <CardDescription>
-                  Percentual de colaboradores que utilizaram os convites
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={tendencias}>
+                    <LineChart data={metricas.convitesPorMes}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="mes" />
                       <YAxis />
                       <Tooltip />
                       <Line 
                         type="monotone" 
-                        dataKey="taxa" 
-                        stroke={COLORS.purple} 
+                        dataKey="quantidade" 
+                        stroke={COLORS.primary} 
                         strokeWidth={3}
-                        dot={{ fill: COLORS.purple, strokeWidth: 2, r: 6 }}
+                        dot={{ fill: COLORS.primary, strokeWidth: 2, r: 4 }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -471,6 +429,8 @@ const DashboardConvites = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Aba de Performance removida por depender de dados simulados */}
 
           <TabsContent value="details" className="space-y-6">
             {/* Lista de Convites Recentes */}

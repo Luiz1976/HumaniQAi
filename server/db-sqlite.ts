@@ -6,6 +6,7 @@ import path from 'path';
 
 // Criar banco SQLite local para desenvolvimento
 const sqlite = new Database('humaniq-dev.db');
+export { sqlite };
 
 // Configurar WAL mode para melhor performance
 sqlite.pragma('journal_mode = WAL');
@@ -23,6 +24,8 @@ export async function runMigrations() {
     await ensureRequiredColumns();
     // Seed de desenvolvimento (admin padrão)
     await seedDevAdmin();
+    // Seed de desenvolvimento (empresa padrão, via .env)
+    await seedDevEmpresa();
     
     console.log('✅ Migrações SQLite concluídas com sucesso!');
   } catch (error) {
@@ -127,10 +130,53 @@ async function createTables() {
     );
   `);
 
+  // Criar tabela convites_empresa
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS convites_empresa (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      token TEXT UNIQUE NOT NULL,
+      nome_empresa TEXT NOT NULL,
+      email_contato TEXT NOT NULL,
+      telefone TEXT,
+      cnpj TEXT,
+      numero_colaboradores INTEGER,
+      dias_acesso INTEGER,
+      admin_id TEXT REFERENCES admins(id),
+      validade TEXT NOT NULL,
+      status TEXT DEFAULT 'pendente' NOT NULL,
+      metadados TEXT DEFAULT '{}',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  // Índices para convites_empresa
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_empresa_token ON convites_empresa(token);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_empresa_status ON convites_empresa(status);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_empresa_validade ON convites_empresa(validade);`);
+
+  // Criar tabela convites_colaborador
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS convites_colaborador (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      token TEXT UNIQUE NOT NULL,
+      nome TEXT NOT NULL,
+      email TEXT NOT NULL,
+      cargo TEXT,
+      departamento TEXT,
+      empresa_id TEXT REFERENCES empresas(id) ON DELETE CASCADE,
+      validade TEXT NOT NULL,
+      status TEXT DEFAULT 'pendente' NOT NULL,
+      metadados TEXT DEFAULT '{}',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  // Índices para convites_colaborador
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_token ON convites_colaborador(token);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_empresa_id ON convites_colaborador(empresa_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_status ON convites_colaborador(status);`);
+
   console.log('📊 Tabelas SQLite criadas com sucesso!');
 }
 
-export { sqlite };
 
 // Garantir colunas requeridas quando a tabela já existe
 async function ensureRequiredColumns() {
@@ -186,15 +232,43 @@ async function ensureRequiredColumns() {
 // Seed de desenvolvimento: cria um admin padrão se não existir
 async function seedDevAdmin() {
   try {
+    const seedEmail = process.env.SEED_ADMIN_EMAIL || 'admin.dev@local.test';
+    const seedNome = process.env.SEED_ADMIN_NOME || 'Admin Dev';
+    const seedSenha = process.env.SEED_ADMIN_SENHA || 'Admin123!';
     const countStmt = sqlite.prepare('SELECT COUNT(1) as c FROM admins WHERE email = ?');
-    const exists = countStmt.get('admin.dev@local.test') as { c: number } | undefined;
+    const exists = countStmt.get(seedEmail) as { c: number } | undefined;
     if (!exists || exists.c === 0) {
-      const senhaHash = await hashPassword('Admin123!');
+      const senhaHash = await hashPassword(seedSenha);
       const insertStmt = sqlite.prepare('INSERT INTO admins (email, nome, senha) VALUES (?, ?, ?)');
-      insertStmt.run('admin.dev@local.test', 'Admin Dev', senhaHash);
-      console.log('🌱 [SQLite] Admin de desenvolvimento criado: admin.dev@local.test');
+      insertStmt.run(seedEmail, seedNome, senhaHash);
+      console.log(`🌱 [SQLite] Admin de desenvolvimento criado: ${seedEmail}`);
     }
   } catch (e) {
     console.warn('⚠️ [SQLite] Falha ao criar admin de desenvolvimento:', (e as any)?.message);
+  }
+}
+
+// Seed de desenvolvimento: cria uma empresa padrão se configurada via .env
+async function seedDevEmpresa() {
+  try {
+    const seedEmail = process.env.SEED_EMPRESA_EMAIL;
+    const seedNomeEmpresa = process.env.SEED_EMPRESA_NOME_EMPRESA;
+    const seedSenha = process.env.SEED_EMPRESA_SENHA;
+
+    if (!seedEmail || !seedNomeEmpresa || !seedSenha) {
+      console.log('ℹ️ [SQLite] Seed de empresa não configurado (defina SEED_EMPRESA_EMAIL, SEED_EMPRESA_NOME_EMPRESA, SEED_EMPRESA_SENHA)');
+      return;
+    }
+
+    const countStmt = sqlite.prepare('SELECT COUNT(1) as c FROM empresas WHERE email_contato = ?');
+    const exists = countStmt.get(seedEmail) as { c: number } | undefined;
+    if (!exists || exists.c === 0) {
+      const senhaHash = await hashPassword(seedSenha);
+      const insertStmt = sqlite.prepare('INSERT INTO empresas (nome_empresa, email_contato, senha, ativo, configuracoes) VALUES (?, ?, ?, 1, ?)');
+      insertStmt.run(seedNomeEmpresa, seedEmail, senhaHash, JSON.stringify({ seeded: true }));
+      console.log(`🌱 [SQLite] Empresa de desenvolvimento criada: ${seedEmail} (${seedNomeEmpresa})`);
+    }
+  } catch (e) {
+    console.warn('⚠️ [SQLite] Falha ao criar empresa de desenvolvimento:', (e as any)?.message);
   }
 }

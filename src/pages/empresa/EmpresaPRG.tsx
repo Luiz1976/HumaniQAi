@@ -138,7 +138,11 @@ export default function EmpresaPRG() {
         // Preferir token via serviço centralizado; fallback para cookies/localStorage
         const token = authServiceNew.getToken() || Cookies.get('authToken') || localStorage.getItem('authToken');
         if (!token) {
-          throw new Error('Token de autenticação não encontrado');
+          console.error('❌ [PGR Frontend] Token de autenticação não encontrado');
+          setError('Sessão não encontrada. Redirecionando para login...');
+          setLoading(false);
+          window.location.href = '/login';
+          return;
         }
 
         console.log('📊 [PGR Frontend] Buscando dados do PGR...');

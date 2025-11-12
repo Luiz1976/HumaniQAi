@@ -16,7 +16,7 @@ import {
 const adminMenuItems = [
   { 
     title: "Dashboard", 
-    url: "/admin", 
+    url: "/admin/dashboard", 
     icon: BarChart3 
   },
   { 

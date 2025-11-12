@@ -40,67 +40,12 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Login endpoint
+// Login indisponível neste servidor simples (use backend real)
 app.post('/api/auth/login', async (req, res) => {
-  try {
-    console.log('🔐 Tentativa de login:', req.body);
-    
-    const { email, password } = req.body;
-    
-    if (!email || !password) {
-      return res.status(400).json({ 
-        error: 'Email e senha são obrigatórios' 
-      });
-    }
-    
-    // Buscar usuário
-    const user = users.find(u => u.email === email);
-    if (!user) {
-      console.log('❌ Usuário não encontrado:', email);
-      return res.status(401).json({ 
-        error: 'Credenciais inválidas' 
-      });
-    }
-    
-    // Verificar senha
-    const validPassword = await bcrypt.compare(password, user.senha);
-    if (!validPassword) {
-      console.log('❌ Senha inválida para:', email);
-      return res.status(401).json({ 
-        error: 'Credenciais inválidas' 
-      });
-    }
-    
-    // Gerar token
-    const token = jwt.sign(
-      { 
-        userId: user.id, 
-        email: user.email, 
-        role: user.role 
-      },
-      'seu_secret_super_seguro_aqui_desenvolvimento_local',
-      { expiresIn: '7d' }
-    );
-    
-    console.log('✅ Login bem-sucedido:', email);
-    
-    res.json({
-      message: 'Login realizado com sucesso',
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        nome: user.nome,
-        role: user.role
-      }
-    });
-    
-  } catch (error) {
-    console.error('❌ Erro no login:', error);
-    res.status(500).json({ 
-      error: 'Erro interno do servidor' 
-    });
-  }
+  return res.status(501).json({
+    success: false,
+    message: 'Login indisponível neste servidor. Use o backend real em server/index.ts (porta 3001)'
+  });
 });
 
 // Middleware de autenticação
@@ -126,26 +71,12 @@ app.get('/api/auth/me', authenticateToken, (req, res) => {
   res.json({ user: req.user });
 });
 
-// Listar testes (mock)
+// Listar testes indisponível sem banco de dados
 app.get('/api/testes', authenticateToken, (req, res) => {
-  const testes = [
-    {
-      id: '1',
-      nome: 'QVT - Qualidade de Vida no Trabalho',
-      descricao: 'Avaliação da qualidade de vida no ambiente de trabalho',
-      categoria: 'Bem-estar',
-      tempoEstimado: 15
-    },
-    {
-      id: '2',
-      nome: 'Estresse Ocupacional',
-      descricao: 'Medição dos níveis de estresse relacionados ao trabalho',
-      categoria: 'Saúde Mental',
-      tempoEstimado: 20
-    }
-  ];
-  
-  res.json({ testes });
+  return res.status(503).json({
+    success: false,
+    message: 'Serviço indisponível sem conexão real de banco de dados'
+  });
 });
 
 // Catch all

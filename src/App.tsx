@@ -192,6 +192,8 @@ function App() {
                 } 
               >
                 <Route index element={<AdminDashboard />} />
+                {/* Alias explícito para dashboard */}
+                <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="empresas" element={<AdminEmpresas />} />
                 <Route path="empresas/:id" element={<AdminEmpresaDetalhes />} />
                 <Route path="convites" element={<AdminConvites />} />
@@ -208,6 +210,8 @@ function App() {
                 } 
               >
                 <Route index element={<EmpresaOverview />} />
+                {/* Alias explícito para dashboard */}
+                <Route path="dashboard" element={<EmpresaOverview />} />
                 <Route path="overview" element={<EmpresaOverview />} />
                 <Route path="visao-geral" element={<EmpresaOverview />} />
                 <Route path="gestao-colaboradores" element={<EmpresaColaboradores />} />

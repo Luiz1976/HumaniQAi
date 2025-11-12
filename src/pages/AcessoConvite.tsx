@@ -172,10 +172,11 @@ const AcessoConvite = () => {
       toast.success('Empresa cadastrada com sucesso!', {
         description: 'Você pode agora fazer login com suas credenciais',
       });
-    } catch (error) {
-      setErrosValidacao(['Erro interno do servidor']);
+    } catch (error: any) {
+      const msg = typeof error?.message === 'string' ? error.message : 'Erro interno do servidor';
+      setErrosValidacao([msg]);
       toast.error('Erro ao cadastrar empresa', {
-        description: 'Tente novamente em alguns instantes',
+        description: msg,
       });
     } finally {
       setIsSubmitting(false);
@@ -210,10 +211,11 @@ const AcessoConvite = () => {
       toast.success("Empresa cadastrada com sucesso!", {
         description: "Você pode agora fazer login com suas credenciais"
       });
-    } catch (error) {
-      setErrosValidacao(['Erro interno do servidor']);
+    } catch (error: any) {
+      const msg = typeof error?.message === 'string' ? error.message : 'Erro interno do servidor';
+      setErrosValidacao([msg]);
       toast.error("Erro ao cadastrar empresa", {
-        description: "Tente novamente em alguns instantes"
+        description: msg
       });
     } finally {
       setIsSubmitting(false);

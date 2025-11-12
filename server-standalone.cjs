@@ -41,10 +41,20 @@ app.get('/api/health', (_req, res) => {
   res.status(200).json({ status: 'ok', service: 'server-standalone', path: '/api/health', timestamp: new Date().toISOString() });
 });
 
-// Endpoint mínimo de login
+// Endpoint de login indisponível neste servidor (use backend real)
 app.post('/api/auth/login', (req, res) => {
-  const { email } = req.body || {};
-  res.status(200).json({ ok: true, token: 'dummy-token', user: { email: email || 'user@example.com' } });
+  return res.status(501).json({
+    success: false,
+    message: 'Login indisponível neste servidor. Use o backend real em http://localhost:3001',
+  });
+});
+
+// Fallback global para outras rotas da API
+app.all('/api/*', (req, res) => {
+  return res.status(501).json({
+    success: false,
+    message: 'Endpoint indisponível neste servidor. Use o backend real em http://localhost:3001',
+  });
 });
 
 app.get('/', (_req, res) => {

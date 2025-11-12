@@ -297,7 +297,7 @@ class ConviteService {
 
   // Configuração de persistência
   private configuracao = {
-    tipo: 'localStorage' as 'memoria' | 'localStorage' | 'api',
+    tipo: 'api' as 'memoria' | 'localStorage' | 'api',
     apiUrl: import.meta.env.VITE_API_URL,
     apiKey: import.meta.env.VITE_API_KEY
   };
@@ -332,7 +332,6 @@ class ConviteService {
           console.log('🔄 [DEBUG] Convites parseados:', convites.length);
           
           convites.forEach((convite: any) => {
-            // Converter strings de data para objetos Date
             convite.dataCriacao = new Date(convite.dataCriacao);
             if (convite.dataExpiracao) {
               convite.dataExpiracao = new Date(convite.dataExpiracao);
@@ -359,102 +358,9 @@ class ConviteService {
       }
     }
   }
-
-  // Simular dados iniciais para demonstração
-  async inicializarDadosDemo(): Promise<void> {
-    console.log('[conviteService] Iniciando inicialização de dados de demonstração...');
-
-    const hasBastosTech = this.convites.has('ap5p6bxzw3j3oowac7et8i');
-    const hasOtherDemos = this.convites.size > 1;
-
-    // Garante que o convite da Bastos Tech sempre exista
-    if (!hasBastosTech) {
-        console.log('[conviteService] Convite Bastos Tech não encontrado. Criando agora...');
-        await this.criarConviteBastosTech();
-    }
-
-    // Garante que o convite da Bastos Tech tenha dados de uso para demonstração
-    let conviteBastosTech = this.convites.get('ap5p6bxzw3j3oowac7et8i')!;
-    if (conviteBastosTech && conviteBastosTech.colaboradoresUsaram === 0) {
-        console.log('[conviteService] Aplicando dados de uso de demonstração ao convite Bastos Tech...');
-        conviteBastosTech.colaboradoresUsaram = 342;
-        conviteBastosTech.colaboradoresRestantes = conviteBastosTech.numeroColaboradores - 342;
-        this.convites.set('ap5p6bxzw3j3oowac7et8i', conviteBastosTech);
-        console.log('[conviteService] Convite Bastos Tech atualizado com dados de uso.');
-    }
-
-    // Se não houver outros convites de demonstração, cria-os.
-    if (!hasOtherDemos) {
-      console.log('[conviteService] Nenhum outro convite de demonstração encontrado. Criando agora...');
-      await this.criarConvitesDemo();
-    }
-
-    this.salvarDados();
-
-    console.log('[conviteService] Finalizada a inicialização de dados de demonstração.');
-  }
-
-  private async criarConviteBastosTech(): Promise<void> {
-    const codigoBastosTech = 'ap5p6bxzw3j3oowac7et8i';
-    const dadosConviteBastosTech = {
-      nomeEmpresa: "Bastos Tech",
-      emailContato: "contato@bastostech.com",
-      numeroColaboradores: 1000,
-      tipoLiberacao: "prazo" as const,
-      prazoDias: 90
-    };
-    await this.criarConviteComCodigo(dadosConviteBastosTech, codigoBastosTech);
-    console.log(`[conviteService] Convite Bastos Tech (${codigoBastosTech}) criado com sucesso.`);
-    
-    // Criar também o convite específico z6enelo43isyy79oj6xno8 para Rocha Tech
-    const codigoEspecifico = 'z6enelo43isyy79oj6xno8';
-    const dadosConviteEspecifico = {
-      nomeEmpresa: "Rocha Tech",
-      emailContato: "contato@rochatech.com",
-      numeroColaboradores: 50,
-      tipoLiberacao: "prazo" as const,
-      prazoDias: 30
-    };
-    await this.criarConviteComCodigo(dadosConviteEspecifico, codigoEspecifico);
-    console.log(`[conviteService] Convite específico Rocha Tech (${codigoEspecifico}) criado com sucesso.`);
-  }
-
-  private async criarConvitesDemo(): Promise<void> {
-    const convitesDemo = [
-      {
-        nomeEmpresa: "TechCorp Solutions",
-        emailContato: "rh@techcorp.com",
-        numeroColaboradores: 25,
-        tipoLiberacao: 'prazo' as const,
-        prazoDias: 30
-      },
-      {
-        nomeEmpresa: "Inovação Digital Ltda",
-        emailContato: "gestao@inovacaodigital.com",
-        numeroColaboradores: 15,
-        tipoLiberacao: 'prazo' as const,
-        prazoDias: 15
-      },
-      {
-        nomeEmpresa: "Consultoria Estratégica",
-        emailContato: "contato@consultoriaestrategica.com",
-        numeroColaboradores: 8,
-        tipoLiberacao: 'unico' as const
-      }
-    ];
-
-    for (const dados of convitesDemo) {
-      await this.criarConvite(dados);
-    }
-    
-    this.salvarDados();
-  }
 }
 
 // Instância singleton do serviço
 export const conviteService = new ConviteService();
 
-// Inicializar dados demo em desenvolvimento
-if (import.meta.env.DEV) {
-  conviteService.inicializarDadosDemo();
-}
+// Operar apenas com dados reais: nenhuma inicialização de dados demo

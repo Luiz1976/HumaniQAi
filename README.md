@@ -11,6 +11,8 @@ HumaniQ é uma plataforma completa para avaliação psicológica no ambiente cor
 - **Sistema Hierárquico**: Admin → Empresa → Colaborador
 - **7 Testes Psicológicos**: QVT, RPO, Clima, Estresse, Karasek-Siegrist, PAS, MGRP
 - **Gestão de Convites**: Sistema de tokens para onboarding seguro
+- **Convites Individuais**: Criação manual de convites para colaboradores
+- **Importação Excel**: Importação em massa de colaboradores via planilha Excel
 - **Autenticação Segura**: JWT + bcrypt
 - **API RESTful**: Express + TypeScript + PostgreSQL
 
@@ -201,6 +203,18 @@ curl -X POST http://localhost:3001/api/convites/empresa/aceitar/TOKEN_DO_CONVITE
 - `STATUS_DO_PROJETO.md` - Status do projeto
 - `MIGRATION_STATUS.md` - Relatório da migração
 - `RESUMO_COMPLETO.md` - Resumo técnico
+
+---
+
+## 🔄 Changelog
+
+### v1.1.0 (Remoção de Funcionalidade ERP)
+- **Removido**: Integração com sistemas ERP (TOTVS, SAP, Senior, Sankhya, Microsoft, Oracle, Benner, Linx)
+- **Motivo**: Simplificação da plataforma e foco em métodos mais eficientes de importação
+- **Alternativas disponíveis**: 
+  - Convites individuais (método 1)
+  - Importação via Excel (método 2)
+- **Impacto**: Funcionalidades de importação em massa continuam disponíveis via Excel
 
 ---
 

@@ -24,15 +24,16 @@ export default defineConfig(async ({ mode }) => {
     server: {
       host: "0.0.0.0",
       port: 5000,
+      strictPort: true,
       allowedHosts: true,
       proxy: {
         '/api': {
-          target: 'http://localhost:3001',
+          target: `http://localhost:${process.env.PORT || 3000}`,
           changeOrigin: true,
           secure: false,
         },
         '/health': {
-          target: 'http://localhost:3001',
+          target: `http://localhost:${process.env.PORT || 3000}`,
           changeOrigin: true,
           secure: false,
         },

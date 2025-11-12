@@ -1,5 +1,5 @@
 import express from 'express';
-import { db } from '../../db';
+import { db } from '../db-config';
 import { empresas, colaboradores, resultados } from '../../shared/schema';
 import { authenticateToken, requireAdmin, AuthRequest } from '../middleware/auth';
 import { parseDateSeguro } from '../utils/dateUtils';
@@ -166,21 +166,11 @@ router.get('/dashboard', authenticateToken, requireAdmin, async (req: AuthReques
       comprasFinalizadas = 0;
     }
 
-    const taxaLandingParaDemo = visitantesLanding > 0 
-      ? Number(((testesDemonstracao / visitantesLanding) * 100).toFixed(1))
-      : 0;
-    
-    const taxaDemoParaCheckout = testesDemonstracao > 0
-      ? Number(((checkoutsIniciados / testesDemonstracao) * 100).toFixed(1))
-      : 0;
-    
-    const taxaCheckoutParaCompra = checkoutsIniciados > 0
-      ? Number(((comprasFinalizadas / checkoutsIniciados) * 100).toFixed(1))
-      : 0;
-    
-    const taxaConversaoGeral = visitantesLanding > 0
-      ? Number(((comprasFinalizadas / visitantesLanding) * 100).toFixed(1))
-      : 0;
+    // Remover qualquer simulação de taxas; indicadores devem vir de dados reais
+    const taxaLandingParaDemo = 0;
+    const taxaDemoParaCheckout = 0;
+    const taxaCheckoutParaCompra = 0;
+    const taxaConversaoGeral = 0;
 
     // 👥 EMPRESAS E COLABORADORES
     const crescimentoMensal = empresasAtivas.length > 0

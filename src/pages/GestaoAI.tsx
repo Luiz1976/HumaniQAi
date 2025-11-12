@@ -131,7 +131,7 @@ export default function GestaoAI() {
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Total de Empresas</p>
                       <p className="text-2xl font-bold">-</p>
-                      <p className="text-xs text-muted-foreground mt-1">Aguardando dados reais</p>
+                      <p className="text-xs text-muted-foreground mt-1">Sem dados disponíveis</p>
                     </div>
                     <Building2 className="h-8 w-8 text-purple-600" />
                   </div>
@@ -144,38 +144,14 @@ export default function GestaoAI() {
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Empresas Ativas</p>
                       <p className="text-2xl font-bold text-green-600">-</p>
-                      <p className="text-xs text-muted-foreground mt-1">Aguardando dados reais</p>
+                      <p className="text-xs text-muted-foreground mt-1">Sem dados disponíveis</p>
                     </div>
                     <TrendingUp className="h-8 w-8 text-green-600" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Colaboradores Total</p>
-                      <p className="text-2xl font-bold">-</p>
-                      <p className="text-xs text-muted-foreground mt-1">Aguardando dados reais</p>
-                    </div>
-                    <Users className="h-8 w-8 text-blue-600" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Testes Este Mês</p>
-                      <p className="text-2xl font-bold">-</p>
-                      <p className="text-xs text-muted-foreground mt-1">Aguardando dados reais</p>
-                    </div>
-                    <BarChart3 className="h-8 w-8 text-pink-600" />
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Removidos cartões com placeholders; mostrar somente métricas reais quando disponíveis */}
             </div>
 
             {/* Empresas Cadastradas (sem dados simulados) */}

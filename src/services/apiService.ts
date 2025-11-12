@@ -127,26 +127,30 @@ class ApiService {
 
   // Criar convite de empresa
   async criarConviteEmpresa(dados: ConviteEmpresa): Promise<ConviteResponse> {
-    const response = await this.makeRequest<{ convite: ConviteResponse; linkConvite: string }>(
+    const response = await this.makeRequest<any>(
       '/api/convites/empresa',
       {
         method: 'POST',
         body: JSON.stringify(dados),
       }
     );
-    return response.convite;
+    // Compatível com formatos antigo e novo
+    const convite = response?.data ?? response?.convite ?? response;
+    return convite as ConviteResponse;
   }
 
   // Criar convite de colaborador
   async criarConviteColaborador(dados: ConviteColaborador): Promise<ConviteResponse> {
-    const response = await this.makeRequest<{ convite: ConviteResponse; linkConvite: string }>(
+    const response = await this.makeRequest<any>(
       '/api/convites/colaborador',
       {
         method: 'POST',
         body: JSON.stringify(dados),
       }
     );
-    return response.convite;
+    // Compatível com formatos antigo e novo
+    const convite = response?.data ?? response?.convite ?? response;
+    return convite as ConviteResponse;
   }
 
   // Buscar convite por token
@@ -163,10 +167,23 @@ class ApiService {
     senha: string,
     logoBase64?: string
   ): Promise<{ message: string; empresa: any }> {
-    return this.makeRequest(`/api/convites/empresa/aceitar/${token}`, {
-      method: 'POST',
-      body: JSON.stringify({ senha, logoBase64 }),
-    });
+    try {
+      return await this.makeRequest(`/api/convites/empresa/aceitar/${token}`, {
+        method: 'POST',
+        body: JSON.stringify({ senha, logoBase64 }),
+      });
+    } catch (error: any) {
+      if (error?.status === 404) {
+        throw new Error('Convite inexistente. Verifique o link enviado.');
+      }
+      if (error?.status === 409) {
+        throw new Error('Convite já utilizado. Caso precise, solicite um novo convite.');
+      }
+      if (error?.status === 410) {
+        throw new Error('Convite expirado. Solicite um novo convite ao administrador.');
+      }
+      throw error;
+    }
   }
 
   // Aceitar convite de colaborador
@@ -272,13 +289,42 @@ class ApiService {
     return this.makeRequest('/api/admin/dashboard');
   }
 
+  // Indicadores agregados das empresas com compras/assinaturas
+  async obterIndicadoresEmpresasComCompras(): Promise<{
+    empresas: { total: number };
+    testes: { total: number; mediaPontuacao: number; mediaPorEmpresa: number };
+    analise: {
+      tendencia: Array<{ mes: string; total: number }>;
+      distribuicaoTemporal: Array<{ periodo: string; valor: number }>;
+      porCategoria: Array<{ categoria: string; total: number }>;
+    };
+  }> {
+    return this.makeRequest('/api/admin/empresas-com-compras/indicadores');
+  }
+
   async obterConfiguracaoLimiteColaboradores(): Promise<{ limiteMaximo: number }> {
     try {
-      return await this.makeRequest('/api/configuracoes/limite-colaboradores');
+      // Endpoint sob /convites para manter contexto
+      return await this.makeRequest('/api/convites/configuracoes/limite-colaboradores');
     } catch (error) {
       console.error('Erro ao buscar configuração de limite:', error);
       return { limiteMaximo: 1000 };
     }
+  }
+
+  // Métricas de convites da empresa
+  async obterMetricasConvitesEmpresa(): Promise<{
+    success: boolean;
+    data: {
+      limiteTotal: number;
+      criados: number;
+      usados: number;
+      disponiveis: number;
+      pendentes: number;
+      cancelados: number;
+    };
+  }> {
+    return this.makeRequest('/api/convites/metricas-empresa');
   }
 }
 

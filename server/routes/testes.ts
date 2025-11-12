@@ -1,9 +1,10 @@
 import express from 'express';
-import { db } from '../../db';
+import { db } from '../db-config';
 import { testes, perguntas, resultados, respostas, colaboradores, testeDisponibilidade, insertResultadoSchema, insertRespostaSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { eq, and, desc, or } from 'drizzle-orm';
 import { z } from 'zod';
+import logger from '../utils/logger';
 
 const router = express.Router();
 
@@ -24,7 +25,7 @@ router.get('/', async (req, res) => {
 
     res.json({ testes: todosTestes });
   } catch (error) {
-    console.error('Erro ao listar testes:', error);
+    logger.error('Erro ao listar testes:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -46,7 +47,7 @@ router.get('/:id', async (req, res) => {
 
     res.json({ teste });
   } catch (error) {
-    console.error('Erro ao buscar teste:', error);
+    logger.error('Erro ao buscar teste:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -69,7 +70,7 @@ router.get('/:id/perguntas', async (req, res) => {
 
     res.json({ perguntas: perguntasTeste, total: perguntasTeste.length });
   } catch (error) {
-    console.error('Erro ao buscar perguntas:', error);
+    logger.error('Erro ao buscar perguntas:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -104,12 +105,12 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
         
         if (testeEncontrado) {
           testeIdFinal = testeEncontrado.id;
-          console.log(`🔍 [RESULTADO] Teste "${metadados.teste_nome}" encontrado automaticamente. ID: ${testeIdFinal}`);
+          logger.info(`🔍 [RESULTADO] Teste "${metadados.teste_nome}" encontrado automaticamente. ID: ${testeIdFinal}`);
         } else {
-          console.warn(`⚠️ [RESULTADO] Teste "${metadados.teste_nome}" não encontrado na tabela testes`);
+          logger.warn(`⚠️ [RESULTADO] Teste "${metadados.teste_nome}" não encontrado na tabela testes`);
         }
       } catch (error) {
-        console.error('❌ [RESULTADO] Erro ao buscar ID do teste:', error);
+        logger.error('❌ [RESULTADO] Erro ao buscar ID do teste:', error);
       }
     }
 
@@ -131,12 +132,12 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
 
     // 🔄 ATUALIZAÇÃO AUTOMÁTICA: Recalcular análise psicossocial em background
     if (req.user!.empresaId) {
-      console.log('🔄 [AUTO-UPDATE] Iniciando recálculo automático da análise psicossocial...');
+      logger.info('🔄 [AUTO-UPDATE] Iniciando recálculo automático da análise psicossocial...');
       // Executar em background sem bloquear a resposta
       setImmediate(() => {
         // A análise será recalculada na próxima vez que a página for acessada
         // Isso é intencional para otimizar performance e custos de API
-        console.log('✅ [AUTO-UPDATE] Análise será recalculada na próxima visualização');
+        logger.info('✅ [AUTO-UPDATE] Análise será recalculada na próxima visualização');
       });
     }
 
@@ -148,7 +149,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
         const empresaId = req.user!.empresaId;
         const agora = new Date();
 
-        console.log(`🔒 [DISPONIBILIDADE-CRÍTICO] Iniciando bloqueio do teste ${testeIdFinal} para colaborador ${colaboradorId}`);
+        logger.info(`🔒 [DISPONIBILIDADE-CRÍTICO] Iniciando bloqueio do teste ${testeIdFinal} para colaborador ${colaboradorId}`);
 
         // Buscar registro existente
         const [disponibilidadeExistente] = await db
@@ -169,7 +170,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
             proximaDisponibilidade = new Date(
               agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000
             );
-            console.log(`📅 [DISPONIBILIDADE] Próxima liberação calculada: ${proximaDisponibilidade.toISOString()} (${disponibilidadeExistente.periodicidadeDias} dias)`);
+            logger.info(`📅 [DISPONIBILIDADE] Próxima liberação calculada: ${proximaDisponibilidade.toISOString()} (${disponibilidadeExistente.periodicidadeDias} dias)`);
           }
 
           // Atualizar para indisponível
@@ -182,7 +183,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
             })
             .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id));
 
-          console.log(`✅ [DISPONIBILIDADE] Teste ${testeIdFinal} bloqueado com sucesso (atualização) - Disponível=${false}, ProximaLiberacao=${proximaDisponibilidade?.toISOString() || 'Manual'}`);
+          logger.info(`✅ [DISPONIBILIDADE] Teste ${testeIdFinal} bloqueado com sucesso (atualização) - Disponível=${false}, ProximaLiberacao=${proximaDisponibilidade?.toISOString() || 'Manual'}`);
         } else {
           // Criar novo registro como indisponível
           const [novoRegistro] = await db
@@ -197,11 +198,11 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
             })
             .returning();
 
-          console.log(`✅ [DISPONIBILIDADE] Registro criado e teste ${testeIdFinal} bloqueado com sucesso (criação) - ID: ${novoRegistro.id}`);
+          logger.info(`✅ [DISPONIBILIDADE] Registro criado e teste ${testeIdFinal} bloqueado com sucesso (criação) - ID: ${novoRegistro.id}`);
         }
       } catch (error) {
-        console.error('❌❌❌ [DISPONIBILIDADE-ERRO-CRÍTICO] FALHA ao bloquear teste:', error);
-        console.error('❌ Stack:', error instanceof Error ? error.stack : 'Sem stack trace');
+        logger.error('❌❌❌ [DISPONIBILIDADE-ERRO-CRÍTICO] FALHA ao bloquear teste:', error);
+        logger.error('❌ Stack:', error instanceof Error ? error.stack : 'Sem stack trace');
         // NÃO continuar se não conseguir bloquear o teste
         throw new Error('Falha crítica ao bloquear teste após conclusão');
       }
@@ -216,7 +217,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
       },
     });
   } catch (error) {
-    console.error('Erro ao salvar resultado:', error);
+    logger.error('Erro ao salvar resultado:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -266,7 +267,7 @@ router.post('/resultado/anonimo', async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Erro ao salvar resultado:', error);
+    logger.error('Erro ao salvar resultado:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -322,7 +323,7 @@ router.get('/resultados/meus', authenticateToken, async (req: AuthRequest, res) 
 
     res.json({ resultados: resultadosEnriquecidos, total: resultadosEnriquecidos.length });
   } catch (error) {
-    console.error('Erro ao buscar resultados:', error);
+    logger.error('Erro ao buscar resultados:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -402,7 +403,7 @@ router.get('/resultado/:id', authenticateToken, async (req: AuthRequest, res) =>
       respostas: respostasResultado,
     });
   } catch (error) {
-    console.error('Erro ao buscar resultado:', error);
+    logger.error('Erro ao buscar resultado:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

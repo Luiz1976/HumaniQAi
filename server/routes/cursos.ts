@@ -1,8 +1,9 @@
 import express from 'express';
-import { db } from '../db';
+import { db } from '../db-config';
 import { cursoProgresso, cursoAvaliacoes, cursoCertificados, colaboradores, cursoDisponibilidade } from '../../shared/schema';
 import { eq, and } from 'drizzle-orm';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import logger from '../utils/logger';
 
 const router = express.Router();
 
@@ -34,7 +35,7 @@ async function verificarDisponibilidadeCurso(
 
     return { disponivel: true };
   } catch (error) {
-    console.error('Erro ao verificar disponibilidade:', error);
+    logger.error('Erro ao verificar disponibilidade:', error);
     return { disponivel: false, motivo: 'Erro ao verificar disponibilidade' };
   }
 }
@@ -68,7 +69,7 @@ router.get('/progresso/:cursoSlug', authenticateToken, async (req: AuthRequest, 
 
     return res.json(progresso);
   } catch (error) {
-    console.error('Erro ao buscar progresso:', error);
+    logger.error('Erro ao buscar progresso:', error);
     return res.status(500).json({ error: 'Erro ao buscar progresso' });
   }
 });
@@ -113,7 +114,7 @@ router.post('/progresso', authenticateToken, async (req: AuthRequest, res) => {
 
     return res.status(201).json(novoProgresso);
   } catch (error) {
-    console.error('Erro ao criar progresso:', error);
+    logger.error('Erro ao criar progresso:', error);
     return res.status(500).json({ error: 'Erro ao criar progresso' });
   }
 });
@@ -121,26 +122,26 @@ router.post('/progresso', authenticateToken, async (req: AuthRequest, res) => {
 // Marcar módulo como completado
 router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    console.log('📝 [CURSOS] Requisição para marcar módulo como concluído recebida');
+    logger.info('📝 [CURSOS] Requisição para marcar módulo como concluído recebida');
     const { cursoSlug, moduloId } = req.params;
     const colaboradorId = req.user?.userId;
     const { totalModulos } = req.body; // Aceitar totalModulos do frontend
     
-    console.log('📝 [CURSOS] Params:', { cursoSlug, moduloId, colaboradorId, totalModulos });
+    logger.info('📝 [CURSOS] Params:', { cursoSlug, moduloId, colaboradorId, totalModulos });
 
     if (!colaboradorId) {
-      console.error('❌ [CURSOS] Colaborador não autenticado');
+      logger.error('❌ [CURSOS] Colaborador não autenticado');
       return res.status(401).json({ error: 'Não autorizado' });
     }
 
     // Verificar disponibilidade do curso
     const { disponivel, motivo } = await verificarDisponibilidadeCurso(colaboradorId, cursoSlug);
     if (!disponivel) {
-      console.error('❌ [CURSOS] Curso não disponível:', motivo);
+      logger.error('❌ [CURSOS] Curso não disponível:', motivo);
       return res.status(403).json({ error: motivo || 'Curso não disponível' });
     }
 
-    console.log('📝 [CURSOS] Buscando progresso no banco...');
+    logger.info('📝 [CURSOS] Buscando progresso no banco...');
     let progresso = await db.query.cursoProgresso.findFirst({
       where: and(
         eq(cursoProgresso.colaboradorId, colaboradorId),
@@ -149,10 +150,10 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
     });
 
     if (!progresso) {
-      console.log('⚠️  [CURSOS] Progresso não encontrado, criando automaticamente...');
+      logger.warn('⚠️  [CURSOS] Progresso não encontrado, criando automaticamente...');
       
       if (!totalModulos) {
-        console.error('❌ [CURSOS] totalModulos não foi fornecido');
+        logger.error('❌ [CURSOS] totalModulos não foi fornecido');
         return res.status(400).json({ error: 'totalModulos é obrigatório para criar progresso' });
       }
       
@@ -166,31 +167,31 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
         progressoPorcentagem: 0,
       }).returning();
       
-      console.log('✅ [CURSOS] Progresso criado automaticamente:', novoProgresso.id);
+      logger.info('✅ [CURSOS] Progresso criado automaticamente:', novoProgresso.id);
       progresso = novoProgresso;
     }
 
-    console.log('✅ [CURSOS] Progresso encontrado:', progresso.id);
+    logger.info('✅ [CURSOS] Progresso encontrado:', progresso.id);
 
     const modulosCompletadosArray = Array.isArray(progresso.modulosCompletados) 
       ? progresso.modulosCompletados 
       : [];
     
-    console.log('📝 [CURSOS] Módulos completados antes:', modulosCompletadosArray);
+    logger.info('📝 [CURSOS] Módulos completados antes:', modulosCompletadosArray);
     
     // Adicionar módulo se ainda não foi completado
     const moduloIdNum = parseInt(moduloId);
     if (!modulosCompletadosArray.includes(moduloIdNum)) {
       modulosCompletadosArray.push(moduloIdNum);
-      console.log('✅ [CURSOS] Módulo adicionado:', moduloIdNum);
+      logger.info('✅ [CURSOS] Módulo adicionado:', moduloIdNum);
     } else {
-      console.log('⚠️  [CURSOS] Módulo já estava completado:', moduloIdNum);
+      logger.warn('⚠️  [CURSOS] Módulo já estava completado:', moduloIdNum);
     }
 
     const novaProgresso = Math.round((modulosCompletadosArray.length / progresso.totalModulos) * 100);
-    console.log('📊 [CURSOS] Novo progresso calculado:', novaProgresso + '%');
+    logger.info('📊 [CURSOS] Novo progresso calculado:', novaProgresso + '%');
 
-    console.log('📝 [CURSOS] Atualizando banco de dados...');
+    logger.info('📝 [CURSOS] Atualizando banco de dados...');
     const [progressoAtualizado] = await db
       .update(cursoProgresso)
       .set({
@@ -202,11 +203,11 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
       .where(eq(cursoProgresso.id, progresso.id))
       .returning();
 
-    console.log('✅ [CURSOS] Progresso atualizado com sucesso!');
+    logger.info('✅ [CURSOS] Progresso atualizado com sucesso!');
     return res.json(progressoAtualizado);
   } catch (error) {
-    console.error('❌ [CURSOS] Erro ao atualizar progresso:', error);
-    console.error('❌ [CURSOS] Stack trace:', (error as Error).stack);
+    logger.error('❌ [CURSOS] Erro ao atualizar progresso:', error);
+    logger.error('❌ [CURSOS] Stack trace:', (error as Error).stack);
     return res.status(500).json({ 
       error: 'Erro ao atualizar progresso',
       details: (error as Error).message 
@@ -340,7 +341,7 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
       tentativasRestantes: 3 - novaTentativa
     });
   } catch (error) {
-    console.error('Erro ao salvar avaliação:', error);
+    logger.error('Erro ao salvar avaliação:', error);
     return res.status(500).json({ error: 'Erro ao salvar avaliação' });
   }
 });
@@ -409,7 +410,7 @@ router.post('/certificado/:cursoSlug', authenticateToken, async (req: AuthReques
 
     return res.status(201).json(certificado);
   } catch (error) {
-    console.error('Erro ao emitir certificado:', error);
+    logger.error('Erro ao emitir certificado:', error);
     return res.status(500).json({ error: 'Erro ao emitir certificado' });
   }
 });
@@ -420,12 +421,12 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
     const { cursoSlug } = req.params;
     const colaboradorId = req.user?.userId;
 
-    console.log('🎓 [BACKEND-CERTIFICADO] Buscando certificado');
-    console.log('🎓 [BACKEND-CERTIFICADO] Curso slug:', cursoSlug);
-    console.log('🎓 [BACKEND-CERTIFICADO] Colaborador ID:', colaboradorId);
+    logger.info('🎓 [BACKEND-CERTIFICADO] Buscando certificado');
+    logger.info('🎓 [BACKEND-CERTIFICADO] Curso slug:', cursoSlug);
+    logger.info('🎓 [BACKEND-CERTIFICADO] Colaborador ID:', colaboradorId);
 
     if (!colaboradorId) {
-      console.error('❌ [BACKEND-CERTIFICADO] Colaborador não autorizado');
+      logger.error('❌ [BACKEND-CERTIFICADO] Colaborador não autorizado');
       return res.status(401).json({ error: 'Não autorizado' });
     }
 
@@ -436,20 +437,20 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
       )
     });
 
-    console.log('🎓 [BACKEND-CERTIFICADO] Certificado encontrado?', !!certificado);
+    logger.info('🎓 [BACKEND-CERTIFICADO] Certificado encontrado?', !!certificado);
     if (certificado) {
-      console.log('🎓 [BACKEND-CERTIFICADO] ID do certificado:', certificado.id);
+      logger.info('🎓 [BACKEND-CERTIFICADO] ID do certificado:', certificado.id);
     }
 
     if (!certificado) {
-      console.log('⚠️ [BACKEND-CERTIFICADO] Retornando 404');
+      logger.warn('⚠️ [BACKEND-CERTIFICADO] Retornando 404');
       return res.status(404).json({ error: 'Certificado não encontrado' });
     }
 
-    console.log('✅ [BACKEND-CERTIFICADO] Retornando certificado com sucesso');
+    logger.info('✅ [BACKEND-CERTIFICADO] Retornando certificado com sucesso');
     return res.json(certificado);
   } catch (error) {
-    console.error('❌ [BACKEND-CERTIFICADO] Erro ao buscar certificado:', error);
+    logger.error('❌ [BACKEND-CERTIFICADO] Erro ao buscar certificado:', error);
     return res.status(500).json({ error: 'Erro ao buscar certificado' });
   }
 });
@@ -481,7 +482,7 @@ router.get('/validar-certificado/:codigo', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Erro ao validar certificado:', error);
+    logger.error('Erro ao validar certificado:', error);
     return res.status(500).json({ error: 'Erro ao validar certificado' });
   }
 });
@@ -501,7 +502,7 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
 
     return res.json(progressos);
   } catch (error) {
-    console.error('Erro ao buscar progressos:', error);
+    logger.error('Erro ao buscar progressos:', error);
     return res.status(500).json({ error: 'Erro ao buscar progressos' });
   }
 });
@@ -537,7 +538,7 @@ router.get('/meus-certificados', authenticateToken, async (req: AuthRequest, res
 
     return res.json(certificadosCamelCase);
   } catch (error) {
-    console.error('Erro ao buscar certificados:', error);
+    logger.error('Erro ao buscar certificados:', error);
     return res.status(500).json({ error: 'Erro ao buscar certificados' });
   }
 });

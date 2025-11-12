@@ -14,6 +14,8 @@ import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { authService } from '@/services/authService';
 import RiskGauge from '@/components/RiskGauge';
+import Cookies from 'js-cookie';
+import { authServiceNew } from '@/services/authServiceNew';
 
 interface PsychosocialAnalysis {
   indiceGeralBemEstar: number;
@@ -156,11 +158,15 @@ export default function EmpresaEstadoPsicossocial() {
 
   useEffect(() => {
     const carregarAnalise = async () => {
-      const token = localStorage.getItem('authToken');
+      // Obter token de forma centralizada com fallback para cookies/localStorage
+      const token = authServiceNew.getToken() || Cookies.get('authToken') || localStorage.getItem('authToken');
       if (!token) {
         console.error('❌ [EmpresaEstadoPsicossocial] Token não encontrado');
-        setError(new Error('Token não encontrado'));
+        setError(new Error('Token não encontrado. Faça login novamente.'));
+        toast.error('Sessão não encontrada. Redirecionando para login...');
         setIsLoading(false);
+        // Redirecionar para página de login
+        window.location.href = '/login';
         return;
       }
 
@@ -169,6 +175,22 @@ export default function EmpresaEstadoPsicossocial() {
       setError(null);
 
       try {
+        // Validação prévia do token para evitar 403 e limpar sessão inválida
+        try {
+          const checkResp = await fetch('/api/auth/check', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+          });
+          if (!checkResp.ok) {
+            console.warn('⚠️ [EmpresaEstadoPsicossocial] Token inválido/expirado. Limpando sessão...');
+            await authServiceNew.logout();
+            throw new Error('Sessão expirada ou inválida. Faça login novamente.');
+          }
+        } catch (checkErr) {
+          console.error('❌ [EmpresaEstadoPsicossocial] Falha ao validar token:', checkErr);
+          throw checkErr instanceof Error ? checkErr : new Error('Falha ao validar token');
+        }
+
         const response = await fetch('/api/empresas/estado-psicossocial', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -499,16 +521,16 @@ export default function EmpresaEstadoPsicossocial() {
           {/* TAB: ANÁLISE POR IA - O Destaque Principal */}
           <TabsContent value="ia" className="space-y-6">
             {/* Privacy & Transparency Banner */}
-            <Alert className="border-0 bg-gradient-to-r from-amber-600/30 to-orange-600/30 backdrop-blur-2xl shadow-2xl rounded-2xl border-2 border-amber-500/40">
+            <Alert className="border-0 bg-gradient-to-r from-[#B85D45] to-[#C66B4E] backdrop-blur-2xl shadow-2xl rounded-2xl border-2 border-white/20">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-amber-600/40 rounded-xl backdrop-blur-xl border border-amber-400/50">
-                  <Info className="h-6 w-6 text-amber-100" />
+                <div className="p-3 bg-white/10 rounded-xl backdrop-blur-xl border border-white/20">
+                  <Info className="h-6 w-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <AlertTitle className="text-amber-50 font-bold text-lg mb-2">
+                  <AlertTitle className="text-white font-bold text-lg mb-2">
                     Transparência Total: Como Funciona Nossa IA
                   </AlertTitle>
-                  <AlertDescription className="text-amber-50/95 space-y-2">
+                  <AlertDescription className="text-white space-y-2 leading-relaxed">
                     <p><strong className="text-white font-extrabold">Metodologia:</strong> Análise de padrões em dados agregados e 100% anônimos dos seus colaboradores.</p>
                     <p><strong className="text-white font-extrabold">Frameworks Científicos:</strong> ISO 45003, OMS, Karasek-Siegrist, validados internacionalmente.</p>
                     <p><strong className="text-white font-extrabold">Sua Privacidade:</strong> Nenhum dado individual é exposto. LGPD Art. 20 garantido.</p>
@@ -526,9 +548,6 @@ export default function EmpresaEstadoPsicossocial() {
                     <Sparkles className="h-7 w-7 text-purple-400" />
                     Insights que Transformam
                   </h3>
-                  <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 backdrop-blur-xl px-4 py-2">
-                    {analise.recomendacoes.length} Recomendações Ativas
-                  </Badge>
                 </div>
 
                 <div className="grid gap-4">

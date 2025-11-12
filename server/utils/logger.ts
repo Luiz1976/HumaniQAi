@@ -47,6 +47,17 @@ if (!isDevelopment) {
   );
 }
 
+// Em desenvolvimento, gravar também em arquivo para facilitar depuração
+if (isDevelopment) {
+  transports.push(
+    new winston.transports.File({
+      filename: path.join('logs', 'dev.log'),
+      level: 'debug',
+      format: customFormat,
+    })
+  );
+}
+
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: customFormat,

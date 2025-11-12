@@ -27,10 +27,10 @@ const PostLoginAnimation: React.FC = () => {
       });
       switch (effectiveRole) {
         case 'admin':
-          navigate('/admin', { replace: true });
+          navigate('/admin/dashboard', { replace: true });
           break;
         case 'empresa':
-          navigate('/empresa', { replace: true });
+          navigate('/empresa/dashboard', { replace: true });
           break;
         case 'colaborador':
           navigate('/colaborador', { replace: true });

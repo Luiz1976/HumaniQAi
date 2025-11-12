@@ -1,5 +1,6 @@
 import express from 'express';
-import { db } from '../../db';
+import { db, dbType } from '../db-config';
+import logger from '../utils/logger';
 import { empresas, colaboradores, convitesColaborador, resultados, testes } from '../../shared/schema';
 import { authenticateToken, requireEmpresa, requireAdmin, AuthRequest } from '../middleware/auth';
 import { eq, and, gt, desc, or } from 'drizzle-orm';
@@ -29,7 +30,7 @@ router.get('/me', authenticateToken, requireEmpresa, async (req: AuthRequest, re
 
     res.json({ empresa });
   } catch (error) {
-    console.error('Erro ao buscar empresa:', error);
+    logger.error('Erro ao buscar empresa:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -54,7 +55,7 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
     // Enriquecer com informações de situação psicossocial
     const colaboradoresEnriquecidos = await Promise.all(
       colaboradoresList.map(async (colaborador) => {
-        console.log(`🔍 [PSICO] Buscando resultados para colaborador: ${colaborador.nome} (${colaborador.id})`);
+        logger.debug(`🔍 [PSICO] Buscando resultados para colaborador: ${colaborador.nome} (${colaborador.id})`);
         
         // Buscar TODOS os resultados do colaborador
         const ultimosResultados = await db
@@ -81,9 +82,9 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
           )
           .orderBy(desc(resultados.dataRealizacao));
 
-        console.log(`📊 [PSICO] Encontrados ${ultimosResultados.length} resultados para ${colaborador.nome}`);
+        logger.info(`📊 [PSICO] Encontrados ${ultimosResultados.length} resultados para ${colaborador.nome}`);
         if (ultimosResultados.length > 0) {
-          console.log(`📊 [PSICO] Primeiro resultado - colaboradorId: ${ultimosResultados[0].colaboradorId}, usuarioId: ${ultimosResultados[0].usuarioId}`);
+          logger.debug(`📊 [PSICO] Primeiro resultado - colaboradorId: ${ultimosResultados[0].colaboradorId}, usuarioId: ${ultimosResultados[0].usuarioId}`);
         }
 
         // Calcular situação psicossocial com base nos últimos testes
@@ -200,29 +201,29 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
 
           situacaoPsicossocial.indicadores = indicadores;
           
-          console.log(`✅ [PSICO] Status final para ${colaborador.nome}:`, situacaoPsicossocial.status);
-          console.log(`✅ [PSICO] Total de indicadores:`, indicadores.length);
+          logger.info(`✅ [PSICO] Status final para ${colaborador.nome}: ${situacaoPsicossocial.status}`);
+          logger.debug(`✅ [PSICO] Total de indicadores: ${indicadores.length}`);
         } else {
-          console.log(`❌ [PSICO] Nenhum resultado encontrado para ${colaborador.nome}`);
+          logger.warn(`❌ [PSICO] Nenhum resultado encontrado para ${colaborador.nome}`);
         }
 
-        console.log(`🎯 [PSICO] Situação final para ${colaborador.nome}:`, JSON.stringify(situacaoPsicossocial));
+        logger.debug(`🎯 [PSICO] Situação final para ${colaborador.nome}: ${JSON.stringify(situacaoPsicossocial)}`);
 
         const colaboradorCompleto = {
           ...colaborador,
           situacaoPsicossocial,
         };
         
-        console.log(`📦 [DADOS] Colaborador ${colaborador.nome} - Cargo: ${colaboradorCompleto.cargo}, Departamento: ${colaboradorCompleto.departamento}`);
+        logger.debug(`📦 [DADOS] Colaborador ${colaborador.nome} - Cargo: ${colaboradorCompleto.cargo}, Departamento: ${colaboradorCompleto.departamento}`);
         
         return colaboradorCompleto;
       })
     );
 
-    console.log('📤 [API] Enviando colaboradores:', colaboradoresEnriquecidos.map(c => ({ nome: c.nome, cargo: c.cargo, departamento: c.departamento })));
+    logger.info('📤 [API] Enviando colaboradores');
     res.json({ colaboradores: colaboradoresEnriquecidos, total: colaboradoresEnriquecidos.length });
   } catch (error) {
-    console.error('Erro ao listar colaboradores:', error);
+    logger.error('Erro ao listar colaboradores:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -639,24 +640,16 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
       });
     }
 
-    // 💰 INDICADORES DE CONVERSÃO E FATURAMENTO
-    // Simular visitantes da landing page (baseado em convites e colaboradores)
-    const visitantesLandingEstimados = Math.max(convitesGerados * 3, totalColaboradores * 5, 50); // Estimativa conservadora
-    const testesDemoRealizados = Math.floor(visitantesLandingEstimados * 0.15); // 15% fazem teste demo
-    const checkoutsIniciados = Math.floor(testesDemoRealizados * 0.4); // 40% iniciam checkout após demo
-    const comprasFinalizadas = totalColaboradores > 0 ? 1 : 0; // 1 compra = empresa ativa
+    // 💰 INDICADORES DE CONVERSÃO E FATURAMENTO (apenas dados reais; sem simulação)
+    // Integrações reais de analytics/checkout devem preencher estes campos
+    const visitantesLandingEstimados = 0;
+    const testesDemoRealizados = 0;
+    const checkoutsIniciados = 0;
+    const comprasFinalizadas = 0;
 
-    const taxaConversaoDemo = visitantesLandingEstimados > 0 
-      ? Number(((testesDemoRealizados / visitantesLandingEstimados) * 100).toFixed(1))
-      : 0;
-    
-    const taxaConversaoCheckout = checkoutsIniciados > 0
-      ? Number(((comprasFinalizadas / checkoutsIniciados) * 100).toFixed(1))
-      : 0;
-
-    const taxaConversaoGeral = visitantesLandingEstimados > 0
-      ? Number(((comprasFinalizadas / visitantesLandingEstimados) * 100).toFixed(1))
-      : 0;
+    const taxaConversaoDemo = 0;
+    const taxaConversaoCheckout = 0;
+    const taxaConversaoGeral = 0;
 
     // Calcular faturamento baseado no número de colaboradores
     const planoTiers = {
@@ -757,10 +750,10 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
       },
     };
 
-    console.log('✅ [ADMIN] Indicadores calculados com sucesso');
+    logger.info('✅ [ADMIN] Indicadores calculados com sucesso');
     res.json(indicadores);
   } catch (error) {
-    console.error('Erro ao buscar indicadores da empresa:', error);
+    logger.error('Erro ao buscar indicadores da empresa:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -768,7 +761,7 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
 // Admin: listar todas as empresas
 router.get('/todas', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
-    console.log('🏢 [ADMIN] Buscando todas as empresas...');
+    logger.info('🏢 [ADMIN] Buscando todas as empresas...');
     const todasEmpresas = await db
       .select({
         id: empresas.id,
@@ -779,9 +772,9 @@ router.get('/todas', authenticateToken, requireAdmin, async (req: AuthRequest, r
       })
       .from(empresas);
 
-    console.log('🏢 [ADMIN] Empresas encontradas no banco:', todasEmpresas.length);
+    logger.info('🏢 [ADMIN] Empresas encontradas no banco:', todasEmpresas.length);
     if (todasEmpresas.length > 0) {
-      console.log('🏢 [ADMIN] Primeira empresa:', todasEmpresas[0]);
+      logger.info('🏢 [ADMIN] Primeira empresa:', todasEmpresas[0]);
     }
 
     // Enriquecer com a contagem de colaboradores
@@ -801,15 +794,15 @@ router.get('/todas', authenticateToken, requireAdmin, async (req: AuthRequest, r
           total_colaboradores: colaboradoresList.length,
         };
         
-        console.log('🏢 [ADMIN] Empresa formatada:', empresaFormatada);
+        logger.info('🏢 [ADMIN] Empresa formatada:', empresaFormatada);
         return empresaFormatada;
       })
     );
 
-    console.log('🏢 [ADMIN] Enviando resposta com', empresasEnriquecidas.length, 'empresas');
+    logger.info('🏢 [ADMIN] Enviando resposta com', empresasEnriquecidas.length, 'empresas');
     res.json({ empresas: empresasEnriquecidas, total: empresasEnriquecidas.length });
   } catch (error) {
-    console.error('Erro ao listar empresas:', error);
+    logger.error('Erro ao listar empresas:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -831,7 +824,7 @@ router.patch('/configuracoes', authenticateToken, requireEmpresa, async (req: Au
 
     res.json({ empresa: empresaAtualizada });
   } catch (error) {
-    console.error('Erro ao atualizar configurações:', error);
+    logger.error('Erro ao atualizar configurações:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -1085,7 +1078,7 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
     };
 
     // ✨ ANÁLISE REAL COM IA - Google Gemini
-    console.log('🧠 [API] Gerando análise com IA para empresa:', empresaId);
+    logger.info('🧠 [API] Gerando análise com IA para empresa:', empresaId);
     
     const aiAnalysis = await generatePsychosocialAnalysis({
       indiceGeralBemEstar,
@@ -1100,10 +1093,10 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
 
     const recomendacoes = aiAnalysis.recomendacoes;
     
-    console.log('✅ [API] Análise IA gerada com sucesso:', recomendacoes.length, 'recomendações');
-    console.log('📤 [Estado Psicossocial] totalColaboradores:', colaboradoresList.length);
-    console.log('📤 [Estado Psicossocial] totalTestesRealizados:', resultadosList.length);
-    console.log('📤 [Estado Psicossocial] cobertura:', nr1Compliance.cobertura);
+    logger.info('✅ [API] Análise IA gerada com sucesso:', recomendacoes.length, 'recomendações');
+    logger.info('📤 [Estado Psicossocial] totalColaboradores:', colaboradoresList.length);
+    logger.info('📤 [Estado Psicossocial] totalTestesRealizados:', resultadosList.length);
+    logger.info('📤 [Estado Psicossocial] cobertura:', nr1Compliance.cobertura);
 
     res.json({
       analise: {
@@ -1121,7 +1114,7 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
       }
     });
   } catch (error) {
-    console.error('Erro ao gerar análise psicossocial:', error);
+    logger.error('Erro ao gerar análise psicossocial:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -1618,16 +1611,16 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
       }
     };
 
-    console.log('📤 [PRG] Enviando resposta com empresa:', responseData.empresa.nome);
-    console.log('📤 [PRG] Chaves da resposta:', Object.keys(responseData));
-    console.log('📤 [PRG] totalColaboradores:', responseData.prg.totalColaboradores);
-    console.log('📤 [PRG] totalTestes:', responseData.prg.totalTestes);
-    console.log('📤 [PRG] cobertura:', responseData.prg.cobertura);
+    logger.info('📤 [PRG] Enviando resposta com empresa:', responseData.empresa.nome);
+    logger.info('📤 [PRG] Chaves da resposta:', Object.keys(responseData));
+    logger.info('📤 [PRG] totalColaboradores:', responseData.prg.totalColaboradores);
+    logger.info('📤 [PRG] totalTestes:', responseData.prg.totalTestes);
+    logger.info('📤 [PRG] cobertura:', responseData.prg.cobertura);
     
     res.json(responseData);
 
   } catch (error) {
-    console.error('❌ [PRG] Erro ao buscar dados do PRG:', error);
+    logger.error('❌ [PRG] Erro ao buscar dados do PRG:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -1635,7 +1628,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
 // 🔓 ROTA PÚBLICA - Acessar PRG via QR Code (SEM AUTENTICAÇÃO)
 router.get('/pgr/publico/:token', async (req, res) => {
   try {
-    console.log('🔓 [PRG Público] Requisição recebida para token:', req.params.token);
+    logger.info('🔓 [PRG Público] Requisição recebida para token:', req.params.token);
 
     const { token } = req.params;
     
@@ -1647,7 +1640,7 @@ router.get('/pgr/publico/:token', async (req, res) => {
 
     // Extrair ID da empresa do token (todos os parts exceto o último são o ID)
     const empresaId = tokenParts.slice(0, -1).join('-');
-    console.log('🔓 [PRG Público] Empresa ID extraído:', empresaId);
+    logger.info('🔓 [PRG Público] Empresa ID extraído:', empresaId);
 
     // Buscar empresa
     const [empresa] = await db
@@ -1657,11 +1650,11 @@ router.get('/pgr/publico/:token', async (req, res) => {
       .limit(1);
 
     if (!empresa) {
-      console.log('❌ [PRG Público] Empresa não encontrada');
+      logger.warn('❌ [PRG Público] Empresa não encontrada');
       return res.status(404).json({ error: 'Empresa não encontrada' });
     }
 
-    console.log('✅ [PRG Público] Empresa encontrada:', empresa.nomeEmpresa);
+    logger.info('✅ [PRG Público] Empresa encontrada:', empresa.nomeEmpresa);
 
     // Buscar colaboradores e resultados (mesma lógica do endpoint autenticado)
     const colaboradoresList = await db
@@ -2108,6 +2101,91 @@ router.post('/:id/bloquear-acesso', authenticateToken, requireAdmin, async (req:
   } catch (error) {
     console.error('❌ [ADMIN] Erro ao bloquear acesso:', error);
     res.status(500).json({ error: 'Erro ao bloquear acesso da empresa' });
+  }
+});
+
+// Admin: Excluir empresa (soft delete por padrão)
+router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    const modo = (req.query.modo as string) || 'soft';
+
+    console.log(`🗑️ [ADMIN] Solicitação de exclusão da empresa ${id} (modo=${modo})...`);
+    console.log('🗑️ [ADMIN] Tipos recebidos:', { idType: typeof id, idPreview: String(id).slice(0,8) });
+
+    // Validar formato do ID (SQLite usa 32-char hex; PG usa UUID com traços)
+    const isHex32 = /^[0-9a-f]{32}$/i.test(id);
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    const updatedAtValue = isSqlite ? new Date().toISOString() : new Date();
+
+    if (isSqlite) {
+      if (!isHex32) {
+        return res.status(400).json({ error: 'ID inválido para SQLite' });
+      }
+      const { sqlite } = await import('../db-sqlite');
+      // Não assumir a existência da coluna 'ativa' no SELECT para evitar erro
+      const row: any = sqlite.prepare('SELECT id, nome_empresa, ativo FROM empresas WHERE id = ? LIMIT 1').get(String(id));
+      if (!row) {
+        return res.status(404).json({ error: 'Empresa não encontrada' });
+      }
+      console.log('🗑️ [ADMIN] Registro encontrado:', { idDbType: typeof row.id, idDbPreview: String(row.id).slice(0,8), ativo: row.ativo });
+      try {
+        const cols: Array<{ name: string }> = sqlite.prepare('PRAGMA table_info(empresas)').all().map((c: any) => ({ name: c.name }));
+        const hasAtiva = cols.some(c => c.name === 'ativa');
+        const sql = hasAtiva
+          ? 'UPDATE empresas SET ativo = 0, ativa = 0 WHERE id = ?'
+          : 'UPDATE empresas SET ativo = 0 WHERE id = ?';
+        console.log('🗑️ [ADMIN] Executando UPDATE (SQLite):', { sql, bindIdType: typeof id, bindIdPreview: String(id).slice(0,8) });
+        sqlite.prepare(sql).run(String(id));
+      } catch (e: any) {
+        console.error('❌ [ADMIN] Falha no UPDATE (SQLite)', { code: e?.code, name: e?.name, message: e?.message, stack: e?.stack });
+        return res.status(500).json({ error: 'Erro ao excluir empresa' });
+      }
+
+      console.log(`✅ [ADMIN] Empresa ${row.nome_empresa} marcada como inativa (soft delete)`);
+      return res.json({
+        success: true,
+        message: 'Empresa excluída com sucesso (soft delete)',
+        empresa: { id: row.id, nome: row.nome_empresa, ativa: false }
+      });
+    } else {
+      const [empresa] = await db
+        .select()
+        .from(empresas)
+        .where(eq(empresas.id, id))
+        .limit(1);
+
+      if (!empresa) {
+        return res.status(404).json({ error: 'Empresa não encontrada' });
+      }
+
+      await db
+        .update(empresas)
+        .set({ ativa: false, updatedAt: updatedAtValue })
+        .where(eq(empresas.id, id));
+
+      console.log(`✅ [ADMIN] Empresa ${empresa.nomeEmpresa} marcada como inativa (soft delete)`);
+      return res.json({
+        success: true,
+        message: 'Empresa excluída com sucesso (soft delete)',
+        empresa: { id: empresa.id, nome: empresa.nomeEmpresa, ativa: false }
+      });
+    }
+
+    // Observação: se necessário implementar hard delete, considerar:
+    // - Remover colaboradores vinculados (colaboradores.empresaId)
+    // - Remover convites (convites_colaborador por empresa_id; convites_empresa por email_contato)
+    // - Remover resultados vinculados (resultados.empresa_id)
+    // - Depois deletar a própria empresa
+    // Isso deve ser implementado com cuidado para não quebrar FKs.
+  } catch (error) {
+    console.error('❌ [ADMIN] Erro ao excluir empresa:', {
+      code: (error as any)?.code,
+      name: (error as any)?.name,
+      message: (error as any)?.message,
+      stack: (error as any)?.stack,
+    });
+    res.status(500).json({ error: 'Erro ao excluir empresa' });
   }
 });
 

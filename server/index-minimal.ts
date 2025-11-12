@@ -106,7 +106,8 @@ lazyRoute('/api/convites', () => import('./routes/convites'));
 lazyRoute('/api/admin', () => import('./routes/admin'));
 lazyRoute('/api/chatbot', () => import('./routes/chatbot'));
 lazyRoute('/api/stripe', () => import('./routes/stripe'));
-lazyRoute('/api/erp', () => import('./routes/erp'));
+// ERP functionality removed - routes disabled
+// lazyRoute('/api/erp', () => import('./routes/erp'));
 lazyRoute('/api/teste-disponibilidade', () => import('./routes/teste-disponibilidade'));
 lazyRoute('/api/curso-disponibilidade', () => import('./routes/curso-disponibilidade'));
 lazyRoute('/api/cursos', () => import('./routes/cursos'));

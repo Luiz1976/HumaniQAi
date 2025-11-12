@@ -70,10 +70,32 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 
 export default function AdminDashboard() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [indicadoresAgregados, setIndicadoresAgregados] = useState<{
+    empresas: { total: number };
+    testes: { total: number; mediaPontuacao: number; mediaPorEmpresa: number };
+    analise: {
+      tendencia: Array<{ mes: string; total: number }>;
+      distribuicaoTemporal: Array<{ periodo: string; valor: number }>;
+      porCategoria: Array<{ categoria: string; total: number }>;
+    };
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     carregarDashboard();
+  }, []);
+
+  // Carregar indicadores agregados (empresas com compras)
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const dados = await apiService.obterIndicadoresEmpresasComCompras();
+        setIndicadoresAgregados(dados as any);
+      } catch (err) {
+        console.warn('⚠️ Falha ao carregar indicadores agregados', err);
+      }
+    };
+    load();
   }, []);
 
   const carregarDashboard = async () => {
@@ -342,6 +364,119 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {indicadoresAgregados && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+            <BarChart3 className="w-5 h-5 mr-2 text-indigo-600" />
+            Indicadores Agregados — Empresas com Compras
+          </h3>
+
+          {/* Cards resumo */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow p-5 text-white">
+              <div className="flex items-center justify-between mb-2">
+                <Building2 className="w-6 h-6" />
+                <span className="text-xs opacity-80">Total de Empresas</span>
+              </div>
+              <p className="text-3xl font-bold">{indicadoresAgregados.empresas.total}</p>
+            </div>
+            <div className="bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl shadow p-5 text-white">
+              <div className="flex items-center justify-between mb-2">
+                <Activity className="w-6 h-6" />
+                <span className="text-xs opacity-80">Total de Testes</span>
+              </div>
+              <p className="text-3xl font-bold">{indicadoresAgregados.testes.total}</p>
+            </div>
+            <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow p-5 text-white">
+              <div className="flex items-center justify-between mb-2">
+                <Zap className="w-6 h-6" />
+                <span className="text-xs opacity-80">Média por Empresa</span>
+              </div>
+              <p className="text-3xl font-bold">{indicadoresAgregados.testes.mediaPorEmpresa}</p>
+            </div>
+            <div className="bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow p-5 text-white">
+              <div className="flex items-center justify-between mb-2">
+                <Award className="w-6 h-6" />
+                <span className="text-xs opacity-80">Pontuação Média</span>
+              </div>
+              <p className="text-3xl font-bold">{indicadoresAgregados.testes.mediaPontuacao}</p>
+            </div>
+          </div>
+
+          {/* Tendência últimos 6 meses */}
+          <div className="mb-8">
+            <h4 className="text-md font-semibold text-gray-900 mb-4 flex items-center">
+              <TrendingUp className="w-5 h-5 mr-2 text-indigo-600" />
+              Testes Concluídos (últimos 6 meses)
+            </h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={indicadoresAgregados.analise.tendencia}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="mes" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="total" stroke="#6366f1" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Distribuição temporal */}
+          <div className="mb-8">
+            <h4 className="text-md font-semibold text-gray-900 mb-4 flex items-center">
+              <Calendar className="w-5 h-5 mr-2 text-indigo-600" />
+              Distribuição por período do dia
+            </h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={indicadoresAgregados.analise.distribuicaoTemporal}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="periodo" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="valor" fill="#10b981" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Distribuição por categoria */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-900 mb-4 flex items-center">
+              <BarChart3 className="w-5 h-5 mr-2 text-indigo-600" />
+              Distribuição por categoria
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex items-center justify-center">
+                <ResponsiveContainer width="100%" height={300}>
+                  <RechartsPie>
+                    <Pie data={indicadoresAgregados.analise.porCategoria} dataKey="total" nameKey="categoria" cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5}>
+                      {indicadoresAgregados.analise.porCategoria.map((entry, index) => (
+                        <Cell key={`cat-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                  </RechartsPie>
+                </ResponsiveContainer>
+              </div>
+              <div>
+                <div className="grid grid-cols-1 gap-3">
+                  {indicadoresAgregados.analise.porCategoria.map((c, idx) => (
+                    <div key={c.categoria} className="flex items-center justify-between p-4 rounded-lg border" style={{ borderColor: COLORS[idx % COLORS.length] }}>
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 rounded-full mr-3" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
+                        <span className="font-medium">{c.categoria}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-600">Testes: {c.total}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

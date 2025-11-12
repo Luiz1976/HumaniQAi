@@ -1,15 +1,16 @@
 import { Router } from 'express';
 import Stripe from 'stripe';
-import { db } from '../db';
+import { db } from '../db-config';
 import { empresas, convitesEmpresa } from '../../shared/schema';
 import { eq } from 'drizzle-orm';
 import { randomBytes } from 'crypto';
+import logger from '../utils/logger';
 
 const router = Router();
 
 // Verificar se a chave do Stripe está configurada
 if (!process.env.STRIPE_SECRET_KEY) {
-  console.warn('⚠️  STRIPE_SECRET_KEY not set. Stripe operations will fail.');
+  logger.warn('⚠️  STRIPE_SECRET_KEY not set. Stripe operations will fail.');
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy_key_for_development', {
@@ -124,7 +125,7 @@ router.post('/create-checkout-session', async (req, res) => {
       url: session.url,
     });
   } catch (error: any) {
-    console.error('Erro ao criar sessão de checkout:', error);
+    logger.error('Erro ao criar sessão de checkout:', error);
     res.status(500).json({
       error: 'Erro ao criar sessão de pagamento',
       details: error.message,
@@ -148,7 +149,7 @@ router.post('/webhook', async (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (err: any) {
-    console.error('Erro ao verificar webhook:', err.message);
+    logger.error('Erro ao verificar webhook:', err.message);
     return res.status(400).json({ error: `Webhook Error: ${err.message}` });
   }
 
@@ -257,7 +258,7 @@ router.post('/webhook', async (req, res) => {
 
     res.json({ received: true });
   } catch (error: any) {
-    console.error('Erro ao processar webhook:', error);
+    logger.error('Erro ao processar webhook:', error);
     res.status(500).json({ error: 'Erro ao processar evento' });
   }
 });
@@ -290,7 +291,7 @@ router.get('/subscription-status/:empresaId', async (req, res) => {
           plan: empresa.plano,
         };
       } catch (error) {
-        console.error('Erro ao recuperar assinatura do Stripe:', error);
+        logger.error('Erro ao recuperar assinatura do Stripe:', error);
       }
     }
 
@@ -303,7 +304,7 @@ router.get('/subscription-status/:empresaId', async (req, res) => {
       subscription: subscriptionData,
     });
   } catch (error: any) {
-    console.error('Erro ao buscar status de assinatura:', error);
+    logger.error('Erro ao buscar status de assinatura:', error);
     res.status(500).json({
       error: 'Erro ao buscar status de assinatura',
       details: error.message,
@@ -350,7 +351,7 @@ router.post('/cancel-subscription/:empresaId', async (req, res) => {
       cancelAt: new Date((subscription as any).current_period_end * 1000),
     });
   } catch (error: any) {
-    console.error('Erro ao cancelar assinatura:', error);
+    logger.error('Erro ao cancelar assinatura:', error);
     res.status(500).json({
       error: 'Erro ao cancelar assinatura',
       details: error.message,
@@ -407,7 +408,7 @@ router.get('/convite-session/:sessionId', async (req, res) => {
       url: `${process.env.FRONTEND_URL || req.headers.origin}/convite/${convite.token}`,
     });
   } catch (error: any) {
-    console.error('Erro ao buscar convite:', error);
+    logger.error('Erro ao buscar convite:', error);
     res.status(500).json({
       error: 'Erro ao buscar convite',
       details: error.message,
