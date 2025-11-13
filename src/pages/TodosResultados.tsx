@@ -25,7 +25,8 @@ import {
   AlertTriangle,
   Shield,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  Timer
 } from 'lucide-react';
 import { apiService } from '@/services/apiService';
 
@@ -238,6 +239,13 @@ export default function TodosResultados() {
       // Verificar se tem campos específicos do QVT
       resultado.indice_geral !== undefined ||
       resultado.satisfacao_funcao !== undefined;
+
+    // Verificar se é um resultado do teste Clima e Bem-Estar
+    const isClimaBemEstar =
+      resultado.teste_id === 'clima-bem-estar' ||
+      resultado.metadados?.tipo_teste === '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5' ||
+      (typeof resultado.metadados?.teste_nome === 'string' && resultado.metadados.teste_nome.includes('Clima e Bem-Estar')) ||
+      (typeof resultado.testes?.nome === 'string' && resultado.testes.nome.includes('Clima e Bem-Estar'));
     
     // Verificar se é um resultado do teste RPO (Riscos Psicossociais Ocupacionais)
     const isRPO = 
@@ -259,6 +267,8 @@ export default function TodosResultados() {
       navigate(`/resultado/percepcao-assedio/${resultado.id}`);
     } else if (isQVT) {
       navigate(`/resultado/qualidade-vida-trabalho/${resultado.id}`);
+    } else if (isClimaBemEstar) {
+      navigate(`/resultado/clima-bem-estar/${resultado.id}`);
     } else if (isRPO) {
       navigate(`/resultado/rpo/${resultado.id}`);
     } else {
@@ -266,25 +276,72 @@ export default function TodosResultados() {
     }
   };
 
+  const parseData = (data: string) => new Date(data);
+
   const formatarData = (data: string) => {
-    return new Date(data).toLocaleDateString('pt-BR', {
+    return new Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+      timeZone: 'America/Sao_Paulo'
+    }).format(parseData(data));
   };
 
-  const formatarTempo = (segundos: number) => {
-    if (segundos === null || segundos === undefined || isNaN(segundos as any)) return '00:00:00';
-    const horas = Math.floor(segundos / 3600);
-    const minutos = Math.floor((segundos % 3600) / 60);
-    const seg = Math.floor(segundos % 60);
-    const hh = String(horas).padStart(2, '0');
-    const mm = String(minutos).padStart(2, '0');
-    const ss = String(seg).padStart(2, '0');
-    return `${hh}:${mm}:${ss}`;
+  const formatarHora = (data: string) => {
+    return new Intl.DateTimeFormat('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Sao_Paulo'
+    }).format(parseData(data));
+  };
+
+  const formatarDuracao = (valor: number | string) => {
+    if (valor === null || valor === undefined) return '0:00';
+    if (typeof valor === 'string') {
+      // Converter HH:MM:SS para MM:SS (minutos totais)
+      const match = valor.match(/^(\d{1,3}):(\d{2}):(\d{2})$/);
+      if (match) {
+        const h = Number(match[1]);
+        const m = Number(match[2]);
+        const s = Number(match[3]);
+        const totalMin = h * 60 + m;
+        const ss = String(s).padStart(2, '0');
+        return `${totalMin}:${ss}`;
+      }
+      const num = Number(valor);
+      if (!isNaN(num)) valor = num;
+    }
+    const total = typeof valor === 'number' ? Math.max(0, Math.floor(valor)) : 0;
+    const minutosTotais = Math.floor(total / 60);
+    const segundos = total % 60;
+    const ss = String(segundos).padStart(2, '0');
+    return `${minutosTotais}:${ss}`;
+  };
+
+  const obterClassificacaoCriticidade = (resultado: Resultado): 'critico' | 'nao_critico' | 'indefinido' => {
+    const m = (resultado.metadados || {}) as Record<string, any>;
+    const textos = [
+      String(m.nivelGeral || ''),
+      String(m.classificacaoGeral || ''),
+      String(m.classificacao || ''),
+      String(m?.analise_completa?.classificacao || ''),
+      String(m?.analise_completa?.nivelGeral || ''),
+      String(resultado.status || ''),
+      String(m.nivelGlobalRisco || ''),
+      String(m.nivelRisco || '')
+    ].join(' ').toLowerCase();
+    if (/critico|crítico|alto risco|elevado|problematico|problemático/.test(textos)) return 'critico';
+    if (/saudavel|positivo|excelente|bom|adequado|reduzido|aceitavel|aceitável|moderado/.test(textos)) return 'nao_critico';
+
+    const { valor5 } = normalizarPontuacaoResultado(resultado);
+    if (valor5 < 3.0) return 'critico';
+    return 'nao_critico';
+  };
+
+  const getBadgeColorPorClassificacao = (resultado: Resultado) => {
+    const c = obterClassificacaoCriticidade(resultado);
+    if (c === 'critico') return 'bg-red-100 text-red-800 border-red-200';
+    return 'bg-green-100 text-green-800 border-green-200';
   };
 
   const getBadgeColor = (pontuacao: number) => {
@@ -915,7 +972,7 @@ export default function TodosResultados() {
               {resultados.map((resultado) => (
                 <Card
                   key={resultado.id}
-                  className="bg-gradient-card border-border/50 hover:shadow-glow transition-all cursor-pointer"
+                  className={`bg-gradient-card hover:shadow-glow transition-all cursor-pointer ${(() => { const c = obterClassificacaoCriticidade(resultado); return c === 'critico' ? 'border-red-200' : 'border-green-200'; })()}`}
                   onClick={() => visualizarResultado(resultado)}
                 >
                   <CardContent className="p-4">
@@ -925,9 +982,14 @@ export default function TodosResultados() {
                           <h3 className="font-semibold text-gray-900">
                             {resultado.testes?.nome}
                           </h3>
-                          <Badge className={getBadgeColor(resultado.pontuacao_total)}>
-                            {resultado.pontuacao_total} pontos
-                          </Badge>
+                          {(() => {
+                            const { valor5 } = normalizarPontuacaoResultado(resultado);
+                            return (
+                              <Badge className={getBadgeColorPorClassificacao(resultado)}>
+                                {valor5.toFixed(1)} pontos
+                              </Badge>
+                            );
+                          })()}
                           <Badge variant="outline">
                             {resultado.testes?.categoria || 'Geral'}
                           </Badge>
@@ -938,11 +1000,15 @@ export default function TodosResultados() {
                             <Calendar className="h-4 w-4" />
                             {formatarData(resultado.data_realizacao)}
                           </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {formatarHora(String(resultado.data_realizacao))}
+                          </div>
                           
                           {resultado.tempo_gasto && (
                             <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              {formatarTempo(resultado.tempo_gasto)}
+                              <Timer className="h-4 w-4" />
+                              {formatarDuracao(resultado.tempo_gasto)}
                             </div>
                           )}
                           
@@ -1011,4 +1077,64 @@ export default function TodosResultados() {
       )}
     </div>
   );
+}
+// Normaliza pontuação para escala 0-5 e formatação com 1 casa decimal
+export function normalizarPontuacaoResultado(resultado: Resultado): { valor5: number; valorPercentual: number } {
+  const m = (resultado.metadados || {}) as Record<string, any>;
+  const tipo = (m.tipo_teste || m.tipo || '').toLowerCase();
+
+  let bruto: number | undefined;
+
+  if (tipo === 'rpo') {
+    bruto = m.analise_completa?.indiceGeralRisco ?? m.indiceGeralRisco ?? m.pontuacao ?? resultado.pontuacao_total;
+  } else if (tipo === 'maturidade-gestao-riscos') {
+    const percentual = (
+      m.analise_completa?.maturidadeGeral?.percentual ??
+      (typeof resultado.pontuacao_total === 'number' && resultado.pontuacao_total <= 100 ? resultado.pontuacao_total : undefined) ??
+      (typeof m.mediaGeral === 'number' ? Math.round(m.mediaGeral * 20) : undefined) ??
+      (typeof m.pontuacaoGeral === 'number'
+        ? Math.round(((m.pontuacaoGeral || 0) / (((m.totalPerguntas || 40) * 5))) * 100)
+        : undefined)
+    ) ?? 0;
+    const valor5 = Number((percentual / 20).toFixed(1));
+    const valorPercentual = Math.round(valor5 * 20);
+    return { valor5, valorPercentual };
+  } else if (
+    tipo === '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5' ||
+    /clima|bem[- ]estar/i.test(String(m.teste_nome || resultado.testes?.nome || ''))
+  ) {
+    const mediaFromAnalise = (
+      typeof m.analise_completa?.mediaGeral === 'number' ? m.analise_completa.mediaGeral : undefined
+    ) ?? (
+      typeof m.mediaGeral === 'number' ? m.mediaGeral : undefined
+    );
+
+    const percentualOrigem = (
+      typeof resultado.pontuacao_total === 'number'
+        ? (resultado.pontuacao_total <= 100 ? Math.round(resultado.pontuacao_total) : undefined)
+        : undefined
+    ) ?? (
+      typeof m.pontuacao_total === 'number'
+        ? (m.pontuacao_total <= 100 ? Math.round(m.pontuacao_total) : undefined)
+        : undefined
+    ) ?? (
+      typeof mediaFromAnalise === 'number' ? Math.round(mediaFromAnalise * 20) : undefined
+    ) ?? (
+      typeof m.pontuacaoGeral === 'number' && typeof m.totalPerguntas === 'number'
+        ? Math.round((m.pontuacaoGeral / m.totalPerguntas) * 20)
+        : undefined
+    ) ?? 0;
+
+    const valor5 = Number((percentualOrigem / 20).toFixed(1));
+    const valorPercentual = percentualOrigem;
+    return { valor5, valorPercentual };
+  } else if (tipo === 'qvt') {
+    bruto = m.pontuacao ?? resultado.pontuacao_total ?? m.indiceGeral ?? m.analise_completa?.indiceGeral;
+  } else {
+    bruto = m.pontuacao ?? m.indiceGeral ?? m.indiceGeralRisco ?? m.analise_completa?.indiceGeralRisco ?? resultado.pontuacao_total;
+  }
+
+  const valor5 = Number((bruto ?? 0).toFixed(1));
+  const valorPercentual = Math.round(valor5 * 20);
+  return { valor5, valorPercentual };
 }

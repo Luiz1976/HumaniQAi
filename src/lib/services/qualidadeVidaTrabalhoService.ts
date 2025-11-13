@@ -163,6 +163,9 @@ export async function finalizarTesteQVT(
       testeId: '7b3c8d4e-9f0a-1b2c-3d4e-5f6a7b8c9d0e', // UUID do teste QVT no banco
       pontuacaoTotal: analiseQVT.indiceGeral || 0,
       metadados: {
+        teste_nome: 'Qualidade de Vida no Trabalho',
+        teste_categoria: configQualidadeVidaTrabalho.categoria,
+        tipo_teste: 'qvt',
         tipo: 'qvt',
         pontuacao: analiseQVT.indiceGeral || 0,
         percentual: analiseQVT.percentualGeral || 0,

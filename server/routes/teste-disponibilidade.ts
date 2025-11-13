@@ -1,9 +1,11 @@
 import express from 'express';
-import { db } from '../db-config';
+import { db, dbType } from '../db-config';
 import { testeDisponibilidade, testes, resultados, colaboradores, insertTesteDisponibilidadeSchema, updateTesteDisponibilidadeSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest, requireEmpresa, requireColaborador } from '../middleware/auth';
 import { eq, and, or, desc, sql } from 'drizzle-orm';
 import { z } from 'zod';
+
+type DisponibilidadeRow = typeof testeDisponibilidade.$inferSelect;
 
 const router = express.Router();
 
@@ -13,33 +15,63 @@ const router = express.Router();
  */
 router.get('/colaborador/testes', authenticateToken, requireColaborador, async (req: AuthRequest, res) => {
   try {
-    const colaboradorId = req.user!.userId;
-    const empresaId = req.user!.empresaId!;
+    const requestId = Math.random().toString(36).slice(2);
+    if (!req.user || !req.user.userId) {
+      console.error('⚠️ [DISPONIBILIDADE]', requestId, 'Contexto de usuário inválido', req.user);
+      return res.status(400).json({ error: 'Contexto de usuário inválido' });
+    }
+    const colaboradorId = req.user.userId;
+    let empresaId = req.user.empresaId;
+    if (!empresaId && req.user.role === 'colaborador') {
+      try {
+        const [colaborador] = await db
+          .select({ empresaId: colaboradores.empresaId })
+          .from(colaboradores)
+          .where(eq(colaboradores.id, colaboradorId))
+          .limit(1);
+        empresaId = colaborador?.empresaId || empresaId;
+      } catch (e) {
+        console.error('❌ [DISPONIBILIDADE]', requestId, 'Falha ao resolver empresaId do colaborador', e);
+      }
+    }
+    if (!empresaId) {
+      console.error('⚠️ [DISPONIBILIDADE]', requestId, 'EmpresaId ausente para usuário', req.user);
+      return res.status(400).json({ error: 'Empresa não identificada' });
+    }
 
-    console.log('🔍 [DISPONIBILIDADE] Buscando testes para colaborador:', colaboradorId, 'da empresa:', empresaId);
+    console.log('🔍 [DISPONIBILIDADE]', requestId, 'Buscando testes para colaborador:', colaboradorId, 'da empresa:', empresaId);
 
-    // Buscar todos os testes ativos
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
     const todosTestes = await db
       .select()
       .from(testes)
-      .where(eq(testes.ativo, true));
+      .where(eq(testes.ativo, isSqlite ? 1 : true));
     
-    console.log('📊 [DISPONIBILIDADE] Total de testes ativos encontrados:', todosTestes.length);
+    console.log('📊 [DISPONIBILIDADE]', requestId, 'Total de testes ativos encontrados:', todosTestes.length);
 
     // Buscar disponibilidade para cada teste
     const testesComDisponibilidade = await Promise.all(
       todosTestes.map(async (teste) => {
-        // Verificar se existe registro de disponibilidade
-        const [disponibilidade] = await db
-          .select()
-          .from(testeDisponibilidade)
-          .where(
-            and(
-              eq(testeDisponibilidade.colaboradorId, colaboradorId),
-              eq(testeDisponibilidade.testeId, teste.id)
+        let disponibilidade: DisponibilidadeRow | null = null;
+        try {
+          const [disp] = await db
+            .select()
+            .from(testeDisponibilidade)
+            .where(
+              and(
+                eq(testeDisponibilidade.colaboradorId, colaboradorId),
+                eq(testeDisponibilidade.testeId, teste.id)
+              )
             )
-          )
-          .limit(1);
+            .limit(1);
+          disponibilidade = disp || null;
+        } catch (e: unknown) {
+          const msg = typeof e === 'object' && e && 'message' in e ? String((e as { message?: unknown }).message) : '';
+          if (!/no such table|does not exist/i.test(msg)) {
+            throw e;
+          }
+          disponibilidade = null;
+        }
 
         // Verificar se já completou o teste
         const [resultado] = await db
@@ -74,12 +106,11 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
             if (agora >= proxima) {
               // Período expirou, liberar automaticamente
               disponivel = true;
-              // Atualizar registro
               await db
                 .update(testeDisponibilidade)
                 .set({ 
                   disponivel: true,
-                  updatedAt: new Date() 
+                  updatedAt: new Date()
                 })
                 .where(eq(testeDisponibilidade.id, disponibilidade.id));
             } else {
@@ -95,17 +126,24 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
           motivo = 'teste_concluido';
           
           // Criar registro de disponibilidade
-          await db
-            .insert(testeDisponibilidade)
-            .values({
-              colaboradorId,
-              testeId: teste.id,
-              empresaId,
-              disponivel: false,
-              ultimaLiberacao: null,
-              proximaDisponibilidade: null,
-            })
-            .onConflictDoNothing();
+          try {
+            await db
+              .insert(testeDisponibilidade)
+              .values({
+                colaboradorId,
+                testeId: teste.id,
+                empresaId,
+                disponivel: false,
+                ultimaLiberacao: null,
+                proximaDisponibilidade: null,
+              })
+              // onConflictDoNothing removido - erro será tratado no catch
+          } catch (e: unknown) {
+            const msg = typeof e === 'object' && e && 'message' in e ? String((e as { message?: unknown }).message) : '';
+            if (!/no such table|does not exist/i.test(msg)) {
+              throw e;
+            }
+          }
         }
 
         const testeInfo = {
@@ -118,7 +156,7 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
           periodicidadeDias: disponibilidade?.periodicidadeDias || null,
         };
 
-        console.log(`📋 [DISPONIBILIDADE] Teste "${teste.nome}" - Colaborador: ${colaboradorId}:`, {
+        console.log(`📋 [DISPONIBILIDADE] ${requestId} Teste "${teste.nome}" - Colaborador: ${colaboradorId}:`, {
           disponivel,
           motivo,
           temDisponibilidade: !!disponibilidade,
@@ -141,8 +179,8 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
       })
     );
 
-    console.log('✅ [DISPONIBILIDADE] Retornando', testesComDisponibilidade.length, 'testes');
-    console.log('📊 [DISPONIBILIDADE] Resumo:', {
+    console.log('✅ [DISPONIBILIDADE]', requestId, 'Retornando', testesComDisponibilidade.length, 'testes');
+    console.log('📊 [DISPONIBILIDADE]', requestId, 'Resumo:', {
       disponiveis: testesComDisponibilidade.filter(t => t.disponivel).length,
       bloqueados: testesComDisponibilidade.filter(t => !t.disponivel).length
     });
@@ -151,8 +189,11 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
       testes: testesComDisponibilidade,
       total: testesComDisponibilidade.length 
     });
-  } catch (error) {
-    console.error('Erro ao buscar testes disponíveis:', error);
+  } catch (error: unknown) {
+    const requestId = Math.random().toString(36).slice(2);
+    const message = typeof error === 'object' && error && 'message' in error ? String((error as { message?: unknown }).message) : String(error);
+    const stack = typeof error === 'object' && error && 'stack' in error ? String((error as { stack?: unknown }).stack) : undefined;
+    console.error('❌ [DISPONIBILIDADE]', requestId, 'Erro ao buscar testes disponíveis:', message, stack);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -164,6 +205,14 @@ router.get('/empresa/colaborador/:colaboradorId/testes', authenticateToken, requ
   try {
     const { colaboradorId } = req.params;
     const empresaId = req.user!.empresaId!;
+    const requestId = Math.random().toString(36).slice(2);
+
+    const paramsValidation = z.object({ colaboradorId: z.string().uuid() }).safeParse({ colaboradorId });
+    if (!paramsValidation.success) {
+      return res.status(400).json({ error: 'Dados inválidos', details: paramsValidation.error.issues });
+    }
+
+    console.log('🔍 [DISPONIBILIDADE/EMPRESA]', requestId, 'Empresa:', empresaId, 'Colaborador:', colaboradorId);
 
     // Verificar se o colaborador pertence à empresa
     const [colaborador] = await db
@@ -247,6 +296,14 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
   try {
     const { colaboradorId, testeId } = req.params;
     const empresaId = req.user!.empresaId!;
+    const requestId = Math.random().toString(36).slice(2);
+
+    const paramsValidation = z.object({ colaboradorId: z.string().uuid(), testeId: z.string().uuid() }).safeParse({ colaboradorId, testeId });
+    if (!paramsValidation.success) {
+      return res.status(400).json({ error: 'Dados inválidos', details: paramsValidation.error.issues });
+    }
+
+    console.log('🔧 [LIBERAR/EMPRESA]', requestId, 'Empresa:', empresaId, 'Colaborador:', colaboradorId, 'Teste:', testeId);
 
     // Verificar se o colaborador pertence à empresa
     const [colaborador] = await db
@@ -291,7 +348,7 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
 
     if (disponibilidadeExistente) {
       // Atualizar registro existente
-      const historicoAtual = (disponibilidadeExistente.historicoLiberacoes as any[]) || [];
+      const historicoAtual = (disponibilidadeExistente.historicoLiberacoes as Array<{ data: string; liberadoPor: string; motivo: string }>) || [];
       const novoHistorico = [
         ...historicoAtual,
         {
@@ -358,6 +415,14 @@ router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade',
   try {
     const { colaboradorId, testeId } = req.params;
     const empresaId = req.user!.empresaId!;
+    const requestId = Math.random().toString(36).slice(2);
+
+    const paramsValidation = z.object({ colaboradorId: z.string().uuid(), testeId: z.string().uuid() }).safeParse({ colaboradorId, testeId });
+    if (!paramsValidation.success) {
+      return res.status(400).json({ error: 'Dados inválidos', details: paramsValidation.error.issues });
+    }
+
+    console.log('⚙️ [PERIODICIDADE/EMPRESA]', requestId, 'Empresa:', empresaId, 'Colaborador:', colaboradorId, 'Teste:', testeId);
 
     // Validar dados
     const validationResult = z.object({
@@ -431,7 +496,7 @@ router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade',
           periodicidadeDias,
           proximaDisponibilidade,
           metadados: {
-            ...(disponibilidadeExistente.metadados as any || {}),
+            ...(disponibilidadeExistente.metadados as Record<string, unknown> || {}),
             periodicidadeConfiguradaEm: agora.toISOString(),
             configuradoPor: req.user!.userId,
           },

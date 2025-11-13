@@ -80,11 +80,11 @@ export default function TesteMGRPIntroducao() {
   ];
 
   const maturityLevels = [
-    { level: "Otimizada", range: "4.5 - 5.0", color: "bg-green-100 text-green-800", description: "Gestão exemplar de riscos psicossociais" },
-    { level: "Avançada", range: "3.6 - 4.4", color: "bg-blue-100 text-blue-800", description: "Gestão adequada com oportunidades de melhoria" },
-    { level: "Intermediária", range: "2.8 - 3.5", color: "bg-yellow-100 text-yellow-800", description: "Gestão em desenvolvimento" },
-    { level: "Inicial", range: "2.0 - 2.7", color: "bg-orange-100 text-orange-800", description: "Gestão básica implementada" },
-    { level: "Baixa", range: "1.0 - 1.9", color: "bg-red-100 text-red-800", description: "Necessita implementação urgente" }
+    { level: "Otimizada", range: "4.5 - 5.0", color: "bg-green-600 text-white", description: "Gestão exemplar de riscos psicossociais" },
+    { level: "Avançada", range: "3.6 - 4.4", color: "bg-blue-600 text-white", description: "Gestão adequada com oportunidades de melhoria" },
+    { level: "Intermediária", range: "2.8 - 3.5", color: "bg-yellow-500 text-slate-900", description: "Gestão em desenvolvimento" },
+    { level: "Inicial", range: "2.0 - 2.7", color: "bg-orange-500 text-white", description: "Gestão básica implementada" },
+    { level: "Baixa", range: "1.0 - 1.9", color: "bg-red-600 text-white", description: "Necessita implementação urgente" }
   ];
 
   return (
@@ -190,7 +190,7 @@ export default function TesteMGRPIntroducao() {
                     className="p-4 rounded-lg bg-white/90 border border-slate-200 hover:bg-white hover:shadow-md transition-all duration-300"
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <Badge className={`${level.color} text-white shadow-sm`}>
+                      <Badge className={`${level.color} shadow-md`}>
                         Nível {level.level}
                       </Badge>
                     </div>

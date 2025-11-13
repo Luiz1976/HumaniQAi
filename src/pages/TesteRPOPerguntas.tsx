@@ -139,7 +139,7 @@ const TesteRPOPerguntas: React.FC = () => {
       const dadosResultado = {
         usuario_id: user?.id || null,
         session_id: sessionId,
-        pontuacao_total: Math.round(analiseRPO.indiceGeralRisco),
+        pontuacao_total: Number(analiseRPO.indiceGeralRisco.toFixed(1)),
         tempo_gasto: tempoTotal || 0,
         status: 'concluido' as const,
         metadados: {

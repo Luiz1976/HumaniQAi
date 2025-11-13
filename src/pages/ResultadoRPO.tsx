@@ -98,7 +98,7 @@ export default function ResultadoRPO() {
         const dadosResultado = {
           usuario_id: null, // Anônimo
           session_id: sessionId,
-          pontuacao_total: Math.round(analiseRPO.indiceGeralRisco),
+          pontuacao_total: Number(analiseRPO.indiceGeralRisco.toFixed(1)),
           tempo_gasto: tempoTotal || 0,
           status: 'concluido' as const,
           metadados: {

@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, Download, Share2, RefreshCw, TrendingUp, Award, Building2, AlertTriangle, Heart, Users, Loader2, CheckCircle, Eye, BarChart3, Radar, Gauge, Activity, Shield, Target, Zap } from "lucide-react";
 import Logo from "@/components/Logo";
 import { calcularResultadoMGRP, type ResultadoMGRP } from "@/lib/testes/mgrp";
+import { dimensoesMaturidadeRiscosPsicossociais } from "@/lib/testes/maturidade-riscos-psicossociais";
 import { resultadosService } from "@/lib/database";
 import { sessionService } from "@/lib/services/session-service";
 import { motion } from "framer-motion";
@@ -95,12 +96,23 @@ export default function ResultadoMaturidadeRiscosPsicossociais() {
             // Converter dimensões se existirem
             if (analiseCompleta.dimensoes) {
               console.log('🔄 [MGRP-RESULTADO] Convertendo dimensões:', Object.keys(analiseCompleta.dimensoes));
+              const perguntasPorDimensaoAntiga: Record<string, number> = Object.fromEntries(
+                dimensoesMaturidadeRiscosPsicossociais.map(d => [d.id, d.perguntas.length])
+              );
               
               Object.entries(analiseCompleta.dimensoes).forEach(([chave, dimensao]) => {
                 if (dimensao && typeof dimensao === 'object') {
+                  const perguntasCount = perguntasPorDimensaoAntiga[chave] || 8;
+                  const percentualCalculado =
+                    dimensao.percentual !== undefined
+                      ? dimensao.percentual
+                      : dimensao.media !== undefined
+                        ? Math.round((dimensao.media || 0) * 20)
+                        : Math.round(((dimensao.pontuacao || 0) / (perguntasCount * 5)) * 100);
+
                   const dimensaoConvertida = {
                     pontuacao: dimensao.pontuacao || 0,
-                    percentual: dimensao.percentual || Math.round((dimensao.pontuacao || 0) / 8 * 100), // Assumindo pontuação máxima de 8 por dimensão
+                    percentual: Math.min(100, Math.max(0, percentualCalculado)),
                     nivel: converterNivelAntigo(dimensao.nivel),
                     classificacao: dimensao.classificacao || 'Não classificado',
                     descricao: dimensao.descricao || ''

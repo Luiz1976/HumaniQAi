@@ -19,6 +19,7 @@ import { ptBR } from "date-fns/locale";
 import { useAuth } from "@/hooks/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import Cookies from "js-cookie";
 import { useEffect } from "react";
 
 interface TesteDisponibilidade {
@@ -44,6 +45,13 @@ export default function Testes() {
   const queryClient = useQueryClient();
 
   const isColaborador = isAuthenticated && user?.role === 'colaborador';
+
+  useEffect(() => {
+    const cookieToken = Cookies.get('authToken') || Cookies.get('token');
+    const lsToken = typeof window !== 'undefined' ? (localStorage.getItem('authToken') || localStorage.getItem('token')) : null;
+    const hasToken = !!(cookieToken && cookieToken.length > 0) || !!(lsToken && lsToken.length > 0);
+    console.log('[TESTES] Contexto', { role: user?.role, isColaborador, hasToken });
+  }, [isColaborador, user?.role]);
 
   // 🚀 React Query: Carrega testes automaticamente com cache inteligente
   const { data, isLoading: carregando, error } = useQuery<{ testes: TesteDisponibilidade[] }>({
@@ -318,7 +326,7 @@ export default function Testes() {
 
   const testesEstaticos = [
     { info: infoTesteClimaOrganizacional, route: '/teste/clima-organizacional', icon: <Building2 className="h-8 w-8 text-white" />, color: 'bg-blue-500', badgeColor: 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800', buttonColor: 'bg-blue-600 hover:bg-blue-700' },
-    { info: infoTesteKarasekSiegrist, route: '/teste/karasek-siegrist', icon: <Logo size="sm" showText={false} />, color: 'bg-purple-500', badgeColor: 'text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800', buttonColor: 'bg-purple-600 hover:bg-purple-700', badges: ['OMS', 'OIT'] },
+    { info: infoTesteKarasekSiegrist, route: '/teste/karasek-siegrist', icon: <Scale className="h-8 w-8 text-white" />, color: 'bg-purple-500', badgeColor: 'text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800', buttonColor: 'bg-purple-600 hover:bg-purple-700', badges: ['OMS', 'OIT'] },
     { info: infoTesteEstresseOcupacional, route: '/teste/estresse-ocupacional', icon: <Heart className="h-8 w-8 text-white" />, color: 'bg-blue-500', badgeColor: 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800', buttonColor: 'bg-blue-600 hover:bg-blue-700' },
     { info: infoTesteClimaBemEstar, route: '/teste/clima-bem-estar', icon: <Users className="h-8 w-8 text-white" />, color: 'bg-green-500', badgeColor: 'text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800', buttonColor: 'bg-green-600 hover:bg-green-700' },
     { info: infoTesteMaturidadeRiscosPsicossociais, route: '/teste/maturidade-riscos-psicossociais', icon: <Shield className="h-8 w-8 text-white" />, color: 'bg-orange-500', badgeColor: 'text-orange-600 border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800', buttonColor: 'bg-orange-600 hover:bg-orange-700', badges: ['Organizacional', 'Gestão'] },

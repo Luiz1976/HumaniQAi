@@ -1,5 +1,6 @@
 /// <reference types="vitest" />
 import { defineConfig } from "vite";
+import type { PluginOption } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
@@ -8,7 +9,7 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
-  let taggerPlugin: any = null;
+  let taggerPlugin: PluginOption | null = null;
   if (mode === "development") {
     try {
       const mod = await import("lovable-tagger");
@@ -28,12 +29,12 @@ export default defineConfig(async ({ mode }) => {
       allowedHosts: true,
       proxy: {
         '/api': {
-          target: `http://localhost:${process.env.PORT || 3000}`,
+          target: 'http://localhost:3000',
           changeOrigin: true,
           secure: false,
         },
         '/health': {
-          target: `http://localhost:${process.env.PORT || 3000}`,
+          target: 'http://localhost:3000',
           changeOrigin: true,
           secure: false,
         },

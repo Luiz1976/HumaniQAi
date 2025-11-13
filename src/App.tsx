@@ -367,14 +367,6 @@ function App() {
                 } 
               />
               <Route 
-                path="/teste/humaniq-insight/perguntas" 
-                element={
-                  <MainLayout>
-                    <TestePerguntas />
-                  </MainLayout>
-                } 
-              />
-              <Route 
                 path="/teste/estresse-ocupacional" 
                 element={
                   <ProtectedRoute>

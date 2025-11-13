@@ -5,12 +5,24 @@ import { ArrowLeft, Download, Share2, Loader2, AlertTriangle } from "lucide-reac
 import Logo from "@/components/Logo";
 import { apiService } from "@/services/apiService";
 import { ResultadoVisualizacao } from "@/components/ResultadoVisualizacao";
+import { toast } from "sonner";
+import type { Resultado, Resposta } from "@/lib/types";
+
+interface ResultadoTeste {
+  id: string;
+  nomeTest?: string;
+  categoria?: string;
+  pontuacao?: number;
+  nivel?: string;
+  dataRealizacao?: string;
+  tipoTabela?: string;
+}
 
 export default function Resultado() {
   const { resultadoId } = useParams();
   const navigate = useNavigate();
-  const [resultado, setResultado] = useState<any>(null);
-  const [dadosResultado, setDadosResultado] = useState<any>(null);
+  const [resultado, setResultado] = useState<ResultadoTeste | null>(null);
+  const [dadosResultado, setDadosResultado] = useState<Resultado | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -35,7 +47,7 @@ export default function Resultado() {
         throw new Error("Resultado não encontrado na resposta da API");
       }
 
-      const dadosCompletos: DadosResultadoAPI = response.resultado;
+      const dadosCompletos: Resultado = response.resultado;
       console.log('✅ [Resultado] Dados recebidos:', dadosCompletos);
 
       // Preparar objeto resultado simplificado para ResultadoVisualizacao
@@ -43,7 +55,7 @@ export default function Resultado() {
         id: dadosCompletos.id || resultadoId,
         nomeTest: dadosCompletos.metadados?.teste_nome || 
                   dadosCompletos.testes?.nome || 
-                  obterNomeTestePorTipo(dadosCompletos.metadados?.tipo_teste),
+                  obterNomeTeste(dadosCompletos.metadados?.tipo_teste),
         categoria: dadosCompletos.testes?.categoria || '',
         pontuacao: dadosCompletos.pontuacao_total || 0,
         nivel: dadosCompletos.metadados?.classificacaoGeral || '',
@@ -58,18 +70,14 @@ export default function Resultado() {
       console.error('❌ [Resultado] Erro ao carregar:', error);
       const mensagemErro = error instanceof Error ? error.message : 'Erro ao carregar resultado';
       setErro(mensagemErro);
-      toast({
-        title: "Erro",
-        description: mensagemErro,
-        variant: "destructive",
-      });
+      toast('Erro ao carregar resultado', { description: mensagemErro });
     } finally {
       setCarregando(false);
     }
   };
 
   // Obter nome do teste de várias fontes
-  const obterNomeTeste = (): string => {
+  const obterNomeTeste = (tipoTeste?: string): string => {
     if (dadosResultado?.metadados?.teste_nome) return dadosResultado.metadados.teste_nome;
     if (dadosResultado?.testes?.nome) return dadosResultado.testes.nome;
     if (resultado?.nomeTest) return resultado.nomeTest;

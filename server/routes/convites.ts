@@ -495,23 +495,26 @@ router.get('/token/:token', async (req, res) => {
 
       return res.json({ convite, tipo: 'empresa' });
     } else if (tipo === 'colaborador') {
-      const [convite] = await db
+      const [row] = await db
         .select()
         .from(convitesColaborador)
-        .where(
-          and(
-            eq(convitesColaborador.token, token),
-            eq(convitesColaborador.status, 'pendente'),
-            gt(convitesColaborador.validade, new Date())
-          )
-        )
+        .where(eq(convitesColaborador.token, token))
         .limit(1);
 
-      if (!convite) {
-        return res.status(404).json({ error: 'Convite não encontrado ou expirado' });
+      if (!row) {
+        return res.status(404).json({ error: 'Token de convite inexistente' });
+      }
+      const agora = new Date();
+      const validadeData = row.validade instanceof Date ? row.validade : new Date(row.validade as any);
+      const expirado = validadeData ? validadeData.getTime() <= agora.getTime() : true;
+      if (expirado) {
+        return res.status(410).json({ error: 'Convite expirado' });
+      }
+      if (row.status !== 'pendente') {
+        return res.status(409).json({ error: 'Convite já utilizado' });
       }
 
-      return res.json({ convite, tipo: 'colaborador' });
+      return res.json({ convite: row, tipo: 'colaborador' });
     }
 
     res.status(400).json({ error: 'Tipo de convite inválido' });
@@ -735,21 +738,25 @@ router.post('/colaborador/aceitar/:token', async (req, res) => {
       return res.status(400).json({ error: 'Senha inválida', details: validationResult.error.issues });
     }
 
-    const [convite] = await db
+    const [row] = await db
       .select()
       .from(convitesColaborador)
-      .where(
-        and(
-          eq(convitesColaborador.token, token),
-          eq(convitesColaborador.status, 'pendente'),
-          gt(convitesColaborador.validade, new Date())
-        )
-      )
+      .where(eq(convitesColaborador.token, token))
       .limit(1);
 
-    if (!convite) {
-      return res.status(404).json({ error: 'Convite não encontrado ou expirado' });
+    if (!row) {
+      return res.status(404).json({ error: 'Token de convite inexistente' });
     }
+    const agora = new Date();
+    const validadeData = row.validade instanceof Date ? row.validade : new Date(row.validade as any);
+    const expirado = validadeData ? validadeData.getTime() <= agora.getTime() : true;
+    if (expirado) {
+      return res.status(410).json({ error: 'Convite expirado' });
+    }
+    if (row.status !== 'pendente') {
+      return res.status(409).json({ error: 'Convite já utilizado' });
+    }
+    const convite = row;
 
     const hashedPassword = await hashPassword(validationResult.data.senha);
 
@@ -757,17 +764,39 @@ router.post('/colaborador/aceitar/:token', async (req, res) => {
     const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
     let novoColaborador: any;
     if (isSqlite) {
-      await db
-        .insert(colaboradores)
-        .values({
-          nome: convite.nome,
-          email: convite.email,
-          senha: hashedPassword,
-          cargo: convite.cargo,
-          departamento: convite.departamento,
-          empresaId: convite.empresaId,
-        });
-      [novoColaborador] = await db.select().from(colaboradores).where(eq(colaboradores.email, convite.email)).limit(1);
+      logger.debug('🧾 [Convites/Colaborador/Aceitar] Dados para inserção (SQLite)', {
+        nome: convite.nome,
+        email: convite.email,
+        cargo: convite.cargo ?? null,
+        departamento: convite.departamento ?? null,
+        empresaId: convite.empresaId ?? null,
+      });
+      const { sqlite } = await import('../db-sqlite');
+      const localId = crypto.randomUUID();
+      const created = new Date().toISOString();
+      const updated = created;
+      const stmt = sqlite.prepare(`
+        INSERT INTO colaboradores (
+          id, nome, email, senha, cargo, departamento, empresa_id,
+          permissoes, ativo, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      stmt.run(
+        localId,
+        convite.nome,
+        convite.email,
+        hashedPassword,
+        convite.cargo || null,
+        convite.departamento || null,
+        convite.empresaId || null,
+        JSON.stringify({}),
+        1,
+        created,
+        updated,
+      );
+      const sel = sqlite.prepare('SELECT * FROM colaboradores WHERE email = ? LIMIT 1');
+      const row: any = sel.get(convite.email);
+      novoColaborador = row ? { id: row.id, nome: row.nome, email: row.email } : undefined;
     } else {
       [novoColaborador] = await db
         .insert(colaboradores)

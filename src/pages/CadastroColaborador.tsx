@@ -178,23 +178,17 @@ const CadastroColaborador: React.FC = () => {
     try {
       setSalvando(true);
 
-      // Aceitar convite (cria colaborador e marca como aceito)
       await apiService.aceitarConviteColaborador(token, formData.senha);
 
       toast.success('Cadastro realizado com sucesso!');
-      
-      // Fazer login automático
       const loginResponse = await authService.login(formData.email, formData.senha);
-      
-      if (loginResponse.success) {
-        navigate('/colaborador');
-      } else {
-        navigate('/login');
-      }
+      navigate(loginResponse.success ? '/colaborador' : '/login');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao cadastrar colaborador:', error);
-      toast.error(error instanceof Error ? error.message : 'Erro ao criar cadastro');
+      const msg = error instanceof Error ? error.message : 'Erro ao criar cadastro';
+      toast.error(msg);
+      setTokenValido(false);
     } finally {
       setSalvando(false);
     }

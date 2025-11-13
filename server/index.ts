@@ -36,7 +36,7 @@ import requireApiKey from './middleware/apiKey';
 
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.BACKEND_PORT || process.env.PORT || 3001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Logger centralizado
@@ -223,27 +223,37 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// Inicializar servidor
-const server = app.listen(PORT, '0.0.0.0', () => {
-  logger.info(`🚀 HumaniQ Backend iniciado com sucesso!`);
-  logger.info(`📍 Servidor rodando em: http://0.0.0.0:${PORT}`);
-  logger.info(`📊 Ambiente: ${NODE_ENV}`);
-  logger.info(`🗄️ Banco de dados: ${process.env.DATABASE_URL ? 'PostgreSQL (Neon)' : 'DESCONHECIDO'}`);
-  logger.info(`🔒 CORS configurado para: ${process.env.CORS_ORIGIN || 'localhost:5000'}`);
-  logger.info(`⚡ Rate limiting: 100 req/15min por IP`);
-  // Agendar backup se habilitado via env
+let server: any;
+
+async function bootstrap() {
   try {
-    scheduleBackupFromEnv();
-    logger.info('🗂️ Backup agendado conforme configuração de ambiente.');
-  } catch (backupErr) {
-    logger.error('Erro ao agendar backups:', backupErr);
+    await runMigrations();
+  } catch (err) {
+    logger.error('Falha ao executar migrações no startup:', err);
   }
-});
+
+  server = app.listen(PORT, '0.0.0.0', () => {
+    logger.info(`🚀 HumaniQ Backend iniciado com sucesso!`);
+    logger.info(`📍 Servidor rodando em: http://0.0.0.0:${PORT}`);
+    logger.info(`📊 Ambiente: ${NODE_ENV}`);
+    logger.info(`🗄️ Banco de dados: ${process.env.DATABASE_URL ? 'PostgreSQL (Neon)' : 'DESCONHECIDO'}`);
+    logger.info(`🔒 CORS configurado para: ${process.env.CORS_ORIGIN || 'localhost:5000'}`);
+    logger.info(`⚡ Rate limiting: 100 req/15min por IP`);
+    try {
+      scheduleBackupFromEnv();
+      logger.info('🗂️ Backup agendado conforme configuração de ambiente.');
+    } catch (backupErr) {
+      logger.error('Erro ao agendar backups:', backupErr);
+    }
+  });
+}
+
+bootstrap();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
   logger.info('SIGTERM recebido. Encerrando servidor graciosamente...');
-  server.close(() => {
+  server?.close(() => {
     logger.info('Servidor encerrado.');
     process.exit(0);
   });
@@ -251,7 +261,7 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   logger.info('SIGINT recebido. Encerrando servidor graciosamente...');
-  server.close(() => {
+  server?.close(() => {
     logger.info('Servidor encerrado.');
     process.exit(0);
   });
@@ -268,12 +278,3 @@ process.on('uncaughtException', (error) => {
 });
 
 export default app;
-// Executar migrações na inicialização (SQLite em dev cria tabelas e seed)
-try {
-  // Não bloquear o startup; apenas registrar falhas
-  runMigrations()?.catch((err) => {
-    logger.error('Falha ao executar migrações no startup:', err);
-  });
-} catch (err) {
-  logger.error('Erro inesperado ao iniciar migrações:', err);
-}

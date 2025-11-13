@@ -3,7 +3,7 @@ import { db } from '../db-config';
 import logger from '../utils/logger';
 import { admins, empresas, colaboradores, insertAdminSchema, insertEmpresaSchema } from '../../shared/schema';
 import { hashPassword, comparePassword, generateToken } from '../utils/auth';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 
@@ -56,43 +56,58 @@ router.post('/login', async (req, res) => {
     let empresaId: string | undefined;
     let colaboradorId: string | undefined;
 
-    // Priorizar EMPRESA sobre ADMIN para evitar confusão quando e-mails coexistem
-    const [empresa] = await db.select().from(empresas).where(eq(empresas.emailContato, email)).limit(1);
+    const [empresa] = await db
+      .select()
+      .from(empresas)
+      .where(sql`lower(${empresas.emailContato}) = ${email.toLowerCase()}`)
+      .limit(1);
+
     if (empresa) {
-      const validPassword = await comparePassword(password, empresa.senha);
-      if (!validPassword) {
-        return res.status(401).json({ error: 'Invalid credentials' });
+      const validPasswordEmpresa = await comparePassword(password, (empresa as any).senha);
+      if (validPasswordEmpresa) {
+        user = empresa;
+        role = 'empresa';
+        empresaId = (empresa as any).id;
+        logger.info('✅ [AUTH/LOGIN] Role selecionado: empresa', { email, empresaId });
       }
-      user = empresa;
-      role = 'empresa';
-      empresaId = empresa.id;
-      logger.info('✅ [AUTH/LOGIN] Role selecionado: empresa', { email, empresaId });
-    } else {
-      const [colaborador] = await db.select().from(colaboradores).where(eq(colaboradores.email, email)).limit(1);
+    }
+
+    if (!user) {
+      const [colaborador] = await db
+        .select()
+        .from(colaboradores)
+        .where(sql`lower(${colaboradores.email}) = ${email.toLowerCase()}`)
+        .limit(1);
       if (colaborador) {
-        const validPassword = await comparePassword(password, colaborador.senha);
-        if (!validPassword) {
-          return res.status(401).json({ error: 'Invalid credentials' });
+        const validPasswordColab = await comparePassword(password, (colaborador as any).senha);
+        if (validPasswordColab) {
+          user = colaborador;
+          role = 'colaborador';
+          empresaId = (colaborador as any).empresaId || undefined;
+          colaboradorId = (colaborador as any).id;
+          logger.info('✅ [AUTH/LOGIN] Role selecionado: colaborador', { email, empresaId, colaboradorId });
         }
-        user = colaborador;
-        role = 'colaborador';
-        empresaId = colaborador.empresaId || undefined;
-        colaboradorId = colaborador.id;
-        logger.info('✅ [AUTH/LOGIN] Role selecionado: colaborador', { email, empresaId, colaboradorId });
-      } else {
-        const [admin] = await db.select().from(admins).where(eq(admins.email, email)).limit(1);
-        if (admin) {
-          const validPassword = await comparePassword(password, admin.senha);
-          if (!validPassword) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-          }
+      }
+    }
+
+    if (!user) {
+      const [admin] = await db
+        .select()
+        .from(admins)
+        .where(sql`lower(${admins.email}) = ${email.toLowerCase()}`)
+        .limit(1);
+      if (admin) {
+        const validPasswordAdmin = await comparePassword(password, (admin as any).senha);
+        if (validPasswordAdmin) {
           user = admin;
           role = 'admin';
           logger.info('✅ [AUTH/LOGIN] Role selecionado: admin', { email });
-        } else {
-          return res.status(401).json({ error: 'Invalid credentials' });
         }
       }
+    }
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const token = generateToken({

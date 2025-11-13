@@ -9,6 +9,7 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+import { runMigrations } from './db-config';
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -127,6 +128,14 @@ app.get('/', (_req, res) => {
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Backend minimal iniciado em http://0.0.0.0:${PORT} (${NODE_ENV})`);
 });
+
+try {
+  runMigrations()?.catch((err) => {
+    console.error('Falha ao executar migrações no startup:', err);
+  });
+} catch (err) {
+  console.error('Erro inesperado ao iniciar migrações:', err);
+}
 
 // Encerramento gracioso
 process.on('SIGTERM', () => {

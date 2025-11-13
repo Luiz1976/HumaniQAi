@@ -41,7 +41,7 @@ export default function TesteKarasekSiegristPerguntas() {
     const buscarPerguntas = async () => {
       try {
         setCarregandoPerguntas(true);
-        const response = await fetch('/api/testes/3d9f4a0b-5c6e-7f8a-9d0e-1f2a3b4c5d6e/perguntas');
+        const response = await fetch('/api/testes/karasek-siegrist/perguntas');
         const data = await response.json();
         
         if (data.perguntas) {

@@ -130,6 +130,60 @@ async function createTables() {
     );
   `);
 
+  // Criar tabela perguntas
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS perguntas (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      teste_id TEXT REFERENCES testes(id) ON DELETE CASCADE,
+      texto TEXT NOT NULL,
+      tipo TEXT NOT NULL,
+      opcoes TEXT,
+      escala_min INTEGER,
+      escala_max INTEGER,
+      obrigatoria BOOLEAN DEFAULT 1,
+      ordem INTEGER NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_perguntas_teste_id ON perguntas(teste_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_perguntas_ordem ON perguntas(teste_id, ordem);`);
+
+  // Criar tabela respostas
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS respostas (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      resultado_id TEXT REFERENCES resultados(id) ON DELETE CASCADE,
+      pergunta_id TEXT REFERENCES perguntas(id) ON DELETE CASCADE,
+      valor TEXT NOT NULL,
+      pontuacao INTEGER,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_respostas_resultado_id ON respostas(resultado_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_respostas_pergunta_id ON respostas(pergunta_id);`);
+
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS teste_disponibilidade (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
+      teste_id TEXT REFERENCES testes(id) ON DELETE CASCADE NOT NULL,
+      empresa_id TEXT REFERENCES empresas(id) ON DELETE CASCADE NOT NULL,
+      disponivel BOOLEAN DEFAULT 1 NOT NULL,
+      periodicidade_dias INTEGER,
+      ultima_liberacao TEXT,
+      proxima_disponibilidade TEXT,
+      historico_liberacoes TEXT DEFAULT '[]',
+      metadados TEXT DEFAULT '{}',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
+    );
+  `);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_colaborador_id ON teste_disponibilidade(colaborador_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_teste_id ON teste_disponibilidade(teste_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_empresa_id ON teste_disponibilidade(empresa_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_disponivel ON teste_disponibilidade(disponivel);`);
+  sqlite.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_teste_disp_colab_teste_unique ON teste_disponibilidade(colaborador_id, teste_id);`);
+
   // Criar tabela convites_empresa
   sqlite.exec(`
     CREATE TABLE IF NOT EXISTS convites_empresa (
@@ -173,6 +227,98 @@ async function createTables() {
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_token ON convites_colaborador(token);`);
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_empresa_id ON convites_colaborador(empresa_id);`);
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_status ON convites_colaborador(status);`);
+
+  
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS curso_disponibilidade (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
+      curso_id TEXT NOT NULL,
+      empresa_id TEXT REFERENCES empresas(id) ON DELETE CASCADE NOT NULL,
+      disponivel BOOLEAN DEFAULT 0 NOT NULL,
+      periodicidade_dias INTEGER,
+      ultima_liberacao TEXT,
+      proxima_disponibilidade TEXT,
+      liberado_por TEXT,
+      historico_liberacoes TEXT DEFAULT '[]',
+      metadados TEXT DEFAULT '{}',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
+    );
+  `);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_colaborador_id ON curso_disponibilidade(colaborador_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_curso_id ON curso_disponibilidade(curso_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_empresa_id ON curso_disponibilidade(empresa_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_disponivel ON curso_disponibilidade(disponivel);`);
+  sqlite.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_curso_disp_colab_curso_unique ON curso_disponibilidade(colaborador_id, curso_id);`);
+
+  
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS curso_progresso (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
+      curso_id TEXT NOT NULL,
+      curso_slug TEXT NOT NULL,
+      modulos_completados TEXT DEFAULT '[]' NOT NULL,
+      total_modulos INTEGER NOT NULL,
+      progresso_porcentagem INTEGER DEFAULT 0 NOT NULL,
+      avaliacao_final_realizada BOOLEAN DEFAULT 0 NOT NULL,
+      avaliacao_final_pontuacao INTEGER,
+      tentativas_avaliacao INTEGER DEFAULT 0 NOT NULL,
+      data_inicio TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      data_ultima_atualizacao TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      data_conclusao TEXT,
+      metadados TEXT DEFAULT '{}',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
+    );
+  `);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_progresso_colaborador_id ON curso_progresso(colaborador_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_progresso_curso_id ON curso_progresso(curso_id);`);
+  sqlite.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_curso_progresso_colab_curso_unique ON curso_progresso(colaborador_id, curso_id);`);
+
+  
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS curso_avaliacoes (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
+      curso_id TEXT NOT NULL,
+      curso_slug TEXT NOT NULL,
+      respostas TEXT,
+      pontuacao INTEGER,
+      total_questoes INTEGER,
+      aprovado BOOLEAN DEFAULT 0 NOT NULL,
+      tempo_gasto INTEGER,
+      metadados TEXT DEFAULT '{}',
+      data_realizacao TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
+    );
+  `);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_avaliacoes_colaborador_id ON curso_avaliacoes(colaborador_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_avaliacoes_curso_id ON curso_avaliacoes(curso_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_avaliacoes_aprovado ON curso_avaliacoes(aprovado);`);
+
+  
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS curso_certificados (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
+      curso_id TEXT NOT NULL,
+      curso_slug TEXT NOT NULL,
+      curso_titulo TEXT,
+      colaborador_nome TEXT,
+      carga_horaria INTEGER,
+      data_emissao TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      codigo_autenticacao TEXT UNIQUE,
+      qr_code_url TEXT,
+      assinatura_digital TEXT,
+      validado BOOLEAN DEFAULT 1 NOT NULL,
+      metadados TEXT DEFAULT '{}'
+    );
+  `);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_cert_colaborador_id ON curso_certificados(colaborador_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_cert_curso_id ON curso_certificados(curso_id);`);
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_cert_codigo ON curso_certificados(codigo_autenticacao);`);
 
   console.log('📊 Tabelas SQLite criadas com sucesso!');
 }

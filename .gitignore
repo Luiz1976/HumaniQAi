@@ -124,6 +124,10 @@ node_modules/
 server/*.db
 server/*.db-shm
 server/*.db-wal
+# Root-level local DBs
+*.db
+*.db-shm
+*.db-wal
 # Large attached assets
 attached_assets/*.pdf
 attached_assets/generated_images/

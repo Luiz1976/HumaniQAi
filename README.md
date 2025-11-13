@@ -18,6 +18,43 @@ HumaniQ é uma plataforma completa para avaliação psicológica no ambiente cor
 
 ---
 
+## ⚠️ PORTA 5000 OBRIGATÓRIA
+
+### 🔒 Requisito de Sistema
+O frontend **DEVE** rodar obrigatoriamente na porta 5000. Esta é uma configuração fixa e inalterável.
+
+### 🔄 Gerenciamento de Porta
+Scripts automáticos para garantir disponibilidade da porta 5000:
+
+```bash
+# Verificar se a porta 5000 está disponível
+npm run port:check
+
+# Preparar a porta (encerrar processos existentes)
+npm run port:prepare
+
+# Forçar encerramento de processos na porta 5000
+npm run port:force-stop
+
+# Iniciar frontend com garantia de porta 5000
+npm run frontend:force
+```
+
+### 📝 Configuração
+O arquivo `.env` deve conter:
+```env
+VITE_API_URL=http://localhost:5000
+PORT=5000
+```
+
+### ⚠️ Solução de Problemas
+Se encontrar erro "Port 5000 is already in use":
+1. Execute `npm run port:prepare` para liberar a porta
+2. Use `npm run frontend:force` para iniciar com garantia
+3. Verifique logs em `logs/port-5000.log`
+
+---
+
 ## 🚀 Como Iniciar
 
 ### 1. Instalar Dependências

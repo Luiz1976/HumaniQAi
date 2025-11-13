@@ -15,7 +15,7 @@ import { apiService } from "@/services/apiService";
 
 // Interface para perguntas vindas da API
 interface PerguntaAPI {
-  id: number;
+  id: string;
   texto: string;
   categoria: string;
   escala: string[];
@@ -25,10 +25,15 @@ export default function TestePerguntas() {
   const { testeId } = useParams<{ testeId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const testeIdResolved = (() => {
+    if (testeId) return testeId;
+    const m = window.location.pathname.match(/^\/teste\/([^\/]+)\/perguntas/);
+    return m?.[1];
+  })();
   
   const [perguntas, setPerguntas] = useState<PerguntaAPI[]>([]);
   const [perguntaAtual, setPerguntaAtual] = useState(0);
-  const [respostas, setRespostas] = useState<{ [key: number]: number }>({});
+  const [respostas, setRespostas] = useState<{ [key: string]: number }>({});
   const [processandoTeste, setProcessandoTeste] = useState(false);
   const [tempoInicio] = useState(Date.now());
   const [carregando, setCarregando] = useState(true);
@@ -46,11 +51,16 @@ export default function TestePerguntas() {
   
   // Estado para controlar a animação de processamento
   const [mostrarAnimacaoProcessamento, setMostrarAnimacaoProcessamento] = useState(false);
+  useEffect(() => {
+    setRespostaSalva(false);
+    setErroSalvamento(null);
+    setProcessandoResposta(false);
+  }, [perguntaAtual]);
 
   // Buscar perguntas da API ao montar o componente
   useEffect(() => {
     const carregarPerguntas = async () => {
-      if (!testeId) {
+      if (!testeIdResolved) {
         setErroCarregamento('ID do teste não fornecido');
         setCarregando(false);
         return;
@@ -60,7 +70,7 @@ export default function TestePerguntas() {
         setCarregando(true);
         setErroCarregamento(null);
         
-        const response = await apiService.obterPerguntasTeste(testeId);
+        const response = await apiService.obterPerguntasTeste(testeIdResolved);
         
         if (response && response.perguntas && Array.isArray(response.perguntas)) {
           // Mapear perguntas da API para o formato esperado
@@ -77,6 +87,10 @@ export default function TestePerguntas() {
             setErroCarregamento('Nenhuma pergunta encontrada para este teste');
           }
         } else {
+          console.error('❌ [ERROR] Formato de resposta inválido. Estrutura esperada: { perguntas: [...] }');
+          console.error('❌ [ERROR] Resposta recebida:', response);
+          console.error('❌ [ERROR] Formato de resposta inválido. Estrutura esperada: { perguntas: [...] }');
+          console.error('❌ [ERROR] Resposta recebida:', response);
           throw new Error('Formato de resposta inválido da API');
         }
       } catch (error) {
@@ -150,7 +164,7 @@ export default function TestePerguntas() {
                 Nenhuma pergunta disponível
               </h3>
               <p className="text-gray-600 mb-4">
-                O teste "{testeId}" não possui perguntas disponíveis no momento.
+                O teste "{testeIdResolved}" não possui perguntas disponíveis no momento.
               </p>
               <Button onClick={() => navigate('/testes')} variant="outline">
                 Voltar aos Testes
@@ -171,7 +185,7 @@ export default function TestePerguntas() {
   const operacaoEmAndamento = salvandoResposta || avancandoAutomaticamente || processandoResposta || processandoTeste;
 
   // Função para salvar resposta individual
-  const salvarRespostaIndividual = async (perguntaId: number, valor: number): Promise<boolean> => {
+  const salvarRespostaIndividual = async (perguntaId: string, valor: number): Promise<boolean> => {
     try {
       setSalvandoResposta(true);
       setErroSalvamento(null);
@@ -182,7 +196,7 @@ export default function TestePerguntas() {
       const respostaData = {
         pergunta_id: perguntaId,
         valor: valor,
-        teste_id: testeId,
+        teste_id: testeIdResolved,
         timestamp: new Date().toISOString()
       };
 
@@ -296,7 +310,7 @@ export default function TestePerguntas() {
       const tempoResposta = Math.round((Date.now() - tempoInicio) / 1000);
       
       console.log('🔍 [DEBUG] Parâmetros para processamento:');
-      console.log('🔍 [DEBUG] - testeId:', testeId);
+      console.log('🔍 [DEBUG] - testeId:', testeIdResolved);
       console.log('🔍 [DEBUG] - respostas:', respostas);
       console.log('🔍 [DEBUG] - tempoResposta:', tempoResposta);
       console.log('🔍 [DEBUG] Chamando processamentoService.processarTesteCompleto...');
@@ -305,7 +319,7 @@ export default function TestePerguntas() {
         // Processar teste no backend com os parâmetros corretos
         console.log('🔍 [DEBUG] Iniciando processamento...');
         const resultado = await processamentoService.processarTesteCompleto(
-          testeId!,
+          testeIdResolved!,
           respostas,
           undefined, // usuarioNome
           undefined, // usuarioEmail
@@ -322,8 +336,8 @@ export default function TestePerguntas() {
         });
 
         // Navegar para resultados com o ID do resultado
-        console.log('🔍 [DEBUG] Navegando para resultado:', `/resultado/${testeId}/${resultado.resultado.id}`);
-        navigate(`/resultado/${testeId}/${resultado.resultado.id}`);
+        console.log('🔍 [DEBUG] Navegando para resultado:', `/resultado/${testeIdResolved}/${resultado.resultado.id}`);
+        navigate(`/resultado/${testeIdResolved}/${resultado.resultado.id}`);
         
       } catch (processError) {
         console.error('❌ [ERROR] Erro específico no processamento:', processError);
@@ -374,12 +388,6 @@ export default function TestePerguntas() {
     }
   };
 
-  // Resetar estados quando mudar de pergunta
-  useEffect(() => {
-    setRespostaSalva(false);
-    setErroSalvamento(null);
-    setProcessandoResposta(false);
-  }, [perguntaAtual]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
@@ -388,10 +396,10 @@ export default function TestePerguntas() {
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200/60">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-slate-800">
-              {testeId === 'big-five' && 'Big Five'}
-              {testeId === 'inteligencia-emocional' && 'Inteligência Emocional'}
-              {testeId === 'clima-organizacional' && 'Clima Organizacional'}
-              {testeId === 'karasek-siegrist' && 'Karasek-Siegrist'}
+              {testeIdResolved === 'big-five' && 'Big Five'}
+              {testeIdResolved === 'inteligencia-emocional' && 'Inteligência Emocional'}
+              {testeIdResolved === 'clima-organizacional' && 'Clima Organizacional'}
+              {testeIdResolved === 'karasek-siegrist' && 'Karasek-Siegrist'}
             </h1>
             <span className="text-sm text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
               {perguntaAtual + 1} de {perguntas.length}

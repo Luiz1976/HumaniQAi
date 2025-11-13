@@ -2,7 +2,7 @@
   "scripts": {
     "start": "npm run server & npm run dev:strict",
     "start:prod": "NODE_ENV=production tsx server/index.ts",
-    "dev": "vite --port 5000 --host 0.0.0.0",
+    "dev": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1",
     "dev:strict": "vite --port 5000 --host 0.0.0.0",
     "dev:ps": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1",
     "server": "tsx server/index.ts",
@@ -18,7 +18,11 @@
     "db:generate": "drizzle-kit generate",
     "wipe:todos-resultados": "node scripts/wipe-todos-resultados.mjs --yes",
     "contar:todos-resultados": "node scripts/wipe-todos-resultados.mjs",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "port:check": "powershell -ExecutionPolicy Bypass -File scripts/manage-port-5000.ps1 -Action check",
+    "port:prepare": "powershell -ExecutionPolicy Bypass -File scripts/manage-port-5000.ps1 -Action prepare",
+    "port:force-stop": "powershell -ExecutionPolicy Bypass -File scripts/manage-port-5000.ps1 -Action force-stop",
+    "frontend:force": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1 -Force"
   },
   "engines": {
     "node": ">=18"

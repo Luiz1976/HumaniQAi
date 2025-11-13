@@ -12,7 +12,6 @@ import {
   CheckCircle, 
   Star, 
   Users, 
-  Building, 
   Heart, 
   Award, 
   Scale,
@@ -83,65 +82,46 @@ function getScoreLevel(score: number) {
 }
 
 export default function ResultadoQVT({ resultado }: ResultadoQVTProps) {
-  // ===== LOGS DETALHADOS PARA DEBUG =====
+  // ===== LOGS DETALHADOS PARA DEBUG - CORRIGIDO =====
   console.log('🔍 [RESULTADO-QVT] ===== ANÁLISE COMPLETA DOS DADOS =====');
   console.log('🔍 [RESULTADO-QVT] Objeto resultado completo:', JSON.stringify(resultado, null, 2));
   console.log('🔍 [RESULTADO-QVT] Tipo do resultado:', typeof resultado);
   console.log('🔍 [RESULTADO-QVT] Chaves do objeto resultado:', Object.keys(resultado || {}));
   
-  // Verificar campos camelCase vs snake_case
+  // Verificar apenas campos camelCase do tipo ResultadoQVT
   console.log('🔍 [RESULTADO-QVT] ===== MAPEAMENTO DE CAMPOS =====');
   console.log('🔍 [RESULTADO-QVT] indiceGeral (camelCase):', resultado?.indiceGeral);
-  console.log('🔍 [RESULTADO-QVT] indice_geral (snake_case):', resultado?.indice_geral);
   console.log('🔍 [RESULTADO-QVT] nivelGeral (camelCase):', resultado?.nivelGeral);
-  console.log('🔍 [RESULTADO-QVT] nivel_geral (snake_case):', resultado?.nivel_geral);
   console.log('🔍 [RESULTADO-QVT] percentualGeral (camelCase):', resultado?.percentualGeral);
-  console.log('🔍 [RESULTADO-QVT] percentual_geral (snake_case):', resultado?.percentual_geral);
   
   // Verificar dimensões
   console.log('🔍 [RESULTADO-QVT] ===== DIMENSÕES =====');
-  console.log('🔍 [RESULTADO-QVT] satisfacao_funcao:', resultado?.satisfacao_funcao);
-  console.log('🔍 [RESULTADO-QVT] relacao_lideranca:', resultado?.relacao_lideranca);
-  console.log('🔍 [RESULTADO-QVT] estrutura_condicoes:', resultado?.estrutura_condicoes);
-  console.log('🔍 [RESULTADO-QVT] recompensas_remuneracao:', resultado?.recompensas_remuneracao);
-  console.log('🔍 [RESULTADO-QVT] equilibrio_vida_trabalho:', resultado?.equilibrio_vida_trabalho);
+  console.log('🔍 [RESULTADO-QVT] dimensoes:', resultado?.dimensoes);
   
   // Verificar arrays
   console.log('🔍 [RESULTADO-QVT] ===== ARRAYS =====');
-  console.log('🔍 [RESULTADO-QVT] pontos_fortes:', resultado?.pontos_fortes);
-  console.log('🔍 [RESULTADO-QVT] dimensoes_criticas:', resultado?.dimensoes_criticas);
-  console.log('🔍 [RESULTADO-QVT] risco_turnover:', resultado?.risco_turnover);
-  
-  // Verificar se há dimensões estruturadas
-  console.log('🔍 [RESULTADO-QVT] ===== DIMENSÕES ESTRUTURADAS =====');
-  console.log('🔍 [RESULTADO-QVT] dimensoes (array estruturado):', resultado?.dimensoes);
-  if (resultado?.dimensoes) {
-    console.log('🔍 [RESULTADO-QVT] Número de dimensões:', resultado.dimensoes.length);
-    resultado.dimensoes.forEach((dim, index) => {
-      console.log(`🔍 [RESULTADO-QVT] Dimensão ${index + 1}:`, dim);
-    });
-  }
+  console.log('🔍 [RESULTADO-QVT] pontoFortes:', resultado?.pontoFortes);
+  console.log('🔍 [RESULTADO-QVT] dimensoesCriticas:', resultado?.dimensoesCriticas);
+  console.log('🔍 [RESULTADO-QVT] riscoTurnover:', resultado?.riscoTurnover);
 
   // Gerar alertas críticos
   const alertasCriticos = gerarAlertasQVT(resultado);
 
   const { 
     indiceGeral, 
-    indice_geral,
     dimensoes, 
     dimensoesCriticas, 
     pontoFortes, 
     riscoTurnover, 
-    nivelGeral: nivel,
-    nivel_geral, 
+    nivelGeral,
     recomendacoes, 
     insights,
     dataRealizacao
   } = resultado;
 
-  // Usar os valores corretos (snake_case do banco de dados)
-  const indiceAtual = indiceGeral || indice_geral || 0;
-  const nivelAtual = nivel || nivel_geral || 'Não Definido';
+  // Usar os valores corretos do tipo ResultadoQVT (camelCase)
+  const indiceAtual = indiceGeral || 0;
+  const nivelAtual = nivelGeral || 'Não Definido';
 
   console.log('🔍 [RESULTADO-QVT] ===== VALORES FINAIS CALCULADOS =====');
   console.log('🔍 [RESULTADO-QVT] indiceAtual final:', indiceAtual);
@@ -149,30 +129,30 @@ export default function ResultadoQVT({ resultado }: ResultadoQVTProps) {
   console.log('🔍 [RESULTADO-QVT] Percentual calculado:', (indiceAtual / 5) * 100);
 
   // Processar pontos fortes e dimensões críticas dos dados reais
-  console.log('🔍 [RESULTADO-QVT] pontoFortes do banco:', resultado?.pontos_fortes);
-  console.log('🔍 [RESULTADO-QVT] dimensoesCriticas do banco:', resultado?.dimensoes_criticas);
+  console.log('🔍 [RESULTADO-QVT] pontoFortes do resultado:', pontoFortes);
+  console.log('🔍 [RESULTADO-QVT] dimensoesCriticas do resultado:', dimensoesCriticas);
   
-  // Usar os dados reais do banco (arrays de strings)
-  const pontosFortes = resultado?.pontos_fortes || [];
-  const pontosFracos = resultado?.dimensoes_criticas || [];
+  // Usar os dados do tipo ResultadoQVT (arrays de objetos)
+  const pontosFortesNomes = pontoFortes?.map(pf => pf.dimensao) || [];
+  const pontosFracosNomes = dimensoesCriticas?.map(dc => dc.dimensao) || [];
   
   // Se não há pontos fortes específicos, criar baseado nas pontuações altas (>= 4.0)
-  const pontosFortesDinamicos = pontosFortes.length === 0 ? [
-    resultado?.satisfacao_funcao >= 4.0 && 'Satisfação com a Função',
-    resultado?.relacao_lideranca >= 4.0 && 'Relação com Liderança', 
-    resultado?.estrutura_condicoes >= 4.0 && 'Estrutura e Condições de Trabalho',
-    resultado?.recompensas_remuneracao >= 4.0 && 'Recompensas e Remuneração',
-    resultado?.equilibrio_vida_trabalho >= 4.0 && 'Equilíbrio Vida-Trabalho'
-  ].filter(Boolean) : pontosFortes;
+  const pontosFortesDinamicos = pontosFortesNomes.length === 0 ? [
+    dimensoes?.find(d => d.dimensao === 'Satisfação com a Função' && d.pontuacao >= 4.0) && 'Satisfação com a Função',
+    dimensoes?.find(d => d.dimensao === 'Relação com Liderança' && d.pontuacao >= 4.0) && 'Relação com Liderança', 
+    dimensoes?.find(d => d.dimensao === 'Estrutura e Condições de Trabalho' && d.pontuacao >= 4.0) && 'Estrutura e Condições de Trabalho',
+    dimensoes?.find(d => d.dimensao === 'Recompensas e Remuneração' && d.pontuacao >= 4.0) && 'Recompensas e Remuneração',
+    dimensoes?.find(d => d.dimensao === 'Equilíbrio Vida-Trabalho' && d.pontuacao >= 4.0) && 'Equilíbrio Vida-Trabalho'
+  ].filter(Boolean) : pontosFortesNomes;
   
   // Se não há áreas críticas específicas, criar baseado nas pontuações baixas (< 3.0)
-  const pontosFracosDinamicos = pontosFracos.length === 0 ? [
-    resultado?.satisfacao_funcao < 3.0 && 'Satisfação com a Função necessita atenção',
-    resultado?.relacao_lideranca < 3.0 && 'Relação com Liderança necessita atenção',
-    resultado?.estrutura_condicoes < 3.0 && 'Estrutura e Condições de Trabalho necessita atenção', 
-    resultado?.recompensas_remuneracao < 3.0 && 'Recompensas e Remuneração necessita atenção',
-    resultado?.equilibrio_vida_trabalho < 3.0 && 'Equilíbrio Vida-Trabalho necessita atenção'
-  ].filter(Boolean) : pontosFracos;
+  const pontosFracosDinamicos = pontosFracosNomes.length === 0 ? [
+    dimensoes?.find(d => d.dimensao === 'Satisfação com a Função' && d.pontuacao < 3.0) && 'Satisfação com a Função necessita atenção',
+    dimensoes?.find(d => d.dimensao === 'Relação com Liderança' && d.pontuacao < 3.0) && 'Relação com Liderança necessita atenção',
+    dimensoes?.find(d => d.dimensao === 'Estrutura e Condições de Trabalho' && d.pontuacao < 3.0) && 'Estrutura e Condições de Trabalho necessita atenção', 
+    dimensoes?.find(d => d.dimensao === 'Recompensas e Remuneração' && d.pontuacao < 3.0) && 'Recompensas e Remuneração necessita atenção',
+    dimensoes?.find(d => d.dimensao === 'Equilíbrio Vida-Trabalho' && d.pontuacao < 3.0) && 'Equilíbrio Vida-Trabalho necessita atenção'
+  ].filter(Boolean) : pontosFracosNomes;
 
   const overallLevel = getScoreLevel(indiceAtual);
 

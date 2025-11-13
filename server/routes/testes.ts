@@ -1,10 +1,44 @@
 import express from 'express';
-import { db } from '../db-config';
+import { db, dbType } from '../db-config';
 import { testes, perguntas, resultados, respostas, colaboradores, testeDisponibilidade, insertResultadoSchema, insertRespostaSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { eq, and, desc, or } from 'drizzle-orm';
 import { z } from 'zod';
 import logger from '../utils/logger';
+import { randomUUID } from 'crypto';
+
+// Importar perguntas dos arquivos locais
+import { dimensoesClimaOrganizacional } from '../../src/lib/testes/clima-organizacional';
+import { dimensoesKarasekSiegrist } from '../../src/lib/testes/karasek-siegrist';
+import { dimensoesHumaniQInsight } from '../../src/lib/testes/humaniq-insight';
+
+// Mapeamento de testes por slug
+const TESTES_DISPONIVEIS = {
+  'clima-organizacional': {
+    id: 'clima-organizacional',
+    nome: 'Clima Organizacional',
+    categoria: 'Organizacional',
+    descricao: 'Avaliação do clima organizacional e satisfação dos colaboradores',
+    tempoEstimado: 15,
+    perguntas: dimensoesClimaOrganizacional
+  },
+  'karasek-siegrist': {
+    id: 'karasek-siegrist',
+    nome: 'Karasek-Siegrist',
+    categoria: 'Saúde Ocupacional',
+    descricao: 'Avaliação de estresse ocupacional e demanda-controle',
+    tempoEstimado: 20,
+    perguntas: dimensoesKarasekSiegrist
+  },
+  'humaniq-insight': {
+    id: 'humaniq-insight',
+    nome: 'HumaniQ Insight',
+    categoria: 'Desenvolvimento Pessoal',
+    descricao: 'Análise comportamental e insights de desenvolvimento',
+    tempoEstimado: 25,
+    perguntas: dimensoesHumaniQInsight
+  }
+};
 
 const router = express.Router();
 
@@ -20,8 +54,7 @@ router.get('/', async (req, res) => {
         tempoEstimado: testes.tempoEstimado,
         ativo: testes.ativo,
       })
-      .from(testes)
-      .where(eq(testes.ativo, true));
+      .from(testes);
 
     res.json({ testes: todosTestes });
   } catch (error) {
@@ -34,6 +67,14 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
+
+    // 🔍 DEBUG: Log da requisição de resultado
+    logger.info(`[DEBUG] Endpoint /resultado/:id - ID: ${id}`);
+    logger.info(`[DEBUG] Usuário autenticado: ${req.user?.userId}, Role: ${req.user?.role}, Empresa: ${req.user?.empresaId}`);
+
+    // 🔍 DEBUG: Log da requisição de resultado
+    logger.info(`[DEBUG] Endpoint /resultado/:id - ID: ${id}`);
+    logger.info(`[DEBUG] Usuário autenticado: ${req.user?.userId}, Role: ${req.user?.role}, Empresa: ${req.user?.empresaId}`);
 
     const [teste] = await db
       .select()
@@ -55,17 +96,71 @@ router.get('/:id', async (req, res) => {
 // Obter perguntas de um teste
 router.get('/:id/perguntas', async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
 
-    const [teste] = await db.select().from(testes).where(eq(testes.id, id)).limit(1);
-    if (!teste) {
-      return res.status(404).json({ error: 'Teste não encontrado' });
+    // 🔍 Verificar se é um teste disponível nos arquivos locais
+    const testeLocal = TESTES_DISPONIVEIS[id as keyof typeof TESTES_DISPONIVEIS];
+    
+    if (testeLocal) {
+      // Converter perguntas do formato local para o formato esperado pela API
+      const perguntasFormatadas = testeLocal.perguntas.flatMap(dimensao => 
+        dimensao.perguntas.map(pergunta => ({
+          id: pergunta.id.toString(),
+          texto: pergunta.texto,
+          categoria: dimensao.nome,
+          tipo: 'likert',
+          opcoes: ["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"],
+          escalaMin: 1,
+          escalaMax: 5,
+          obrigatoria: true,
+          ordem: pergunta.id,
+          createdAt: new Date().toISOString()
+        }))
+      );
+
+      return res.json({ 
+        perguntas: perguntasFormatadas, 
+        total: perguntasFormatadas.length 
+      });
+    }
+
+    // Se não for um teste local, tentar buscar no banco de dados (mantido para compatibilidade)
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+    let testeId = id;
+
+    if (!isUuid) {
+      const toSlug = (s: string) => s
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+    const todosTestes = await db
+      .select({
+        id: testes.id,
+        nome: testes.nome,
+        categoria: testes.categoria,
+      })
+      .from(testes);
+
+      const encontrado = todosTestes.find(t => toSlug(t.nome || '') === id || toSlug(t.categoria || '') === id);
+      if (!encontrado) {
+        return res.status(404).json({ error: 'Teste não encontrado' });
+      }
+      testeId = String(encontrado.id);
+    } else {
+      const [teste] = await db.select().from(testes).where(eq(testes.id, testeId)).limit(1);
+      if (!teste) {
+        return res.status(404).json({ error: 'Teste não encontrado' });
+      }
     }
 
     const perguntasTeste = await db
       .select()
       .from(perguntas)
-      .where(eq(perguntas.testeId, id))
+      .where(eq(perguntas.testeId, testeId))
       .orderBy(perguntas.ordem);
 
     res.json({ perguntas: perguntasTeste, total: perguntasTeste.length });
@@ -93,42 +188,137 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
 
     const { testeId, pontuacaoTotal, tempoGasto, sessionId, metadados, status } = validationResult.data;
 
-    // 🔍 BUSCAR AUTOMATICAMENTE O teste_id SE NÃO FOI FORNECIDO
     let testeIdFinal = testeId;
     if (!testeIdFinal && metadados && metadados.teste_nome) {
       try {
-        const [testeEncontrado] = await db
-          .select({ id: testes.id })
-          .from(testes)
-          .where(eq(testes.nome, metadados.teste_nome))
-          .limit(1);
-        
-        if (testeEncontrado) {
-          testeIdFinal = testeEncontrado.id;
-          logger.info(`🔍 [RESULTADO] Teste "${metadados.teste_nome}" encontrado automaticamente. ID: ${testeIdFinal}`);
+        const toSlug = (s: string) => String(s)
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+
+        const nomeEntrada = String(metadados.teste_nome);
+        const nomeSlug = toSlug(nomeEntrada);
+
+        const todos = await db
+          .select({ id: testes.id, nome: testes.nome, categoria: testes.categoria })
+          .from(testes);
+
+        let encontrado = todos.find(t => toSlug(t.nome || '') === nomeSlug || toSlug(t.categoria || '') === nomeSlug);
+        if (!encontrado) {
+          const nomes = todos.map(t => ({ t, nome: toSlug(t.nome || ''), cat: toSlug(t.categoria || '') }));
+          encontrado = nomes.find(n => nomeSlug.includes(n.nome) || n.nome.includes(nomeSlug) || nomeSlug.includes(n.cat))?.t;
+          if (!encontrado) {
+            const dist = (a: string, b: string) => {
+              const m: number[][] = Array(a.length + 1).fill(0).map(() => Array(b.length + 1).fill(0));
+              for (let i = 0; i <= a.length; i++) m[i][0] = i;
+              for (let j = 0; j <= b.length; j++) m[0][j] = j;
+              for (let i = 1; i <= a.length; i++) {
+                for (let j = 1; j <= b.length; j++) {
+                  const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                  m[i][j] = Math.min(m[i-1][j] + 1, m[i][j-1] + 1, m[i-1][j-1] + cost);
+                }
+              }
+              return m[a.length][b.length];
+            };
+            let best: { t: typeof todos[number] | undefined; d: number } = { t: undefined, d: Infinity };
+            for (const n of nomes) {
+              const dNome = dist(nomeSlug, n.nome);
+              const dCat = dist(nomeSlug, n.cat);
+              const d = Math.min(dNome, dCat);
+              if (d < best.d) best = { t: n.t, d };
+            }
+            if (best.d <= 2) encontrado = best.t;
+          }
+        }
+
+        if (encontrado) {
+          testeIdFinal = encontrado.id as any;
+          logger.info(`🔍 [RESULTADO] Teste "${nomeEntrada}" correspondente encontrado. ID: ${testeIdFinal}`);
         } else {
-          logger.warn(`⚠️ [RESULTADO] Teste "${metadados.teste_nome}" não encontrado na tabela testes`);
+          logger.warn(`⚠️ [RESULTADO] Teste "${nomeEntrada}" não encontrado`);
         }
       } catch (error) {
         logger.error('❌ [RESULTADO] Erro ao buscar ID do teste:', error);
       }
     }
 
-    const [resultado] = await db
-      .insert(resultados)
-      .values({
-        testeId: testeIdFinal || null,
-        usuarioId: req.user!.userId,
+    // Validar se testeIdFinal existe na tabela testes para evitar FOREIGN KEY constraint
+    if (testeIdFinal) {
+      try {
+        const { sqlite } = await import('../db-sqlite');
+        const testeExistente = sqlite.prepare('SELECT id FROM testes WHERE id = ?').get(testeIdFinal);
+        if (!testeExistente) {
+          logger.warn(`⚠️ [RESULTADO] Teste ID ${testeIdFinal} não existe na tabela testes. Usando null.`);
+          testeIdFinal = null;
+        }
+      } catch (error) {
+        logger.error('❌ [RESULTADO] Erro ao validar teste_id:', error);
+        testeIdFinal = null;
+      }
+    }
+
+    // Validar empresa_id do usuário para evitar FOREIGN KEY constraint
+    let empresaIdFinal = req.user!.empresaId;
+    if (empresaIdFinal) {
+      try {
+        const { sqlite } = await import('../db-sqlite');
+        const empresaExistente = sqlite.prepare('SELECT id FROM empresas WHERE id = ?').get(empresaIdFinal);
+        if (!empresaExistente) {
+          logger.warn(`⚠️ [RESULTADO] Empresa ID ${empresaIdFinal} não existe na tabela empresas. Usando null.`);
+          empresaIdFinal = null;
+        }
+      } catch (error) {
+        logger.error('❌ [RESULTADO] Erro ao validar empresa_id:', error);
+        empresaIdFinal = null;
+      }
+    }
+
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    let resultado: any;
+    if (isSqlite) {
+      const { sqlite } = await import('../db-sqlite');
+      const localId = randomUUID();
+      const stmt = sqlite.prepare(`
+        INSERT INTO resultados (
+          id, teste_id, usuario_id, pontuacao_total, tempo_gasto, status,
+          session_id, metadados, colaborador_id, empresa_id, user_email
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      stmt.run(
+        localId,
+        testeIdFinal || null,
+        req.user!.userId,
         pontuacaoTotal,
-        tempoGasto,
-        status: status || 'concluido',
-        sessionId,
-        metadados,
-        colaboradorId: req.user!.role === 'colaborador' ? req.user!.userId : undefined,
-        empresaId: req.user!.empresaId,
-        userEmail: req.user!.email,
-      })
-      .returning();
+        tempoGasto ?? null,
+        status || 'concluido',
+        sessionId ?? null,
+        JSON.stringify(metadados ?? {}),
+        req.user!.role === 'colaborador' ? req.user!.userId : null,
+        empresaIdFinal ?? null,
+        req.user!.email ?? null,
+      );
+      const row = sqlite.prepare('SELECT id, pontuacao_total as pontuacaoTotal, data_realizacao as dataRealizacao FROM resultados WHERE id = ?').get(localId);
+      resultado = row;
+    } else {
+      [resultado] = await db
+        .insert(resultados)
+        .values({
+          id: randomUUID(),
+          testeId: testeIdFinal || null,
+          usuarioId: req.user!.userId,
+          pontuacaoTotal,
+          tempoGasto,
+          status: status || 'concluido',
+          sessionId,
+          metadados,
+          colaboradorId: req.user!.role === 'colaborador' ? req.user!.userId : undefined,
+          empresaId: empresaIdFinal,
+          userEmail: req.user!.email,
+        })
+        .returning();
+    }
 
     // 🔄 ATUALIZAÇÃO AUTOMÁTICA: Recalcular análise psicossocial em background
     if (req.user!.empresaId) {
@@ -152,53 +342,86 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
         logger.info(`🔒 [DISPONIBILIDADE-CRÍTICO] Iniciando bloqueio do teste ${testeIdFinal} para colaborador ${colaboradorId}`);
 
         // Buscar registro existente
-        const [disponibilidadeExistente] = await db
-          .select()
-          .from(testeDisponibilidade)
-          .where(
-            and(
-              eq(testeDisponibilidade.colaboradorId, colaboradorId),
-              eq(testeDisponibilidade.testeId, testeIdFinal)
-            )
-          )
-          .limit(1);
+        const { sqlite } = await import('../db-sqlite');
+        const disponibilidadeExistente = sqlite.prepare(`
+          SELECT * FROM teste_disponibilidade 
+          WHERE colaborador_id = ? AND teste_id = ? 
+          LIMIT 1
+        `).get(colaboradorId, testeIdFinal);
+
+
+
+
+
+
+
+
+
 
         if (disponibilidadeExistente) {
           // Calcular próxima disponibilidade se tiver periodicidade
-          let proximaDisponibilidade: Date | null = null;
-          if (disponibilidadeExistente.periodicidadeDias) {
-            proximaDisponibilidade = new Date(
-              agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000
+          let proximaDisponibilidade: string | null = null;
+          if (disponibilidadeExistente.periodicidade_dias) {
+            const proximaData = new Date(
+              agora.getTime() + disponibilidadeExistente.periodicidade_dias * 24 * 60 * 60 * 1000
             );
-            logger.info(`📅 [DISPONIBILIDADE] Próxima liberação calculada: ${proximaDisponibilidade.toISOString()} (${disponibilidadeExistente.periodicidadeDias} dias)`);
+            proximaDisponibilidade = proximaData.toISOString();
+            logger.info(`📅 [DISPONIBILIDADE] Próxima liberação calculada: ${proximaDisponibilidade} (${disponibilidadeExistente.periodicidade_dias} dias)`);
           }
 
           // Atualizar para indisponível
-          await db
-            .update(testeDisponibilidade)
-            .set({
-              disponivel: false,
-              proximaDisponibilidade,
-              updatedAt: agora,
-            })
-            .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id));
+          // Atualizar para indisponível usando SQLite
+          sqlite.prepare(`
+            UPDATE teste_disponibilidade 
+            SET 
+              disponivel = 0,
+              proxima_disponibilidade = ?,
+              updated_at = ?
+            WHERE id = ?
+          `).run(
+            proximaDisponibilidade,
+            agora.toISOString(),
+            disponibilidadeExistente.id
+          );
 
-          logger.info(`✅ [DISPONIBILIDADE] Teste ${testeIdFinal} bloqueado com sucesso (atualização) - Disponível=${false}, ProximaLiberacao=${proximaDisponibilidade?.toISOString() || 'Manual'}`);
+
+
+
+
+
+
+          logger.info(`✅ [DISPONIBILIDADE] Teste ${testeIdFinal} bloqueado com sucesso (atualização) - Disponível=${false}, ProximaLiberacao=${proximaDisponibilidade || 'Manual'}`);
         } else {
-          // Criar novo registro como indisponível
-          const [novoRegistro] = await db
-            .insert(testeDisponibilidade)
-            .values({
-              colaboradorId,
-              testeId: testeIdFinal,
-              empresaId,
-              disponivel: false,
-              ultimaLiberacao: null,
-              proximaDisponibilidade: null,
-            })
-            .returning();
+          // Criar novo registro como indisponível usando SQLite
+          const id = randomUUID();
+          sqlite.prepare(`
+            INSERT INTO teste_disponibilidade (
+              id, colaborador_id, teste_id, empresa_id, 
+              disponivel, ultima_liberacao, proxima_disponibilidade,
+              created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `).run(
+            id,
+            colaboradorId,
+            testeIdFinal,
+            empresaId,
+            0, // disponivel = false
+            null, // ultima_liberacao
+            null, // proxima_disponibilidade
+            agora.toISOString(),
+            agora.toISOString()
+          );
 
-          logger.info(`✅ [DISPONIBILIDADE] Registro criado e teste ${testeIdFinal} bloqueado com sucesso (criação) - ID: ${novoRegistro.id}`);
+
+
+
+
+
+
+
+
+
+          logger.info(`✅ [DISPONIBILIDADE] Registro criado e teste ${testeIdFinal} bloqueado com sucesso (criação) - ID: ${id}`);
         }
       } catch (error) {
         logger.error('❌❌❌ [DISPONIBILIDADE-ERRO-CRÍTICO] FALHA ao bloquear teste:', error);
@@ -243,20 +466,49 @@ router.post('/resultado/anonimo', async (req, res) => {
 
     const { testeId, usuarioId, pontuacaoTotal, tempoGasto, sessionId, metadados, status, userEmail, empresaId } = validationResult.data;
 
-    const [resultado] = await db
-      .insert(resultados)
-      .values({
-        testeId: testeId || null,
-        usuarioId: usuarioId || null,
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    let resultado: any;
+    if (isSqlite) {
+      const { sqlite } = await import('../db-sqlite');
+      const localId = randomUUID();
+      const stmt = sqlite.prepare(`
+        INSERT INTO resultados (
+          id, teste_id, usuario_id, pontuacao_total, tempo_gasto, status,
+          session_id, metadados, colaborador_id, empresa_id, user_email
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      stmt.run(
+        localId,
+        testeId || null,
+        usuarioId || null,
         pontuacaoTotal,
-        tempoGasto,
-        status: status || 'concluido',
-        sessionId,
-        metadados,
-        userEmail: userEmail || null,
-        empresaId: empresaId || null,
-      })
-      .returning();
+        tempoGasto ?? null,
+        status || 'concluido',
+        sessionId ?? null,
+        JSON.stringify(metadados ?? {}),
+        null,
+        empresaId ?? null,
+        userEmail ?? null,
+      );
+      const row = sqlite.prepare('SELECT id, pontuacao_total as pontuacaoTotal, data_realizacao as dataRealizacao FROM resultados WHERE id = ?').get(localId);
+      resultado = row;
+    } else {
+      [resultado] = await db
+        .insert(resultados)
+        .values({
+          id: randomUUID(),
+          testeId: testeId || null,
+          usuarioId: usuarioId || null,
+          pontuacaoTotal,
+          tempoGasto,
+          status: status || 'concluido',
+          sessionId,
+          metadados,
+          userEmail: userEmail || null,
+          empresaId: empresaId || null,
+        })
+        .returning();
+    }
 
     res.status(201).json({
       message: 'Resultado salvo com sucesso',
@@ -294,16 +546,30 @@ router.get('/resultados/meus', authenticateToken, async (req: AuthRequest, res) 
       .where(
         or(
           eq(resultados.colaboradorId, req.user!.userId),
-          eq(resultados.usuarioId, req.user!.userId)
+          eq(resultados.usuarioId, req.user!.userId),
+          eq(resultados.userEmail, req.user!.email)
         )
       )
       .orderBy(desc(resultados.dataRealizacao));
 
     // Enriquecer metadados com nome do teste se disponível
     const resultadosEnriquecidos = meusResultados.map(r => {
-      const metadadosBase = r.metadados as Record<string, any> || {};
-      const nomeTesteFinal = r.testeNome || metadadosBase.teste_nome || 'Teste Personalizado';
-      
+      const metadadosBase = (r.metadados as Record<string, any>) || {};
+      let nomeTesteFinal = r.testeNome || metadadosBase.teste_nome;
+      let categoriaFinal = r.testeCategoria || metadadosBase.teste_categoria;
+
+      const tipo = (metadadosBase.tipo || metadadosBase.tipo_teste || '').toLowerCase();
+      if (!nomeTesteFinal) {
+        if (tipo === 'qvt') {
+          nomeTesteFinal = 'Qualidade de Vida no Trabalho';
+          categoriaFinal = categoriaFinal || 'Bem-estar e Engajamento';
+        }
+      }
+
+      if (!nomeTesteFinal) {
+        nomeTesteFinal = 'Teste Personalizado';
+      }
+
       return {
         id: r.id,
         testeId: r.testeId,
@@ -314,10 +580,10 @@ router.get('/resultados/meus', authenticateToken, async (req: AuthRequest, res) 
         metadados: {
           ...metadadosBase,
           teste_nome: nomeTesteFinal,
-          teste_categoria: r.testeCategoria || metadadosBase.teste_categoria,
+          teste_categoria: categoriaFinal,
         },
         nomeTeste: nomeTesteFinal,
-        categoria: r.testeCategoria || metadadosBase.teste_categoria,
+        categoria: categoriaFinal,
       };
     });
 

@@ -51,13 +51,20 @@ interface ConviteResponse {
 }
 
 function getAuthToken(): string | null {
-  // Preferir cookies em produção; fallback para localStorage
-  const cookieToken = Cookies.get('authToken');
-  if (cookieToken && typeof cookieToken === 'string' && cookieToken.length > 0) {
-    return cookieToken;
+  const cookieTokenPrimary = Cookies.get('authToken');
+  if (cookieTokenPrimary && typeof cookieTokenPrimary === 'string' && cookieTokenPrimary.length > 0) {
+    return cookieTokenPrimary;
   }
-  const lsToken = localStorage.getItem('authToken');
-  return lsToken || null;
+  const cookieTokenFallback = Cookies.get('token');
+  if (cookieTokenFallback && typeof cookieTokenFallback === 'string' && cookieTokenFallback.length > 0) {
+    return cookieTokenFallback;
+  }
+  const lsTokenPrimary = localStorage.getItem('authToken');
+  if (lsTokenPrimary && lsTokenPrimary.length > 0) {
+    return lsTokenPrimary;
+  }
+  const lsTokenFallback = localStorage.getItem('token');
+  return lsTokenFallback || null;
 }
 
 class ApiService {
@@ -188,10 +195,23 @@ class ApiService {
 
   // Aceitar convite de colaborador
   async aceitarConviteColaborador(token: string, senha: string): Promise<{ message: string; colaborador: any }> {
-    return this.makeRequest(`/api/convites/colaborador/aceitar/${token}`, {
-      method: 'POST',
-      body: JSON.stringify({ senha }),
-    });
+    try {
+      return await this.makeRequest(`/api/convites/colaborador/aceitar/${token}`, {
+        method: 'POST',
+        body: JSON.stringify({ senha }),
+      });
+    } catch (error: any) {
+      if (error?.status === 404) {
+        throw new Error('Convite inexistente. Verifique o link enviado.');
+      }
+      if (error?.status === 409) {
+        throw new Error('Convite já utilizado. Solicite um novo convite.');
+      }
+      if (error?.status === 410) {
+        throw new Error('Convite expirado. Solicite um novo convite à empresa.');
+      }
+      throw error;
+    }
   }
 
   // Listar convites
@@ -243,7 +263,21 @@ class ApiService {
 
   // Obter resultado por ID
   async obterResultadoPorId(id: string): Promise<{ resultado: any; respostas: any[] }> {
-    return this.makeRequest(`/api/testes/resultado/${id}`);
+    try {
+      return await this.makeRequest(`/api/testes/resultado/${id}`);
+    } catch (err: any) {
+      if (err?.status === 401 || err?.status === 403) {
+        try {
+          const cacheRaw = localStorage.getItem('resultadosCache');
+          const cache = cacheRaw ? JSON.parse(cacheRaw) : {};
+          const item = cache[id];
+          if (item) {
+            return { resultado: item, respostas: [] };
+          }
+        } catch (_) {}
+      }
+      throw err;
+    }
   }
 
   // Obter dados da empresa
@@ -274,16 +308,23 @@ class ApiService {
     empresaId?: string | null;
   }): Promise<{ id: string; pontuacaoTotal: number; dataRealizacao: string }> {
     const token = getAuthToken();
-    
-    // Se tiver token, usa endpoint autenticado; senão usa anônimo
     const endpoint = token ? '/api/testes/resultado' : '/api/testes/resultado/anonimo';
-    
-    const response = await this.makeRequest<{ resultado: any }>(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(dados),
-    });
-    
-    return response.resultado;
+    try {
+      const response = await this.makeRequest<{ resultado: any }>(endpoint, {
+        method: 'POST',
+        body: JSON.stringify(dados),
+      });
+      return response.resultado;
+    } catch (err: any) {
+      if (endpoint === '/api/testes/resultado' && (err?.status === 401 || err?.status === 403)) {
+        const fallback = await this.makeRequest<{ resultado: any }>('/api/testes/resultado/anonimo', {
+          method: 'POST',
+          body: JSON.stringify(dados),
+        });
+        return fallback.resultado;
+      }
+      throw err;
+    }
   }
   async obterDashboardAdmin(): Promise<any> {
     return this.makeRequest('/api/admin/dashboard');

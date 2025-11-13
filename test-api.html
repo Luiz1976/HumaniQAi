@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste API HumaniQ</title>
+</head>
+<body>
+    <h1>Teste de API - HumaniQ</h1>
+    <button onclick="testarAPI()">Testar Carregamento de Perguntas</button>
+    <div id="resultado"></div>
+
+    <script>
+        async function testarAPI() {
+            const resultado = document.getElementById('resultado');
+            resultado.innerHTML = 'Testando API...';
+            
+            try {
+                // Testar endpoint de perguntas
+                const response = await fetch('http://localhost:3000/api/testes/clima-organizacional/perguntas');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultado.innerHTML = `
+                        <h3>✅ Sucesso!</h3>
+                        <p>Status: ${response.status}</p>
+                        <p>Perguntas encontradas: ${data.perguntas ? data.perguntas.length : 0}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultado.innerHTML = `
+                        <h3>❌ Erro na API</h3>
+                        <p>Status: ${response.status}</p>
+                        <p>Erro: ${data.error || 'Erro desconhecido'}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultado.innerHTML = `
+                    <h3>❌ Erro de Conexão</h3>
+                    <p>${error.message}</p>
+                    <p>Verifique se o servidor backend está rodando em http://localhost:3000</p>
+                `;
+            }
+        }
+        
+        // Testar automaticamente ao carregar
+        window.onload = function() {
+            testarAPI();
+        };
+    </script>
+</body>
+</html>

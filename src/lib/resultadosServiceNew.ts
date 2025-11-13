@@ -29,14 +29,20 @@ export const resultadosService = {
       
       console.log('✅ [RESULTADOS-SERVICE] Resultado salvo com sucesso via API:', resultadoSalvo);
       
-      // Salvar no cache local para acesso sem autenticação
       if (resultadoSalvo && resultadoSalvo.id) {
         try {
           const resultadosCache = localStorage.getItem('resultadosCache');
           const cache = resultadosCache ? JSON.parse(resultadosCache) : {};
-          cache[resultadoSalvo.id] = resultadoSalvo;
+          const enriquecido = {
+            id: resultadoSalvo.id,
+            pontuacao_total: Number(dadosApi.pontuacaoTotal) || resultadoSalvo.pontuacaoTotal || 0,
+            data_realizacao: resultadoSalvo.dataRealizacao,
+            metadados: dadosApi.metadados || {},
+            testes: dadosApi.testeId ? { id: dadosApi.testeId, nome: dadosApi.metadados?.teste_nome } : undefined,
+            status: dadosApi.status || 'concluido'
+          };
+          cache[resultadoSalvo.id] = enriquecido;
           localStorage.setItem('resultadosCache', JSON.stringify(cache));
-          console.log('✅ [RESULTADOS-SERVICE] Resultado salvo no cache local');
         } catch (e) {
           console.warn('⚠️ [RESULTADOS-SERVICE] Erro ao salvar no cache local:', e);
         }

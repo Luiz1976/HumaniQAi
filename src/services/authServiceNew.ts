@@ -87,6 +87,7 @@ class AuthServiceNew {
 
   private async makeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${NORMALIZED_BASE}${endpoint}`;
+    const canFallback = Boolean(FALLBACK_BASE && FALLBACK_BASE !== NORMALIZED_BASE);
     
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
@@ -118,6 +119,25 @@ class AuthServiceNew {
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`❌ [AuthService] Erro HTTP ${response.status}:`, errorText);
+        if (response.status >= 500 && canFallback) {
+          const fallbackUrl = `${FALLBACK_BASE}${endpoint}`;
+          console.warn(`⚠️ [AuthService] HTTP ${response.status} em primário, tentando fallback: ${fallbackUrl}`);
+          const fbResponse = await fetch(fallbackUrl, {
+            ...options,
+            headers,
+            mode: 'cors',
+            credentials: 'include',
+          });
+          console.log(`📡 [AuthService] Fallback status: ${fbResponse.status}`);
+          if (fbResponse.ok) {
+            const fbData = await fbResponse.json();
+            console.warn(`✅ [AuthService] Fallback bem-sucedido em ${fallbackUrl}`);
+            return fbData;
+          } else {
+            const fbText = await fbResponse.text();
+            console.error(`❌ [AuthService] Fallback falhou: HTTP ${fbResponse.status}:`, fbText);
+          }
+        }
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
@@ -129,7 +149,6 @@ class AuthServiceNew {
       
       // Tentar fallback automaticamente se houver falha de conectividade
       const isFetchFail = error instanceof TypeError && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'));
-      const canFallback = FALLBACK_BASE && FALLBACK_BASE !== NORMALIZED_BASE;
       if (isFetchFail && canFallback) {
         const fallbackUrl = `${FALLBACK_BASE}${endpoint}`;
         console.warn(`⚠️ [AuthService] Tentando fallback: ${fallbackUrl}`);

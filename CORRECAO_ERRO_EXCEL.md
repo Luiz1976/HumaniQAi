@@ -292,15 +292,18 @@ if (existingColaborador) {
 
 ### **Frontend:**
 ```typescript
-// Valida colunas da planilha
-const colunasEsperadas = ['Nome', 'Cargo', 'Setor', 'Idade', 'Sexo'];
+// Valida colunas da planilha (6 colunas)
+const colunasEsperadas = ['Nome', 'Cargo', 'Setor', 'Idade', 'Sexo', 'Email'];
 const colunasFaltando = colunasEsperadas.filter(
   col => !primeiraLinha.hasOwnProperty(col)
 );
 
-// Filtra linhas vazias
+// Valida presença e formato de Email
+const isValidEmail = (email: string) => /.+@.+\..+/.test(email);
+
+// Filtra linhas válidas
 const colaboradoresValidos = convitesParaGerar.filter(
-  c => c.nome && c.cargo && c.setor
+  c => c.nome && c.cargo && c.setor && c.email && isValidEmail(c.email)
 );
 ```
 

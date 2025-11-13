@@ -53,6 +53,7 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
     const nomeTest = resultado.nomeTest?.toLowerCase() || '';
     const tipoTeste = dadosResultado?.metadados?.tipo_teste?.toLowerCase() || '';
     const testeNome = dadosResultado?.metadados?.teste_nome?.toLowerCase() || '';
+    const tipoMetadados = dadosResultado?.metadados?.tipo?.toLowerCase() || '';
     
     return nomeTest.includes('humaniq insight') || 
            tipoTeste === 'humaniq-insight' ||
@@ -113,12 +114,14 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
     const nomeTest = resultado.nomeTest?.toLowerCase() || '';
     const tipoTeste = dadosResultado?.metadados?.tipo_teste?.toLowerCase() || '';
     const testeNome = dadosResultado?.metadados?.teste_nome?.toLowerCase() || '';
+    const tipoMetadados = dadosResultado?.metadados?.tipo?.toLowerCase() || '';
     
     return nomeTest.includes('qvt') || 
            nomeTest.includes('qualidade de vida') ||
            nomeTest.includes('qualidade vida trabalho') ||
            nomeTest.includes('vida no trabalho') ||
            tipoTeste === 'qvt' ||
+           tipoMetadados === 'qvt' ||
            testeNome.includes('qualidade de vida');
   };
 
