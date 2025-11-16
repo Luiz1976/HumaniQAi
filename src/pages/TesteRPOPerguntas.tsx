@@ -137,6 +137,7 @@ const TesteRPOPerguntas: React.FC = () => {
       console.log('🔍 [FINALIZAR-TESTE-RPO] Session ID obtido:', sessionId);
       
       const dadosResultado = {
+        teste_id: sessionStorage.getItem('current_teste_id') || null,
         usuario_id: user?.id || null,
         session_id: sessionId,
         pontuacao_total: Number(analiseRPO.indiceGeralRisco.toFixed(1)),

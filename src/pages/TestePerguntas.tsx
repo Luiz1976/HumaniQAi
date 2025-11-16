@@ -19,6 +19,7 @@ interface PerguntaAPI {
   texto: string;
   categoria: string;
   escala: string[];
+  ordem?: number;
 }
 
 export default function TestePerguntas() {
@@ -69,29 +70,41 @@ export default function TestePerguntas() {
       try {
         setCarregando(true);
         setErroCarregamento(null);
-        
-        const response = await apiService.obterPerguntasTeste(testeIdResolved);
-        
-        if (response && response.perguntas && Array.isArray(response.perguntas)) {
-          // Mapear perguntas da API para o formato esperado
-          const perguntasMapeadas: PerguntaAPI[] = response.perguntas.map((pergunta: any) => ({
-            id: pergunta.id,
-            texto: pergunta.texto,
-            categoria: pergunta.categoria || pergunta.dimensao || 'Geral',
-            escala: pergunta.escala || ["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"]
+
+        // Fonte local para Clima Organizacional
+        if (testeIdResolved === 'clima-organizacional') {
+          const todas = obterTodasPerguntas();
+          const perguntasLocal: PerguntaAPI[] = todas.map(p => ({
+            id: String(p.id),
+            texto: p.texto,
+            categoria: p.dimensao,
+            escala: ["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"],
+            ordem: p.id
           }));
-          
-          setPerguntas(perguntasMapeadas);
-          
-          if (perguntasMapeadas.length === 0) {
-            setErroCarregamento('Nenhuma pergunta encontrada para este teste');
-          }
+          const ordenadas = [...perguntasLocal].sort((a, b) => (a.ordem! - b.ordem!));
+          setPerguntas(ordenadas);
+          if (ordenadas.length === 0) setErroCarregamento('Nenhuma pergunta encontrada para este teste');
         } else {
-          console.error('❌ [ERROR] Formato de resposta inválido. Estrutura esperada: { perguntas: [...] }');
-          console.error('❌ [ERROR] Resposta recebida:', response);
-          console.error('❌ [ERROR] Formato de resposta inválido. Estrutura esperada: { perguntas: [...] }');
-          console.error('❌ [ERROR] Resposta recebida:', response);
-          throw new Error('Formato de resposta inválido da API');
+          // Demais testes: usar API
+          const response = await apiService.obterPerguntasTeste(testeIdResolved);
+          if (response && response.perguntas && Array.isArray(response.perguntas)) {
+            const perguntasMapeadas: PerguntaAPI[] = response.perguntas.map((pergunta: any) => ({
+              id: pergunta.id,
+              texto: pergunta.texto,
+              categoria: pergunta.categoria || pergunta.dimensao || 'Geral',
+              escala: pergunta.opcoes || pergunta.escala || ["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"],
+              ordem: Number(pergunta.ordem ?? pergunta.id)
+            }));
+            const perguntasOrdenadas = [...perguntasMapeadas].sort((a, b) => {
+              const aOrd = a.ordem ?? Number(a.id);
+              const bOrd = b.ordem ?? Number(b.id);
+              return aOrd - bOrd;
+            });
+            setPerguntas(perguntasOrdenadas);
+            if (perguntasOrdenadas.length === 0) setErroCarregamento('Nenhuma pergunta encontrada para este teste');
+          } else {
+            throw new Error('Formato de resposta inválido da API');
+          }
         }
       } catch (error) {
         console.error('Erro ao carregar perguntas:', error);
@@ -450,7 +463,7 @@ export default function TestePerguntas() {
           <div className="bg-gradient-to-r from-slate-800 to-slate-700 p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Pergunta {perguntaAtual + 1}</h2>
+                <h2 className="text-xl font-semibold mb-2">Pergunta {pergunta.ordem ?? Number(pergunta.id)}</h2>
                 <span className="inline-block bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                   {pergunta.categoria}
                 </span>

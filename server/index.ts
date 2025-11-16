@@ -196,6 +196,14 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/export', exportRoutes);
 
+// Endpoint simples de auditoria para receber logs do frontend
+app.post('/api/audit/logs', (req, res) => {
+  try {
+    logger.info('AUDIT_LOG', { payload: req.body, ts: new Date().toISOString() });
+  } catch (_) {}
+  res.json({ success: true });
+});
+
 // Middleware para rotas não encontradas (sem wildcard inválido)
 app.use((req, res) => {
   res.status(404).json({

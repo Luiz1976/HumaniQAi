@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock, Award, Target, CheckCircle2, BookOpen, Play, ChevronRight, FileText, Download, Trophy } from "lucide-react";
+import { ArrowLeft, Clock, Award, Target, CheckCircle2, BookOpen, Play, ChevronRight, FileText, Download, Trophy, Lock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import AvaliacaoFinal from "@/components/cursos/AvaliacaoFinal";
 import CertificadoView from "@/components/cursos/CertificadoView";
+import Cookies from "js-cookie";
+import { authServiceNew } from "@/services/authServiceNew";
 
 export default function CursoDetalhes() {
   const { slug } = useParams<{ slug: string }>();
@@ -19,6 +21,8 @@ export default function CursoDetalhes() {
   const curso = getCursoBySlug(slug!);
   const { toast } = useToast();
   const [moduloExpandido, setModuloExpandido] = useState<number | null>(null);
+  const [cursoBloqueado, setCursoBloqueado] = useState<boolean>(false);
+  const [motivoBloqueio, setMotivoBloqueio] = useState<string | null>(null);
 
   if (!curso) {
     return (
@@ -41,17 +45,7 @@ export default function CursoDetalhes() {
     queryFn: async () => {
       try {
         console.log('📚 [CURSO-FRONTEND] Buscando progresso do curso:', slug);
-        let token = localStorage.getItem('token');
-        
-        // FIX CRÍTICO: Verificar se token é string "null" e converter para null
-        if (token === 'null' || token === 'undefined' || !token) {
-          console.error('❌ [CURSO-FRONTEND] Token inválido no localStorage:', token);
-          token = null;
-        }
-        
-        console.log('📚 [CURSO-FRONTEND] Token presente?', !!token);
-        console.log('📚 [CURSO-FRONTEND] Token (primeiros 30 chars):', token ? token.substring(0, 30) + '...' : 'NENHUM');
-        
+        const token = authServiceNew.getToken() || Cookies.get('authToken') || localStorage.getItem('authToken');
         if (!token) {
           throw new Error('Token de autenticação não encontrado. Por favor, faça login novamente.');
         }
@@ -102,7 +96,14 @@ export default function CursoDetalhes() {
         if (!response.ok) {
           const errorText = await response.text();
           console.error('❌ [CURSO-FRONTEND] Erro ao buscar progresso:', errorText);
-          throw new Error(`Erro ao buscar progresso: ${errorText}`);
+          const msg = `Erro ao buscar progresso: ${errorText}`;
+          const lower = msg.toLowerCase();
+          if (lower.includes('bloqueado') || lower.includes('não liberado')) {
+            setCursoBloqueado(true);
+            setMotivoBloqueio(errorText);
+            return null;
+          }
+          throw new Error(msg);
         }
         
         const progressoExistente = await response.json();
@@ -110,10 +111,39 @@ export default function CursoDetalhes() {
         return progressoExistente;
       } catch (error) {
         console.error('❌ [CURSO-FRONTEND] Erro geral:', error);
+        const msg = (error as any)?.message?.toString()?.toLowerCase() || '';
+        if (msg.includes('bloqueado') || msg.includes('não liberado')) {
+          setCursoBloqueado(true);
+          setMotivoBloqueio((error as any)?.message || null);
+          return null;
+        }
         throw error;
       }
     }
   });
+
+  const { data: disponibilidadeCursos } = useQuery<{cursos: any[], total: number}>({
+    queryKey: ['/api/curso-disponibilidade/colaborador/cursos']
+  });
+
+  const disponibilidadeAtual = disponibilidadeCursos?.cursos?.find((c: any) => c.slug === slug);
+  const bloqueadoPorDisponibilidade = !!(disponibilidadeAtual && !disponibilidadeAtual.disponivel);
+  const proximaData = disponibilidadeAtual?.proximaDisponibilidade || null;
+
+  function mapMotivo(m: string | null | undefined, proxima: string | null) {
+    if (m === 'aguardando_periodicidade' && proxima) {
+      try {
+        const d = new Date(proxima);
+        return `Aguardando liberação automática em ${d.toLocaleDateString('pt-BR')}`;
+      } catch (_) {
+        return 'Aguardando liberação automática';
+      }
+    }
+    if (m === 'bloqueado_empresa') return 'Curso bloqueado pela empresa';
+    if (m === 'curso_nao_liberado') return 'Curso não liberado pela empresa';
+    if (m === 'curso_concluido') return 'Curso já concluído';
+    return null;
+  }
 
   // Buscar certificado (se existir)
   const { data: certificado, refetch: refetchCertificado } = useQuery({
@@ -162,10 +192,10 @@ export default function CursoDetalhes() {
         description: "Continue progredindo no curso.",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Erro",
-        description: "Não foi possível marcar o módulo como concluído.",
+        description: error?.message || "Não foi possível marcar o módulo como concluído.",
         variant: "destructive"
       });
     }
@@ -179,9 +209,15 @@ export default function CursoDetalhes() {
   const todosModulosCompletados = modulosCompletados.length === curso.modulos.length;
   const avaliacaoHabilitada = todosModulosCompletados && !progresso?.avaliacaoFinalRealizada;
   const avaliacaoRealizada = progresso?.avaliacaoFinalRealizada || false;
-  const possuiCertificado = !!certificado || avaliacaoRealizada; // Habilita se tem certificado OU se passou na avaliação
+  const possuiCertificado = !!certificado;
 
   const handleCompletarModulo = (moduloId: number) => {
+    const bloqueado = cursoBloqueado || bloqueadoPorDisponibilidade;
+    const msg = motivoBloqueio || mapMotivo(disponibilidadeAtual?.motivo, proximaData) || 'Entre em contato com sua empresa para liberação.';
+    if (bloqueado) {
+      toast({ title: 'Curso bloqueado', description: msg, variant: 'destructive' });
+      return;
+    }
     if (!modulosCompletados.includes(moduloId)) {
       completarModuloMutation.mutate(moduloId);
     }
@@ -249,12 +285,32 @@ export default function CursoDetalhes() {
             <p className="text-xs text-gray-600 mt-2">
               {modulosCompletados.length} de {curso.modulos.length} módulos concluídos
             </p>
+            {(cursoBloqueado || bloqueadoPorDisponibilidade) && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+                <Lock className="h-5 w-5 text-red-600" />
+                <p className="text-sm text-red-700 font-medium">
+                  {motivoBloqueio || mapMotivo(disponibilidadeAtual?.motivo, proximaData) || 'Curso bloqueado. Entre em contato com sua empresa.'}
+                </p>
+              </div>
+            )}
             
             {todosModulosCompletados && !avaliacaoRealizada && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                 <p className="text-sm text-green-700 font-medium">
                   🎉 Parabéns! Você completou todos os módulos. A avaliação final está disponível!
                 </p>
+              </div>
+            )}
+
+            {!avaliacaoRealizada && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700 font-medium">
+                  Curso em andamento — requisitos pendentes para o diploma:
+                </p>
+                <ul className="mt-2 text-xs text-blue-800 list-disc list-inside">
+                  <li>Concluir todas as questões da avaliação final</li>
+                  <li>Alcançar pontuação mínima de 70%</li>
+                </ul>
               </div>
             )}
 
@@ -277,7 +333,7 @@ export default function CursoDetalhes() {
             <TabsTrigger 
               value="avaliacao" 
               data-testid="tab-avaliacao"
-              disabled={!todosModulosCompletados}
+              disabled={!todosModulosCompletados || cursoBloqueado || bloqueadoPorDisponibilidade}
               className={todosModulosCompletados ? "bg-green-50" : ""}
             >
               Avaliação
@@ -417,7 +473,7 @@ export default function CursoDetalhes() {
                           variant="outline"
                           className="border-green-600 text-green-700 hover:bg-green-50 hover:text-green-800"
                           onClick={() => handleCompletarModulo(modulo.id)}
-                          disabled={completarModuloMutation.isPending}
+                          disabled={completarModuloMutation.isPending || cursoBloqueado || bloqueadoPorDisponibilidade}
                           data-testid={`button-completar-modulo-${modulo.id}`}
                         >
                           {completarModuloMutation.isPending ? (

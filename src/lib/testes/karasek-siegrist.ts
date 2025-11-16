@@ -277,7 +277,7 @@ export const infoTesteKarasekSiegrist = {
   nome: "HumaniQ - Karasek-Siegrist",
   descricao: "Avaliação avançada de risco psicossocial baseada nos modelos científicos de Karasek e Siegrist, analisando demanda, controle, apoio social, esforço-recompensa e hipercomprometimento.",
   duracao: "25 min",
-  questoes: 60,
+  questoes: 50,
   categoria: "Psicossocial",
   dimensoes: dimensoesKarasekSiegrist.length,
   basesCientificas: [

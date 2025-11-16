@@ -19,12 +19,14 @@ export default function TesteEstresseOcupacionalPerguntas() {
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
 
-  const perguntas = obterTodasPerguntasEO().map(pergunta => ({
-    id: pergunta.id,
-    texto: pergunta.texto,
-    categoria: pergunta.dimensao,
-    escala: escalaLikert
-  }));
+  const perguntas = obterTodasPerguntasEO()
+    .map(pergunta => ({
+      id: pergunta.id,
+      texto: pergunta.texto,
+      categoria: pergunta.dimensao,
+      escala: escalaLikert
+    }))
+    .sort((a, b) => a.id - b.id);
   
   const [perguntaAtual, setPerguntaAtual] = useState(0);
   const [respostas, setRespostas] = useState<Record<number, number>>({});
@@ -117,7 +119,8 @@ export default function TesteEstresseOcupacionalPerguntas() {
       console.log('🔍 [FINALIZAR-TESTE-EO] Session ID obtido:', sessionId);
       
       const dadosResultado = {
-        usuario_id: isAuthenticated && user ? user.id : null, // Usar ID do usuário se autenticado
+        teste_id: sessionStorage.getItem('current_teste_id') || null,
+        usuario_id: isAuthenticated && user ? user.id : null,
         session_id: sessionId,
         pontuacao_total: Math.round(analiseEstresse.indiceVulnerabilidade),
         tempo_gasto: tempoTotal || 0,
@@ -363,7 +366,7 @@ export default function TesteEstresseOcupacionalPerguntas() {
           {/* Cabeçalho com fundo escuro */}
           <div className="bg-slate-700 text-white px-6 py-4 rounded-t-lg">
             <h2 className="text-xl font-semibold mb-2">
-              Pergunta {perguntaAtual + 1}
+              Pergunta {pergunta.id}
             </h2>
             <div className="inline-block bg-purple-500 text-white text-sm font-medium px-3 py-1 rounded-full">
               {pergunta.categoria}

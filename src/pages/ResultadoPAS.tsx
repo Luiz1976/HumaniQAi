@@ -11,6 +11,7 @@ import { ArrowLeft, Download, Share2, RefreshCw, TrendingUp, Award, Building2, A
 import Logo from "@/components/Logo";
 import { calcularResultadoPercepacaoAssedio, type ResultadoPercepacaoAssedio } from '@/lib/testes/percepcao-assedio';
 import { resultadosService } from '@/lib/database';
+import { apiService } from '@/services/apiService';
 import { sessionService } from '@/lib/services/session-service';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -38,16 +39,33 @@ export default function ResultadoPAS() {
       if (resultadoId) {
         console.log('🔍 [PAS-RESULTADO] Buscando resultado existente com ID:', resultadoId);
         
-        const resultadoExistente = await resultadosService.buscarResultadoPorId(resultadoId);
+        let resultadoExistente = await resultadosService.buscarResultadoPorId(resultadoId);
         
         if (resultadoExistente && resultadoExistente.metadados?.analise_completa) {
           console.log('✅ [PAS-RESULTADO] Resultado encontrado no banco:', resultadoExistente);
           setResultado(resultadoExistente.metadados.analise_completa);
           setCarregando(false);
           return;
-        } else {
-          console.log('❌ [PAS-RESULTADO] Resultado não encontrado ou sem análise completa');
-        }
+      } else {
+        console.log('❌ [PAS-RESULTADO] Resultado não encontrado ou sem análise completa');
+        try {
+          const apiResp = await apiService.obterResultadoPorId(resultadoId);
+          if (apiResp?.resultado?.metadados?.analise_completa) {
+            setResultado(apiResp.resultado.metadados.analise_completa);
+            setCarregando(false);
+            return;
+          }
+        } catch (_) {}
+        try {
+          const meus = await apiService.obterMeusResultados();
+          const ultimoPAS = (meus.resultados || []).find((r: any) => (r?.metadados?.tipo_teste || '').includes('percepcao-assedio'));
+          if (ultimoPAS?.metadados?.analise_completa) {
+            setResultado(ultimoPAS.metadados.analise_completa);
+            setCarregando(false);
+            return;
+          }
+        } catch (_) {}
+      }
       }
 
       // Fallback: processar dados do estado da navegação (para compatibilidade)
@@ -73,6 +91,7 @@ export default function ResultadoPAS() {
       if (!resultadoId) {
         const sessionId = sessionService.getSessionId();
         const dadosResultado = {
+          teste_id: (typeof window !== 'undefined' ? (sessionStorage.getItem('current_teste_id') || 'percepcao-assedio') : 'percepcao-assedio'),
           usuario_id: null, // Anônimo
           session_id: sessionId,
           pontuacao_total: analisePAS.percentualGeral,
@@ -100,6 +119,9 @@ export default function ResultadoPAS() {
         console.log('🔍 [PAS-RESULTADO] Salvando resultado no banco...');
         const resultadoSalvo = await resultadosService.salvarResultado(dadosResultado);
         console.log('✅ [PAS-RESULTADO] Resultado salvo com ID:', resultadoSalvo.id);
+        try {
+          window.dispatchEvent(new CustomEvent('teste-concluido', { detail: { testeId: dadosResultado.teste_id } }));
+        } catch (_) {}
       }
 
       setResultado(analisePAS);

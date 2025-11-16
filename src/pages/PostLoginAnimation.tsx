@@ -30,7 +30,7 @@ const PostLoginAnimation: React.FC = () => {
           navigate('/admin/dashboard', { replace: true });
           break;
         case 'empresa':
-          navigate('/empresa/dashboard', { replace: true });
+          navigate('/empresa/overview', { replace: true });
           break;
         case 'colaborador':
           navigate('/colaborador', { replace: true });

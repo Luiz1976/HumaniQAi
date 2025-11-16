@@ -20,6 +20,7 @@ import {
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '@/services/authService';
+import { apiService } from '@/services/apiService';
 import { hybridInvitationService } from '@/services/invitationServiceHybrid';
 
 interface SituacaoPsicossocial {
@@ -66,18 +67,31 @@ export default function EmpresaColaboradores() {
 
   const carregarColaboradores = async () => {
     try {
-      const response = await authService.getColaboradores();
-      
-      if (response.success && response.data) {
-        console.log('🔍 [FRONT] Colaboradores recebidos:', response.data.map(c => ({ 
-          nome: c.nome, 
-          cargo: c.cargo, 
-          departamento: c.departamento 
-        })));
-        setColaboradores(response.data);
-      } else {
-        toast.error(response.message || 'Erro ao carregar colaboradores');
+      const isEmailValido = (email: string) => /.+@.+\..+/.test(email);
+
+      const filtrarReais = (lista: any[]): Colaborador[] => {
+        const unicos = new Map<string, Colaborador>();
+        for (const c of lista) {
+          const email = String(c.email || '').toLowerCase();
+          if (!isEmailValido(email)) continue;
+          if (!unicos.has(email)) unicos.set(email, c);
+        }
+        return Array.from(unicos.values());
+      };
+
+      // Preferir API oficial de empresa; fallback para authService (mock)
+      let lista: any[] = [];
+      try {
+        const resp = await apiService.listarColaboradores();
+        lista = Array.isArray(resp?.colaboradores) ? resp.colaboradores : [];
+      } catch (_) {
+        const response = await authService.getColaboradores();
+        lista = response.success && Array.isArray(response.data) ? response.data : [];
       }
+
+      const reais = filtrarReais(lista);
+      console.log('🔍 [FRONT] Colaboradores reais:', reais.map(c => ({ nome: c.nome, email: c.email })));
+      setColaboradores(reais);
     } catch (error) {
       console.error('Erro ao carregar colaboradores:', error);
       toast.error('Erro ao carregar colaboradores');

@@ -230,7 +230,7 @@ class AuthServiceNew {
 
       const roleMap: Record<string, string> = {
         admin: '/admin/dashboard',
-        empresa: '/empresa/dashboard',
+        empresa: '/empresa/overview',
         colaborador: '/colaborador',
       };
 
@@ -337,10 +337,10 @@ class AuthServiceNew {
 
   async getColaboradorById(id: string): Promise<{ success: boolean; data?: any; message?: string }> {
     try {
-      const response = await this.makeRequest<{ data: any }>(`/api/colaboradores/${id}`, {
+      const response = await this.makeRequest<{ colaborador: any }>(`/api/empresas/colaboradores/${id}`, {
         method: 'GET'
       });
-      return { success: true, data: response.data };
+      return { success: true, data: response.colaborador };
     } catch (error) {
       return { success: false, message: error instanceof Error ? error.message : 'Erro ao buscar colaborador' };
     }
@@ -348,10 +348,10 @@ class AuthServiceNew {
 
   async getResultadosColaborador(colaboradorId: string): Promise<{ success: boolean; data?: any[]; message?: string }> {
     try {
-      const response = await this.makeRequest<{ data: any[] }>(`/api/testes/resultado/${colaboradorId}`, {
+      const response = await this.makeRequest<{ resultados: any[] }>(`/api/empresas/colaboradores/${colaboradorId}/resultados`, {
         method: 'GET'
       });
-      return { success: true, data: response.data };
+      return { success: true, data: response.resultados };
     } catch (error) {
       return { success: false, message: error instanceof Error ? error.message : 'Erro ao buscar resultados' };
     }

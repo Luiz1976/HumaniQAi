@@ -1,9 +1,10 @@
 import express from 'express';
 import { db, dbType } from '../db-config';
 import { testeDisponibilidade, testes, resultados, colaboradores, insertTesteDisponibilidadeSchema, updateTesteDisponibilidadeSchema } from '../../shared/schema';
-import { authenticateToken, AuthRequest, requireEmpresa, requireColaborador } from '../middleware/auth';
+import { authenticateToken, AuthRequest, requireEmpresa, requireColaborador, requireRole } from '../middleware/auth';
 import { eq, and, or, desc, sql } from 'drizzle-orm';
 import { z } from 'zod';
+import logger from '../utils/logger';
 
 type DisponibilidadeRow = typeof testeDisponibilidade.$inferSelect;
 
@@ -230,11 +231,12 @@ router.get('/empresa/colaborador/:colaboradorId/testes', authenticateToken, requ
       return res.status(404).json({ error: 'Colaborador não encontrado' });
     }
 
-    // Buscar todos os testes
+    // Buscar todos os testes (compatível com SQLite e Postgres)
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
     const todosTestes = await db
       .select()
       .from(testes)
-      .where(eq(testes.ativo, true));
+      .where(eq(testes.ativo, isSqlite ? 1 : true));
 
     // Buscar disponibilidade e resultados para cada teste
     const testesComInfo = await Promise.all(
@@ -292,7 +294,7 @@ router.get('/empresa/colaborador/:colaboradorId/testes', authenticateToken, requ
 /**
  * Empresa: Liberar teste novamente para um colaborador
  */
-router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
+router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authenticateToken, requireRole('empresa','admin'), async (req: AuthRequest, res) => {
   try {
     const { colaboradorId, testeId } = req.params;
     const empresaId = req.user!.empresaId!;
@@ -304,6 +306,7 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
     }
 
     console.log('🔧 [LIBERAR/EMPRESA]', requestId, 'Empresa:', empresaId, 'Colaborador:', colaboradorId, 'Teste:', testeId);
+    logger.info('LIBERAR_TESTE', { requestId, empresaId, colaboradorId, testeId, byUser: req.user!.userId, role: req.user!.role, ts: new Date().toISOString() });
 
     // Verificar se o colaborador pertence à empresa
     const [colaborador] = await db
@@ -372,11 +375,13 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
         .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id))
         .returning();
 
-      return res.json({
+      const payload = {
         success: true,
         message: 'Teste liberado com sucesso',
         disponibilidade: atualizado,
-      });
+      };
+      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: atualizado.id, ts: new Date().toISOString() });
+      return res.json(payload);
     } else {
       // Criar novo registro
       const [novo] = await db
@@ -396,11 +401,13 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
         })
         .returning();
 
-      return res.json({
+      const payload = {
         success: true,
         message: 'Teste liberado com sucesso',
         disponibilidade: novo,
-      });
+      };
+      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: novo.id, ts: new Date().toISOString() });
+      return res.json(payload);
     }
   } catch (error) {
     console.error('Erro ao liberar teste:', error);
@@ -411,7 +418,7 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
 /**
  * Empresa: Configurar periodicidade de um teste para um colaborador
  */
-router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
+router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade', authenticateToken, requireRole('empresa','admin'), async (req: AuthRequest, res) => {
   try {
     const { colaboradorId, testeId } = req.params;
     const empresaId = req.user!.empresaId!;
@@ -423,6 +430,7 @@ router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade',
     }
 
     console.log('⚙️ [PERIODICIDADE/EMPRESA]', requestId, 'Empresa:', empresaId, 'Colaborador:', colaboradorId, 'Teste:', testeId);
+    logger.info('CONFIG_PERIODICIDADE', { requestId, empresaId, colaboradorId, testeId, byUser: req.user!.userId, role: req.user!.role, ts: new Date().toISOString() });
 
     // Validar dados
     const validationResult = z.object({
@@ -505,11 +513,13 @@ router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade',
         .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id))
         .returning();
 
-      return res.json({
+      const payload = {
         success: true,
         message: 'Periodicidade configurada com sucesso',
         disponibilidade: atualizado,
-      });
+      };
+      logger.info('CONFIG_PERIODICIDADE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: atualizado.id, periodicidadeDias, proximaDisponibilidade, ts: new Date().toISOString() });
+      return res.json(payload);
     } else {
       // Criar novo registro
       const [novo] = await db
@@ -528,11 +538,13 @@ router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade',
         })
         .returning();
 
-      return res.json({
+      const payload = {
         success: true,
         message: 'Periodicidade configurada com sucesso',
         disponibilidade: novo,
-      });
+      };
+      logger.info('CONFIG_PERIODICIDADE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: novo.id, periodicidadeDias, proximaDisponibilidade, ts: new Date().toISOString() });
+      return res.json(payload);
     }
   } catch (error) {
     console.error('Erro ao configurar periodicidade:', error);
@@ -598,6 +610,7 @@ router.post('/marcar-concluido', authenticateToken, async (req: AuthRequest, res
           updatedAt: agora,
         })
         .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id));
+      logger.info('BLOQUEIO_AUTOMATICO_TESTE', { empresaId, colaboradorId, testeId, disponibilidadeId: disponibilidadeExistente.id, proximaDisponibilidade, byUser: req.user!.userId, ts: agora.toISOString() });
     } else {
       // Criar novo registro como indisponível
       await db
@@ -611,6 +624,7 @@ router.post('/marcar-concluido', authenticateToken, async (req: AuthRequest, res
           proximaDisponibilidade: null,
         })
         .onConflictDoNothing();
+      logger.info('BLOQUEIO_AUTOMATICO_TESTE', { empresaId, colaboradorId, testeId, disponibilidadeCriada: true, byUser: req.user!.userId, ts: agora.toISOString() });
     }
 
     res.json({ 

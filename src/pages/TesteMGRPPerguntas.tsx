@@ -12,6 +12,7 @@ import { sessionService } from "@/lib/services/session-service";
 import { supabase } from "@/lib/supabase";
 import { numeroParaLetra } from "@/lib/utils";
 import ProcessingAnimation from "@/components/ProcessingAnimation";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function TesteMGRPPerguntas() {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export default function TesteMGRPPerguntas() {
   const [respostas, setRespostas] = useState<Record<number, number>>({});
   const [processandoTeste, setProcessandoTeste] = useState(false);
   const [tempoInicio] = useState(Date.now());
+  const [bloqueado, setBloqueado] = useState(false);
   
   // Estados para controle do avanço automático
   const [salvandoResposta, setSalvandoResposta] = useState(false);
@@ -42,6 +44,19 @@ export default function TesteMGRPPerguntas() {
   
   // Estado para controlar a animação de processamento
   const [mostrarAnimacaoProcessamento, setMostrarAnimacaoProcessamento] = useState(false);
+  useEffect(() => {
+    (async () => {
+      try {
+        const resp = await apiRequest<{ testes: any[] }>("/api/teste-disponibilidade/colaborador/testes");
+        const item = (resp.testes || []).find(t => (t.id === 'maturidade-riscos-psicossociais') || (String(t.nome || '').toLowerCase().includes('maturidade')));
+        if (item && item.disponivel === false) {
+          setBloqueado(true);
+          toast({ title: "Teste bloqueado", description: "Aguardando liberação pela empresa", variant: "destructive" });
+          navigate('/testes');
+        }
+      } catch (_) {}
+    })();
+  }, [toast, navigate]);
   
   if (!perguntas.length) {
     return (
@@ -137,6 +152,7 @@ export default function TesteMGRPPerguntas() {
       console.log('🔍 [FINALIZAR-TESTE-MGRP] Session ID obtido:', sessionId);
       
       const dadosResultado = {
+        teste_id: sessionStorage.getItem('current_teste_id') || null,
         usuario_id: user?.id || null,
         session_id: sessionId,
         pontuacao_total: Math.round(analiseMaturidade.pontuacaoGeral * 100) / 100,

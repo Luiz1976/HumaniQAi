@@ -36,40 +36,30 @@ export default function TesteKarasekSiegristPerguntas() {
   // Estado para controlar a animação de processamento
   const [mostrarAnimacaoProcessamento, setMostrarAnimacaoProcessamento] = useState(false);
   
-  // Buscar perguntas do banco de dados
+  // Carregar perguntas da biblioteca local (fonte oficial) para garantir o total correto
   useEffect(() => {
-    const buscarPerguntas = async () => {
-      try {
-        setCarregandoPerguntas(true);
-        const response = await fetch('/api/testes/karasek-siegrist/perguntas');
-        const data = await response.json();
-        
-        if (data.perguntas) {
-          // Mapear perguntas do banco de dados para o formato esperado
-          const perguntasMapeadas = data.perguntas.map((p: any) => ({
-            id: p.ordem, // Usar ordem como ID para manter compatibilidade
-            texto: p.texto,
-            categoria: 'karasek-siegrist',
-            escala: p.opcoes ? Object.values(p.opcoes) : escalaLikert5,
-            perguntaDbId: p.id // ID real do banco de dados
-          }));
-          
-          console.log(`✅ [PERGUNTAS] ${perguntasMapeadas.length} perguntas carregadas do banco de dados`);
-          setPerguntas(perguntasMapeadas);
-        }
-      } catch (error) {
-        console.error('❌ [PERGUNTAS] Erro ao buscar perguntas:', error);
-        toast({
-          title: "Erro ao carregar perguntas",
-          description: "Não foi possível carregar as perguntas do teste.",
-          variant: "destructive"
-        });
-      } finally {
-        setCarregandoPerguntas(false);
-      }
-    };
-    
-    buscarPerguntas();
+    setCarregandoPerguntas(true);
+    try {
+      const todas = obterTodasPerguntasKS();
+      const perguntasMapeadas = todas.map(p => ({
+        id: p.id,
+        texto: p.texto,
+        categoria: 'karasek-siegrist',
+        escala: p.escala, // 'likert4' | 'likert5'
+      }));
+      const perguntasOrdenadas = [...perguntasMapeadas].sort((a, b) => a.id - b.id);
+      setPerguntas(perguntasOrdenadas);
+      console.log(`✅ [PERGUNTAS] ${perguntasOrdenadas.length} perguntas carregadas (fonte local)`);
+    } catch (error) {
+      console.error('❌ [PERGUNTAS] Erro ao carregar perguntas locais:', error);
+      toast({
+        title: "Erro ao carregar perguntas",
+        description: "Falha ao carregar perguntas do teste.",
+        variant: "destructive"
+      });
+    } finally {
+      setCarregandoPerguntas(false);
+    }
   }, [toast]);
 
   // Resetar estados quando mudar de pergunta
@@ -166,6 +156,7 @@ export default function TesteKarasekSiegristPerguntas() {
       console.log('🔍 [FINALIZAR-TESTE] Session ID obtido:', sessionId);
       
       const dadosResultado = {
+        teste_id: sessionStorage.getItem('current_teste_id') || null,
         usuario_id: null,
         session_id: sessionId,
         pontuacao_total: analiseKarasek.riscoGeral.percentual,
@@ -377,7 +368,7 @@ export default function TesteKarasekSiegristPerguntas() {
           {/* Cabeçalho com fundo escuro */}
           <div className="bg-slate-700 text-white px-6 py-4 rounded-t-lg">
             <h2 className="text-xl font-semibold mb-2">
-              Pergunta {perguntaAtual + 1}
+              Pergunta {pergunta.id}
             </h2>
             <div className="inline-block bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded-full">
               {pergunta.categoria}

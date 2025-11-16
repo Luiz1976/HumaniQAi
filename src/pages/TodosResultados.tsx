@@ -116,7 +116,7 @@ export default function TodosResultados() {
       console.log('📊 [TODOS-RESULTADOS] Dados:', response.resultados);
 
       // Mapear dados da API para formato esperado pela página
-      const resultadosMapeados = response.resultados.map((r: any) => ({
+      const resultadosMapeadosRaw = response.resultados.map((r: any) => ({
         id: r.id,
         teste_id: r.testeId,
         pontuacao_total: r.pontuacaoTotal,
@@ -129,8 +129,37 @@ export default function TodosResultados() {
           categoria: r.categoria || r.metadados?.teste_categoria || 'Geral',
         },
       }));
+      const tiposPermitidos = new Set([
+        'maturidade-riscos-psicossociais',
+        'clima-organizacional',
+        'karasek-siegrist',
+        'qualidade-vida-trabalho',
+        'rpo',
+        'estresse-ocupacional',
+        'percepcao-assedio',
+        'clima-bem-estar'
+      ]);
+      const resultadosMapeados = resultadosMapeadosRaw.filter((r: any) => {
+        const tipo = String(r.teste_id || r.metadados?.tipo_teste || '').toLowerCase();
+        const nome = String(r.testes?.nome || '').toLowerCase();
+        const valido = tiposPermitidos.has(tipo) || Array.from(tiposPermitidos).some(t => nome.includes(t.replace(/-/g, ' ')) || nome.includes(t.split('-')[0]));
+        return valido;
+      });
 
       setResultados(resultadosMapeados);
+      try {
+        fetch('http://localhost:3001/api/audit/logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tipo: 'todos_resultados_carregados',
+            totalRecebidos: response.resultados.length,
+            totalExibidos: resultadosMapeados.length,
+            usuario: user?.email,
+            timestamp: new Date().toISOString()
+          })
+        }).catch(() => {});
+      } catch (_) {}
       setTotalResultados(response.total || response.resultados.length);
       
       // Calcular estatísticas

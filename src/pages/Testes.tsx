@@ -304,7 +304,15 @@ export default function Testes() {
           {disponivel ? (
             <Button 
               className={`w-full ${getTesteButtonColor(teste.nome)} text-white rounded-xl py-3 font-medium transition-colors duration-200`}
-              onClick={() => route && navigate(route)}
+              onClick={() => {
+                if (route) {
+                  try {
+                    sessionStorage.setItem('current_teste_id', teste.id);
+                    sessionStorage.setItem('current_teste_nome', displayNome);
+                  } catch (_) {}
+                  navigate(route);
+                }
+              }}
               data-testid={`button-iniciar-${teste.id}`}
             >
               Iniciar Teste
@@ -325,8 +333,8 @@ export default function Testes() {
   };
 
   const testesEstaticos = [
-    { info: infoTesteClimaOrganizacional, route: '/teste/clima-organizacional', icon: <Building2 className="h-8 w-8 text-white" />, color: 'bg-blue-500', badgeColor: 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800', buttonColor: 'bg-blue-600 hover:bg-blue-700' },
-    { info: infoTesteKarasekSiegrist, route: '/teste/karasek-siegrist', icon: <Scale className="h-8 w-8 text-white" />, color: 'bg-purple-500', badgeColor: 'text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800', buttonColor: 'bg-purple-600 hover:bg-purple-700', badges: ['OMS', 'OIT'] },
+    { info: infoTesteClimaOrganizacional, route: '/teste/clima-organizacional', icon: <Building2 className="h-8 w-8 text-white" />, color: 'bg-blue-500', badgeColor: 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800', buttonColor: 'bg-blue-600 hover:bg-blue-700', questoes: 56 },
+    { info: infoTesteKarasekSiegrist, route: '/teste/karasek-siegrist', icon: <Scale className="h-8 w-8 text-white" />, color: 'bg-purple-500', badgeColor: 'text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800', buttonColor: 'bg-purple-600 hover:bg-purple-700', badges: ['OMS', 'OIT'], questoes: 50 },
     { info: infoTesteEstresseOcupacional, route: '/teste/estresse-ocupacional', icon: <Heart className="h-8 w-8 text-white" />, color: 'bg-blue-500', badgeColor: 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800', buttonColor: 'bg-blue-600 hover:bg-blue-700' },
     { info: infoTesteClimaBemEstar, route: '/teste/clima-bem-estar', icon: <Users className="h-8 w-8 text-white" />, color: 'bg-green-500', badgeColor: 'text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800', buttonColor: 'bg-green-600 hover:bg-green-700' },
     { info: infoTesteMaturidadeRiscosPsicossociais, route: '/teste/maturidade-riscos-psicossociais', icon: <Shield className="h-8 w-8 text-white" />, color: 'bg-orange-500', badgeColor: 'text-orange-600 border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800', buttonColor: 'bg-orange-600 hover:bg-orange-700', badges: ['Organizacional', 'Gestão'] },

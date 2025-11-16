@@ -525,8 +525,8 @@ export default function ResultadoMaturidadeRiscosPsicossociais() {
                           <h4 className="font-semibold text-gray-900">
                             {nomesDimensoes[chave] || chave}
                           </h4>
-                          <Badge className={`${obterCorPorNivel(dimensao.nivel)} border text-xs`}>
-                            {dimensao.nivel.replace('-', ' ')}
+                          <Badge className={`${obterCorPorNivel(dimensao.nivel || 'inicial')} border text-xs`}>
+                            {(dimensao.nivel || 'inicial').replace('-', ' ')}
                           </Badge>
                         </div>
                         <div className="mb-2">

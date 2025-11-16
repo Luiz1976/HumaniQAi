@@ -128,6 +128,9 @@ server/*.db-wal
 *.db
 *.db-shm
 *.db-wal
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 # Large attached assets
 attached_assets/*.pdf
 attached_assets/generated_images/

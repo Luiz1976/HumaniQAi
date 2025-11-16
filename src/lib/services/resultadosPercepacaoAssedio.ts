@@ -77,7 +77,7 @@ export class ResultadosPercepacaoAssedioService {
       
       // Preparar dados para salvar no banco (compatível com schema)
       const dadosResultado = {
-        teste_id: null, // NULL para testes que não estão na tabela testes
+        teste_id: 'percepcao-assedio',
         usuario_id: usuarioEmail ? crypto.randomUUID() : null, // NULL para anônimos
         session_id: sessionId,
         pontuacao_total: Math.round(analisePAS.percentualGeral), // Usar percentual geral como pontuação total
@@ -104,6 +104,21 @@ export class ResultadosPercepacaoAssedioService {
         // Salvar no banco de dados
         console.log('🔍 [PAS-RESULTADOS] Tentando salvar resultado...');
         const resultadoSalvo = await resultadosService.salvarResultado(dadosResultado);
+        try {
+          const token = typeof localStorage !== 'undefined' ? localStorage.getItem('authToken') : null;
+          const userRaw = typeof localStorage !== 'undefined' ? localStorage.getItem('currentUser') : null;
+          if (token && userRaw) {
+            const userData = JSON.parse(userRaw);
+            if (userData.role === 'colaborador') {
+              await fetch('/api/teste-disponibilidade/marcar-concluido', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ testeId: 'percepcao-assedio', colaboradorId: userData.userId })
+              });
+              try { window.dispatchEvent(new CustomEvent('teste-concluido', { detail: { testeId: 'percepcao-assedio' } })); } catch (_) {}
+            }
+          }
+        } catch (_) {}
         console.log('🔍 [PAS-RESULTADOS] Resultado salvo com sucesso:', resultadoSalvo);
         console.log('🔍 [PAS-RESULTADOS] ID do resultado salvo:', resultadoSalvo.id);
         

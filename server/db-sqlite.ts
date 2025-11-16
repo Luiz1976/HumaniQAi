@@ -1,5 +1,6 @@
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
+import { randomUUID } from 'crypto';
 import * as schema from '../shared/schema';
 import { hashPassword } from './utils/auth';
 import path from 'path';
@@ -10,6 +11,10 @@ export { sqlite };
 
 // Configurar WAL mode para melhor performance
 sqlite.pragma('journal_mode = WAL');
+
+// Função compatível com defaults de Drizzle (Postgres) usada no schema compartilhado
+// Emula gen_random_uuid() para evitar erros em inserts executados via Drizzle em ambiente SQLite
+sqlite.function('gen_random_uuid', () => randomUUID());
 
 export const db = drizzle(sqlite, { schema });
 

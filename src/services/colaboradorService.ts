@@ -18,22 +18,13 @@ class ColaboradorService {
     try {
       console.log('🔍 [ColaboradorService] Iniciando busca por dados do colaborador logado...');
       
-      // Obter token de autenticação
+      // Obter token de autenticação (opcional em dev)
       const token = localStorage.getItem('authToken');
-      
-      if (!token) {
-        console.log('⚠️ [ColaboradorService] Nenhum token encontrado');
-        return null;
-      }
 
       // Buscar dados do colaborador via API
-      const response = await fetch('/api/colaboradores/me', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const response = await fetch('/api/colaboradores/me', { method: 'GET', headers });
 
       if (!response.ok) {
         console.error('❌ [ColaboradorService] Erro ao buscar colaborador:', response.status);

@@ -1,5 +1,7 @@
 import express from 'express';
-import { db } from '../db-config';
+import { db, dbType } from '../db-config';
+import { sqlite } from '../db-sqlite';
+import { randomUUID } from 'crypto';
 import { cursoDisponibilidade, cursoAvaliacoes, colaboradores, insertCursoDisponibilidadeSchema, updateCursoDisponibilidadeSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest, requireEmpresa, requireColaborador } from '../middleware/auth';
 import { eq, and, desc } from 'drizzle-orm';
@@ -13,6 +15,7 @@ const router = express.Router();
  */
 router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (req: AuthRequest, res) => {
   try {
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
     const colaboradorId = req.user!.userId;
     const empresaId = req.user!.empresaId!;
 
@@ -46,7 +49,7 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
             and(
               eq(cursoAvaliacoes.cursoId, curso.slug),
               eq(cursoAvaliacoes.colaboradorId, colaboradorId),
-              eq(cursoAvaliacoes.aprovado, true)
+              eq(cursoAvaliacoes.aprovado, isSqlite ? 1 : true)
             )
           )
           .orderBy(desc(cursoAvaliacoes.dataRealizacao))
@@ -145,6 +148,7 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
  */
 router.get('/empresa/colaborador/:colaboradorId/cursos', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
   try {
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
     const { colaboradorId } = req.params;
     const empresaId = req.user!.empresaId!;
 
@@ -188,7 +192,7 @@ router.get('/empresa/colaborador/:colaboradorId/cursos', authenticateToken, requ
             and(
               eq(cursoAvaliacoes.cursoId, curso.slug),
               eq(cursoAvaliacoes.colaboradorId, colaboradorId),
-              eq(cursoAvaliacoes.aprovado, true)
+              eq(cursoAvaliacoes.aprovado, isSqlite ? 1 : true)
             )
           )
           .orderBy(desc(cursoAvaliacoes.dataRealizacao))
@@ -228,6 +232,8 @@ router.get('/empresa/colaborador/:colaboradorId/cursos', authenticateToken, requ
  */
 router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/liberar', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
   try {
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    console.log('📥 [CURSO-DISPONIBILIDADE/LIBERAR] isSqlite =', isSqlite);
     const { colaboradorId, cursoSlug } = req.params;
     const empresaId = req.user!.empresaId!;
 
@@ -281,43 +287,98 @@ router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/liberar', auth
         },
       ];
 
-      const [atualizado] = await db
-        .update(cursoDisponibilidade)
-        .set({
-          disponivel: true,
-          ultimaLiberacao: agora,
-          proximaDisponibilidade: disponibilidadeExistente.periodicidadeDias
-            ? new Date(agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000)
-            : null,
-          historicoLiberacoes: novoHistorico,
-          updatedAt: agora,
-        })
-        .where(eq(cursoDisponibilidade.id, disponibilidadeExistente.id))
-        .returning();
+      if (isSqlite) {
+        const proxima = disponibilidadeExistente.periodicidadeDias
+          ? new Date(agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000).toISOString()
+          : null;
+        const stmt = sqlite.prepare(`
+          UPDATE curso_disponibilidade
+          SET disponivel = ?,
+              ultima_liberacao = ?,
+              proxima_disponibilidade = ?,
+              historico_liberacoes = ?,
+              updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `);
+        stmt.run(
+          1,
+          agora.toISOString(),
+          proxima,
+          JSON.stringify(novoHistorico),
+          disponibilidadeExistente.id as any,
+        );
+        const atualizado = sqlite.prepare('SELECT * FROM curso_disponibilidade WHERE id = ?').get(disponibilidadeExistente.id);
+        return res.json({
+          success: true,
+          message: 'Curso liberado com sucesso',
+          disponibilidade: atualizado,
+        });
+      } else {
+        const [atualizado] = await db
+          .update(cursoDisponibilidade)
+          .set({
+            disponivel: true,
+            ultimaLiberacao: agora,
+            proximaDisponibilidade: disponibilidadeExistente.periodicidadeDias
+              ? new Date(agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000)
+              : null,
+            historicoLiberacoes: novoHistorico,
+            updatedAt: agora,
+          })
+          .where(eq(cursoDisponibilidade.id, disponibilidadeExistente.id))
+          .returning();
 
-      return res.json({
-        success: true,
-        message: 'Curso liberado com sucesso',
-        disponibilidade: atualizado,
-      });
+        return res.json({
+          success: true,
+          message: 'Curso liberado com sucesso',
+          disponibilidade: atualizado,
+        });
+      }
     } else {
       // Criar novo registro
-      const [novo] = await db
-        .insert(cursoDisponibilidade)
-        .values({
+      let novo: any;
+      if (isSqlite) {
+        console.log('🪵 [CURSO-DISPONIBILIDADE/LIBERAR] Inserindo via SQLite prepare');
+        const id = randomUUID();
+        const stmt = sqlite.prepare(`
+          INSERT INTO curso_disponibilidade (
+            id, colaborador_id, curso_id, empresa_id, disponivel,
+            ultima_liberacao, proxima_disponibilidade, historico_liberacoes,
+            created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        `);
+        stmt.run(
+          id,
           colaboradorId,
-          cursoId: cursoSlug,
+          cursoSlug,
           empresaId,
-          disponivel: true,
-          ultimaLiberacao: agora,
-          proximaDisponibilidade: null,
-          historicoLiberacoes: [{
-            data: agora.toISOString(),
-            liberadoPor: req.user!.userId,
-            motivo: 'liberacao_manual',
-          }],
-        })
-        .returning();
+          1,
+          agora.toISOString(),
+          null,
+          JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_manual' }]),
+        );
+        novo = sqlite.prepare('SELECT * FROM curso_disponibilidade WHERE id = ?').get(id);
+      } else {
+        console.log('🧱 [CURSO-DISPONIBILIDADE/LIBERAR] Inserindo via Postgres drizzle');
+        const [inserted] = await db
+          .insert(cursoDisponibilidade)
+          .values({
+            id: randomUUID(),
+            colaboradorId,
+            cursoId: cursoSlug,
+            empresaId,
+            disponivel: true,
+            ultimaLiberacao: agora,
+            proximaDisponibilidade: null,
+            historicoLiberacoes: [{
+              data: agora.toISOString(),
+              liberadoPor: req.user!.userId,
+              motivo: 'liberacao_manual',
+            }],
+          })
+          .returning();
+        novo = inserted;
+      }
 
       return res.json({
         success: true,
@@ -336,6 +397,8 @@ router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/liberar', auth
  */
 router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/bloquear', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
   try {
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    console.log('📥 [CURSO-DISPONIBILIDADE/BLOQUEAR] isSqlite =', isSqlite);
     const { colaboradorId, cursoSlug } = req.params;
     const empresaId = req.user!.empresaId!;
 
@@ -371,31 +434,70 @@ router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/bloquear', aut
 
     if (disponibilidadeExistente) {
       // Atualizar registro existente
-      const [atualizado] = await db
-        .update(cursoDisponibilidade)
-        .set({
-          disponivel: false,
-          updatedAt: agora,
-        })
-        .where(eq(cursoDisponibilidade.id, disponibilidadeExistente.id))
-        .returning();
+      if (isSqlite) {
+        const stmt = sqlite.prepare(`
+          UPDATE curso_disponibilidade
+          SET disponivel = 0,
+              updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `);
+        stmt.run(disponibilidadeExistente.id as any);
+        const atualizado = sqlite.prepare('SELECT * FROM curso_disponibilidade WHERE id = ?').get(disponibilidadeExistente.id);
+        return res.json({
+          success: true,
+          message: 'Curso bloqueado com sucesso',
+          disponibilidade: atualizado,
+        });
+      } else {
+        const [atualizado] = await db
+          .update(cursoDisponibilidade)
+          .set({
+            disponivel: false,
+            updatedAt: agora,
+          })
+          .where(eq(cursoDisponibilidade.id, disponibilidadeExistente.id))
+          .returning();
 
-      return res.json({
-        success: true,
-        message: 'Curso bloqueado com sucesso',
-        disponibilidade: atualizado,
-      });
+        return res.json({
+          success: true,
+          message: 'Curso bloqueado com sucesso',
+          disponibilidade: atualizado,
+        });
+      }
     } else {
       // Criar novo registro como bloqueado
-      const [novo] = await db
-        .insert(cursoDisponibilidade)
-        .values({
+      let novo: any;
+      if (isSqlite) {
+        console.log('🪵 [CURSO-DISPONIBILIDADE/BLOQUEAR] Inserindo via SQLite prepare');
+        const id = randomUUID();
+        const stmt = sqlite.prepare(`
+          INSERT INTO curso_disponibilidade (
+            id, colaborador_id, curso_id, empresa_id, disponivel,
+            created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        `);
+        stmt.run(
+          id,
           colaboradorId,
-          cursoId: cursoSlug,
+          cursoSlug,
           empresaId,
-          disponivel: false,
-        })
-        .returning();
+          0,
+        );
+        novo = sqlite.prepare('SELECT * FROM curso_disponibilidade WHERE id = ?').get(id);
+      } else {
+        console.log('🧱 [CURSO-DISPONIBILIDADE/BLOQUEAR] Inserindo via Postgres drizzle');
+        const [inserted] = await db
+          .insert(cursoDisponibilidade)
+          .values({
+            id: randomUUID(),
+            colaboradorId,
+            cursoId: cursoSlug,
+            empresaId,
+            disponivel: false,
+          })
+          .returning();
+        novo = inserted;
+      }
 
       return res.json({
         success: true,
@@ -414,6 +516,8 @@ router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/bloquear', aut
  */
 router.patch('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/periodicidade', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
   try {
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    console.log('📥 [CURSO-DISPONIBILIDADE/PERIODICIDADE] isSqlite =', isSqlite);
     const { colaboradorId, cursoSlug } = req.params;
     const empresaId = req.user!.empresaId!;
 
@@ -480,43 +584,98 @@ router.patch('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/periodicidade
 
     if (disponibilidadeExistente) {
       // Atualizar registro existente
-      const [atualizado] = await db
-        .update(cursoDisponibilidade)
-        .set({
-          periodicidadeDias,
-          proximaDisponibilidade,
-          metadados: {
-            ...(disponibilidadeExistente.metadados as any || {}),
-            periodicidadeConfiguradaEm: agora.toISOString(),
-            configuradoPor: req.user!.userId,
-          },
-          updatedAt: agora,
-        })
-        .where(eq(cursoDisponibilidade.id, disponibilidadeExistente.id))
-        .returning();
+      if (isSqlite) {
+        const metadadosAtualizados = {
+          ...(disponibilidadeExistente.metadados as any || {}),
+          periodicidadeConfiguradaEm: agora.toISOString(),
+          configuradoPor: req.user!.userId,
+        };
+        const stmt = sqlite.prepare(`
+          UPDATE curso_disponibilidade
+          SET periodicidade_dias = ?,
+              proxima_disponibilidade = ?,
+              metadados = ?,
+              updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `);
+        stmt.run(
+          periodicidadeDias ?? null,
+          proximaDisponibilidade ? proximaDisponibilidade.toISOString() : null,
+          JSON.stringify(metadadosAtualizados),
+          disponibilidadeExistente.id as any,
+        );
+        const atualizado = sqlite.prepare('SELECT * FROM curso_disponibilidade WHERE id = ?').get(disponibilidadeExistente.id);
+        return res.json({
+          success: true,
+          message: 'Periodicidade configurada com sucesso',
+          disponibilidade: atualizado,
+        });
+      } else {
+        const [atualizado] = await db
+          .update(cursoDisponibilidade)
+          .set({
+            periodicidadeDias,
+            proximaDisponibilidade,
+            metadados: {
+              ...(disponibilidadeExistente.metadados as any || {}),
+              periodicidadeConfiguradaEm: agora.toISOString(),
+              configuradoPor: req.user!.userId,
+            },
+            updatedAt: agora,
+          })
+          .where(eq(cursoDisponibilidade.id, disponibilidadeExistente.id))
+          .returning();
 
-      return res.json({
-        success: true,
-        message: 'Periodicidade configurada com sucesso',
-        disponibilidade: atualizado,
-      });
+        return res.json({
+          success: true,
+          message: 'Periodicidade configurada com sucesso',
+          disponibilidade: atualizado,
+        });
+      }
     } else {
       // Criar novo registro
-      const [novo] = await db
-        .insert(cursoDisponibilidade)
-        .values({
+      let novo: any;
+      if (isSqlite) {
+        console.log('🪵 [CURSO-DISPONIBILIDADE/PERIODICIDADE] Inserindo via SQLite prepare');
+        const id = randomUUID();
+        const stmt = sqlite.prepare(`
+          INSERT INTO curso_disponibilidade (
+            id, colaborador_id, curso_id, empresa_id, disponivel,
+            periodicidade_dias, proxima_disponibilidade, metadados,
+            created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        `);
+        stmt.run(
+          id,
           colaboradorId,
-          cursoId: cursoSlug,
+          cursoSlug,
           empresaId,
-          disponivel: true,
-          periodicidadeDias,
-          proximaDisponibilidade,
-          metadados: {
-            periodicidadeConfiguradaEm: agora.toISOString(),
-            configuradoPor: req.user!.userId,
-          },
-        })
-        .returning();
+          1,
+          periodicidadeDias ?? null,
+          proximaDisponibilidade ? proximaDisponibilidade.toISOString() : null,
+          JSON.stringify({ periodicidadeConfiguradaEm: agora.toISOString(), configuradoPor: req.user!.userId }),
+        );
+        novo = sqlite.prepare('SELECT * FROM curso_disponibilidade WHERE id = ?').get(id);
+      } else {
+        console.log('🧱 [CURSO-DISPONIBILIDADE/PERIODICIDADE] Inserindo via Postgres drizzle');
+        const [inserted] = await db
+          .insert(cursoDisponibilidade)
+          .values({
+            id: randomUUID(),
+            colaboradorId,
+            cursoId: cursoSlug,
+            empresaId,
+            disponivel: true,
+            periodicidadeDias,
+            proximaDisponibilidade,
+            metadados: {
+              periodicidadeConfiguradaEm: agora.toISOString(),
+              configuradoPor: req.user!.userId,
+            },
+          })
+          .returning();
+        novo = inserted;
+      }
 
       return res.json({
         success: true,
