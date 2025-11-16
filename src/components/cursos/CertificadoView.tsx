@@ -91,7 +91,13 @@ export default function CertificadoView({ certificado, curso }: CertificadoViewP
     }
   };
 
-  const dataFormatada = new Date(certificado.dataEmissao).toLocaleDateString('pt-BR', {
+  const dataObj = (() => {
+    const de: any = certificado?.dataEmissao;
+    if (de instanceof Date) return de;
+    const d = new Date(de || Date.now());
+    return isNaN(d.getTime()) ? new Date() : d;
+  })();
+  const dataFormatada = dataObj.toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'long',
     year: 'numeric'

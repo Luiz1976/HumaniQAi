@@ -91,8 +91,8 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
           motivo = 'curso_nao_liberado';
         }
 
-        // Se já completou, mostrar isso
-        if (avaliacao) {
+        // Se já completou, mostrar isso apenas quando não está disponível
+        if (avaliacao && !disponivel) {
           motivo = 'curso_concluido';
         }
 

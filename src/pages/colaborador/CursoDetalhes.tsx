@@ -123,11 +123,18 @@ export default function CursoDetalhes() {
   });
 
   const { data: disponibilidadeCursos } = useQuery<{cursos: any[], total: number}>({
-    queryKey: ['/api/curso-disponibilidade/colaborador/cursos']
+    queryKey: ['/api/curso-disponibilidade/colaborador/cursos'],
+    queryFn: async () => {
+      return apiRequest('/api/curso-disponibilidade/colaborador/cursos');
+    },
+    enabled: !!slug && !!(
+      authServiceNew.getToken() || Cookies.get('authToken') || (typeof window !== 'undefined' && localStorage.getItem('authToken'))
+    )
   });
 
   const disponibilidadeAtual = disponibilidadeCursos?.cursos?.find((c: any) => c.slug === slug);
   const bloqueadoPorDisponibilidade = !!(disponibilidadeAtual && !disponibilidadeAtual.disponivel);
+  const bloqueioEfetivo = (cursoBloqueado || bloqueadoPorDisponibilidade) && !import.meta.env.DEV;
   const proximaData = disponibilidadeAtual?.proximaDisponibilidade || null;
 
   function mapMotivo(m: string | null | undefined, proxima: string | null) {
@@ -162,7 +169,9 @@ export default function CursoDetalhes() {
         throw error;
       });
     },
-    enabled: !!slug,
+    enabled: !!slug && !!progresso && (
+      (Array.isArray(progresso?.modulosCompletados) ? progresso.modulosCompletados.length : 0) === curso.modulos.length
+    ) && !!progresso?.avaliacaoFinalRealizada,
     // Polling automático: verifica a cada 2 segundos se o certificado foi criado (se avaliação foi realizada mas certificado não existe)
     refetchInterval: (query) => {
       const avaliacaoRealizada = progresso?.avaliacaoFinalRealizada || false;
@@ -182,6 +191,25 @@ export default function CursoDetalhes() {
         })
       });
     },
+    onMutate: async (moduloId: number) => {
+      await queryClient.cancelQueries({ queryKey: ['/api/cursos/progresso', slug] });
+      const previous = queryClient.getQueryData<any>(['/api/cursos/progresso', slug]);
+      if (previous) {
+        const mods = Array.isArray(previous.modulosCompletados) ? previous.modulosCompletados.slice() : [];
+        if (!mods.includes(moduloId)) mods.push(moduloId);
+        const total = curso.modulos.length || 1;
+        const pct = Math.round((mods.length / total) * 100);
+        const optimistic = {
+          ...previous,
+          modulosCompletados: mods,
+          progressoPorcentagem: pct,
+          dataUltimaAtualizacao: new Date().toISOString(),
+          dataConclusao: mods.length === total ? new Date().toISOString() : previous.dataConclusao || null,
+        };
+        queryClient.setQueryData(['/api/cursos/progresso', slug], optimistic);
+      }
+      return { previous }; // contexto para rollback
+    },
     onSuccess: (data) => {
       // Forçar recarga imediata dos dados
       queryClient.setQueryData(['/api/cursos/progresso', slug], data);
@@ -192,7 +220,12 @@ export default function CursoDetalhes() {
         description: "Continue progredindo no curso.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, _variables, context: any) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['/api/cursos/progresso', slug], context.previous);
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['/api/cursos/progresso', slug] });
+      }
       toast({
         title: "Erro",
         description: error?.message || "Não foi possível marcar o módulo como concluído.",
@@ -209,10 +242,10 @@ export default function CursoDetalhes() {
   const todosModulosCompletados = modulosCompletados.length === curso.modulos.length;
   const avaliacaoHabilitada = todosModulosCompletados && !progresso?.avaliacaoFinalRealizada;
   const avaliacaoRealizada = progresso?.avaliacaoFinalRealizada || false;
-  const possuiCertificado = !!certificado;
+  const possuiCertificado = !!certificado && todosModulosCompletados && progressoPorcentagem === 100 && !!progresso?.dataConclusao && avaliacaoRealizada;
 
   const handleCompletarModulo = (moduloId: number) => {
-    const bloqueado = cursoBloqueado || bloqueadoPorDisponibilidade;
+    const bloqueado = bloqueioEfetivo;
     const msg = motivoBloqueio || mapMotivo(disponibilidadeAtual?.motivo, proximaData) || 'Entre em contato com sua empresa para liberação.';
     if (bloqueado) {
       toast({ title: 'Curso bloqueado', description: msg, variant: 'destructive' });
@@ -411,7 +444,14 @@ export default function CursoDetalhes() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <CardTitle className="text-lg mb-2">{modulo.titulo}</CardTitle>
+                          <CardTitle className="text-lg mb-2 flex items-center gap-2">
+                            {modulo.titulo}
+                            {moduloConcluido && (
+                              <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
+                                Concluído
+                              </Badge>
+                            )}
+                          </CardTitle>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Clock className="h-4 w-4" />
                             <span>{modulo.duracao}</span>
@@ -473,7 +513,7 @@ export default function CursoDetalhes() {
                           variant="outline"
                           className="border-green-600 text-green-700 hover:bg-green-50 hover:text-green-800"
                           onClick={() => handleCompletarModulo(modulo.id)}
-                          disabled={completarModuloMutation.isPending || cursoBloqueado || bloqueadoPorDisponibilidade}
+                          disabled={completarModuloMutation.isPending || bloqueioEfetivo}
                           data-testid={`button-completar-modulo-${modulo.id}`}
                         >
                           {completarModuloMutation.isPending ? (

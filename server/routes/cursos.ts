@@ -14,6 +14,10 @@ async function verificarDisponibilidadeCurso(
   cursoSlug: string
 ): Promise<{ disponivel: boolean; motivo?: string }> {
   try {
+    const isDev = String(process.env.NODE_ENV || '').toLowerCase() === 'development';
+    if (isDev) {
+      return { disponivel: true };
+    }
     // Buscar registro de disponibilidade
     const [disponibilidade] = await db
       .select()
@@ -59,7 +63,28 @@ async function verificarDisponibilidadeCurso(
         const row = sqlite.prepare(
           'SELECT * FROM curso_progresso WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
         ).get(colaboradorId, String(cursoSlug));
-        progresso = row || null;
+        if (row) {
+          let mods: number[] = [];
+          if (typeof row.modulos_completados === 'string') {
+            try { mods = JSON.parse(row.modulos_completados) || []; } catch { mods = []; }
+          }
+          progresso = {
+            id: row.id,
+            colaboradorId: row.colaborador_id,
+            cursoId: row.curso_id,
+            cursoSlug: row.curso_slug,
+            modulosCompletados: mods,
+            totalModulos: Number(row.total_modulos || 0),
+            progressoPorcentagem: Number(row.progresso_porcentagem || 0),
+            avaliacaoFinalRealizada: !!row.avaliacao_final_realizada,
+            avaliacaoFinalPontuacao: Number(row.avaliacao_final_pontuacao || 0),
+            dataInicio: row.data_inicio,
+            dataUltimaAtualizacao: row.data_ultima_atualizacao,
+            dataConclusao: row.data_conclusao || null,
+          };
+        } else {
+          progresso = null;
+        }
       } else {
         progresso = await db.query.cursoProgresso.findFirst({
           where: and(
@@ -171,12 +196,22 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
     }
 
     logger.info('📝 [CURSOS] Buscando progresso no banco...');
-    let progresso = await db.query.cursoProgresso.findFirst({
-      where: and(
-        eq(cursoProgresso.colaboradorId, colaboradorId),
-        eq(cursoProgresso.cursoSlug, cursoSlug)
-      )
-    });
+    const isSqliteFind = (dbType || '').toLowerCase().includes('sqlite');
+    let progresso: any = null;
+    if (isSqliteFind) {
+      const { sqlite } = await import('../db-sqlite');
+      const row = sqlite.prepare(
+        'SELECT * FROM curso_progresso WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
+      ).get(colaboradorId, String(cursoSlug));
+      progresso = row || null;
+    } else {
+      progresso = await db.query.cursoProgresso.findFirst({
+        where: and(
+          eq(cursoProgresso.colaboradorId, colaboradorId),
+          eq(cursoProgresso.cursoSlug, cursoSlug)
+        )
+      });
+    }
 
     if (!progresso) {
       logger.warn('⚠️  [CURSOS] Progresso não encontrado, criando automaticamente...');
@@ -223,22 +258,44 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
 
     logger.info('✅ [CURSOS] Progresso encontrado:', progresso.id);
 
-    const modulosCompletadosArray = Array.isArray(progresso.modulosCompletados) 
-      ? progresso.modulosCompletados 
-      : [];
+    let modulosCompletadosArray: number[] = [];
+    if (isSqliteFind) {
+      if (typeof progresso.modulos_completados === 'string') {
+        try { modulosCompletadosArray = JSON.parse(progresso.modulos_completados) || []; } catch { modulosCompletadosArray = []; }
+      }
+    } else {
+      modulosCompletadosArray = Array.isArray(progresso.modulosCompletados) ? progresso.modulosCompletados : [];
+    }
     
     logger.info('📝 [CURSOS] Módulos completados antes:', modulosCompletadosArray);
     
-    // Adicionar módulo se ainda não foi completado
     const moduloIdNum = parseInt(moduloId);
+    if (isNaN(moduloIdNum)) {
+      logger.warn('⚠️  [CURSOS] moduloId inválido recebido:', moduloId);
+      return res.status(400).json({ error: 'ID do módulo inválido' });
+    }
+    if (moduloIdNum < 1) {
+      logger.warn('⚠️  [CURSOS] moduloId fora do intervalo (mínimo 1):', moduloIdNum);
+      return res.status(400).json({ error: 'Módulo inexistente para este curso' });
+    }
+
+    const totalMods = Number(isSqliteFind ? progresso.total_modulos : progresso.totalModulos);
+    if (typeof totalMods !== 'number' || !Number.isFinite(totalMods) || totalMods <= 0) {
+      logger.error('❌ [CURSOS] totalMods inválido ao validar módulo:', totalMods);
+      return res.status(400).json({ error: 'Total de módulos inválido para este curso' });
+    }
+    if (moduloIdNum > totalMods) {
+      logger.warn('⚠️  [CURSOS] moduloId excede total de módulos:', { moduloIdNum, totalMods });
+      return res.status(400).json({ error: 'Módulo não pertence a este curso' });
+    }
+
     if (!modulosCompletadosArray.includes(moduloIdNum)) {
       modulosCompletadosArray.push(moduloIdNum);
       logger.info('✅ [CURSOS] Módulo adicionado:', moduloIdNum);
     } else {
       logger.warn('⚠️  [CURSOS] Módulo já estava completado:', moduloIdNum);
     }
-
-    const novaProgresso = Math.round((modulosCompletadosArray.length / progresso.totalModulos) * 100);
+    const novaProgresso = Math.round((modulosCompletadosArray.length / (totalMods || 1)) * 100);
     logger.info('📊 [CURSOS] Novo progresso calculado:', novaProgresso + '%');
 
     logger.info('📝 [CURSOS] Atualizando banco de dados...');
@@ -256,12 +313,29 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
       stmt.run(
         JSON.stringify(modulosCompletadosArray),
         novaProgresso,
-        modulosCompletadosArray.length === progresso.totalModulos ? new Date().toISOString() : null,
+        modulosCompletadosArray.length === totalMods ? new Date().toISOString() : null,
         progresso.id
       );
       const atualizado = sqlite.prepare('SELECT * FROM curso_progresso WHERE id = ?').get(progresso.id);
       logger.info('✅ [CURSOS] Progresso atualizado (SQLite) com sucesso!');
-      return res.json(atualizado);
+      let mods: number[] = [];
+      if (typeof atualizado.modulos_completados === 'string') {
+        try { mods = JSON.parse(atualizado.modulos_completados) || []; } catch { mods = []; }
+      }
+      return res.json({
+        id: atualizado.id,
+        colaboradorId: atualizado.colaborador_id,
+        cursoId: atualizado.curso_id,
+        cursoSlug: atualizado.curso_slug,
+        modulosCompletados: mods,
+        totalModulos: Number(atualizado.total_modulos || 0),
+        progressoPorcentagem: Number(atualizado.progresso_porcentagem || 0),
+        avaliacaoFinalRealizada: !!atualizado.avaliacao_final_realizada,
+        avaliacaoFinalPontuacao: Number(atualizado.avaliacao_final_pontuacao || 0),
+        dataInicio: atualizado.data_inicio,
+        dataUltimaAtualizacao: atualizado.data_ultima_atualizacao,
+        dataConclusao: atualizado.data_conclusao || null,
+      });
     } else {
       const [progressoAtualizado] = await db
         .update(cursoProgresso)
@@ -269,7 +343,7 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
           modulosCompletados: modulosCompletadosArray,
           progressoPorcentagem: novaProgresso,
           dataUltimaAtualizacao: new Date(),
-          dataConclusao: modulosCompletadosArray.length === progresso.totalModulos ? new Date() : null,
+          dataConclusao: modulosCompletadosArray.length === totalMods ? new Date() : null,
         })
         .where(eq(cursoProgresso.id, progresso.id))
         .returning();
@@ -759,12 +833,18 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
     const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
 
     let avaliacaoOk: boolean = false;
+    let totalQuestoes = 0;
+    let pontuacaoObtida = 0;
     if (isSqlite) {
       const { sqlite } = await import('../db-sqlite');
       const av = sqlite.prepare(
-        'SELECT id FROM curso_avaliacoes WHERE colaborador_id = ? AND curso_slug = ? AND aprovado = 1 LIMIT 1'
+        'SELECT pontuacao, total_questoes FROM curso_avaliacoes WHERE colaborador_id = ? AND curso_slug = ? AND aprovado = 1 ORDER BY data_realizacao DESC LIMIT 1'
       ).get(colaboradorId, String(cursoSlug));
-      avaliacaoOk = !!av;
+      if (av) {
+        totalQuestoes = Number(av.total_questoes || 0);
+        pontuacaoObtida = Number(av.pontuacao || 0);
+        avaliacaoOk = pontuacaoObtida >= Math.ceil(totalQuestoes * 0.7) && totalQuestoes > 0;
+      }
     } else {
       const av = await db.query.cursoAvaliacoes.findFirst({
         where: and(
@@ -773,7 +853,11 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
           eq(cursoAvaliacoes.aprovado, true)
         )
       });
-      avaliacaoOk = !!av;
+      if (av) {
+        totalQuestoes = Number(av.totalQuestoes || 0);
+        pontuacaoObtida = Number(av.pontuacao || 0);
+        avaliacaoOk = pontuacaoObtida >= Math.ceil(totalQuestoes * 0.7) && totalQuestoes > 0;
+      }
     }
 
     if (!avaliacaoOk) {
@@ -781,10 +865,11 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
     }
 
     let progressoOk: boolean = false;
+    let avaliacaoFinalOkComProgresso: boolean = false;
     if (isSqlite) {
       const { sqlite } = await import('../db-sqlite');
       const pr = sqlite.prepare(
-        'SELECT total_modulos, modulos_completados, progresso_porcentagem, data_conclusao FROM curso_progresso WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
+        'SELECT total_modulos, modulos_completados, progresso_porcentagem, data_conclusao, avaliacao_final_realizada, avaliacao_final_pontuacao FROM curso_progresso WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
       ).get(colaboradorId, String(cursoSlug));
       if (pr) {
         let comp = 0;
@@ -795,6 +880,7 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
         const pct = Number(pr.progresso_porcentagem || 0);
         const concl = pr.data_conclusao || null;
         progressoOk = comp >= tm && pct >= 100 && !!concl;
+        avaliacaoFinalOkComProgresso = !!pr.avaliacao_final_realizada && Number(pr.avaliacao_final_pontuacao || 0) >= Math.ceil(totalQuestoes * 0.7);
       }
     } else {
       const pr = await db.query.cursoProgresso.findFirst({
@@ -809,11 +895,12 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
         const pct = Number(pr.progressoPorcentagem || 0);
         const concl = pr.dataConclusao || null;
         progressoOk = comp >= tm && pct >= 100 && !!concl;
+        avaliacaoFinalOkComProgresso = !!pr.avaliacaoFinalRealizada && Number(pr.avaliacaoFinalPontuacao || 0) >= Math.ceil(totalQuestoes * 0.7);
       }
     }
 
-    if (!progressoOk) {
-      return res.status(404).json({ error: 'Certificado não disponível: curso não concluído' });
+    if (!progressoOk || !avaliacaoFinalOkComProgresso) {
+      return res.status(404).json({ error: 'Certificado não disponível: curso não concluído ou avaliação não aprovada' });
     }
 
     let certificado: any = null;
@@ -872,7 +959,56 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
     }
 
     logger.info('✅ [BACKEND-CERTIFICADO] Retornando certificado com sucesso');
-    return res.json(certificado);
+    try {
+      let carga = (certificado as any).cargaHoraria;
+      if (!carga) {
+        try {
+          const { cursos } = await import('../../src/data/cursosData');
+          const ci = (cursos as any[]).find((c: any) => c.slug === cursoSlug);
+          carga = String(ci?.duracao || '1h');
+        } catch (_) {
+          carga = '1h';
+        }
+      }
+      let codigo = (certificado as any).codigoAutenticacao || (certificado as any).codigo_autenticacao || '';
+      if (!codigo) {
+        const cid = (certificado as any).id || 'NOID';
+        codigo = `HQ-${String(cid).substring(0, 8).toUpperCase()}`;
+      }
+      let dataEmissaoISO: string;
+      const de = (certificado as any).dataEmissao;
+      if (de instanceof Date) {
+        dataEmissaoISO = de.toISOString();
+      } else if (typeof de === 'string' && de) {
+        const d = new Date(de);
+        dataEmissaoISO = isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+      } else {
+        dataEmissaoISO = new Date().toISOString();
+      }
+      const qr = (certificado as any).qrCodeUrl || `${process.env.REPLIT_DEV_DOMAIN || 'https://humaniq.ai'}/validar-certificado/${codigo}`;
+      let colaboradorNome = (certificado as any).colaboradorNome || (certificado as any).colaborador_nome || '';
+      if (!colaboradorNome) {
+        try {
+          const [col] = await db
+            .select({ nome: colaboradores.nome })
+            .from(colaboradores)
+            .where(eq(colaboradores.id, (certificado as any).colaboradorId))
+            .limit(1);
+          colaboradorNome = String(col?.nome || '');
+        } catch (_) {}
+      }
+      const normalized = {
+        ...certificado,
+        cargaHoraria: String(carga),
+        codigoAutenticacao: String(codigo),
+        dataEmissao: dataEmissaoISO,
+        qrCodeUrl: String(qr),
+        colaboradorNome: String(colaboradorNome || 'Aluno'),
+      } as any;
+      return res.json(normalized);
+    } catch (_) {
+      return res.json(certificado);
+    }
   } catch (error) {
     logger.error('❌ [BACKEND-CERTIFICADO] Erro ao buscar certificado:', error);
     return res.status(500).json({ error: 'Erro ao buscar certificado' });
@@ -983,17 +1119,25 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
               carga = '1h';
             }
           }
+          let codigo = row.codigo_autenticacao || '';
+          if (!codigo) {
+            codigo = `HQ-${String(row.id || 'NOID').substring(0, 8).toUpperCase()}`;
+          }
+          const qr = row.qr_code_url || `${process.env.REPLIT_DEV_DOMAIN || 'https://humaniq.ai'}/validar-certificado/${codigo}`;
+          const de = row.data_emissao;
+          const dataEmissaoISO = de ? new Date(de).toISOString() : new Date().toISOString();
+          const colaboradorNome = row.colaborador_nome || '';
           return {
             id: row.id,
             colaboradorId: row.colaborador_id,
             cursoId: row.curso_id,
             cursoSlug: row.curso_slug,
             cursoTitulo: row.curso_titulo,
-            colaboradorNome: row.colaborador_nome,
+            colaboradorNome: colaboradorNome || 'Aluno',
             cargaHoraria: String(carga),
-            dataEmissao: new Date(row.data_emissao || Date.now()).toISOString(),
-            codigoAutenticacao: row.codigo_autenticacao,
-            qrCodeUrl: row.qr_code_url,
+            dataEmissao: dataEmissaoISO,
+            codigoAutenticacao: String(codigo),
+            qrCodeUrl: String(qr),
             assinaturaDigital: row.assinatura_digital,
             validado: !!row.validado
           };
@@ -1029,6 +1173,20 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
           ? pr!.avaliacaoFinalPontuacao >= Math.ceil((av?.totalQuestoes || 0) * 0.7)
           : false;
         if (av && comp >= tm && pct >= 100 && !!concl && minScoreOk && evalDone) {
+          let carga = cert.cargaHoraria;
+          if (!carga) {
+            try {
+              const { cursos } = await import('../../src/data/cursosData');
+              const ci = (cursos as any[]).find((c: any) => c.slug === cert.cursoSlug);
+              carga = String(ci?.duracao || '1h');
+            } catch (_) {
+              carga = '1h';
+            }
+          }
+          const codigo = cert.codigoAutenticacao || '';
+          const qr = cert.qrCodeUrl || `${process.env.REPLIT_DEV_DOMAIN || 'https://humaniq.ai'}/validar-certificado/${codigo}`;
+          const de = cert.dataEmissao as any;
+          const dataEmissaoISO = de instanceof Date ? de.toISOString() : new Date(de || Date.now()).toISOString();
           filtrados.push({
             id: cert.id,
             colaboradorId: cert.colaboradorId,
@@ -1036,10 +1194,10 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
             cursoSlug: cert.cursoSlug,
             cursoTitulo: cert.cursoTitulo,
             colaboradorNome: cert.colaboradorNome,
-            cargaHoraria: cert.cargaHoraria,
-            dataEmissao: cert.dataEmissao,
-            codigoAutenticacao: cert.codigoAutenticacao,
-            qrCodeUrl: cert.qrCodeUrl,
+            cargaHoraria: String(carga),
+            dataEmissao: dataEmissaoISO,
+            codigoAutenticacao: String(codigo),
+            qrCodeUrl: String(qr),
             assinaturaDigital: cert.assinaturaDigital,
             validado: cert.validado
           });

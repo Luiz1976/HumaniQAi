@@ -26,7 +26,11 @@ export default function ColaboradorCursos() {
   });
 
   const cursosDisponiveis = responseCursos?.cursos || [];
-  const cursosLiberados = cursosDisponiveis.filter((c) => c.disponivel);
+  const cursosLiberados = cursosDisponiveis.filter((c) => {
+    const concluidoPorCertificado = certificados.some((cert) => cert.cursoSlug === c.slug);
+    const concluidoPorAvaliacao = !!c.dataConclusao;
+    return c.disponivel && !concluidoPorCertificado && !concluidoPorAvaliacao;
+  });
   const cursosConcluidos = certificados.length;
   
   // Calcular tempo total de estudo (estimado com base no progresso)

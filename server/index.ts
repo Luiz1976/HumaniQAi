@@ -38,16 +38,20 @@ import requireApiKey from './middleware/apiKey';
 const app = express();
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 3001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const IS_DEV = NODE_ENV === 'development';
+
+app.set('trust proxy', 1);
 
 // Logger centralizado
 
 // Configurar rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // máximo 100 requests por IP por janela
+  windowMs: IS_DEV ? 60 * 1000 : 15 * 60 * 1000,
+  max: IS_DEV ? 1000 : 100,
   message: 'Muitas tentativas. Tente novamente em 15 minutos.',
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => IS_DEV && req.method === 'GET',
 });
 
 // Rate limiting específico para ERP (parametrizado por ambiente)
