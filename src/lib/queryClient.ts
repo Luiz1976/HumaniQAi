@@ -1,5 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
+import { authService } from '@/services/authService';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,6 +70,25 @@ export async function apiRequest<T>(
       console.error('[API]', method, endpoint, 'falhou', { status: response.status, statusText: response.statusText, error: data?.error || data?.message });
     } catch (_) {}
     const message = data?.error || data?.message || `HTTP ${response.status}: ${response.statusText}`;
+    if (response.status === 401 || response.status === 403) {
+      try {
+        await authService.logout();
+      } catch (_) {}
+      try {
+        Cookies.remove('authToken');
+        Cookies.remove('currentUser');
+      } catch (_) {}
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('token');
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login';
+          }
+        }
+      } catch (_) {}
+    }
     throw new Error(message);
   }
 

@@ -230,3 +230,6 @@ export const infoTesteHumaniQInsight = {
     "Serve de base para ações em ESG, QVT e liderança humanizada"
   ]
 };
+
+// Exportação adicional para compatibilidade com o padrão dos outros testes
+export const infoHumaniQInsight = infoTesteHumaniQInsight;

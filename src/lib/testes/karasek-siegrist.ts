@@ -68,98 +68,108 @@ export const dimensoesKarasekSiegrist: DimensaoKarasekSiegrist[] = [
     id: "demanda-psicologica",
     nome: "Demanda Psicológica",
     descricao: "Avalia a carga psicológica e mental do trabalho",
-    pontuacaoMaxima: 36, // 9 perguntas × 4 pontos
+    pontuacaoMaxima: 40,
     perguntas: [
-      { id: 1, texto: "Meu trabalho exige que eu trabalhe muito rapidamente.", dimensao: "demanda-psicologica", escala: "likert4" },
-      { id: 2, texto: "Meu trabalho exige que eu trabalhe intensamente.", dimensao: "demanda-psicologica", escala: "likert4" },
-      { id: 3, texto: "Não me pedem para fazer uma quantidade excessiva de trabalho.", dimensao: "demanda-psicologica", escala: "likert4" },
-      { id: 4, texto: "Tenho tempo suficiente para fazer meu trabalho.", dimensao: "demanda-psicologica", escala: "likert4" },
-      { id: 5, texto: "Meu trabalho não apresenta demandas conflitantes.", dimensao: "demanda-psicologica", escala: "likert4" },
-      { id: 6, texto: "Meu trabalho requer longos períodos de concentração intensa.", dimensao: "demanda-psicologica", escala: "likert4" },
-      { id: 7, texto: "Minhas tarefas são frequentemente interrompidas antes que eu possa completá-las.", dimensao: "demanda-psicologica", escala: "likert4" },
-      { id: 8, texto: "Meu trabalho é muito agitado.", dimensao: "demanda-psicologica", escala: "likert4" },
-      { id: 9, texto: "Esperar pelo trabalho de outros frequentemente diminui meu ritmo.", dimensao: "demanda-psicologica", escala: "likert4" }
+      { id: 1, texto: "Tenho prazos curtos e frequentes.", dimensao: "demanda-psicologica", escala: "likert4" },
+      { id: 2, texto: "Sinto pressão constante para aumentar minha produtividade.", dimensao: "demanda-psicologica", escala: "likert4" },
+      { id: 3, texto: "Preciso realizar várias tarefas ao mesmo tempo.", dimensao: "demanda-psicologica", escala: "likert4" },
+      { id: 4, texto: "Meu trabalho exige esforço mental intenso.", dimensao: "demanda-psicologica", escala: "likert4" },
+      { id: 5, texto: "Costumo levar trabalho para casa ou pensar nele fora do expediente.", dimensao: "demanda-psicologica", escala: "likert4" },
+      { id: 6, texto: "As tarefas mudam rapidamente e sem aviso.", dimensao: "demanda-psicologica", escala: "likert4" },
+      { id: 7, texto: "Tenho muitas tarefas simultâneas que competem entre si.", dimensao: "demanda-psicologica", escala: "likert4" },
+      { id: 8, texto: "A complexidade das atividades me deixa mentalmente exausto(a).", dimensao: "demanda-psicologica", escala: "likert4" },
+      { id: 9, texto: "Sinto que não tenho tempo suficiente para cumprir minhas obrigações.", dimensao: "demanda-psicologica", escala: "likert4" },
+      { id: 10, texto: "Minhas tarefas são emocionalmente exigentes.", dimensao: "demanda-psicologica", escala: "likert4" }
     ]
   },
   {
     id: "controle-autonomia",
     nome: "Controle e Autonomia",
     descricao: "Mede o nível de controle e autonomia no trabalho",
-    pontuacaoMaxima: 36, // 9 perguntas × 4 pontos
+    pontuacaoMaxima: 40,
     perguntas: [
-      { id: 10, texto: "Meu trabalho permite que eu tome muitas decisões por conta própria.", dimensao: "controle-autonomia", escala: "likert4" },
-      { id: 11, texto: "Em meu trabalho, tenho muito pouco liberdade para decidir como fazer.", dimensao: "controle-autonomia", escala: "likert4" },
-      { id: 12, texto: "Tenho muita influência sobre o que acontece em meu trabalho.", dimensao: "controle-autonomia", escala: "likert4" },
-      { id: 13, texto: "Meu trabalho me permite desenvolver minhas próprias habilidades especiais.", dimensao: "controle-autonomia", escala: "likert4" },
-      { id: 14, texto: "Meu trabalho requer que eu seja criativo.", dimensao: "controle-autonomia", escala: "likert4" },
-      { id: 15, texto: "Meu trabalho envolve muita repetição.", dimensao: "controle-autonomia", escala: "likert4" },
-      { id: 16, texto: "Meu trabalho requer um alto nível de habilidade.", dimensao: "controle-autonomia", escala: "likert4" },
-      { id: 17, texto: "Posso escolher COMO fazer meu trabalho.", dimensao: "controle-autonomia", escala: "likert4" },
-      { id: 18, texto: "Tenho oportunidade de aprender coisas novas em meu trabalho.", dimensao: "controle-autonomia", escala: "likert4" }
+      { id: 11, texto: "Tenho liberdade para decidir como executar meu trabalho.", dimensao: "controle-autonomia", escala: "likert4" },
+      { id: 12, texto: "Posso organizar minhas tarefas conforme minha preferência.", dimensao: "controle-autonomia", escala: "likert4" },
+      { id: 13, texto: "Participo das decisões que afetam meu trabalho.", dimensao: "controle-autonomia", escala: "likert4" },
+      { id: 14, texto: "Tenho autonomia para resolver problemas.", dimensao: "controle-autonomia", escala: "likert4" },
+      { id: 15, texto: "Posso fazer pausas ou ajustes quando necessário.", dimensao: "controle-autonomia", escala: "likert4" },
+      { id: 16, texto: "Sinto que meu conhecimento é valorizado nas decisões.", dimensao: "controle-autonomia", escala: "likert4" },
+      { id: 17, texto: "Tenho espaço para propor melhorias ou mudanças.", dimensao: "controle-autonomia", escala: "likert4" },
+      { id: 18, texto: "Recebo treinamentos para aprimorar minhas habilidades.", dimensao: "controle-autonomia", escala: "likert4" },
+      { id: 19, texto: "Meu trabalho permite desenvolvimento profissional.", dimensao: "controle-autonomia", escala: "likert4" },
+      { id: 20, texto: "Tenho clareza sobre o que é esperado de mim.", dimensao: "controle-autonomia", escala: "likert4" }
     ]
   },
   {
     id: "apoio-social",
     nome: "Apoio Social",
     descricao: "Avalia o suporte recebido de colegas e supervisores",
-    pontuacaoMaxima: 40, // 10 perguntas × 4 pontos
+    pontuacaoMaxima: 40,
     perguntas: [
-      { id: 19, texto: "Meu supervisor se preocupa com o bem-estar de seus subordinados.", dimensao: "apoio-social", escala: "likert4" },
-      { id: 20, texto: "Meu supervisor presta atenção ao que eu digo.", dimensao: "apoio-social", escala: "likert4" },
-      { id: 21, texto: "Meu supervisor me ajuda a fazer o trabalho.", dimensao: "apoio-social", escala: "likert4" },
-      { id: 22, texto: "Meu supervisor consegue fazer as pessoas trabalharem juntas.", dimensao: "apoio-social", escala: "likert4" },
-      { id: 23, texto: "As pessoas com quem trabalho são competentes em fazer seus trabalhos.", dimensao: "apoio-social", escala: "likert4" },
-      { id: 24, texto: "As pessoas com quem trabalho levam interesse pessoal em mim.", dimensao: "apoio-social", escala: "likert4" },
-      { id: 25, texto: "As pessoas com quem trabalho são amigáveis.", dimensao: "apoio-social", escala: "likert4" },
-      { id: 26, texto: "As pessoas com quem trabalho me ajudam a fazer o trabalho.", dimensao: "apoio-social", escala: "likert4" },
-      { id: 27, texto: "As pessoas com quem trabalho facilitam a realização do trabalho.", dimensao: "apoio-social", escala: "likert4" },
-      { id: 28, texto: "Posso contar com meus colegas quando as coisas ficam difíceis no trabalho.", dimensao: "apoio-social", escala: "likert4" }
+      { id: 21, texto: "Meus colegas me apoiam quando preciso.", dimensao: "apoio-social", escala: "likert4" },
+      { id: 22, texto: "Minha liderança me orienta e dá suporte técnico.", dimensao: "apoio-social", escala: "likert4" },
+      { id: 23, texto: "Me sinto parte da equipe.", dimensao: "apoio-social", escala: "likert4" },
+      { id: 24, texto: "O clima no ambiente de trabalho é positivo.", dimensao: "apoio-social", escala: "likert4" },
+      { id: 25, texto: "Posso conversar abertamente com meus colegas.", dimensao: "apoio-social", escala: "likert4" },
+      { id: 26, texto: "Posso buscar ajuda da liderança sem medo.", dimensao: "apoio-social", escala: "likert4" },
+      { id: 27, texto: "Me sinto respeitado(a) no ambiente de trabalho.", dimensao: "apoio-social", escala: "likert4" },
+      { id: 28, texto: "Recebo reconhecimento pelo que faço bem.", dimensao: "apoio-social", escala: "likert4" },
+      { id: 29, texto: "A empresa promove cooperação entre setores.", dimensao: "apoio-social", escala: "likert4" },
+      { id: 30, texto: "Há canais claros para resolver conflitos ou problemas.", dimensao: "apoio-social", escala: "likert4" }
     ]
   },
   {
     id: "esforco-exigido",
     nome: "Esforço Exigido",
     descricao: "Mede o esforço físico e mental demandado pelo trabalho",
-    pontuacaoMaxima: 25, // 5 perguntas × 5 pontos
+    pontuacaoMaxima: 50,
     perguntas: [
-      { id: 29, texto: "Tenho pressão constante de tempo devido à carga pesada de trabalho.", dimensao: "esforco-exigido", escala: "likert5" },
-      { id: 30, texto: "Sou frequentemente pressionado pelo tempo.", dimensao: "esforco-exigido", escala: "likert5" },
-      { id: 31, texto: "Assim que levanto pela manhã, começo a pensar nos problemas do trabalho.", dimensao: "esforco-exigido", escala: "likert5" },
-      { id: 32, texto: "Quando chego em casa, consigo relaxar e 'desligar' do trabalho facilmente.", dimensao: "esforco-exigido", escala: "likert5" },
-      { id: 33, texto: "As pessoas próximas a mim dizem que me sacrifico demais pelo meu trabalho.", dimensao: "esforco-exigido", escala: "likert5" }
+      { id: 31, texto: "Tenho que me esforçar ao máximo todos os dias.", dimensao: "esforco-exigido", escala: "likert5" },
+      { id: 32, texto: "Costumo fazer horas extras sem reconhecimento.", dimensao: "esforco-exigido", escala: "likert5" },
+      { id: 33, texto: "Me cobro demais por bons resultados.", dimensao: "esforco-exigido", escala: "likert5" },
+      { id: 34, texto: "Faço muito mais do que me foi atribuído.", dimensao: "esforco-exigido", escala: "likert5" },
+      { id: 35, texto: "Aceito demandas urgentes mesmo fora do horário.", dimensao: "esforco-exigido", escala: "likert5" },
+      { id: 36, texto: "O ritmo do trabalho é desgastante.", dimensao: "esforco-exigido", escala: "likert5" },
+      { id: 37, texto: "Estou sempre preocupado(a) com desempenho.", dimensao: "esforco-exigido", escala: "likert5" },
+      { id: 38, texto: "Sinto que estou sob constante avaliação.", dimensao: "esforco-exigido", escala: "likert5" },
+      { id: 39, texto: "Tenho dificuldade em equilibrar trabalho e vida pessoal.", dimensao: "esforco-exigido", escala: "likert5" },
+      { id: 40, texto: "Faço sacrifícios pessoais para atender às exigências do trabalho.", dimensao: "esforco-exigido", escala: "likert5" }
     ]
   },
   {
     id: "recompensas-recebidas",
     nome: "Recompensas Recebidas",
     descricao: "Avalia o reconhecimento, salário e perspectivas de carreira",
-    pontuacaoMaxima: 55, // 11 perguntas × 5 pontos
+    pontuacaoMaxima: 50,
     perguntas: [
-      { id: 34, texto: "Recebo o respeito que mereço dos meus superiores.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 35, texto: "Recebo o respeito que mereço dos meus colegas de trabalho.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 36, texto: "Recebo o apoio adequado em situações difíceis.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 37, texto: "Sou tratado injustamente no trabalho.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 38, texto: "Minhas perspectivas de promoção no trabalho são pobres.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 39, texto: "Experimentei ou espero experimentar uma mudança indesejável em minha situação de trabalho.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 40, texto: "Minha segurança no emprego é pobre.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 41, texto: "Minha posição no trabalho está de acordo com minha educação e treinamento.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 42, texto: "Considerando todos os meus esforços e conquistas, meu salário/renda é adequado.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 43, texto: "Considerando todos os meus esforços e conquistas, recebo o reconhecimento e prestígio que mereço no trabalho.", dimensao: "recompensas-recebidas", escala: "likert5" },
-      { id: 44, texto: "Considerando todos os meus esforços e conquistas, minhas chances de promoção no futuro são adequadas.", dimensao: "recompensas-recebidas", escala: "likert5" }
+      { id: 41, texto: "Sinto que sou bem pago pelo meu trabalho.", dimensao: "recompensas-recebidas", escala: "likert5" },
+      { id: 42, texto: "Recebo reconhecimento quando atinjo metas.", dimensao: "recompensas-recebidas", escala: "likert5" },
+      { id: 43, texto: "Tenho estabilidade no emprego.", dimensao: "recompensas-recebidas", escala: "likert5" },
+      { id: 44, texto: "Tenho perspectivas reais de crescimento.", dimensao: "recompensas-recebidas", escala: "likert5" },
+      { id: 45, texto: "Me sinto valorizado(a) pela liderança.", dimensao: "recompensas-recebidas", escala: "likert5" },
+      { id: 46, texto: "As promoções são baseadas em mérito.", dimensao: "recompensas-recebidas", escala: "likert5" },
+      { id: 47, texto: "Tenho acesso a benefícios compatíveis com meu esforço.", dimensao: "recompensas-recebidas", escala: "likert5" },
+      { id: 48, texto: "Me sinto respeitado(a) independentemente da minha função.", dimensao: "recompensas-recebidas", escala: "likert5" },
+      { id: 49, texto: "Sinto que sou tratado(a) de forma justa.", dimensao: "recompensas-recebidas", escala: "likert5" },
+      { id: 50, texto: "Meus resultados são levados em consideração pela empresa.", dimensao: "recompensas-recebidas", escala: "likert5" }
     ]
   },
   {
     id: "hipercomprometimento",
     nome: "Hipercomprometimento",
     descricao: "Avalia o excesso de comprometimento e envolvimento com o trabalho",
-    pontuacaoMaxima: 30, // 6 perguntas × 5 pontos
+    pontuacaoMaxima: 50,
     perguntas: [
-      { id: 45, texto: "Fico facilmente sobrecarregado pelas pressões de tempo no trabalho.", dimensao: "hipercomprometimento", escala: "likert5" },
-      { id: 46, texto: "Assim que levanto pela manhã, começo a pensar nos problemas do trabalho.", dimensao: "hipercomprometimento", escala: "likert5" },
-      { id: 47, texto: "Quando chego em casa, consigo relaxar e 'desligar' do trabalho facilmente.", dimensao: "hipercomprometimento", escala: "likert5" },
-      { id: 48, texto: "As pessoas próximas a mim dizem que me sacrifico demais pelo meu trabalho.", dimensao: "hipercomprometimento", escala: "likert5" },
-      { id: 49, texto: "O trabalho raramente me deixa ir embora, ele ainda está na minha mente quando vou dormir.", dimensao: "hipercomprometimento", escala: "likert5" },
-      { id: 50, texto: "Se eu adio algo que deveria fazer hoje, fico inquieto.", dimensao: "hipercomprometimento", escala: "likert5" }
+      { id: 51, texto: "Me sinto culpado(a) quando não trabalho o suficiente.", dimensao: "hipercomprometimento", escala: "likert5" },
+      { id: 52, texto: "Mesmo cansado(a) ou doente, insisto em manter o desempenho.", dimensao: "hipercomprometimento", escala: "likert5" },
+      { id: 53, texto: "Não consigo recusar tarefas, mesmo já sobrecarregado(a).", dimensao: "hipercomprometimento", escala: "likert5" },
+      { id: 54, texto: "Trabalho é minha principal fonte de identidade.", dimensao: "hipercomprometimento", escala: "likert5" },
+      { id: 55, texto: "Não consigo relaxar fora do expediente.", dimensao: "hipercomprometimento", escala: "likert5" },
+      { id: 56, texto: "Me cobro além do razoável.", dimensao: "hipercomprometimento", escala: "likert5" },
+      { id: 57, texto: "Fico ansioso(a) quando não estou produzindo.", dimensao: "hipercomprometimento", escala: "likert5" },
+      { id: 58, texto: "Coloco as demandas profissionais acima da minha saúde.", dimensao: "hipercomprometimento", escala: "likert5" },
+      { id: 59, texto: "Tenho dificuldade de delegar tarefas.", dimensao: "hipercomprometimento", escala: "likert5" },
+      { id: 60, texto: "Me sinto angustiado(a) quando deixo algo pendente.", dimensao: "hipercomprometimento", escala: "likert5" }
     ]
   }
 ];
@@ -178,8 +188,7 @@ export function calcularResultadoKarasekSiegrist(respostas: Record<number, numbe
       // Ajustar pontuação para perguntas invertidas (específicas do modelo)
       let pontuacaoAjustada = resposta;
       
-      // Perguntas invertidas que precisam ter a pontuação revertida
-      const perguntasInvertidas = [3, 4, 5, 11, 15, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 47];
+      const perguntasInvertidas = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
       
       if (perguntasInvertidas.includes(pergunta.id)) {
         if (pergunta.escala === 'likert4') {
@@ -277,7 +286,7 @@ export const infoTesteKarasekSiegrist = {
   nome: "HumaniQ - Karasek-Siegrist",
   descricao: "Avaliação avançada de risco psicossocial baseada nos modelos científicos de Karasek e Siegrist, analisando demanda, controle, apoio social, esforço-recompensa e hipercomprometimento.",
   duracao: "25 min",
-  questoes: 50,
+  questoes: 60,
   categoria: "Psicossocial",
   dimensoes: dimensoesKarasekSiegrist.length,
   basesCientificas: [

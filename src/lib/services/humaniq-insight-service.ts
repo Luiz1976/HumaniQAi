@@ -6,6 +6,7 @@ import {
 } from '@/lib/testes/humaniq-insight';
 import { resultadosService } from '@/lib/resultadosServiceNew';
 import { sessionService } from './session-service';
+import { apiService } from '@/services/apiService';
 
 export interface Resultado {
   id: string;
@@ -55,7 +56,7 @@ class HumaniQInsightService {
         dimensoesParaBackend[dimensaoId] = {
           percentual: (dados.media / 5) * 100, // Converter escala 1-5 para 0-100
           media: dados.media,
-          pontuacao: dados.pontuacaoTotal
+          pontuacao: dados.pontuacao
         };
       });
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Pontuações das dimensões:', pontuacoesDimensoes);
@@ -88,8 +89,30 @@ class HumaniQInsightService {
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Session ID obtido:', sessionId);
       
       // Preparar dados para salvar no banco
+      let resolvedTesteId: string | null = null;
+      try {
+        const lista = await apiService.listarTestes();
+        const toSlug = (s: string) => String(s)
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        const alvo = 'humaniq-insight';
+        const encontrado = (lista.testes || []).find((t: any) => {
+          const nomeSlug = toSlug(t.nome || '');
+          const catSlug = toSlug(t.categoria || '');
+          return nomeSlug === alvo || catSlug === alvo || nomeSlug.includes('insight') || nomeSlug.includes('humaniq');
+        });
+        const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        resolvedTesteId = encontrado?.id && uuidRe.test(String(encontrado.id)) ? String(encontrado.id) : null;
+      } catch (_) {
+        const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        resolvedTesteId = testeId && uuidRe.test(String(testeId)) ? String(testeId) : null;
+      }
+
       const dadosResultado = {
-        teste_id: testeId || null, // Usar o testeId passado ou null
+        teste_id: resolvedTesteId,
         usuario_id: usuarioEmail ? crypto.randomUUID() : null,
         session_id: sessionId,
         pontuacao_total: analiseHumaniQInsight.pontuacaoGeral,

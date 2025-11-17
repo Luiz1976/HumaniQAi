@@ -1,5 +1,6 @@
 import express from 'express';
 import { db, dbType } from '../db-config';
+import { sqlite as sqliteDb } from '../db-sqlite';
 import { testeDisponibilidade, testes, resultados, colaboradores, insertTesteDisponibilidadeSchema, updateTesteDisponibilidadeSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest, requireEmpresa, requireColaborador, requireRole } from '../middleware/auth';
 import { eq, and, or, desc, sql } from 'drizzle-orm';
@@ -92,8 +93,8 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
           .limit(1);
 
         // Determinar disponibilidade
-        let disponivel = true;
-        let motivo: string | null = null;
+        let disponivel = false;
+        let motivo: string | null = 'bloqueado_empresa';
         let proximaDisponibilidade: Date | null = null;
 
         if (disponibilidade) {
@@ -145,6 +146,9 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
               throw e;
             }
           }
+        } else {
+          disponivel = false;
+          motivo = 'bloqueado_empresa';
         }
 
         const testeInfo = {
@@ -299,8 +303,9 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
     const { colaboradorId, testeId } = req.params;
     const empresaId = req.user!.empresaId!;
     const requestId = Math.random().toString(36).slice(2);
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
 
-    const paramsValidation = z.object({ colaboradorId: z.string().uuid(), testeId: z.string().uuid() }).safeParse({ colaboradorId, testeId });
+    const paramsValidation = z.object({ colaboradorId: z.string().uuid(), testeId: z.string().min(1) }).safeParse({ colaboradorId, testeId });
     if (!paramsValidation.success) {
       return res.status(400).json({ error: 'Dados inválidos', details: paramsValidation.error.issues });
     }
@@ -328,7 +333,7 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
     const [teste] = await db
       .select()
       .from(testes)
-      .where(eq(testes.id, testeId))
+      .where(or(eq(testes.id, testeId), eq(testes.categoria, testeId)))
       .limit(1);
 
     if (!teste) {
@@ -344,7 +349,7 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
       .where(
         and(
           eq(testeDisponibilidade.colaboradorId, colaboradorId),
-          eq(testeDisponibilidade.testeId, testeId)
+          eq(testeDisponibilidade.testeId, teste.id)
         )
       )
       .limit(1);
@@ -361,56 +366,262 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
         },
       ];
 
+      // Usar caminho SQLite raw para garantir compatibilidade (ambiente dev)
+      console.log('⚙️ [LIBERAR/EMPRESA] Usando caminho SQLite (UPDATE)');
+      const prox = disponibilidadeExistente.periodicidadeDias
+        ? new Date(agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000).toISOString()
+        : null;
+      const stmt = sqliteDb.prepare(`
+        UPDATE teste_disponibilidade
+        SET disponivel = ?, ultima_liberacao = ?, proxima_disponibilidade = ?, historico_liberacoes = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `);
+      stmt.run(1, agora.toISOString(), prox, JSON.stringify(novoHistorico), disponibilidadeExistente.id as unknown as string);
+      const atualizado = sqliteDb.prepare('SELECT * FROM teste_disponibilidade WHERE id = ?').get(disponibilidadeExistente.id as unknown as string);
+      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: atualizado.id, ts: new Date().toISOString() });
+      return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: atualizado });
+    } else {
+      // Criar novo registro
+      // Usar caminho SQLite raw para garantir compatibilidade (ambiente dev)
+      console.log('⚙️ [LIBERAR/EMPRESA] Usando caminho SQLite (INSERT)');
+      const id = (await import('crypto')).randomUUID();
+      const stmt2 = sqliteDb.prepare(`
+        INSERT INTO teste_disponibilidade (
+          id, colaborador_id, teste_id, empresa_id, disponivel,
+          ultima_liberacao, proxima_disponibilidade, historico_liberacoes,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      `);
+      stmt2.run(
+        id,
+        colaboradorId,
+        teste.id,
+        empresaId,
+        1,
+        agora.toISOString(),
+        null,
+        JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_manual' }])
+      );
+      const novo = sqliteDb.prepare('SELECT * FROM teste_disponibilidade WHERE id = ?').get(id);
+      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: novo.id, ts: new Date().toISOString() });
+      return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: novo });
+    }
+  } catch (error) {
+    console.error('Erro ao liberar teste:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/bloquear', authenticateToken, requireRole('empresa','admin'), async (req: AuthRequest, res) => {
+  try {
+    const { colaboradorId, testeId } = req.params;
+    const empresaId = req.user!.empresaId!;
+    const requestId = Math.random().toString(36).slice(2);
+
+    const paramsValidation = z.object({ colaboradorId: z.string().uuid(), testeId: z.string().min(1) }).safeParse({ colaboradorId, testeId });
+    if (!paramsValidation.success) {
+      return res.status(400).json({ error: 'Dados inválidos', details: paramsValidation.error.issues });
+    }
+
+    const [colaborador] = await db
+      .select()
+      .from(colaboradores)
+      .where(
+        and(
+          eq(colaboradores.id, colaboradorId),
+          eq(colaboradores.empresaId, empresaId)
+        )
+      )
+      .limit(1);
+
+    if (!colaborador) {
+      return res.status(404).json({ error: 'Colaborador não encontrado' });
+    }
+
+    const [teste] = await db
+      .select()
+      .from(testes)
+      .where(or(eq(testes.id, testeId), eq(testes.categoria, testeId)))
+      .limit(1);
+
+    if (!teste) {
+      return res.status(404).json({ error: 'Teste não encontrado' });
+    }
+
+    const agora = new Date();
+
+    const [disponibilidadeExistente] = await db
+      .select()
+      .from(testeDisponibilidade)
+      .where(
+        and(
+          eq(testeDisponibilidade.colaboradorId, colaboradorId),
+          eq(testeDisponibilidade.testeId, teste.id)
+        )
+      )
+      .limit(1);
+
+    if (disponibilidadeExistente) {
+      const historicoAtual = (disponibilidadeExistente.historicoLiberacoes as Array<{ data: string; liberadoPor: string; motivo: string }>) || [];
+      const novoHistorico = [
+        ...historicoAtual,
+        {
+          data: agora.toISOString(),
+          liberadoPor: req.user!.userId,
+          motivo: 'bloqueio_empresa',
+        },
+      ];
+
       const [atualizado] = await db
         .update(testeDisponibilidade)
         .set({
-          disponivel: true,
-          ultimaLiberacao: agora,
-          proximaDisponibilidade: disponibilidadeExistente.periodicidadeDias
-            ? new Date(agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000)
-            : null,
+          disponivel: false,
+          proximaDisponibilidade: null,
           historicoLiberacoes: novoHistorico,
           updatedAt: agora,
         })
         .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id))
         .returning();
 
-      const payload = {
-        success: true,
-        message: 'Teste liberado com sucesso',
-        disponibilidade: atualizado,
-      };
-      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: atualizado.id, ts: new Date().toISOString() });
-      return res.json(payload);
+      return res.json({ success: true, message: 'Teste bloqueado com sucesso', disponibilidade: atualizado });
     } else {
-      // Criar novo registro
-      const [novo] = await db
-        .insert(testeDisponibilidade)
-        .values({
+      const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+      if (isSqlite) {
+        const id = (await import('crypto')).randomUUID();
+        const stmt = sqliteDb.prepare(`
+          INSERT INTO teste_disponibilidade (
+            id, colaborador_id, teste_id, empresa_id, disponivel,
+            ultima_liberacao, proxima_disponibilidade, historico_liberacoes,
+            created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        `);
+        stmt.run(
+          id,
           colaboradorId,
           testeId,
           empresaId,
-          disponivel: true,
-          ultimaLiberacao: agora,
-          proximaDisponibilidade: null,
-          historicoLiberacoes: [{
-            data: agora.toISOString(),
-            liberadoPor: req.user!.userId,
-            motivo: 'liberacao_manual',
-          }],
-        })
-        .returning();
-
-      const payload = {
-        success: true,
-        message: 'Teste liberado com sucesso',
-        disponibilidade: novo,
-      };
-      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: novo.id, ts: new Date().toISOString() });
-      return res.json(payload);
+          0,
+          null,
+          null,
+          JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'bloqueio_empresa' }])
+        );
+        const novo = sqliteDb.prepare('SELECT * FROM teste_disponibilidade WHERE id = ?').get(id);
+        return res.json({ success: true, message: 'Teste bloqueado com sucesso', disponibilidade: novo });
+      } else {
+        const [novo] = await db
+          .insert(testeDisponibilidade)
+          .values({
+            colaboradorId,
+            testeId: teste.id,
+            empresaId,
+            disponivel: false,
+            ultimaLiberacao: agora,
+            proximaDisponibilidade: null,
+            historicoLiberacoes: [{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'bloqueio_empresa' }],
+          })
+          .returning();
+        return res.json({ success: true, message: 'Teste bloqueado com sucesso', disponibilidade: novo });
+      }
     }
   } catch (error) {
-    console.error('Erro ao liberar teste:', error);
+    console.error('Erro ao bloquear teste:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+router.post('/empresa/colaborador/:colaboradorId/testes/bloquear', authenticateToken, requireRole('empresa','admin'), async (req: AuthRequest, res) => {
+  try {
+    const { colaboradorId } = req.params;
+    const empresaId = req.user!.empresaId!;
+    const requestId = Math.random().toString(36).slice(2);
+
+    const paramsValidation = z.object({ colaboradorId: z.string().uuid() }).safeParse({ colaboradorId });
+    if (!paramsValidation.success) {
+      return res.status(400).json({ error: 'Dados inválidos', details: paramsValidation.error.issues });
+    }
+
+    const [colaborador] = await db
+      .select()
+      .from(colaboradores)
+      .where(
+        and(
+          eq(colaboradores.id, colaboradorId),
+          eq(colaboradores.empresaId, empresaId)
+        )
+      )
+      .limit(1);
+
+    if (!colaborador) {
+      return res.status(404).json({ error: 'Colaborador não encontrado' });
+    }
+
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    const todosTestes = await db
+      .select()
+      .from(testes)
+      .where(eq(testes.ativo, isSqlite ? 1 : true));
+
+    const agora = new Date();
+    for (const t of todosTestes) {
+      const [disp] = await db
+        .select()
+        .from(testeDisponibilidade)
+        .where(
+          and(
+            eq(testeDisponibilidade.colaboradorId, colaboradorId),
+            eq(testeDisponibilidade.testeId, t.id)
+          )
+        )
+        .limit(1);
+      if (disp) {
+        const historicoAtual = (disp.historicoLiberacoes as Array<{ data: string; liberadoPor: string; motivo: string }>) || [];
+        const novoHistorico = [
+          ...historicoAtual,
+          { data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'bloqueio_empresa' },
+        ];
+        await db
+          .update(testeDisponibilidade)
+          .set({ disponivel: false, proximaDisponibilidade: null, historicoLiberacoes: novoHistorico, updatedAt: agora })
+          .where(eq(testeDisponibilidade.id, disp.id));
+      } else {
+        if ((dbType || '').toLowerCase().includes('sqlite')) {
+          const id = (await import('crypto')).randomUUID();
+          const stmt = sqliteDb.prepare(`
+            INSERT INTO teste_disponibilidade (
+              id, colaborador_id, teste_id, empresa_id, disponivel,
+              ultima_liberacao, proxima_disponibilidade, historico_liberacoes,
+              created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+          `);
+          stmt.run(
+            id,
+            colaboradorId,
+            t.id,
+            empresaId,
+            0,
+            null,
+            null,
+            JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'bloqueio_empresa' }])
+          );
+        } else {
+          await db
+            .insert(testeDisponibilidade)
+            .values({
+              colaboradorId,
+              testeId: t.id,
+              empresaId,
+              disponivel: false,
+              ultimaLiberacao: agora,
+              proximaDisponibilidade: null,
+              historicoLiberacoes: [{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'bloqueio_empresa' }],
+            });
+        }
+      }
+    }
+
+    return res.json({ success: true, message: 'Testes bloqueados com sucesso' });
+  } catch (error) {
+    console.error('Erro ao bloquear testes:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -424,7 +635,7 @@ router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade',
     const empresaId = req.user!.empresaId!;
     const requestId = Math.random().toString(36).slice(2);
 
-    const paramsValidation = z.object({ colaboradorId: z.string().uuid(), testeId: z.string().uuid() }).safeParse({ colaboradorId, testeId });
+    const paramsValidation = z.object({ colaboradorId: z.string().uuid(), testeId: z.string().min(1) }).safeParse({ colaboradorId, testeId });
     if (!paramsValidation.success) {
       return res.status(400).json({ error: 'Dados inválidos', details: paramsValidation.error.issues });
     }
@@ -466,7 +677,7 @@ router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade',
     const [teste] = await db
       .select()
       .from(testes)
-      .where(eq(testes.id, testeId))
+      .where(or(eq(testes.id, testeId), eq(testes.categoria, testeId)))
       .limit(1);
 
     if (!teste) {
@@ -482,7 +693,7 @@ router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade',
       .where(
         and(
           eq(testeDisponibilidade.colaboradorId, colaboradorId),
-          eq(testeDisponibilidade.testeId, testeId)
+          eq(testeDisponibilidade.testeId, teste.id)
         )
       )
       .limit(1);

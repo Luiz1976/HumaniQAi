@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 // Base URL da API
 // Em produção, usa VITE_API_URL (ex.: https://api.humaniqai.com.br)
 // Em desenvolvimento, faz fallback para http://localhost:3000 (backend local)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 // Normalizar base para evitar duplicações de "/api" e barras finais
 const NORMALIZED_BASE = (API_BASE_URL || '').replace(/\/api\/?$/, '').replace(/\/+$/, '');
 // NOVO: Fallback opcional via variável de ambiente

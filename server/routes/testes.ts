@@ -102,7 +102,6 @@ router.get('/:id/perguntas', async (req, res) => {
     const testeLocal = TESTES_DISPONIVEIS[id as keyof typeof TESTES_DISPONIVEIS];
     
     if (testeLocal) {
-      // Converter perguntas do formato local para o formato esperado pela API
       const perguntasFormatadas = testeLocal.perguntas.flatMap(dimensao => 
         dimensao.perguntas.map(pergunta => ({
           id: pergunta.id.toString(),
@@ -117,6 +116,35 @@ router.get('/:id/perguntas', async (req, res) => {
           createdAt: new Date().toISOString()
         }))
       );
+
+      if (req.user && req.user.role === 'colaborador') {
+        const toSlug = (s: string) => s
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        const todosTestes = await db
+          .select({ id: testes.id, nome: testes.nome, categoria: testes.categoria })
+          .from(testes);
+        const encontrado = todosTestes.find(t => toSlug(t.nome || '') === id || toSlug(t.categoria || '') === id);
+        if (!encontrado) {
+          return res.status(403).json({ error: 'Teste bloqueado' });
+        }
+        const [disp] = await db
+          .select()
+          .from(testeDisponibilidade)
+          .where(
+            and(
+              eq(testeDisponibilidade.colaboradorId, req.user.userId),
+              eq(testeDisponibilidade.testeId, encontrado.id)
+            )
+          )
+          .limit(1);
+        if (!disp || !disp.disponivel) {
+          return res.status(403).json({ error: 'Teste bloqueado' });
+        }
+      }
 
       return res.json({ 
         perguntas: perguntasFormatadas, 

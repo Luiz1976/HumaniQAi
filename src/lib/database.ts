@@ -104,8 +104,9 @@ export const resultadosService = {
       console.log('🔍 [DATABASE] Dados recebidos:', resultado);
       
       // Preparar dados no formato esperado pela API
+      const isUuid = (v: any) => typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
       const dadosAPI = {
-        testeId: resultado.teste_id || null,
+        testeId: isUuid(resultado.teste_id) ? resultado.teste_id : null,
         pontuacaoTotal: resultado.pontuacao_total,
         tempoGasto: resultado.tempo_gasto || 0,
         sessionId: resultado.session_id,
@@ -650,17 +651,16 @@ export const resultadosService = {
 export const respostasService = {
   // Salvar respostas de um resultado
   async salvarRespostas(respostas: Omit<Resposta, 'id' | 'created_at'>[]): Promise<Resposta[]> {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('respostas')
-      .insert(respostas)
-      .select();
+      .insert(respostas);
 
     if (error) {
       console.error('Erro ao salvar respostas:', error);
       throw new Error('Falha ao salvar respostas');
     }
 
-    return data || [];
+    return [];
   },
 
   // Buscar respostas por resultado
@@ -745,8 +745,7 @@ export const analiseService = {
 
 // Mapeamento de slugs para UUIDs dos testes no banco de dados
 const TESTE_SLUG_TO_UUID: Record<string, string> = {
-  'humaniq-insight': '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5',
-  'clima-organizacional': '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5', // Mesmo teste
+  'clima-organizacional': '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5',
   'karasek-siegrist': '9b7d4c8e-1a2b-4f3e-9d7a-5e6f7a8b9c0d',
   'estresse-ocupacional': '2c8e3f9a-4b5d-6e7a-8c9d-0e1f2a3b4c5d',
   'pas': '4e0a5b1c-6d7f-8e9a-0f1a-2b3c4d5e6f7a',

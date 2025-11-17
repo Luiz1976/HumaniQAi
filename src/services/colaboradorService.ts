@@ -1,4 +1,5 @@
 import { authService } from './authService';
+import { apiRequest } from '@/lib/queryClient';
 
 export interface ColaboradorCompleto {
   id: string;
@@ -17,21 +18,12 @@ class ColaboradorService {
   async getDadosColaboradorLogado(): Promise<ColaboradorCompleto | null> {
     try {
       console.log('🔍 [ColaboradorService] Iniciando busca por dados do colaborador logado...');
-      
-      // Obter token de autenticação (opcional em dev)
-      const token = localStorage.getItem('authToken');
-
-      // Buscar dados do colaborador via API
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      const response = await fetch('/api/colaboradores/me', { method: 'GET', headers });
-
-      if (!response.ok) {
-        console.error('❌ [ColaboradorService] Erro ao buscar colaborador:', response.status);
+      const user = authService.getCurrentUser();
+      if (!user || user.role !== 'colaborador') {
         return null;
       }
-
-      const data = await response.json();
+      
+      const data = await apiRequest<{ colaborador: ColaboradorCompleto }>('/api/colaboradores/me');
       console.log('✅ [ColaboradorService] Colaborador encontrado com sucesso:', data.colaborador);
       
       return data.colaborador;
@@ -53,7 +45,7 @@ class ColaboradorService {
         return false;
       }
 
-      const response = await fetch(`/api/colaboradores/${id}`, {
+      await apiRequest(`/api/colaboradores/${id}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -61,11 +53,6 @@ class ColaboradorService {
         },
         body: JSON.stringify(dados)
       });
-
-      if (!response.ok) {
-        console.error('Erro ao atualizar colaborador:', response.status);
-        return false;
-      }
 
       return true;
     } catch (error) {

@@ -10,16 +10,17 @@ export const resultadosService = {
       console.log('📊 [RESULTADOS-SERVICE] Dados recebidos:', JSON.stringify(resultado, null, 2));
       
       // Preparar dados para API (converter snake_case para camelCase)
+      const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       const dadosApi = {
-        testeId: resultado.teste_id || null,
-        usuarioId: resultado.usuario_id || null,
+        testeId: typeof resultado.teste_id === 'string' && uuidRe.test(resultado.teste_id) ? resultado.teste_id : null,
+        usuarioId: typeof resultado.usuario_id === 'string' && uuidRe.test(resultado.usuario_id) ? resultado.usuario_id : null,
         pontuacaoTotal: Number(resultado.pontuacao_total),
         tempoGasto: resultado.tempo_gasto ? Number(resultado.tempo_gasto) : undefined,
         sessionId: resultado.session_id,
         metadados: resultado.metadados,
         status: resultado.status || 'concluido',
         userEmail: resultado.user_email || undefined,
-        empresaId: resultado.empresa_id || null,
+        empresaId: typeof resultado.empresa_id === 'string' && uuidRe.test(resultado.empresa_id) ? resultado.empresa_id : null,
       };
       
       console.log('🔍 [RESULTADOS-SERVICE] Enviando para API local:', JSON.stringify(dadosApi, null, 2));

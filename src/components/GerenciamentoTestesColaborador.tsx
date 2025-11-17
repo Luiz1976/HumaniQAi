@@ -269,7 +269,7 @@ export function GerenciamentoTestesColaborador({
                   size="sm"
                   variant="outline"
                   onClick={() => liberarTeste(teste.id)}
-                  disabled={processando || teste.disponibilidade?.disponivel}
+                  disabled={processando}
                   className="w-full"
                   data-testid={`button-liberar-${teste.id}`}
                 >

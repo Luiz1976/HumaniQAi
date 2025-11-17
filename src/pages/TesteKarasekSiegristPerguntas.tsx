@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,9 @@ export default function TesteKarasekSiegristPerguntas() {
   const [processandoResposta, setProcessandoResposta] = useState(false);
   const [mostrarBotaoFinalizar, setMostrarBotaoFinalizar] = useState(false);
   
+  // Ref para bloquear múltiplas finalizações rápidas
+  const finalizandoRef = useRef(false);
+
   // Estado para controlar a animação de processamento
   const [mostrarAnimacaoProcessamento, setMostrarAnimacaoProcessamento] = useState(false);
   
@@ -93,6 +96,7 @@ export default function TesteKarasekSiegristPerguntas() {
   const progresso = ((perguntaAtual + 1) / perguntas.length) * 100;
   const jaRespondeu = respostas[pergunta.id] !== undefined;
   const isUltimaPergunta = perguntaAtual === perguntas.length - 1;
+  const todasRespondidas = perguntas.every(p => respostas[p.id] !== undefined);
 
   // Verificar se qualquer operação está em andamento
   const operacaoEmAndamento = salvandoResposta || avancandoAutomaticamente || processandoResposta || processandoTeste;
@@ -127,7 +131,12 @@ export default function TesteKarasekSiegristPerguntas() {
   };
 
   // Função para finalizar o teste
-  const finalizarTeste = async () => {
+    const finalizarTeste = async () => {
+    if (finalizandoRef.current) {
+      console.warn('⚠️ [FINALIZAR-TESTE] Finalização já em andamento, ignorando chamada duplicada.');
+      return;
+    }
+    finalizandoRef.current = true;
     console.log('🔍 [FINALIZAR-TESTE] Iniciando finalização do teste...');
     setProcessandoTeste(true);
     
@@ -156,7 +165,7 @@ export default function TesteKarasekSiegristPerguntas() {
       console.log('🔍 [FINALIZAR-TESTE] Session ID obtido:', sessionId);
       
       const dadosResultado = {
-        teste_id: sessionStorage.getItem('current_teste_id') || null,
+        teste_id: null,
         usuario_id: null,
         session_id: sessionId,
         pontuacao_total: analiseKarasek.riscoGeral.percentual,
@@ -287,8 +296,8 @@ export default function TesteKarasekSiegristPerguntas() {
           setAvancandoAutomaticamente(false);
           setRespostaSalva(false);
         } else {
-          // Se for a última pergunta, mostrar botão de finalizar
-          setMostrarBotaoFinalizar(true);
+          // Mostrar botão de finalizar somente se todas as perguntas foram respondidas
+          setMostrarBotaoFinalizar(todasRespondidas);
         }
       } else {
         // Mostrar erro e não avançar
@@ -492,14 +501,21 @@ export default function TesteKarasekSiegristPerguntas() {
                   <div className="flex items-center justify-center gap-3">
                     <CheckCircle className="h-5 w-5" />
                     <span className="font-medium">
-                      Selecionado: {pergunta.escala[respostas[pergunta.id] - 1]}
+                      Selecionado: {(() => {
+                        const total = pergunta.escala === 'likert4' ? 4 : 5;
+                        const valor = respostas[pergunta.id];
+                        if (total === 4) {
+                          return ['Discordo totalmente','Discordo','Concordo','Concordo totalmente'][valor - 1];
+                        }
+                        return ['Discordo totalmente','Discordo','Neutro','Concordo','Concordo totalmente'][valor - 1];
+                      })()}
                     </span>
                   </div>
                 </div>
               )}
 
               {/* Botão de finalizar teste - aparece após responder a última pergunta */}
-              {mostrarBotaoFinalizar && isUltimaPergunta && jaRespondeu && (
+              {mostrarBotaoFinalizar && isUltimaPergunta && jaRespondeu && todasRespondidas && (
                 <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl">
                   <div className="text-center">
                     <h3 className="text-lg font-semibold text-green-800 mb-2">
@@ -510,7 +526,7 @@ export default function TesteKarasekSiegristPerguntas() {
                     </p>
                     <Button
                       onClick={finalizarTeste}
-                      disabled={processandoTeste}
+                      disabled={processandoTeste || !todasRespondidas}
                       className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold"
                     >
                       {processandoTeste ? (
@@ -566,6 +582,11 @@ export default function TesteKarasekSiegristPerguntas() {
       {/* Animação de processamento */}
       {mostrarAnimacaoProcessamento && (
         <ProcessingAnimation onComplete={handleAnimacaoCompleta} />
+      )}
+
+      {/* Overlay global anti-cliques durante operações */}
+      {(operacaoEmAndamento || salvandoResposta || processandoTeste) && (
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-[1px] z-50" />
       )}
     </div>
   );

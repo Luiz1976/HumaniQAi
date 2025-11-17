@@ -3,6 +3,7 @@ import { drizzle as drizzlePostgres } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import Database from 'better-sqlite3';
 import * as schema from '../shared/schema';
+import { randomUUID } from 'crypto';
 
 // Escolher banco baseado no ambiente
 const isProduction = process.env.NODE_ENV === 'production';
@@ -29,6 +30,7 @@ if (isProduction && hasDatabaseUrl) {
 
   const sqlite = new Database('humaniq-dev.db');
   sqlite.pragma('journal_mode = WAL');
+  sqlite.function('gen_random_uuid', () => randomUUID());
 
   db = drizzle(sqlite, { schema });
   dbType = 'SQLite (desenvolvimento)';

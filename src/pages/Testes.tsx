@@ -12,7 +12,8 @@ import { infoTesteMaturidadeRiscosPsicossociais } from "@/lib/testes/maturidade-
 import { configPercepacaoAssedio } from "@/lib/testes/percepcao-assedio";
 import { configQualidadeVidaTrabalho } from "@/lib/testes/qualidade-vida-trabalho";
 import { obterInfoTesteRPO } from "@/lib/testes/riscos-psicossociais-ocupacionais";
-import { infoTesteHumaniQInsight } from "@/lib/testes/humaniq-insight";
+import { infoHumaniQInsight } from "@/lib/testes/humaniq-insight";
+
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -61,6 +62,9 @@ export default function Testes() {
     staleTime: 0, // Sempre revalidar
     refetchOnWindowFocus: true, // ✅ Recarregar automaticamente ao focar na janela
     refetchOnMount: true, // ✅ Recarregar ao montar
+    refetchOnReconnect: true, // ✅ Recarregar ao reconectar rede
+    refetchInterval: 8000, // ✅ Atualização em background para refletir liberação da empresa rapidamente
+    refetchIntervalInBackground: true,
   });
 
   // ✅ Listener para invalidar cache quando um teste for concluído
@@ -68,8 +72,6 @@ export default function Testes() {
     const handleTesteConcluido = (event: Event) => {
       const customEvent = event as CustomEvent;
       console.log('🔄 [TESTES] Teste concluído detectado:', customEvent.detail);
-      
-      // Invalidar cache para forçar recarregamento
       queryClient.invalidateQueries({ 
         queryKey: ['/api/teste-disponibilidade/colaborador/testes'] 
       });
@@ -83,7 +85,8 @@ export default function Testes() {
     };
   }, [queryClient]);
 
-  const testes = data?.testes || [];
+  let testes = (data?.testes || []);
+
 
   // Logging quando os dados mudam
   if (data) {
@@ -105,7 +108,8 @@ export default function Testes() {
 
   const getTesteInfo = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
-    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return infoTesteHumaniQInsight;
+    
+    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return infoHumaniQInsight;
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return infoTesteClimaOrganizacional;
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return infoTesteKarasekSiegrist;
     if (nomeNorm.includes('estresse ocupacional') || nomeNorm.includes('estresse-ocupacional')) return infoTesteEstresseOcupacional;
@@ -119,6 +123,7 @@ export default function Testes() {
 
   const getTesteRoute = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
+    
     if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return '/teste/humaniq-insight';
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return '/teste/karasek-siegrist';
@@ -133,7 +138,8 @@ export default function Testes() {
 
   const getTesteIcon = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
-    if (nomeNorm.includes('humaniq insight')) return <Lightbulb className="h-8 w-8 text-white" />;
+    
+    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return <Lightbulb className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('clima organizacional')) return <Building2 className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return <Scale className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('estresse')) return <Heart className="h-8 w-8 text-white" />;
@@ -147,6 +153,7 @@ export default function Testes() {
 
   const getTesteColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
+    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return 'bg-sky-500';
     if (nomeNorm.includes('clima organizacional')) return 'bg-blue-500';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'bg-purple-500';
     if (nomeNorm.includes('estresse')) return 'bg-blue-500';
@@ -160,6 +167,7 @@ export default function Testes() {
 
   const getTesteBadgeColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
+    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return 'text-sky-600 border-sky-200 bg-sky-50 dark:bg-sky-900/20 dark:text-sky-400 dark:border-sky-800';
     if (nomeNorm.includes('clima organizacional')) return 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800';
     if (nomeNorm.includes('estresse')) return 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
@@ -173,6 +181,7 @@ export default function Testes() {
 
   const getTesteButtonColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
+    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return 'bg-sky-600 hover:bg-sky-700';
     if (nomeNorm.includes('clima organizacional')) return 'bg-blue-600 hover:bg-blue-700';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'bg-purple-600 hover:bg-purple-700';
     if (nomeNorm.includes('estresse')) return 'bg-blue-600 hover:bg-blue-700';
@@ -418,11 +427,12 @@ export default function Testes() {
                   </div>
                 )}
                 <Button 
-                  className={`w-full ${testeConfig.buttonColor} text-white rounded-xl py-3 font-medium transition-colors duration-200`}
-                  onClick={() => navigate(testeConfig.route)}
-                  data-testid={`button-iniciar-estatico-${index}`}
+                  className={`w-full bg-gray-400 text-gray-700 rounded-xl py-3 font-medium cursor-not-allowed`}
+                  disabled
+                  data-testid={`button-bloqueado-estatico-${index}`}
                 >
-                  {testeConfig.buttonText || 'Iniciar Teste'}
+                  <Lock className="h-4 w-4 mr-2" />
+                  Aguardando liberação da empresa
                 </Button>
               </CardContent>
             </Card>
