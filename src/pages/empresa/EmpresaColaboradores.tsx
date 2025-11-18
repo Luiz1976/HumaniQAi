@@ -90,8 +90,22 @@ export default function EmpresaColaboradores() {
       }
 
       const reais = filtrarReais(lista);
-      console.log('🔍 [FRONT] Colaboradores reais:', reais.map(c => ({ nome: c.nome, email: c.email })));
-      setColaboradores(reais);
+      const normalizados: Colaborador[] = reais.map((c: any) => ({
+        id: c.id,
+        nome: typeof c.nome === 'string' && c.nome.length > 0 ? c.nome : (c.name || 'Sem nome'),
+        email: typeof c.email === 'string' && c.email.length > 0 ? c.email : 'sem-email@local',
+        cargo: (typeof c.cargo === 'string' && c.cargo.length > 0) ? c.cargo : undefined,
+        departamento: (typeof c.departamento === 'string' && c.departamento.length > 0) ? c.departamento : undefined,
+        avatar: c.avatar,
+        ativo: Boolean(c.ativo),
+        created_at: (typeof c.created_at !== 'undefined' && c.created_at !== null) ? c.created_at : (c.createdAt ?? c.created_at),
+        updated_at: (typeof c.updated_at !== 'undefined' && c.updated_at !== null) ? c.updated_at : (c.updatedAt ?? c.updated_at),
+        total_testes: (typeof c.total_testes === 'number') ? c.total_testes : (typeof c.totalTestes === 'number' ? c.totalTestes : 0),
+        ultimo_teste: c.ultimo_teste ?? c.ultimoTeste ?? undefined,
+        situacaoPsicossocial: c.situacaoPsicossocial,
+      }));
+      console.log('🔍 [FRONT] Colaboradores normalizados:', normalizados.map(c => ({ nome: c.nome, email: c.email, created_at: c.created_at })));
+      setColaboradores(normalizados);
     } catch (error) {
       console.error('Erro ao carregar colaboradores:', error);
       toast.error('Erro ao carregar colaboradores');
@@ -141,8 +155,10 @@ export default function EmpresaColaboradores() {
     navigate(`/empresa/colaborador/${colaboradorId}/resultados`);
   };
 
-  const formatarData = (data: string) => {
-    return new Date(data).toLocaleDateString('pt-BR');
+  const formatarData = (data: any) => {
+    if (!data) return '—';
+    const d = data instanceof Date ? data : new Date(data);
+    return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('pt-BR');
   };
 
   const getStatusIcon = (status: string) => {
@@ -176,8 +192,8 @@ export default function EmpresaColaboradores() {
   };
 
   const colaboradoresFiltrados = colaboradores.filter(colaborador => {
-    const matchesSearch = colaborador.nome.toLowerCase().includes(filtroColaboradores.toLowerCase()) ||
-                         colaborador.email.toLowerCase().includes(filtroColaboradores.toLowerCase()) ||
+      const matchesSearch = (colaborador.nome || '').toLowerCase().includes(filtroColaboradores.toLowerCase()) ||
+                         (colaborador.email || '').toLowerCase().includes(filtroColaboradores.toLowerCase()) ||
                          (colaborador.cargo && colaborador.cargo.toLowerCase().includes(filtroColaboradores.toLowerCase())) ||
                          (colaborador.departamento && colaborador.departamento.toLowerCase().includes(filtroColaboradores.toLowerCase()));
     

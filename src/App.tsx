@@ -48,6 +48,7 @@ import TesteClimaBemEstarPerguntas from "./pages/TesteClimaBemEstarPerguntas";
 import TesteHumaniQInsightIntroducao from "./pages/TesteHumaniQInsightIntroducao";
 import ResultadoHumaniQInsight from "./pages/ResultadoHumaniQInsight";
 import ResultadoClimaBemEstar from "./pages/ResultadoClimaBemEstar";
+import FinalizacaoAmigavel from "./pages/FinalizacaoAmigavel";
 import TesteMGRPIntroducao from "./pages/TesteMGRPIntroducao";
 import TesteMGRPPerguntas from "./pages/TesteMGRPPerguntas";
 import ResultadoMaturidadeRiscosPsicossociais from "./pages/ResultadoMaturidadeRiscosPsicossociais";
@@ -341,7 +342,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <ResultadoKarasekSiegrist />
+                      <FinalizacaoAmigavel />
                     </MainLayout>
                   </ProtectedRoute>
                 } 
@@ -391,7 +392,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <ResultadoEstresseOcupacional />
+                      <FinalizacaoAmigavel />
                     </MainLayout>
                   </ProtectedRoute>
                 } 
@@ -416,7 +417,7 @@ function App() {
                 path="/resultado/clima-bem-estar/:resultadoId" 
                 element={
                   <MainLayout>
-                    <ResultadoClimaBemEstar />
+                    <FinalizacaoAmigavel />
                   </MainLayout>
                 } 
               />
@@ -467,7 +468,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <ResultadoMaturidadeRiscosPsicossociais />
+                      <FinalizacaoAmigavel />
                     </MainLayout>
                   </ProtectedRoute>
                 } 
@@ -477,7 +478,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <ResultadoMaturidadeRiscosPsicossociais />
+                      <FinalizacaoAmigavel />
                     </MainLayout>
                   </ProtectedRoute>
                 } 
@@ -507,7 +508,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <ResultadoPAS />
+                      <FinalizacaoAmigavel />
                     </MainLayout>
                   </ProtectedRoute>
                 } 
@@ -537,7 +538,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <Resultado />
+                      <FinalizacaoAmigavel />
                     </MainLayout>
                   </ProtectedRoute>
                 } 
@@ -567,7 +568,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <ResultadoRPO />
+                      <FinalizacaoAmigavel />
                     </MainLayout>
                   </ProtectedRoute>
                 } 
@@ -597,7 +598,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <ResultadoRPO />
+                      <FinalizacaoAmigavel />
                     </MainLayout>
                   </ProtectedRoute>
                 } 
@@ -606,7 +607,7 @@ function App() {
                 path="/resultado/humaniq-insight/:resultadoId" 
                 element={
                   <MainLayout>
-                    <ResultadoHumaniQInsight />
+                    <FinalizacaoAmigavel />
                   </MainLayout>
                 } 
               />
@@ -615,7 +616,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <Resultado />
+                      <FinalizacaoAmigavel />
                     </MainLayout>
                   </ProtectedRoute>
                 } 
@@ -624,7 +625,7 @@ function App() {
                 path="/resultado/:resultadoId" 
                 element={
                   <MainLayout>
-                    <Resultado />
+                    <FinalizacaoAmigavel />
                   </MainLayout>
                 } 
               />

@@ -1396,19 +1396,11 @@ export default function EmpresaPRG() {
 
       const copyBtnId = `copy-${Date.now()}`;
       const openBtnId = `open-${Date.now()}`;
-      const isLocalBase = /localhost|127\.0\.0\.1/i.test(baseUrl);
-      const warningHtml = isLocalBase
-        ? `<div style="margin-bottom: 10px; background: #fff3cd; color: #7c5400; padding: 10px; border-radius: 8px; font-size: 14px;">
-             <strong>⚠️ Atenção:</strong> A URL base atual é <em>localhost</em>. Celulares não acessam <em>localhost</em>.
-             Configure <code style="background:#0000000a; padding:2px 6px; border-radius:6px;">VITE_LOCAL_IP_BASE_URL</code> com seu IP local (ex.: <em>http://192.168.x.x:5000</em>) para escanear via câmera.
-           </div>`
-        : '';
       content.innerHTML = `
         <h2 style="color: #1f2937; margin-bottom: 8px; font-weight: 700; font-size: 20px;">📱 QR Code - Dashboard PGR Público</h2>
         <p style="color: #065f46; margin-bottom: 12px; font-weight: 600; background: #d1fae5; padding: 10px; border-radius: 8px;">
           ✓ Acesso livre sem login — visualize pelo QR ou link
         </p>
-        ${warningHtml}
         <p style="color: #4b5563; margin-bottom: 16px; font-size: 14px;">
           Dica: aproxime a câmera e garanta boa iluminação.
         </p>
@@ -1578,7 +1570,7 @@ export default function EmpresaPRG() {
                 <div>
                   <h2 className="text-lg font-bold text-white">{empresaData.nome}</h2>
                   <div className="flex gap-4 text-sm text-white/70 mt-1">
-                    <span>CNPJ: {empresaData.cnpj}</span>
+                    
                     {empresaData.setor !== 'Não informado' && <span>Setor: {empresaData.setor}</span>}
                   </div>
                 </div>

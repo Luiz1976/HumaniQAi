@@ -2,7 +2,7 @@ import { Sparkles, BarChart3, User, Menu, Database, Home, LogOut, GraduationCap 
 import Logo from "@/components/Logo";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { colaboradorService, ColaboradorCompleto } from "@/services/colaboradorService";
 import AvatarSelector from "@/components/AvatarSelector";
 import { toast } from "sonner";
@@ -53,12 +53,17 @@ export function AppSidebar() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   // Buscar dados do colaborador logado
+  const hasLoadedRef = useRef(false);
   useEffect(() => {
     const carregarDadosColaborador = async () => {
       console.log('🔄 [AppSidebar] Iniciando carregamento de dados do colaborador...');
       console.log('👤 [AppSidebar] Usuário atual:', user);
       
       if (user) {
+        if (hasLoadedRef.current) {
+          return;
+        }
+        hasLoadedRef.current = true;
         setLoadingColaborador(true);
         try {
           console.log('📞 [AppSidebar] Chamando colaboradorService.getDadosColaboradorLogado()...');
@@ -75,6 +80,7 @@ export function AppSidebar() {
         console.log('⚠️ [AppSidebar] Usuário não autenticado, limpando dados do colaborador');
         setColaborador(null);
         setLoadingColaborador(false);
+        hasLoadedRef.current = false;
       }
     };
 
@@ -166,6 +172,7 @@ export function AppSidebar() {
 
   const isActive = (path: string) => currentPath === path || currentPath.startsWith(path);
   const isCollapsed = state === "collapsed";
+  const menuItems = user?.role === 'colaborador' ? items.filter((i) => i.url !== '/todos-resultados') : items;
 
   return (
     <Sidebar
@@ -232,7 +239,7 @@ export function AppSidebar() {
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu className="space-y-2">
-                {items.map((item) => {
+                {menuItems.map((item) => {
                   const active = isActive(item.url);
                   return (
                     <SidebarMenuItem key={item.title}>

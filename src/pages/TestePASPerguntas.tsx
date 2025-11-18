@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/AuthContext';
 import { configPercepacaoAssedio, escalaLikertPAS } from '@/lib/testes/percepcao-assedio';
 import { obterPerguntasPercepacaoAssedio } from '@/lib/services/perguntasPercepacaoAssedio';
 import { salvarRespostaPercepacaoAssedio, finalizarTestePercepacaoAssedio } from '@/lib/services/resultadosPercepacaoAssedio';
-import { obterSessaoAtual } from '@/lib/services/session-service';
+import { sessionService } from '@/lib/services/session-service';
 import { supabase } from '@/lib/supabase';
 import ProcessingAnimation from '@/components/ProcessingAnimation';
 
@@ -57,13 +57,8 @@ export default function TestePASPerguntas() {
   useEffect(() => {
     const inicializar = async () => {
       try {
-        const sessao = await obterSessaoAtual();
-        if (!sessao) {
-          toast.error('Sessão não encontrada. Redirecionando...');
-          navigate('/testes');
-          return;
-        }
-        setSessaoId(sessao.sessionId);
+        const id = sessionService.renewSessionIfNeeded();
+        setSessaoId(id);
 
         const perguntasData = await obterPerguntasPercepacaoAssedio();
         const perguntasFormatadas = perguntasData.map((p, index) => ({

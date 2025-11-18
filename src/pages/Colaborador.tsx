@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, BarChart3, Zap, Shield, Users, Building2, Heart, Target, TrendingUp, Award, ClipboardCheck } from "lucide-react";
+import { Sparkles, BarChart3, Zap, Shield, Users, Building2, Heart, Target, Award, ClipboardCheck } from "lucide-react";
 import Logo from "@/components/Logo";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -237,55 +237,6 @@ const Colaborador = () => {
                  <span className="flex items-center justify-center gap-3">
                    Começar Agora
                    <Zap className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-                 </span>
-               </Button>
-            </CardHeader>
-          </Card>
-
-          {/* Meus Resultados */}
-          <Card
-            className="relative group bg-gradient-to-br from-green-50 via-white to-emerald-50/50 dark:from-green-900/20 dark:via-gray-800 dark:to-emerald-900/20 border border-green-200/50 dark:border-green-700/50 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden cursor-pointer"
-            onClick={() => navigate('/todos-resultados')}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate('/todos-resultados'); }}
-          >
-            {/* Efeito de brilho animado */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            
-            {/* Gradiente decorativo superior */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-500 via-emerald-500 to-green-600"></div>
-            
-            {/* Padrão de fundo decorativo */}
-            <div className="absolute top-4 right-4 w-24 h-24 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full blur-2xl"></div>
-            <div className="absolute bottom-4 left-4 w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-green-500/10 rounded-full blur-xl"></div>
-            
-            <CardHeader className="text-center pb-6 pt-8 px-8 relative z-10">
-              {/* Ícone com efeito especial */}
-              <div className="relative mb-8 mx-auto w-fit">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-500/40 to-emerald-500/40 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-green-500 to-emerald-600 p-6 rounded-3xl shadow-2xl group-hover:shadow-green-500/25 transition-all duration-500">
-                  <BarChart3 className="h-16 w-16 text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 drop-shadow-lg" />
-                </div>
-              </div>
-              
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4 group-hover:from-green-500 group-hover:to-emerald-500 transition-all duration-300">
-                Meus Resultados
-              </CardTitle>
-              
-              <CardDescription className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-8 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
-                Visualize e analise seus resultados anteriores. Acompanhe sua evolução ao longo do tempo e obtenha insights personalizados para seu desenvolvimento pessoal e profissional.
-              </CardDescription>
-              
-              {/* Botão de ação */}
-              <Button 
-                 size="lg" 
-                 className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 group-hover:shadow-green-500/25"
-                 onClick={(e) => { e.stopPropagation(); navigate('/todos-resultados'); }}
-               >
-                 <span className="flex items-center justify-center gap-3">
-                   Ver Resultados
-                   <TrendingUp className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
                  </span>
                </Button>
             </CardHeader>

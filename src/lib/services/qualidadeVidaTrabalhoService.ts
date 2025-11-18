@@ -160,10 +160,10 @@ export async function finalizarTesteQVT(
     
     // Salvar resultado via API local
     const dadosAPI = {
-      testeId: '7b3c8d4e-9f0a-1b2c-3d4e-5f6a7b8c9d0e', // UUID do teste QVT no banco
+      // Não enviar testeId para deixar o backend encontrar pelo metadados.teste_nome
       pontuacaoTotal: analiseQVT.indiceGeral || 0,
       metadados: {
-        teste_nome: 'Qualidade de Vida no Trabalho',
+        teste_nome: 'HumaniQ QVT - Qualidade de Vida no Trabalho',
         teste_categoria: configQualidadeVidaTrabalho.categoria,
         tipo_teste: 'qvt',
         tipo: 'qvt',
@@ -188,6 +188,32 @@ export async function finalizarTesteQVT(
     console.log('🔍 [QVT-SERVICE] Enviando resultado para API...');
     const resultadoSalvo = await apiService.salvarResultadoTeste(dadosAPI);
     console.log('✅ [QVT-SERVICE] Resultado salvo via API com sucesso:', resultadoSalvo);
+    try {
+      const token = localStorage.getItem('authToken');
+      const userRaw = localStorage.getItem('currentUser');
+      if (token && userRaw && dadosAPI.testeId) {
+        const userData = JSON.parse(userRaw);
+        if (userData.role === 'colaborador' && userData.userId) {
+          console.log('🔒 [QVT-SERVICE] Marcando teste como concluído (bloqueio automático)');
+          const resp = await fetch('/api/teste-disponibilidade/marcar-concluido', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ testeId: dadosAPI.testeId, colaboradorId: userData.userId })
+          });
+          if (resp.ok) {
+            console.log('✅ [QVT-SERVICE] Teste QVT marcado como indisponível');
+            window.dispatchEvent(new CustomEvent('teste-concluido', { detail: { testeId: dadosAPI.testeId } }));
+          } else {
+            console.warn('⚠️ [QVT-SERVICE] Falha ao marcar indisponível:', await resp.text());
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('⚠️ [QVT-SERVICE] Erro ao acionar bloqueio automático:', e);
+    }
     
     return {
       resultado: {

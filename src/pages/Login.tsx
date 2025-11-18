@@ -4,9 +4,10 @@ import { useAuth } from '../hooks/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Eye, EyeOff, Lock, Mail, Sparkles, Shield, Zap, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Shield, Zap, CheckCircle2 } from 'lucide-react';
+import HumaniQLogoHQ from '../components/HumaniQLogoHQ';
 
-const Login = () => {
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -50,17 +51,71 @@ const Login = () => {
 
   console.log('🔍 [LOGIN] Renderizando componente Login');
 
+  const bgUrl = import.meta.env.VITE_LOGIN_BG_URL || '/vecteezy_blue-shiny-space-fire-particle-powder-looping-flow-animation_11789447.mov';
+  const normalizedBgUrl = /^[a-zA-Z]:\\/.test(bgUrl)
+    ? `/${bgUrl.split(/[/\\]/).pop()}`
+    : bgUrl;
+  const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(normalizedBgUrl);
+  const isMov = /\.mov$/i.test(normalizedBgUrl);
+  const videoType = isMov
+    ? 'video/quicktime'
+    : /\.mp4$/i.test(bgUrl)
+    ? 'video/mp4'
+    : /\.webm$/i.test(bgUrl)
+    ? 'video/webm'
+    : /\.ogg$/i.test(bgUrl)
+    ? 'video/ogg'
+    : undefined;
+
+  // Fallback para quando o vídeo não funciona
+  const [videoFailed, setVideoFailed] = useState(false);
+  
+  // Usar animação CSS como fallback principal
+  const useVideoBackground = isVideo && !videoFailed;
+  
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
-      {/* Animated Background Gradient Orbs */}
-      <div className="absolute inset-0 overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Background Animado - sempre visível */}
+      <div 
+        className="absolute inset-0 w-full h-full z-0"
+        style={{
+          background: 'linear-gradient(-45deg, #0f172a, #1e293b, #334155, #0f172a, #1e40af, #0f172a)',
+          backgroundSize: '400% 400%',
+          animation: 'gradient 20s ease infinite'
+        }}
+      />
+      
+      {/* Tentativa de vídeo por cima do background animado */}
+      {useVideoBackground ? (
+        <video
+          className="absolute inset-0 w-full h-full object-cover z-10"
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/placeholder.svg"
+          onError={() => setVideoFailed(true)}
+          onAbort={() => setVideoFailed(true)}
+        >
+          <source src={normalizedBgUrl} type={videoType} />
+          <source src={normalizedBgUrl} type="video/mp4" />
+        </video>
+      ) : normalizedBgUrl && !isVideo ? (
+        <div
+          className="absolute inset-0 w-full h-full bg-center bg-cover z-0"
+          style={{ backgroundImage: `url(${normalizedBgUrl})` }}
+        />
+      ) : null}
+      <div
+        className={`absolute inset-0 z-0 ${normalizedBgUrl ? 'bg-gradient-to-br from-slate-950/40 via-blue-950/40 to-slate-900/40' : 'bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900'}`}
+      />
+      <div className="absolute inset-0 overflow-hidden z-10">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-blob" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-blob animation-delay-2000" />
         <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-blob animation-delay-4000" />
       </div>
 
-      {/* Floating Particles */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-10">
         {[...Array(20)].map((_, i) => (
           <div
             key={i}
@@ -75,8 +130,7 @@ const Login = () => {
         ))}
       </div>
 
-      {/* Main Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-12">
+      <div className="relative z-20 flex items-center justify-center min-h-screen px-4 py-12">
         <div className="w-full max-w-md">
           {/* Trust Indicators - PNL: Social Proof */}
           <div className="mb-8 text-center space-y-3 animate-fade-in">
@@ -109,8 +163,8 @@ const Login = () => {
             {/* Header */}
             <div className="relative px-8 pt-8 pb-6 text-center">
               {/* Logo/Icon with Glow */}
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/50 transform hover:scale-110 transition-transform duration-300">
-                <Sparkles className="w-8 h-8 text-white" />
+              <div className="inline-flex items-center justify-center mb-4 transform hover:scale-110 transition-transform duration-300">
+                <HumaniQLogoHQ size="lg" />
               </div>
               
               {/* PNL: Presupposition & Sensory Language */}
@@ -242,10 +296,7 @@ const Login = () => {
                     <span>Acessando...</span>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center gap-2">
-                    <span>Entrar Agora</span>
-                    <Sparkles className="w-4 h-4" />
-                  </div>
+                  <span>Entrar Agora</span>
                 )}
               </Button>
 
@@ -297,12 +348,22 @@ const Login = () => {
           }
         }
 
+        @keyframes gradient {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
         .animate-fade-in {
           animation: fade-in 1s ease-out;
         }
       `}</style>
     </div>
   );
-};
-
-export default Login;
+}

@@ -9,12 +9,14 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight, Clock, FileText, Shield, TrendingUp, Users, MessageSquare, CheckCircle, AlertTriangle, Target, BookOpen, BarChart3, UserX, Heart } from 'lucide-react';
 import { configPercepacaoAssedio } from '@/lib/testes/percepcao-assedio';
 import { motion } from 'framer-motion';
+import { sessionService } from '@/lib/services/session-service';
 
 export default function TestePASIntroducao() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleStartTest = async () => {
+    sessionService.renewSessionIfNeeded();
     setIsLoading(true);
   };
 

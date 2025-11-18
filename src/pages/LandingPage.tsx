@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Shield, CheckCircle, TrendingUp, Users, FileCheck, Zap, 
   Award, Clock, AlertTriangle, BarChart3, Sparkles, Target, Star,
   ChevronRight, Download, Play, ArrowRight, Check, X, GraduationCap,
-  BookOpen, Scale, Brain, HeartPulse, UserCheck, FileBarChart, TrendingDown, QrCode
+  BookOpen, Scale, Brain, HeartPulse, UserCheck, FileBarChart, TrendingDown, QrCode,
+  Mail, MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,6 +24,12 @@ export default function LandingPage() {
   const [activeTab, setActiveTab] = useState('rh');
   const [showComparison, setShowComparison] = useState(false);
   const navigate = useNavigate();
+  const certImgRef = useRef<HTMLImageElement>(null);
+  const [stamp, setStamp] = useState<{ width: number; rotate: number; height: number; fontSize: number }>({ width: 0, rotate: 0, height: 0, fontSize: 0 });
+
+  const navLinkClass = scrolled
+    ? 'text-gray-800 hover:text-indigo-700 font-semibold'
+    : 'text-gray-100 hover:text-indigo-300 drop-shadow-lg font-semibold';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +37,65 @@ export default function LandingPage() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const update = () => {
+      const el = certImgRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const w = r.width;
+      const h = r.height;
+      const diag = Math.sqrt(w * w + h * h);
+      const angle = Math.atan2(h, w) * (180 / Math.PI);
+      const height = Math.max(Math.round(h * 0.06), 24);
+      const fontSize = Math.max(Math.round(height * 0.6), 14);
+      const width = Math.max(Math.round(diag * 0.85), 100);
+      setStamp({ width, rotate: -angle, height, fontSize });
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    if (certImgRef.current) ro.observe(certImgRef.current);
+    window.addEventListener('resize', update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  useEffect(() => {
+    const video = document.querySelector('video[data-testid="hero-video"]') as HTMLVideoElement;
+    if (video) {
+      console.log('🎬 Vídeo encontrado, tentando reproduzir...');
+      console.log('📹 Vídeo selecionado: Pessoas olhando para computador - ID 3248994');
+      
+      const sources = video.querySelectorAll('source');
+      console.log('📋 Sources disponíveis:', sources.length);
+      sources.forEach((source, index) => {
+        console.log(`🔗 Source ${index + 1}:`, (source as HTMLSourceElement).src);
+      });
+      
+      video.play().catch(error => {
+        console.log('🚫 Autoplay bloqueado, tentando reproduzir com interação:', error);
+        document.addEventListener('click', () => {
+          video.play().catch(e => console.log('❌ Erro ao reproduzir vídeo:', e));
+        }, { once: true });
+      });
+      
+      video.addEventListener('loadeddata', () => {
+        console.log('✅ Vídeo carregado com sucesso!');
+        console.log('📺 Vídeo atual:', video.currentSrc);
+      });
+      
+      video.addEventListener('error', (e) => {
+        console.log('❌ Erro ao carregar vídeo:', e);
+        console.log('🔄 URL tentada:', video.currentSrc);
+      });
+      
+      video.addEventListener('loadstart', () => {
+        console.log('⏳ Iniciando carregamento do vídeo...');
+      });
+    }
   }, []);
 
   const scrollToSection = (id: string) => {
@@ -42,23 +108,23 @@ export default function LandingPage() {
       {/* Header Fixo */}
       <header 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg' : 'bg-transparent'
+          scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg' : 'bg-white/10 backdrop-blur-md border-b border-white/20'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center">
             <Logo size="md" showText={true} />
             <nav className="hidden md:flex space-x-8 items-center ml-12">
-              <button onClick={() => scrollToSection('solucao')} className="text-gray-700 hover:text-indigo-600 transition-colors">
+              <button onClick={() => scrollToSection('solucao')} className={`${navLinkClass} transition-colors`}>
                 Solução
               </button>
-              <button onClick={() => scrollToSection('modulos')} className="text-gray-700 hover:text-indigo-600 transition-colors">
+              <button onClick={() => scrollToSection('modulos')} className={`${navLinkClass} transition-colors`}>
                 Módulos
               </button>
-              <button onClick={() => scrollToSection('planos')} className="text-gray-700 hover:text-indigo-600 transition-colors">
+              <button onClick={() => scrollToSection('planos')} className={`${navLinkClass} transition-colors`}>
                 Planos
               </button>
-              <button onClick={() => scrollToSection('depoimentos')} className="text-gray-700 hover:text-indigo-600 transition-colors">
+              <button onClick={() => scrollToSection('depoimentos')} className={`${navLinkClass} transition-colors`}>
                 Casos de Sucesso
               </button>
               <button
@@ -69,7 +135,7 @@ export default function LandingPage() {
                     console.warn('Falha ao disparar evento chatbot:open', e);
                   }
                 }}
-                className="text-gray-700 hover:text-indigo-600 transition-colors"
+                className={`${navLinkClass} transition-colors`}
                 data-testid="button-chatbot-header"
                 title="Abrir Chatbot"
               >
@@ -96,33 +162,58 @@ export default function LandingPage() {
 
       {/* SEÇÃO 1: HERO */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
-        <div className="max-w-7xl mx-auto">
+        <div className="absolute inset-0 z-0">
+          <video
+            data-testid="hero-video"
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
+            crossOrigin="anonymous"
+            aria-hidden="true"
+            style={{ minWidth: '100%', minHeight: '100%', width: 'auto', height: 'auto' }}
+          >
+            <source src="https://videos.pexels.com/video-files/3248994/3248994-hd_1920_1080_25fps.mp4" type="video/mp4" />
+            <source src="https://videos.pexels.com/video-files/7792332/7792332-hd_1920_1080_25fps.mp4" type="video/mp4" />
+            <source src="https://videos.pexels.com/video-files/3184365/3184365-hd_1920_1080_30fps.mp4" type="video/mp4" />
+            <source src="/videos/office-computer-hd.mp4" type="video/mp4" />
+            Seu navegador não suporta vídeos HTML5.
+          </video>
+        </div>
+        {/* Overlay inteligente - gradiente sutil que cria contraste apenas onde necessário */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/5 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/5 via-transparent to-purple-900/5 z-10" />
+        {/* Reforço de contraste específico para área de texto */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent z-10" />
+        <div className="max-w-7xl mx-auto relative z-20">
           <div className="text-center max-w-4xl mx-auto">
-            <Badge className="mb-6 bg-amber-100 text-amber-800 border-amber-200 px-4 py-2 text-sm font-medium" data-testid="badge-prazo">
-              ⚠️ Prazo NR-01: Fiscalização ativa a partir de 25/05/2026
+            <Badge className="mb-6 bg-red-600 text-white px-4 py-2 text-sm font-semibold shadow-md relative z-30" data-testid="badge-prazo">
+              ⚠️ URGENTE: Prazo NR-01 - Fiscalização ativa a partir de 25/05/2026
             </Badge>
             
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              Sua empresa está <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">protegida</span> contra os riscos psicossociais?
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+              Sua empresa está <span className="text-yellow-400">protegida</span> contra os riscos psicossociais?
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-white mb-8 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               A partir de maio de 2026, mapear e controlar riscos psicossociais será obrigatório. 
-              Empresas sem evidências documentadas enfrentarão <strong className="text-red-600">multas de até R$ 6.708</strong> e 
-              passivos trabalhistas que podem ultrapassar <strong className="text-red-600">R$ 100 mil</strong> por caso.
+              Empresas sem evidências documentadas enfrentarão multas de até <strong className="text-yellow-400 font-semibold">R$ 6.708</strong> e 
+              passivos trabalhistas que podem ultrapassar <strong className="text-yellow-400 font-semibold">R$ 100 mil</strong> por caso.
             </p>
 
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 p-6 mb-8 rounded-lg" data-testid="card-estatistica">
+            <div className="bg-white border-l-4 border-red-500 p-6 mb-8 rounded-lg shadow-lg relative z-30" data-testid="card-estatistica">
               <div className="flex items-start">
                 <AlertTriangle className="h-6 w-6 text-red-600 mt-1 mr-3 flex-shrink-0" />
                 <div className="text-left">
                   <p className="text-lg font-semibold text-gray-900 mb-2">
-                    Dado Alarmante que Exige Sua Atenção Agora
+                    Dado alarmante que exige sua atenção
                   </p>
-                  <p className="text-gray-700">
-                    <strong className="text-2xl text-red-600">472 mil afastamentos</strong> por transtornos mentais foram registrados no Brasil em 2024 — 
-                    um aumento de <strong>68% em relação a 2023</strong>.
+                  <p className="text-gray-800">
+                    <strong className="text-xl text-red-600">472 mil afastamentos</strong> por transtornos mentais foram registrados no Brasil em 2024 — 
+                    um aumento de <strong className="text-red-700">68% em relação a 2023</strong>.
                   </p>
                 </div>
               </div>
@@ -132,7 +223,7 @@ export default function LandingPage() {
               <Button 
                 size="lg" 
                 onClick={() => scrollToSection('diagnostico')}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all"
+                className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all text-gray-900 font-bold relative z-30"
                 data-testid="button-diagnostico-hero"
               >
                 <Sparkles className="mr-2 h-5 w-5" />
@@ -142,17 +233,13 @@ export default function LandingPage() {
                 size="lg" 
                 variant="outline"
                 onClick={() => scrollToSection('demo')}
-                className="text-lg px-8 py-6 border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+                className="text-lg px-8 py-6 border-2 border-indigo-400 text-indigo-700 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 font-semibold transition-all bg-white shadow-lg hover:shadow-xl group relative z-30"
                 data-testid="button-demo"
               >
-                <Play className="mr-2 h-5 w-5" />
+                <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                 Ver Demonstração
               </Button>
             </div>
-
-            <p className="text-sm text-gray-500 mt-4">
-              ✓ Sem custo ✓ Sem cartão de crédito ✓ Resultado imediato
-            </p>
           </div>
         </div>
       </section>
@@ -162,9 +249,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              O custo invisível que está <span className="text-red-600">consumindo sua empresa</span>
+              O custo invisível que está <span className="text-red-600">devorando sua empresa</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto font-medium">
               Enquanto você lê esta página, colaboradores da sua organização podem estar enfrentando:
             </p>
           </div>
@@ -177,7 +264,7 @@ export default function LandingPage() {
                     <AlertTriangle className="h-6 w-6 text-red-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-2">Riscos que Você Não Vê</h3>
+                    <h3 className="font-bold text-xl mb-3 text-red-700">🎯 Riscos que Você NÃO Vê (Mas Estão Lá)</h3>
                     <ul className="space-y-2 text-gray-700">
                       <li className="flex items-start">
                         <X className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
@@ -212,27 +299,27 @@ export default function LandingPage() {
                     <TrendingUp className="h-6 w-6 text-orange-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-2">Impacto Financeiro Real</h3>
-                    <ul className="space-y-2 text-gray-700">
+                    <h3 className="font-bold text-xl mb-3 text-orange-700">💰 Impacto Financeiro REAL</h3>
+                    <ul className="space-y-3 text-gray-800">
                       <li className="flex items-start">
-                        <span className="text-orange-600 font-bold mr-2">R$ 12-20k</span>
-                        por colaborador afastado
+                        <span className="text-orange-600 font-black text-lg bg-orange-100 px-2 py-1 rounded">R$ 12-20k</span>
+                        <span className="ml-2">por colaborador afastado</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="text-orange-600 font-bold mr-2">20-50%</span>
-                        do salário anual por turnover
+                        <span className="text-orange-600 font-black text-lg bg-orange-100 px-2 py-1 rounded">20-50%</span>
+                        <span className="ml-2">do salário anual por turnover</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="text-orange-600 font-bold mr-2">até 30%</span>
-                        de perda de produtividade
+                        <span className="text-orange-600 font-black text-lg bg-orange-100 px-2 py-1 rounded">até 30%</span>
+                        <span className="ml-2">de perda de produtividade</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="text-orange-600 font-bold mr-2">+R$ 100k</span>
-                        em indenizações por caso
+                        <span className="text-red-600 font-black text-lg bg-red-100 px-2 py-1 rounded">+R$ 100k</span>
+                        <span className="ml-2">em indenizações por caso</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="text-orange-600 font-bold mr-2">+134%</span>
-                        em afastamentos em 2 anos
+                        <span className="text-red-600 font-black text-lg bg-red-100 px-2 py-1 rounded">+134%</span>
+                        <span className="ml-2">em afastamentos em 2 anos</span>
                       </li>
                     </ul>
                   </div>
@@ -241,12 +328,12 @@ export default function LandingPage() {
             </Card>
           </div>
 
-          <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-2xl p-8 text-center">
-            <p className="text-2xl font-semibold mb-2">
-              O Brasil está entre os países mais estressados do mundo
+          <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white rounded-2xl p-8 text-center shadow-2xl border-2 border-indigo-400">
+            <p className="text-3xl font-bold mb-3 text-yellow-300">
+              🇧🇷 O Brasil está entre os países MAIS estressados do mundo
             </p>
-            <p className="text-lg text-gray-300">
-              54% da população reporta alta preocupação com saúde mental
+            <p className="text-xl text-indigo-200 font-semibold">
+              <span className="text-4xl text-yellow-400 font-black">54%</span> da população reporta alta preocupação com saúde mental
             </p>
           </div>
         </div>
@@ -256,18 +343,21 @@ export default function LandingPage() {
       <section id="urgencia" className="py-20 bg-gradient-to-br from-amber-50 to-orange-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <Badge className="mb-4 bg-red-600 text-white px-4 py-2" data-testid="badge-nr01">
-              🚨 NOVA EXIGÊNCIA NR-01
+            <Badge className="mb-4 bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-3 text-lg font-bold shadow-xl" data-testid="badge-nr01">
+              🚨 NOVA EXIGÊNCIA NR-01 - MULTAS DE ATÉ R$ 6.708
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              O que mudou na NR-01 — e por que sua empresa precisa agir <span className="text-red-600">agora</span>
+            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              O que mudou na NR-01 — e por que sua empresa precisa agir <span className="text-red-600 font-black">AGORA</span>
             </h2>
+            <p className="text-xl text-gray-700 max-w-4xl mx-auto font-medium">
+              A partir de <span className="text-red-600 font-bold">25 de maio de 2026</span>, empresas que não estiverem em conformidade enfrentarão <span className="text-red-600 font-bold">multas diárias</span> e <span className="text-red-600 font-bold">ações trabalhistas coletivas</span>
+            </p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
-              <div className="bg-white rounded-2xl p-8 shadow-xl">
-                <h3 className="text-2xl font-bold mb-6 text-gray-900">A NR-01 agora exige que você:</h3>
+              <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-green-200">
+                <h3 className="text-2xl font-bold mb-6 text-gray-900 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">✅ A NR-01 agora exige que você:</h3>
                 <ul className="space-y-4">
                   {[
                     'Identifique os fatores de risco psicossociais',
@@ -276,9 +366,9 @@ export default function LandingPage() {
                     'Controle com planos de ação documentados',
                     'Monitore continuamente a evolução'
                   ].map((item, index) => (
-                    <li key={index} className="flex items-start" data-testid={`requirement-${index}`}>
-                      <CheckCircle className="h-6 w-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700 text-lg">{item}</span>
+                    <li key={index} className="flex items-start bg-green-50 p-3 rounded-lg border-l-4 border-green-500" data-testid={`requirement-${index}`}>
+                      <CheckCircle className="h-6 w-6 text-green-600 mr-3 flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-800 text-lg font-medium">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -304,37 +394,49 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <h4 className="font-bold text-lg mb-3 text-gray-900">Consequências para quem não cumprir:</h4>
-                <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-start">
-                    <AlertTriangle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
-                    Multas entre R$ 1.799,39 e R$ 6.708,08
+              <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-6 shadow-lg border-2 border-red-200">
+                <h4 className="font-bold text-xl mb-4 text-red-800">⚠️ Consequências para quem não cumprir:</h4>
+                <ul className="space-y-3 text-gray-800">
+                  <li className="flex items-start bg-red-100 p-3 rounded-lg border-l-4 border-red-500">
+                    <AlertTriangle className="h-6 w-6 text-red-600 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <strong className="text-red-700 font-bold text-lg">Multas entre R$ 1.799,39 e R$ 6.708,08</strong>
+                      <p className="text-sm text-red-600">por dia de descumprimento</p>
+                    </div>
                   </li>
-                  <li className="flex items-start">
-                    <AlertTriangle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
-                    Notificações via eSocial (automático)
+                  <li className="flex items-start bg-orange-100 p-3 rounded-lg border-l-4 border-orange-500">
+                    <AlertTriangle className="h-6 w-6 text-orange-600 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <strong className="text-orange-700 font-bold text-lg">Notificações via eSocial (automático)</strong>
+                      <p className="text-sm text-orange-600">sem aviso prévio</p>
+                    </div>
                   </li>
-                  <li className="flex items-start">
-                    <AlertTriangle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
-                    Ações trabalhistas com dano moral coletivo
+                  <li className="flex items-start bg-yellow-100 p-3 rounded-lg border-l-4 border-yellow-500">
+                    <AlertTriangle className="h-6 w-6 text-yellow-600 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <strong className="text-yellow-700 font-bold text-lg">Ações trabalhistas com dano moral coletivo</strong>
+                      <p className="text-sm text-yellow-600">até R$ 100 mil por colaborador</p>
+                    </div>
                   </li>
-                  <li className="flex items-start">
-                    <AlertTriangle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
-                    Possibilidade de Ação Civil Pública (ACP)
+                  <li className="flex items-start bg-purple-100 p-3 rounded-lg border-l-4 border-purple-500">
+                    <AlertTriangle className="h-6 w-6 text-purple-600 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <strong className="text-purple-700 font-bold text-lg">Possibilidade de Ação Civil Pública (ACP)</strong>
+                      <p className="text-sm text-purple-600">multas milionárias e danos reputacionais</p>
+                    </div>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
 
-          <div className="mt-12 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl p-8 text-center">
-            <p className="text-xl md:text-2xl font-semibold mb-4">
-              ⚠️ Empresas que começarem apenas em maio de 2026 estarão <strong>12 meses atrasadas</strong> na construção de evidências
+          <div className="mt-12 bg-gradient-to-r from-red-600 via-orange-500 to-red-500 text-white rounded-2xl p-8 text-center shadow-2xl border-4 border-yellow-400 transform hover:scale-105 transition-transform">
+            <p className="text-2xl md:text-3xl font-bold mb-4">
+              🚨 Empresas que começarem apenas em maio de 2026 estarão <strong className="text-yellow-300 bg-red-800 px-2 py-1 rounded">12 MESES ATRASADAS</strong> na construção de evidências
             </p>
-            <p className="text-lg text-indigo-100">
-              Auditores avaliarão o histórico completo de ações, não apenas a situação presente. 
-              Com a HumaniQ AI, você constrói esse histórico automaticamente desde o primeiro dia.
+            <p className="text-lg text-orange-100 font-medium">
+              Auditores avaliarão o <strong className="text-white">histórico completo de ações</strong>, não apenas a situação presente. 
+              Com a <strong className="text-yellow-300">HumaniQ AI</strong>, você constrói esse histórico <strong className="text-white">automaticamente desde o primeiro dia</strong>.
             </p>
           </div>
         </div>
@@ -345,24 +447,24 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-grid-white/[0.05] -z-0" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <Badge className="mb-6 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-6 py-3 text-base font-bold" data-testid="badge-solucao">
-              🎯 SOLUÇÃO 360° COMPLETA
+            <Badge className="mb-6 bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 text-gray-900 px-8 py-3 text-lg font-bold shadow-2xl animate-bounce" data-testid="badge-solucao">
+              🎯 SOLUÇÃO 360° COMPLETA - NR-01
             </Badge>
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              HumaniQ AI: A Plataforma Completa para Gestão de Riscos Psicossociais
+            <h2 className="text-4xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-white via-yellow-100 to-white bg-clip-text text-transparent drop-shadow-2xl">
+              HumaniQ AI: A Única Plataforma Completa para Gestão de Riscos Psicossociais
             </h2>
-            <p className="text-xl md:text-2xl text-indigo-200 max-w-4xl mx-auto">
-              A única solução integrada que entrega tudo o que a NR-01 exige — do mapeamento online à capacitação de lideranças — 
-              em um sistema totalmente automatizado e auditável.
+            <p className="text-xl md:text-3xl text-indigo-200 max-w-5xl mx-auto font-medium">
+              A <span className="text-yellow-300 font-bold">única solução integrada</span> que entrega <span className="text-white font-bold">tudo o que a NR-01 exige</span> — do mapeamento online à capacitação de lideranças — 
+              em um sistema <span className="text-emerald-300 font-bold">totalmente automatizado e auditável</span>.
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-            <p className="text-center text-2xl font-semibold mb-2">
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 transform hover:scale-105 transition-transform">
+            <p className="text-center text-2xl font-semibold mb-2 text-indigo-200">
               Não é apenas software.
             </p>
-            <p className="text-center text-3xl font-bold text-transparent bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text">
-              É todo o ecossistema de conformidade psicossocial.
+            <p className="text-center text-4xl font-black text-transparent bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 bg-clip-text animate-pulse">
+              É TODO O ECOSISTEMA DE CONFORMIDADE PSICOSSOCIAL
             </p>
           </div>
         </div>
@@ -612,24 +714,7 @@ export default function LandingPage() {
               ))}
             </div>
 
-            {/* CTA Central de Reciprocidade */}
-            <div className="mt-12 text-center bg-gradient-to-r from-yellow-500 to-orange-500 text-gray-900 rounded-2xl p-8">
-              <p className="text-2xl font-bold mb-2">
-                🎁 Bônus Exclusivo: Módulo 1 "Fundamentos da NR-01" Liberado Gratuitamente
-              </p>
-              <p className="text-lg mb-4">
-                Experimente a qualidade dos nossos cursos antes de contratar. Sem custo, sem compromisso.
-              </p>
-              <Button 
-                size="lg"
-                onClick={() => navigate('/quick-check')}
-                className="bg-gray-900 hover:bg-gray-800 text-white font-bold px-8 py-4 text-lg"
-                data-testid="button-modulo-gratuito"
-              >
-                <GraduationCap className="mr-2 h-5 w-5" />
-                Acessar Módulo Gratuito Agora
-              </Button>
-            </div>
+            
           </div>
 
           {/* Seção de Certificação Digital */}
@@ -645,6 +730,32 @@ export default function LandingPage() {
                 Cada curso concluído gera um <strong className="text-white">certificado digital profissional</strong> com 
                 validade jurídica, aceito em auditorias do MTE e processos trabalhistas.
               </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-[2px] rounded-3xl shadow-2xl mb-12 flex justify-center">
+              <div className="bg-white rounded-[28px] p-0">
+                <div 
+                  className="relative inline-block bg-white rounded-2xl border border-gray-200 mx-auto group cursor-zoom-in overflow-hidden"
+                  onClick={() => window.open('/Captura%20de%20tela%202025-11-18%20102806.png', '_blank')}
+                  role="button"
+                >
+                  <img 
+                    src="/Captura%20de%20tela%202025-11-18%20102806.png"
+                    alt="Modelo de Certificado HumaniQ AI"
+                    className="block h-auto w-auto max-h-[80vh] max-w-[92vw] transition-transform duration-300 ease-out group-hover:scale-[1.01]"
+                    loading="lazy"
+                    ref={certImgRef}
+                  />
+                  <div
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                    style={{ width: `${stamp.width}px`, transform: `translate(-50%,-50%) rotate(${stamp.rotate}deg)` }}
+                  >
+                    <div className="flex items-center justify-center rounded-md bg-gradient-to-r from-amber-200/50 via-amber-300/40 to-amber-200/50 ring-1 ring-amber-400/60 shadow-[0_8px_32px_rgba(0,0,0,0.18)]" style={{ height: `${stamp.height}px` }}>
+                      <span className="text-amber-900 font-extrabold tracking-[0.35em]" style={{ fontSize: `${stamp.fontSize}px` }}>MODELO</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -1477,6 +1588,79 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      <section id="contato-demo" className="py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <Badge className="mb-4 bg-yellow-400 text-gray-900 px-4 py-2 font-bold" data-testid="badge-contato-demo">
+              Agende sua Demonstração
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+              Experimente o HumaniQ AI ao vivo
+            </h2>
+            <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
+              Imagine sua diretoria visualizando, em poucos minutos, o mapa real de riscos psicossociais da empresa. Decida agora: uma conversa rápida pode evitar meses de incerteza.
+            </p>
+          </div>
+          <div className="bg-white rounded-2xl shadow-2xl border-2 border-amber-200 p-8">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <Sparkles className="h-6 w-6 text-amber-600" />
+                  <p className="text-gray-900 text-lg font-semibold">Demonstração guiada por especialista</p>
+                </div>
+                <ul className="space-y-3 text-gray-700">
+                  <li className="flex items-start">
+                    <Check className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    Veja dashboards, relatórios PGR e trilha de certificação
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    Entenda como a IA propõe planos de ação específicos
+                  </li>
+                  <li className="flex items-start">
+                    <Check className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    Prove valor rápido: resultados práticos em 30 minutos
+                  </li>
+                </ul>
+                <div className="mt-6 bg-amber-100 border-l-4 border-amber-500 p-4 rounded">
+                  <p className="text-sm text-amber-900 font-semibold">Vagas limitadas nesta semana. Garanta seu horário agora.</p>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-xl p-6">
+                <p className="text-gray-900 text-lg font-bold mb-4">Escolha seu canal preferido</p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
+                    className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                    data-testid="button-contato-whatsapp"
+                    onClick={() => window.open('https://wa.me/5519983835867?text=Olá%2C%20quero%20agendar%20uma%20demonstração%20do%20HumaniQ%20AI.', '_blank')}
+                    title="Agendar pelo WhatsApp"
+                  >
+                    <MessageCircle className="mr-2 h-5 w-5" />
+                    WhatsApp
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="flex-1 border-2 border-indigo-600 text-indigo-700 hover:bg-indigo-50"
+                    data-testid="button-contato-email"
+                    onClick={() => {
+                      const subject = encodeURIComponent('Agendamento de Demonstração - HumaniQ AI');
+                      const body = encodeURIComponent('Olá,\n\nGostaria de agendar uma demonstração do HumaniQ AI para nossa empresa.\nObjetivo: entender mapeamento, relatórios PGR e trilha de certificação.\n\nMelhores horários:\n- [inserir]\n\nObrigado(a).');
+                      window.location.href = `mailto:luizcarlos.bastos@gmail.com?subject=${subject}&body=${body}`;
+                    }}
+                    title="Agendar por Email"
+                  >
+                    <Mail className="mr-2 h-5 w-5" />
+                    Email
+                  </Button>
+                </div>
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-gray-600">Resposta rápida. Compromisso de retorno em até 4h úteis.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

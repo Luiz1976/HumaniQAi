@@ -131,6 +131,7 @@ export default function AdminDashboard() {
     value: p.quantidade,
     receita: p.receita,
   }));
+  const porCategoria = indicadoresAgregados?.analise?.porCategoria ?? [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 p-6">
@@ -450,8 +451,8 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-center">
                 <ResponsiveContainer width="100%" height={300}>
                   <RechartsPie>
-                    <Pie data={indicadoresAgregados.analise.porCategoria} dataKey="total" nameKey="categoria" cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5}>
-                      {indicadoresAgregados.analise.porCategoria.map((entry, index) => (
+                    <Pie data={porCategoria} dataKey="total" nameKey="categoria" cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5}>
+                      {porCategoria.map((entry, index) => (
                         <Cell key={`cat-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -460,7 +461,7 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <div className="grid grid-cols-1 gap-3">
-                  {indicadoresAgregados.analise.porCategoria.map((c, idx) => (
+                  {porCategoria.map((c, idx) => (
                     <div key={c.categoria} className="flex items-center justify-between p-4 rounded-lg border" style={{ borderColor: COLORS[idx % COLORS.length] }}>
                       <div className="flex items-center">
                         <div className="w-3 h-3 rounded-full mr-3" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>

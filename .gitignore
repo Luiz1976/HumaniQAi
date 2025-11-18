@@ -19,6 +19,9 @@ dist-ssr
 .env.test.local
 .env.production.local
 
+# Static media (do not version large videos)
+public/videos/
+
 # Temporary and debug files
 debug-*.js
 debug-*.cjs

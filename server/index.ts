@@ -36,6 +36,8 @@ import requireApiKey from './middleware/apiKey';
 
 
 const app = express();
+// Desabilitar ETag para evitar 304 em desenvolvimento (garante dados atualizados)
+app.set('etag', false);
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 3001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const IS_DEV = NODE_ENV === 'development';

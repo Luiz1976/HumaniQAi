@@ -209,8 +209,35 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
 
         logger.debug(`🎯 [PSICO] Situação final para ${colaborador.nome}: ${JSON.stringify(situacaoPsicossocial)}`);
 
+        // Fallback: preencher cargo/departamento a partir do último convite do colaborador, se ausentes
+        let cargoFinal = colaborador.cargo || null;
+        let departamentoFinal = colaborador.departamento || null;
+        if (!cargoFinal || !departamentoFinal) {
+          try {
+            const [ultimoConvite] = await db
+              .select({
+                cargo: convitesColaborador.cargo,
+                departamento: convitesColaborador.departamento,
+                createdAt: convitesColaborador.createdAt,
+              })
+              .from(convitesColaborador)
+              .where(
+                and(
+                  eq(convitesColaborador.empresaId, req.user!.empresaId!),
+                  eq(convitesColaborador.email, colaborador.email)
+                )
+              )
+              .orderBy(desc(convitesColaborador.createdAt))
+              .limit(1);
+            cargoFinal = cargoFinal || ultimoConvite?.cargo || null;
+            departamentoFinal = departamentoFinal || ultimoConvite?.departamento || null;
+          } catch (_) {}
+        }
+
         const colaboradorCompleto = {
           ...colaborador,
+          cargo: cargoFinal || colaborador.cargo,
+          departamento: departamentoFinal || colaborador.departamento,
           situacaoPsicossocial,
         };
         
@@ -221,7 +248,11 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
     );
 
     logger.info('📤 [API] Enviando colaboradores');
-    res.json({ colaboradores: colaboradoresEnriquecidos, total: colaboradoresEnriquecidos.length });
+    try {
+      res.set('Cache-Control', 'no-store');
+      res.set('ETag', `${Date.now()}`);
+    } catch (_) {}
+    res.status(200).json({ colaboradores: colaboradoresEnriquecidos, total: colaboradoresEnriquecidos.length });
   } catch (error) {
     logger.error('Erro ao listar colaboradores:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
