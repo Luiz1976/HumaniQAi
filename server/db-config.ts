@@ -15,8 +15,25 @@ let dbType: string;
 if (isProduction && hasDatabaseUrl) {
   // Usar PostgreSQL em produção (postgres-js)
   console.log('🔗 Conectando ao PostgreSQL (postgres-js)...');
+  function normalizeDatabaseUrl(input: string): string {
+    let s = input.trim();
+    s = s.replace(/^psql\s+/, '');
+    if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+      s = s.slice(1, -1);
+    }
+    const match = s.match(/postgres(?:ql)?:\/\/[^\s]+/i);
+    if (match) s = match[0];
+    try {
+      const u = new URL(s);
+      u.searchParams.delete('channel_binding');
+      if (!u.searchParams.has('sslmode')) u.searchParams.set('sslmode', 'require');
+      return u.toString();
+    } catch {
+      return s;
+    }
+  }
 
-  const client = postgres(process.env.DATABASE_URL!, {
+  const client = postgres(normalizeDatabaseUrl(process.env.DATABASE_URL!), {
     max: 20,
     idle_timeout: 20,
     connect_timeout: 10,
