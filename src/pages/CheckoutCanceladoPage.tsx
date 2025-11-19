@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { VinhedoFooter } from '@/components/VinhedoFooter';
 
 export default function CheckoutCanceladoPage() {
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ export default function CheckoutCanceladoPage() {
           </div>
         </CardContent>
       </Card>
+      <VinhedoFooter />
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
+import { VinhedoFooter } from '@/components/VinhedoFooter';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -1661,6 +1662,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      <VinhedoFooter />
     </div>
   );
 }

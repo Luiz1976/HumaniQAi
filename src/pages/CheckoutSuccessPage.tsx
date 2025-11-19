@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { VinhedoFooter } from '@/components/VinhedoFooter';
 
 // Função util para obter base da API de forma segura
 function getApiBase() {
@@ -214,6 +215,7 @@ export default function CheckoutSuccessPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <VinhedoFooter />
     </div>
   );
 }

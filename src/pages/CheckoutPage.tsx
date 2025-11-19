@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { VinhedoFooter } from '@/components/VinhedoFooter';
 
 // Função util para obter base da API de forma segura
 function getApiBase() {
@@ -265,6 +266,7 @@ export default function CheckoutPage() {
           </Card>
         </div>
       </div>
+      <VinhedoFooter />
     </div>
   );
 }
