@@ -6,6 +6,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Eye, EyeOff, Lock, Mail, Shield, Zap, CheckCircle2 } from 'lucide-react';
 import HumaniQLogoHQ from '../components/HumaniQLogoHQ';
+import { VinhedoFooter } from '@/components/VinhedoFooter';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -364,6 +365,7 @@ export default function Login() {
           animation: fade-in 1s ease-out;
         }
       `}</style>
+      <VinhedoFooter />
     </div>
   );
 }

@@ -13,6 +13,7 @@ import {
 import { numeroParaLetra } from '@/lib/utils';
 import LoadingAnimation from '@/components/LoadingAnimation';
 import ProcessingAnimation from '@/components/ProcessingAnimation';
+import { VinhedoFooter } from '@/components/VinhedoFooter';
 
 const perguntasQuickCheck = [
   { 
@@ -643,6 +644,7 @@ export default function QuickCheckEstresse() {
           </div>
         </div>
       </div>
+      <VinhedoFooter />
     </div>
   );
 }

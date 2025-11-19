@@ -5,6 +5,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Mail, ArrowLeft, Sparkles, Shield, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { VinhedoFooter } from '@/components/VinhedoFooter';
 
 const RecuperarSenha = () => {
   const [email, setEmail] = useState('');
@@ -235,6 +236,7 @@ const RecuperarSenha = () => {
           animation-delay: 4s;
         }
       `}</style>
+      <VinhedoFooter />
     </div>
   );
 };
