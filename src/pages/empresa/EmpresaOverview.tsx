@@ -206,7 +206,7 @@ export default function EmpresaOverview() {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-                  <Logo size="sm" showText={false} className="w-6 h-6 text-white" />
+                  <Logo size="sm" showText={false} />
                 </div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                   {user?.name ? `${user.name}` : 'Dashboard'}
