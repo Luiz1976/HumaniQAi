@@ -263,6 +263,7 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
 router.get('/colaboradores/:id', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
+    const normalizedId = String(id).replace(/-/g, '');
     
     const [colaborador] = await db
       .select({
@@ -2144,8 +2145,11 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, 
     console.log(`🗑️ [ADMIN] Solicitação de exclusão da empresa ${id} (modo=${modo})...`);
     console.log('🗑️ [ADMIN] Tipos recebidos:', { idType: typeof id, idPreview: String(id).slice(0,8) });
 
+    // Normaliza UUID com traços para 32-hex no SQLite
+    const normalizedId = String(id).replace(/-/g, '');
+
     // Validar formato do ID (SQLite usa 32-char hex; PG usa UUID com traços)
-    const isHex32 = /^[0-9a-f]{32}$/i.test(id);
+    const isHex32 = /^[0-9a-f]{32}$/i.test(normalizedId);
     const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
     const updatedAtValue = isSqlite ? new Date().toISOString() : new Date();
 
@@ -2155,6 +2159,7 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, 
       }
       const { sqlite } = await import('../db-sqlite');
       // Não assumir a existência da coluna 'ativa' no SELECT para evitar erro
+      // Usa o ID original (com traços) pois é como está armazenado no banco
       const row: any = sqlite.prepare('SELECT id, nome_empresa, ativo FROM empresas WHERE id = ? LIMIT 1').get(String(id));
       if (!row) {
         return res.status(404).json({ error: 'Empresa não encontrada' });
