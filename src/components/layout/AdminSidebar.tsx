@@ -98,6 +98,16 @@ export function AdminSidebar() {
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200">
+          {state === "expanded" && (
+            <div className="mb-3 flex flex-col items-center">
+              <img
+                src="/9367e6ee2e74133cb50922479bc48869.jpg"
+                alt="São Bento"
+                className="w-24 h-24 object-cover rounded-md shadow-sm"
+              />
+              <p className="mt-2 text-xs text-gray-500">Abençoado por São Bento</p>
+            </div>
+          )}
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>

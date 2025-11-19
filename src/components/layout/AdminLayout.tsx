@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSidebar } from "./AdminSidebar";
 import { MobileHeader } from "./MobileHeader";
+import { VinhedoFooter } from "@/components/VinhedoFooter";
 
 export function AdminLayout() {
   return (
@@ -14,6 +15,7 @@ export function AdminLayout() {
           <div className="flex-1 p-4 md:p-6">
             <Outlet />
           </div>
+          <VinhedoFooter />
         </main>
       </div>
     </SidebarProvider>

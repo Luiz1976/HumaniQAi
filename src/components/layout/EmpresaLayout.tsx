@@ -1,6 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { EmpresaSidebar } from "./EmpresaSidebar";
 import { MobileHeader } from "./MobileHeader";
+import { VinhedoFooter } from "@/components/VinhedoFooter";
 
 interface EmpresaLayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export function EmpresaLayout({ children }: EmpresaLayoutProps) {
           <div className="flex-1 p-4 md:p-6">
             {children}
           </div>
+          <VinhedoFooter />
         </main>
       </div>
     </SidebarProvider>
