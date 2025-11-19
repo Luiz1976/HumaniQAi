@@ -14,6 +14,90 @@ export async function generateChatResponse(
   try {
     console.log('🤖 [CHATBOT] Processando mensagem do usuário...');
 
+    // Verificar se a Google API Key está configurada
+    if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY === 'demo-key-not-configured') {
+      console.log('⚠️ [CHATBOT] Google API Key não configurada, usando resposta padrão');
+      
+      const lowerMessage = message.toLowerCase();
+      
+      // Respostas pré-definidas para perguntas comuns
+      if (lowerMessage.includes('teste') || lowerMessage.includes('avaliação')) {
+        return `📊 **TESTES PSICOLÓGICOS DISPONÍVEIS:**
+
+✅ **QVT** - Qualidade de Vida no Trabalho (70 perguntas)
+✅ **RPO** - Riscos Psicossociais Ocupacionais 
+✅ **Clima Organizacional** (60 perguntas)
+✅ **Estresse Ocupacional** - Calcula IVE
+✅ **Karasek-Siegrist** - Modelo científico validado
+✅ **PAS** - Percepção de Assédio (Lei 14.457/22)
+✅ **MGRP** - Maturidade em Gestão de Riscos
+
+🔗 Acesse: /colaborador/testes para realizar os testes
+📋 Resultados: /colaborador/resultados`;
+      }
+      
+      if (lowerMessage.includes('curso') || lowerMessage.includes('certificado')) {
+        return `🎓 **SISTEMA DE CURSOS NR-01:**
+
+📚 **8 Cursos Profissionais:**
+1. Fundamentos Legais dos Riscos Psicossociais
+2. Inteligência Emocional na Liderança  
+3. Comunicação Não Violenta (CNV)
+4. Gestão de Riscos Psicossociais
+5. Prevenção ao Assédio Moral e Sexual
+6. Gestão do Estresse e QVT
+7. Liderança Humanizada
+8. Diversidade e Inclusão
+
+✅ Certificação automática com QR Code
+📄 Validade pública em /validar-certificado/:codigo`;
+      }
+      
+      if (lowerMessage.includes('empresa') || lowerMessage.includes('admin')) {
+        return `🏢 **NAVEGAÇÃO POR PERFIL:**
+
+👔 **ADMIN:**
+• /admin - Dashboard global
+• /admin/empresas - Gerenciar empresas
+• /admin/metrics - KPIs e métricas
+
+🏭 **EMPRESA:**
+• /empresa - Visão geral
+• /empresa/colaboradores - Equipe e indicadores
+• /empresa/convites - Gerenciar convites
+• /empresa/prg - Programa de Gestão de Riscos
+• /empresa/indicadores - Métricas agregadas`;
+      }
+      
+      if (lowerMessage.includes('lei') || lowerMessage.includes('nr-01') || lowerMessage.includes('compliance')) {
+        return `⚖️ **CONFORMIDADE LEGAL:**
+
+📋 **Normas e Legislações:**
+• **NR-01** - Portaria MTP 6.730/2020: Gestão de riscos psicossociais
+• **Lei 14.457/22** - Prevenção de assédio moral e sexual
+• **ISO 45003:2021** - Saúde mental e segurança psicológica
+• **LGPD** - Anonimização de dados agregados
+
+🎯 **Objetivos de Compliance:**
+• Proteção jurídica empresa/colaborador
+• Cultura de segurança psicológica
+• Prevenção de riscos psicossociais`;
+      }
+      
+      // Resposta padrão para outras perguntas
+      return `🤖 **Assistente Virtual HumaniQ AI**
+
+Desculpe, meu recurso de IA avançada está em configuração. No momento, posso ajudar com:
+
+📋 **MENU RÁPIDO:**
+• Digite "testes" - Ver testes psicológicos disponíveis
+• Digite "cursos" - Informações sobre cursos NR-01
+• Digite "navegação" - Ajuda com perfis Admin/Empresa
+• Digite "compliance" - Normas e legislações
+
+🔧 **Suporte técnico:** luizcarlos.bastos@gmail.com`;
+    }
+
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.0-flash',
       generationConfig: {
@@ -240,6 +324,43 @@ Responda de forma técnica, precisa e orientada a ação, como um consultor espe
 }
 
 export async function generateWelcomeMessage(): Promise<string> {
+  // Verificar se a Google API Key está configurada
+  if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY === 'demo-key-not-configured') {
+    console.log('⚠️ [CHATBOT] Google API Key não configurada, usando mensagem padrão');
+    return `🤖 Assistente Virtual HumaniQ AI
+
+Olá! Sou seu assistente virtual especializado em saúde mental e gestão de riscos psicossociais no trabalho.
+
+📋 **FUNCIONALIDADES DISPONÍVEIS:**
+
+✅ **Testes Psicológicos**
+• QVT - Qualidade de Vida no Trabalho
+• RPO - Riscos Psicossociais Ocupacionais  
+• Clima Organizacional
+• Estresse Ocupacional
+• Karasek-Siegrist
+• PAS - Percepção de Assédio
+• MGRP - Maturidade em Gestão de Riscos
+
+✅ **Sistema de Cursos**
+• 8 cursos profissionais NR-01
+• Certificação automática
+• Conteúdo interativo
+
+✅ **Análises Inteligentes**
+• Relatórios personalizados
+• Indicadores de bem-estar
+• Recomendações técnicas
+
+❌ **Recursos Temporariamente Indisponíveis**
+• Assistente virtual com IA (em configuração)
+• Análises em tempo real com Gemini
+
+🔧 **Para suporte técnico:** luizcarlos.bastos@gmail.com
+
+Como posso ajudar você hoje?`;
+  }
+
   return `Bem-vindo ao Assistente Virtual Especializado do HumaniQ AI
 
 Sou seu consultor em avaliação psicossocial e gestão de riscos em saúde mental no trabalho, preparado para oferecer orientação técnica e suporte especializado.
