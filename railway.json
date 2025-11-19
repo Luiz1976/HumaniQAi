@@ -15,7 +15,8 @@
     "production": {
       "variables": {
         "NODE_ENV": "production",
-        "CORS_ORIGIN": "https://www.humaniqai.com.br"
+        "CORS_ORIGIN": "https://humaniqai.com.br",
+        "FRONTEND_URL": "https://humaniqai.com.br"
       }
     }
   }

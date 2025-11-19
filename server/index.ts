@@ -32,6 +32,7 @@ import exportRoutes from './routes/export';
 import { scheduleBackupFromEnv } from './utils/backup';
 import { cacheMiddleware } from './utils/cache';
 import requireApiKey from './middleware/apiKey';
+import postgres from 'postgres';
 
 
 
@@ -163,6 +164,20 @@ app.get('/api/health', (req, res) => {
     database: 'connected',
     version: '1.0.0'
   });
+});
+
+app.get('/api/db/ping', async (req, res) => {
+  try {
+    if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+      const client = postgres(process.env.DATABASE_URL, { idle_timeout: 5, connect_timeout: 5, max: 1 });
+      await client`select 1`;
+      await client.end();
+      return res.json({ connected: true, type: 'postgres' });
+    }
+    return res.json({ connected: true, type: 'sqlite' });
+  } catch (err) {
+    return res.status(500).json({ connected: false });
+  }
 });
 
 // Root endpoint
