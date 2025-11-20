@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Send, User, Loader2, Minimize2 } from 'lucide-react';
+import { X, Send, User, Loader2, Minimize2, Camera, Mic, Smile, Paperclip } from 'lucide-react';
 import Lottie from 'lottie-react';
 import robotWaving from '@/assets/robot-waving.json';
 
@@ -9,6 +9,12 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  id?: string;
+}
+
+interface DateGroup {
+  date: string;
+  messages: Message[];
 }
 
 // Função util para obter base da API de forma segura
@@ -18,20 +24,64 @@ const getApiBase = () => {
   return trimmed.replace(/\/api$/, '');
 };
 
+// Funções auxiliares para formatação e agrupamento
+const formatTime = (date: Date) => {
+  return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+};
+
+const formatDate = (date: Date) => {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  if (date.toDateString() === today.toDateString()) {
+    return 'Hoje';
+  } else if (date.toDateString() === yesterday.toDateString()) {
+    return 'Ontem';
+  } else {
+    return date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+  }
+};
+
+const groupMessagesByDate = (messages: Message[]): DateGroup[] => {
+  const groups: { [key: string]: Message[] } = {};
+  
+  messages.forEach(message => {
+    const dateKey = message.timestamp.toDateString();
+    if (!groups[dateKey]) {
+      groups[dateKey] = [];
+    }
+    groups[dateKey].push(message);
+  });
+
+  return Object.entries(groups).map(([date, messages]) => ({
+    date: formatDate(new Date(date)),
+    messages
+  }));
+};
+
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const path = typeof window !== 'undefined' ? window.location.pathname : '';
   // Oculta o gatilho flutuante especificamente na Landing (/ e /landing)
   const hideFloatingTriggerOnThisPage = path === '/' || path === '/landing';
 
+  const emojis = ['😀', '😂', '😍', '🥰', '😊', '🤔', '👍', '👎', '❤️', '🎉', '🔥', '✅', '👋', '🙏', '💪', '🎯'];
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const addEmoji = (emoji: string) => {
+    setInputMessage(prev => prev + emoji);
+    setShowEmojiPicker(false);
   };
 
   useEffect(() => {
@@ -202,100 +252,121 @@ export function Chatbot() {
   return (
     <div 
       className="fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6 z-[10000]
-                 w-full h-[100dvh] sm:w-[420px] sm:h-auto sm:max-h-[85vh] md:w-[480px] lg:w-[520px]
-                 bg-white dark:bg-slate-900 
+                 w-full h-[100dvh] sm:w-[380px] sm:h-auto sm:max-h-[85vh] md:w-[400px] lg:w-[420px]
+                 bg-[#ece5dd] dark:bg-[#0b141a]
                  rounded-none sm:rounded-2xl 
-                 shadow-none sm:shadow-2xl border-none sm:border border-slate-200 dark:border-slate-700 
+                 shadow-none sm:shadow-2xl border-none sm:border
                  flex flex-col overflow-hidden"
       style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}
       data-testid="chatbot-container"
     >
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 sm:p-4 flex items-center justify-between text-white flex-shrink-0 relative z-[10001]">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12">
+      {/* Header - Estilo WhatsApp */}
+      <div className="bg-[#075e54] dark:bg-[#202c33] p-3 sm:p-4 flex items-center justify-between text-white flex-shrink-0 relative z-[10001]">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 relative">
             <Lottie 
               animationData={robotWaving} 
               loop={true}
-              className="w-full h-full"
+              className="w-full h-full rounded-full"
             />
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#075e54] dark:border-[#202c33]"></div>
           </div>
-          <div>
-            <h3 className="font-semibold text-base sm:text-lg">HumaniQ</h3>
-            <p className="text-xs text-white/80 hidden sm:block">Online • Sempre disponível</p>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-base text-white truncate">HumaniQ</h3>
+            <p className="text-xs text-green-300">online</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 relative z-[10002]">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setIsMinimized(true)}
             data-testid="button-minimize-chat"
-            className="p-2 hover:bg-white/20 rounded-lg transition-colors cursor-pointer relative z-[10003]"
+            className="p-2 hover:bg-white/10 rounded-full transition-colors"
             aria-label="Minimizar"
           >
-            <Minimize2 className="w-5 h-5 sm:w-4 sm:h-4" />
+            <Minimize2 className="w-5 h-5" />
           </button>
           <button
             onClick={() => setIsOpen(false)}
             data-testid="button-close-chat"
-            className="p-2 hover:bg-white/20 rounded-lg transition-colors cursor-pointer relative z-[10003]"
+            className="p-2 hover:bg-white/10 rounded-full transition-colors"
             aria-label="Fechar"
           >
-            <X className="w-5 h-5 sm:w-4 sm:h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      {/* Messages Area */}
-      <div className="flex-1 bg-slate-50 dark:bg-slate-950 overflow-x-auto overflow-y-auto p-3 sm:p-4 scrollbar-visible">
-        <div className="space-y-4 w-full min-w-0">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
-              data-testid={`message-${message.role}-${index}`}
-            >
-              <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0 ${
-                message.role === 'user' 
-                  ? 'bg-blue-500 text-white rounded-full' 
-                  : ''
-              }`}>
-                {message.role === 'user' ? (
-                  <User className="w-4 h-4" />
-                ) : (
-                  <Lottie 
-                    animationData={robotWaving} 
-                    loop={true}
-                    className="w-full h-full"
-                  />
-                )}
-              </div>
-              <div className={`flex flex-col min-w-0 ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
-                <div className={`px-3 py-2 sm:px-4 sm:py-3 rounded-2xl min-w-0 ${
-                  message.role === 'user'
-                    ? 'bg-blue-500 text-white rounded-tr-none'
-                    : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-tl-none shadow-sm border border-slate-200 dark:border-slate-700'
-                }`}>
-                  <p className="text-xs sm:text-sm whitespace-pre-wrap break-words overflow-wrap-anywhere min-w-0">{message.content}</p>
+      {/* Messages Area - Estilo WhatsApp */}
+      <div className="flex-1 overflow-y-auto bg-[#ece5dd] dark:bg-[#0b141a] relative">
+        {/* Fundo com padrão WhatsApp */}
+        <div className="absolute inset-0 opacity-10">
+          <svg width="100%" height="100%" className="absolute inset-0">
+            <defs>
+              <pattern id="whatsapp-bg" x="0" y="0" width="400" height="400" patternUnits="userSpaceOnUse">
+                <rect width="400" height="400" fill="#e5ddd5"/>
+                <circle cx="50" cy="50" r="50" fill="#d4ccc4" opacity="0.5"/>
+                <circle cx="250" cy="150" r="70" fill="#d4ccc4" opacity="0.5"/>
+                <circle cx="350" cy="350" r="40" fill="#d4ccc4" opacity="0.5"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#whatsapp-bg)"/>
+          </svg>
+        </div>
+        
+        <div className="relative z-10 p-3 sm:p-4 space-y-1">
+          {groupMessagesByDate(messages).map((group, groupIndex) => (
+            <div key={groupIndex} className="space-y-1">
+              {/* Date Separator */}
+              <div className="flex items-center justify-center my-4">
+                <div className="bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(42,57,66,0.8)] px-4 py-1 rounded-full">
+                  <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">{group.date}</span>
                 </div>
-                <span className="text-xs text-slate-500 dark:text-slate-400 mt-1 px-2">
-                  {message.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                </span>
               </div>
+              
+              {group.messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  data-testid={`message-${message.role}-${index}`}
+                >
+                  <div className={`max-w-[70%] sm:max-w-[65%] ${message.role === 'user' ? 'order-2' : 'order-1'}`}>
+                    <div className={`
+                      relative px-3 py-2 rounded-lg shadow-sm
+                      ${message.role === 'user' 
+                        ? 'bg-[#dcf8c6] dark:bg-[#005c4b] text-slate-900 dark:text-white rounded-tr-none' 
+                        : 'bg-white dark:bg-[#202c33] text-slate-900 dark:text-white rounded-tl-none'
+                      }
+                    `}>
+                      <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                      <div className={`flex items-center gap-1 mt-1 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                          {formatTime(message.timestamp)}
+                        </span>
+                        {message.role === 'user' && (
+                          <svg width="16" height="16" viewBox="0 0 16 16" className="text-blue-500">
+                            <path fill="currentColor" d="M8 0L10.5 3L16 5L13 8L16 11L10.5 13L8 16L5.5 13L0 11L3 8L0 5L5.5 3L8 0Z"/>
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ))}
+          
           {isLoading && (
-            <div className="flex gap-3">
-              <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-                <Lottie 
-                  animationData={robotWaving} 
-                  loop={true}
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="bg-white dark:bg-slate-800 px-4 py-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 dark:border-slate-700">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Digitando...</span>
+            <div className="flex gap-2 justify-start">
+              <div className="max-w-[65%]">
+                <div className="bg-white dark:bg-[#202c33] px-3 py-2 rounded-lg rounded-tl-none shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+                      <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+                      <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+                    </div>
+                    <span className="text-xs text-slate-500">digitando</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -304,34 +375,79 @@ export function Chatbot() {
         </div>
       </div>
 
-      {/* Input Area */}
-      <form onSubmit={sendMessage} className="p-3 sm:p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
-        <div className="flex gap-2">
+      {/* Input Area - Estilo WhatsApp */}
+      <div className="bg-white dark:bg-[#202c33] p-3 flex items-center gap-2 border-t border-slate-200 dark:border-slate-700">
+        <div className="relative">
+          <button 
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+          >
+            <Smile className="w-5 h-5" />
+          </button>
+          
+          {showEmojiPicker && (
+            <div className="absolute bottom-12 left-0 bg-white dark:bg-[#2a3942] rounded-lg shadow-lg p-3 grid grid-cols-4 gap-2 z-50">
+              {emojis.map((emoji, index) => (
+                <button
+                  key={index}
+                  onClick={() => addEmoji(emoji)}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors text-lg"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        <button className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+          <Paperclip className="w-5 h-5" />
+        </button>
+        
+        <button className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+          <Camera className="w-5 h-5" />
+        </button>
+        
+        <div className="flex-1 relative">
           <Input
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Digite sua mensagem..."
+            placeholder="Digite uma mensagem"
             disabled={isLoading}
             data-testid="input-chat-message"
-            className="flex-1 rounded-xl border-slate-300 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 text-sm"
+            className="w-full rounded-full bg-slate-100 dark:bg-[#2a3942] border-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 text-sm px-4 py-2"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage(e as any);
+              }
+            }}
           />
+        </div>
+        
+        {inputMessage.trim() ? (
           <Button
             type="submit"
             disabled={!inputMessage.trim() || isLoading}
             data-testid="button-send-message"
-            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl px-3 sm:px-4"
+            className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2 transition-colors"
+            onClick={sendMessage}
           >
             {isLoading ? (
-              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Send className="w-5 h-5" />
             )}
           </Button>
-        </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center hidden sm:block">
-          Powered by Google Gemini AI
-        </p>
-      </form>
+        ) : (
+          <Button
+            type="button"
+            className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2 transition-colors"
+          >
+            <Mic className="w-5 h-5" />
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
