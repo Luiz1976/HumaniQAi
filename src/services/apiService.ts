@@ -90,6 +90,8 @@ class ApiService {
       const response = await fetch(url, {
         ...options,
         headers,
+        mode: 'cors',
+        credentials: 'include',
       });
 
       let data: any = null;
@@ -120,7 +122,16 @@ class ApiService {
       if ((isServerError || isNetworkError) && canFallback) {
         const fallbackUrl = buildUrl(API_FALLBACK_BASE);
         console.warn(`⚠️ [ApiService] Erro em '${primaryUrl}' → tentando fallback '${fallbackUrl}'`);
-        return await tryFetch(fallbackUrl);
+        try {
+          return await tryFetch(fallbackUrl);
+        } catch (_) {}
+      }
+
+      if (isNetworkError || (error?.status && error.status >= 500)) {
+        const relativeUrl = endpoint;
+        try {
+          return await tryFetch(relativeUrl);
+        } catch (_) {}
       }
 
       throw error;

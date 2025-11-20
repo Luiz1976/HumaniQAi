@@ -137,6 +137,20 @@ class AuthServiceNew {
             const fbText = await fbResponse.text();
             console.error(`❌ [AuthService] Fallback falhou: HTTP ${fbResponse.status}:`, fbText);
           }
+          const relativeUrl = endpoint;
+          try {
+            const relResp = await fetch(relativeUrl, {
+              ...options,
+              headers,
+              mode: 'cors',
+              credentials: 'include',
+            });
+            if (relResp.ok) {
+              const relData = await relResp.json();
+              console.warn(`✅ [AuthService] Sucesso via mesma origem: ${relativeUrl}`);
+              return relData;
+            }
+          } catch (_) {}
         }
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
@@ -171,6 +185,20 @@ class AuthServiceNew {
         } catch (fbError) {
           console.error(`❌ [AuthService] Erro ao usar fallback ${fallbackUrl}:`, fbError);
         }
+        try {
+          const relativeUrl = endpoint;
+          const relResp = await fetch(relativeUrl, {
+            ...options,
+            headers,
+            mode: 'cors',
+            credentials: 'include',
+          });
+          if (relResp.ok) {
+            const relData = await relResp.json();
+            console.warn(`✅ [AuthService] Sucesso via mesma origem: ${relativeUrl}`);
+            return relData;
+          }
+        } catch (_) {}
       }
       
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
