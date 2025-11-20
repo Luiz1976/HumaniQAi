@@ -1,4 +1,5 @@
 import { Building2, Mail, LogOut, BarChart3 } from "lucide-react";
+import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/AuthContext";
 import {
@@ -32,6 +33,8 @@ const adminMenuItems = [
 ];
 
 export function AdminSidebar() {
+  const localSaoBento = new URL('/9367e6ee2e74133cb50922479bc48869.jpg', window.location.origin).toString();
+  const [saoBentoSrc, setSaoBentoSrc] = useState<string>(localSaoBento);
   const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -98,16 +101,24 @@ export function AdminSidebar() {
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200">
-          {state === "expanded" && (
-            <div className="mb-3 flex flex-col items-center">
-              <img
-                src="/9367e6ee2e74133cb50922479bc48869.jpg"
-                alt="São Bento"
-                className="w-24 h-24 object-cover rounded-md shadow-sm"
-              />
+          <div className="mb-3 flex flex-col items-center">
+            <img
+              src={saoBentoSrc}
+              alt="São Bento"
+              className={`${state === 'expanded' ? 'w-24 h-24' : 'w-10 h-10'} object-cover rounded-md shadow-sm`}
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
+              onError={() => {
+                if (saoBentoSrc === localSaoBento) {
+                  setSaoBentoSrc('https://www.humaniqai.com.br/9367e6ee2e74133cb50922479bc48869.jpg');
+                }
+              }}
+            />
+            {state === 'expanded' && (
               <p className="mt-2 text-xs text-gray-500">Abençoado por São Bento</p>
-            </div>
-          )}
+            )}
+          </div>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
