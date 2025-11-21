@@ -22,7 +22,8 @@
     "port:check": "powershell -ExecutionPolicy Bypass -File scripts/manage-port-5000.ps1 -Action check",
     "port:prepare": "powershell -ExecutionPolicy Bypass -File scripts/manage-port-5000.ps1 -Action prepare",
     "port:force-stop": "powershell -ExecutionPolicy Bypass -File scripts/manage-port-5000.ps1 -Action force-stop",
-    "frontend:force": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1 -Force"
+    "frontend:force": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1 -Force",
+    "seed:tests:pg": "node scripts/seed-postgres-tests.mjs"
   },
   "engines": {
     "node": ">=18.18.0 <23.0.0"
