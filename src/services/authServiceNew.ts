@@ -113,8 +113,10 @@ class AuthServiceNew {
         credentials: 'include',
       });
 
+      const contentType = response.headers.get('content-type') || '';
       console.log(`📡 [AuthService] Response status: ${response.status}`);
       console.log(`📡 [AuthService] Response ok: ${response.ok}`);
+      console.log(`📡 [AuthService] Content-Type: ${contentType}`);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -155,6 +157,11 @@ class AuthServiceNew {
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error(`❌ [AuthService] Resposta não JSON do backend:`, text.slice(0, 200));
+        throw new Error(`Resposta não JSON do backend (${response.status}).`);
+      }
       const data = await response.json();
       console.log(`✅ [AuthService] Resposta recebida:`, data);
       return data;

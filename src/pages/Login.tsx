@@ -297,14 +297,14 @@ export default function Login() {
                     <span>Acessando...</span>
                   </div>
                 ) : (
-                  <span>Entrar Agora</span>
+                  <span>Entrar agora</span>
                 )}
               </Button>
 
               {/* Rapport Building - Reassurance */}
               <div className="pt-4 text-center">
                 <p className="text-white/50 text-xs leading-relaxed">
-                  🔒 Suas informações estão protegidas com criptografia de ponta
+                  🔒 Suas informações estão protegidas com criptografia de ponta.
                 </p>
               </div>
             </form>

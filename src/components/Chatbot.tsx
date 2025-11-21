@@ -192,7 +192,7 @@ export function Chatbot() {
       
       const errorMessage: Message = {
         role: 'assistant',
-        content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.',
+        content: 'Desculpe. Ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.',
         timestamp: new Date(),
       };
       

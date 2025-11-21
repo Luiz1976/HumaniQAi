@@ -1,5 +1,6 @@
 // Trilha de Capacitacao - Lideranca e Saude Psicossocial - Conforme NR01
 // IMPORTANTE: Este arquivo contem TODOS os 8 cursos completos da trilha
+import { corrigirPTBR } from "../utils/corrigirPTBR";
 
 export interface Modulo {
   id: number;
@@ -28,7 +29,7 @@ export interface Curso {
   integracaoPGR?: string[];
 }
 
-export const cursos: Curso[] = [
+const cursosRaw: Curso[] = [
   {
     id: 1,
     slug: "fundamentos-legais-riscos-psicossociais",
@@ -10234,6 +10235,36 @@ FIM DO CURSO DE DIVERSIDADE, INCLUSAO E RESPEITO
     ]
   }
 ];
+
+const corrigirArray = (arr?: string[]) => (arr ? arr.map(corrigirPTBR) : arr);
+
+function corrigirModulo(m: Modulo): Modulo {
+  return {
+    ...m,
+    titulo: corrigirPTBR(m.titulo),
+    // mantemos duracao sem alteração de tipo
+    duracao: m.duracao,
+    topicos: m.topicos?.map(corrigirPTBR) ?? [],
+    materialDidatico: corrigirPTBR(m.materialDidatico),
+  };
+}
+
+function corrigirCurso(c: Curso): Curso {
+  return {
+    ...c,
+    titulo: corrigirPTBR(c.titulo),
+    subtitulo: corrigirPTBR(c.subtitulo),
+    descricao: corrigirPTBR(c.descricao),
+    // não alterar c.nivel para evitar conflito com o tipo literal
+    objetivo: corrigirPTBR(c.objetivo),
+    resultadosEsperados: c.resultadosEsperados.map(corrigirPTBR),
+    modulos: c.modulos.map(corrigirModulo),
+    atividadesPraticas: corrigirArray(c.atividadesPraticas),
+    integracaoPGR: corrigirArray(c.integracaoPGR),
+  };
+}
+
+export const cursos: Curso[] = cursosRaw.map(corrigirCurso);
 
 export const getCursoBySlug = (slug: string): Curso | undefined => {
   return cursos.find(curso => curso.slug === slug);

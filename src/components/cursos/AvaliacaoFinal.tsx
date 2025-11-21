@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Curso } from "@/data/cursosData.ts";
+import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface AvaliacaoFinalProps {
   curso: Curso;
@@ -30,9 +31,9 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
   // Adicionar 1-2 perguntas sobre o objetivo e resultados do curso
   questoes.push({
     id: questaoId++,
-    pergunta: `Qual é o objetivo principal do curso "${curso.titulo}"?`,
+    pergunta: `Qual é o objetivo principal do curso "${corrigirPTBR(curso.titulo)}"?`,
     opcoes: [
-      curso.objetivo,
+      corrigirPTBR(curso.objetivo),
       "Aprender apenas teoria sem aplicação prática",
       "Desenvolver habilidades técnicas não relacionadas",
       "Estudar conteúdos genéricos sem foco específico"
@@ -50,14 +51,14 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
       const topicoDestaque = topicos[0];
       const opcoesEmbaralhadas = [
         "Conceitos não relacionados ao tema",
-        topicoDestaque,
+        corrigirPTBR(topicoDestaque),
         "Assuntos fora do escopo do curso",
         "Teorias sem aplicação prática"
       ].sort(() => Math.random() - 0.5);
       
       questoes.push({
         id: questaoId++,
-        pergunta: `No módulo "${modulo.titulo}", qual é um dos principais tópicos abordados?`,
+        pergunta: `No módulo "${corrigirPTBR(modulo.titulo)}", qual é um dos principais tópicos abordados?`,
         opcoes: opcoesEmbaralhadas,
         respostaCorreta: opcoesEmbaralhadas.indexOf(topicoDestaque)
       });
@@ -67,7 +68,7 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
     if (topicos.length > 1) {
       const topicoSecundario = topicos[Math.min(1, topicos.length - 1)];
       const opcoesEmbaralhadas2 = [
-        topicoSecundario,
+        corrigirPTBR(topicoSecundario),
         "Estratégias de marketing digital",
         "Programação de computadores",
         "Gestão financeira pessoal"
@@ -75,7 +76,7 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
       
       questoes.push({
         id: questaoId++,
-        pergunta: `Qual dos seguintes tópicos é abordado no módulo "${modulo.titulo}"?`,
+        pergunta: `Qual dos seguintes tópicos é abordado no módulo "${corrigirPTBR(modulo.titulo)}"?`,
         opcoes: opcoesEmbaralhadas2,
         respostaCorreta: opcoesEmbaralhadas2.indexOf(topicoSecundario)
       });
@@ -87,7 +88,7 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
     const resultadoDestaque = curso.resultadosEsperados[0];
     const opcoesEmbaralhadas3 = [
       "Nenhum resultado prático mensurável",
-      resultadoDestaque,
+      corrigirPTBR(resultadoDestaque),
       "Certificação em outra área não relacionada",
       "Apenas conhecimento teórico sem aplicação"
     ].sort(() => Math.random() - 0.5);
@@ -153,7 +154,7 @@ export default function AvaliacaoFinal({ curso, progresso, avaliacaoRealizada }:
         method: 'POST',
         body: JSON.stringify({
           cursoId: curso.id.toString(),
-          cursoTitulo: curso.titulo,
+          cursoTitulo: corrigirPTBR(curso.titulo),
           cargaHoraria: curso.duracao
         })
       });
@@ -373,7 +374,7 @@ export default function AvaliacaoFinal({ curso, progresso, avaliacaoRealizada }:
       <Card className="border-2 border-blue-200">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Avaliação Final - {curso.titulo}</span>
+            <span>Avaliação Final - {corrigirPTBR(curso.titulo)}</span>
             <Badge className="bg-blue-100 text-blue-700">
               {Object.keys(respostas).length}/{questoes.length} respondidas
             </Badge>

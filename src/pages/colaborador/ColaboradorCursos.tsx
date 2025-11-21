@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { corrigirPTBR } from '@/utils/corrigirPTBR';
+
 
 export default function ColaboradorCursos() {
   const navigate = useNavigate();
@@ -54,12 +56,24 @@ export default function ColaboradorCursos() {
       case "Iniciante":
         return "bg-green-100 text-green-700 border-green-200";
       case "Intermediário":
+      case "Intermediario":
         return "bg-blue-100 text-blue-700 border-blue-200";
       case "Avançado":
+      case "Avancado":
         return "bg-purple-100 text-purple-700 border-purple-200";
       default:
         return "bg-gray-100 text-gray-700 border-gray-200";
     }
+  };
+
+  const materialMap: Record<string, string> = {
+    "fundamentos-legais-riscos-psicossociais": "/Cursos/Fundamentos Legais e Tecnicos dos Riscos Psicossociais.pdf",
+    "inteligencia-emocional-lideranca": "/Cursos/Inteligencia Emocional Aplicada a Lideranca.pdf",
+    "comunicacao-nao-violenta": "/Cursos/Comunicacao Nao Violenta (CNV).pdf",
+    "gestao-riscos-psicossociais-saude-mental": "/Cursos/Gestao de Riscos Psicossociais e Saude Mental.pdf",
+    "prevencao-assedio-moral-sexual": "/Cursos/Prevencao e Combate ao Assedio Moral e Sexual.pdf",
+    "lideranca-humanizada-clima-organizacional": "/Cursos/Lideranca Humanizada e Clima Organizacional.pdf",
+    "diversidade-inclusao-respeito": "/Cursos/Diversidade, Inclusao e Respeito nas Relacoes de Trabalho.pdf",
   };
 
   return (
@@ -156,7 +170,7 @@ export default function ColaboradorCursos() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="text-lg font-bold text-green-900 mb-1 truncate">
-                            {certificado.cursoTitulo}
+                            {corrigirPTBR(certificado.cursoTitulo)}
                           </h3>
                           <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
                             <Calendar className="h-4 w-4 flex-shrink-0" />
@@ -241,20 +255,20 @@ export default function ColaboradorCursos() {
                     <div className="text-5xl">{curso.icone}</div>
                     <div className="flex flex-col gap-2">
                       <Badge variant="outline" className="w-fit text-xs">
-                        {curso.categoria}
+                        {corrigirPTBR(curso.categoria)}
                       </Badge>
                       <Badge variant="outline" className={`w-fit text-xs ${getNivelColor(curso.nivel)}`}>
-                        {curso.nivel}
+                        {corrigirPTBR(curso.nivel)}
                       </Badge>
                     </div>
                   </div>
                 </div>
                 <div>
                   <CardTitle className="text-xl mb-2 group-hover:text-blue-600 transition-colors">
-                    {curso.titulo}
+                    {corrigirPTBR(curso.titulo)}
                   </CardTitle>
                   <CardDescription className="text-sm leading-relaxed line-clamp-2">
-                    {curso.subtitulo}
+                    {corrigirPTBR(curso.subtitulo)}
                   </CardDescription>
                 </div>
               </CardHeader>
@@ -269,6 +283,21 @@ export default function ColaboradorCursos() {
                     <span>{curso.modulos?.length || 0} módulos</span>
                   </div>
                 </div>
+                {(() => {
+                  const url = (curso as any).materialUrl || materialMap[curso.slug];
+                  return url ? (
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      className="w-full"
+                      onClick={(e) => { e.stopPropagation(); window.open(url, '_blank'); }}
+                      data-testid={`button-material-${curso.slug}`}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Material PDF
+                    </Button>
+                  ) : null;
+                })()}
                 <Button 
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg group-hover:shadow-xl transition-all"
                   onClick={(e) => {
@@ -295,7 +324,7 @@ export default function ColaboradorCursos() {
               🎓 Trilha de Capacitação Completa
             </h3>
             <p className="text-gray-600 mb-4">
-              <strong>Conforme NR01</strong> - Liderança e Saúde Psicossocial
+              <strong>Conforme NR-01</strong> - Liderança e Saúde Psicossocial
             </p>
             <p className="text-sm text-gray-500">
               {cursosDisponiveis.length} cursos disponíveis | Conteúdo baseado em PNL e Rapport | Integração com PGR

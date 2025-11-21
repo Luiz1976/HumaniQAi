@@ -1,7 +1,8 @@
 import { DimensaoRPO, DimensaoResultadoRPO, ResultadoRPO, NivelRiscoRPO } from '../types';
+import { corrigirPTBR } from '../../utils/corrigirPTBR';
 
 // Perguntas do teste RPO organizadas por dimensão
-export const perguntasRPO = {
+const perguntasRPORaw = {
   'Demandas do trabalho': [
     { id: 1, texto: 'Tenho tempo suficiente para realizar minhas tarefas com qualidade.' },
     { id: 2, texto: 'A quantidade de trabalho que recebo é adequada.' },
@@ -116,6 +117,13 @@ export const perguntasRPO = {
   ]
 };
 
+export const perguntasRPO = Object.fromEntries(
+  Object.entries(perguntasRPORaw).map(([dimensao, perguntas]) => [
+    dimensao,
+    perguntas.map(p => ({ ...p, texto: corrigirPTBR(p.texto) }))
+  ])
+);
+
 // Perguntas invertidas (onde concordar indica maior risco)
 const perguntasInvertidas = [6, 7, 77, 78, 85, 86, 91, 92, 93, 94];
 
@@ -190,7 +198,7 @@ function gerarInterpretacao(dimensao: DimensaoRPO, nivel: NivelRiscoRPO): string
     }
   };
 
-  return interpretacoes[dimensao][nivel];
+  return corrigirPTBR(interpretacoes[dimensao][nivel]);
 }
 
 // Função para gerar recomendações específicas por dimensão e nível
@@ -374,7 +382,7 @@ function gerarRecomendacoes(dimensao: DimensaoRPO, nivel: NivelRiscoRPO): string
     }
   };
 
-  return recomendacoes[dimensao][nivel];
+  return recomendacoes[dimensao][nivel].map(corrigirPTBR);
 }
 
 // Função principal para calcular o resultado do teste RPO
@@ -441,30 +449,30 @@ export function calcularResultadoRPO(respostas: Record<number, number>): Resulta
   // Gerar alertas críticos
   const alertasCriticos: string[] = [];
   if (dimensoesCriticas.some(d => d.nivel === 'Elevado')) {
-    alertasCriticos.push('⚠️ ATENÇÃO: Foram identificados riscos psicossociais ELEVADOS que requerem ação imediata.');
+    alertasCriticos.push(corrigirPTBR('⚠️ ATENÇÃO: Foram identificados riscos psicossociais ELEVADOS que requerem ação imediata.'));
   }
   if (dimensoesCriticas.some(d => d.dimensao === 'Violência, assédio e pressão' && d.nivel !== 'Reduzido')) {
-    alertasCriticos.push('🚨 CRÍTICO: Sinais de violência, assédio ou pressão detectados. Intervenção urgente necessária.');
+    alertasCriticos.push(corrigirPTBR('🚨 CRÍTICO: Sinais de violência, assédio ou pressão detectados. Intervenção urgente necessária.'));
   }
   if (indiceGlobalRisco >= 4.0) {
-    alertasCriticos.push('📊 RISCO GLOBAL ELEVADO: O ambiente de trabalho apresenta múltiplos fatores de risco.');
+    alertasCriticos.push(corrigirPTBR('📊 RISCO GLOBAL ELEVADO: O ambiente de trabalho apresenta múltiplos fatores de risco.'));
   }
 
   // Gerar recomendações prioritárias
   const recomendacoesPrioritarias: string[] = [];
   dimensoesCriticas.forEach(dimensao => {
     if (dimensao.nivel === 'Elevado') {
-      recomendacoesPrioritarias.push(`${dimensao.dimensao}: ${dimensao.recomendacoes[0]}`);
+      recomendacoesPrioritarias.push(corrigirPTBR(`${dimensao.dimensao}: ${dimensao.recomendacoes[0]}`));
     }
   });
 
   // Gerar plano de ação
   const planoAcao: string[] = [
-    '1. Priorizar intervenções nas dimensões de risco elevado',
-    '2. Implementar monitoramento contínuo dos fatores de risco',
-    '3. Estabelecer cronograma de reavaliação em 3-6 meses',
-    '4. Envolver liderança e RH nas ações corretivas',
-    '5. Comunicar resultados e ações para toda a equipe'
+    corrigirPTBR('1. Priorizar intervenções nas dimensões de risco elevado'),
+    corrigirPTBR('2. Implementar monitoramento contínuo dos fatores de risco'),
+    corrigirPTBR('3. Estabelecer cronograma de reavaliação em 3-6 meses'),
+    corrigirPTBR('4. Envolver liderança e RH nas ações corretivas'),
+    corrigirPTBR('5. Comunicar resultados e ações para toda a equipe')
   ];
 
   return {
@@ -498,22 +506,22 @@ export function obterPerguntasRPO() {
     });
   });
   
-  return todasPerguntas.sort((a, b) => a.id - b.id);
+  return todasPerguntas.map(p => ({ ...p, texto: corrigirPTBR(p.texto) })).sort((a, b) => a.id - b.id);
 }
 
 // Função para obter informações do teste
 export function obterInfoTesteRPO() {
   return {
-    titulo: 'HumaniQ RPO - Riscos Psicossociais Ocupacionais',
-    nome: 'HumaniQ RPO - Riscos Psicossociais Ocupacionais',
-    descricao: 'Avaliação científica dos fatores psicossociais no ambiente de trabalho baseada em normas ISO 10075 e diretrizes da OIT.',
-    categoria: 'Riscos Psicossociais',
+    titulo: corrigirPTBR('HumaniQ RPO - Riscos Psicossociais Ocupacionais'),
+    nome: corrigirPTBR('HumaniQ RPO - Riscos Psicossociais Ocupacionais'),
+    descricao: corrigirPTBR('Avaliação científica dos fatores psicossociais no ambiente de trabalho baseada em normas ISO 10075 e diretrizes da OIT.'),
+    categoria: corrigirPTBR('Riscos Psicossociais'),
     duracaoEstimada: 15,
-    tempoEstimado: '15-20 min',
+    tempoEstimado: corrigirPTBR('15-20 min'),
     totalPerguntas: 96,
     numeroPerguntas: 96,
     dimensoes: 8,
-    instrucoes: `
+    instrucoes: corrigirPTBR(`
       Este teste avalia os riscos psicossociais no seu ambiente de trabalho através de 96 questões organizadas em 8 dimensões:
       
       1. **Demandas do trabalho** - Carga e pressão de trabalho
@@ -537,6 +545,6 @@ export function obterInfoTesteRPO() {
       - Neutro (3)
       - Concordo (4)
       - Concordo totalmente (5)
-    `
+    `)
   };
 }

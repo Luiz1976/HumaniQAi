@@ -1,3 +1,5 @@
+import { corrigirPTBR } from "../../utils/corrigirPTBR";
+
 export interface DimensaoPercepacaoAssedio {
   nome: string;
   pontuacao: number;
@@ -44,7 +46,7 @@ export interface ResultadoPercepacaoAssedio {
   };
 }
 
-export const configPercepacaoAssedio = {
+const configPercepacaoAssedioRaw = {
   id: "percepcao-assedio",
   nome: "HumaniQ PAS - Percepção de Assédio Moral e Sexual",
   descricao: "Identificação de condutas abusivas percebidas ou vivenciadas, com foco em assédio moral, institucional e sexual",
@@ -729,6 +731,27 @@ export const configPercepacaoAssedio = {
   ]
 };
 
+export const configPercepacaoAssedio = {
+  ...configPercepacaoAssedioRaw,
+  nome: corrigirPTBR(configPercepacaoAssedioRaw.nome),
+  descricao: corrigirPTBR(configPercepacaoAssedioRaw.descricao),
+  categoria: corrigirPTBR(configPercepacaoAssedioRaw.categoria),
+  tempoEstimado: corrigirPTBR(configPercepacaoAssedioRaw.tempoEstimado),
+  baseCientifica: configPercepacaoAssedioRaw.baseCientifica.map(corrigirPTBR),
+  objetivos: configPercepacaoAssedioRaw.objetivos.map(corrigirPTBR),
+  beneficios: configPercepacaoAssedioRaw.beneficios.map(corrigirPTBR),
+  dimensoes: configPercepacaoAssedioRaw.dimensoes.map(d => ({
+    ...d,
+    nome: corrigirPTBR(d.nome),
+    descricao: corrigirPTBR(d.descricao)
+  })),
+  perguntas: configPercepacaoAssedioRaw.perguntas.map(p => ({
+    ...p,
+    texto: corrigirPTBR(p.texto),
+    opcoes: p.opcoes.map(o => ({ ...o, texto: corrigirPTBR(o.texto) }))
+  }))
+};
+
 // Função para calcular o resultado do teste
 export function calcularResultadoPercepacaoAssedio(respostas: Record<number, number>): ResultadoPercepacaoAssedio {
   const dimensoes: DimensaoPercepacaoAssedio[] = [];
@@ -783,19 +806,19 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
           ? 'Alta percepção de assédio moral direto - situação preocupante.'
           : 'Percepção crítica de assédio moral direto - intervenção urgente necessária.';
         
-        interpretacao = 'Avalia a exposição a agressões verbais, humilhações e comportamentos abusivos diretos.';
+        interpretacao = corrigirPTBR('Avalia a exposição a agressões verbais, humilhações e comportamentos abusivos diretos.');
         
         recomendacoes = alertaCritico 
           ? [
-              'Investigação imediata das situações relatadas',
-              'Treinamento urgente para gestores sobre conduta respeitosa',
-              'Implementação de medidas disciplinares quando necessário',
-              'Acompanhamento psicológico para colaboradores afetados'
+              corrigirPTBR('Investigação imediata das situações relatadas'),
+              corrigirPTBR('Treinamento urgente para gestores sobre conduta respeitosa'),
+              corrigirPTBR('Implementação de medidas disciplinares quando necessário'),
+              corrigirPTBR('Acompanhamento psicológico para colaboradores afetados')
             ]
           : [
-              'Reforçar políticas de conduta respeitosa',
-              'Treinamentos preventivos sobre assédio moral',
-              'Monitoramento contínuo do clima organizacional'
+              corrigirPTBR('Reforçar políticas de conduta respeitosa'),
+              corrigirPTBR('Treinamentos preventivos sobre assédio moral'),
+              corrigirPTBR('Monitoramento contínuo do clima organizacional')
             ];
         
         cor = 'from-red-500 to-rose-500';
@@ -810,7 +833,7 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
           ? 'Cultura organizacional com tolerância preocupante a comportamentos abusivos.'
           : 'Cultura institucional crítica - normalização de comportamentos abusivos.';
         
-        interpretacao = 'Avalia a cultura organizacional e a tolerância institucional a comportamentos abusivos.';
+        interpretacao = corrigirPTBR('Avalia a cultura organizacional e a tolerância institucional a comportamentos abusivos.');
         
         recomendacoes = alertaCritico
           ? [
@@ -818,11 +841,11 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
               'Treinamento de liderança sobre responsabilidade institucional',
               'Implementação de políticas anti-assédio mais rigorosas',
               'Auditoria dos processos de gestão de pessoas'
-            ]
+            ].map(corrigirPTBR)
           : [
-              'Fortalecimento dos valores organizacionais',
-              'Comunicação clara sobre tolerância zero ao assédio',
-              'Capacitação contínua de lideranças'
+              corrigirPTBR('Fortalecimento dos valores organizacionais'),
+              corrigirPTBR('Comunicação clara sobre tolerância zero ao assédio'),
+              corrigirPTBR('Capacitação contínua de lideranças')
             ];
         
         cor = 'from-orange-500 to-red-500';
@@ -837,7 +860,7 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
           ? 'Alta percepção de assédio sexual - situação grave.'
           : 'Percepção crítica de assédio sexual - intervenção imediata necessária.';
         
-        interpretacao = 'Avalia a exposição a comentários, gestos e comportamentos de cunho sexual inadequados.';
+        interpretacao = corrigirPTBR('Avalia a exposição a comentários, gestos e comportamentos de cunho sexual inadequados.');
         
         recomendacoes = alertaCritico
           ? [
@@ -846,11 +869,11 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
               'Treinamento obrigatório sobre assédio sexual',
               'Suporte psicológico especializado para vítimas',
               'Revisão das políticas de prevenção ao assédio sexual'
-            ]
+            ].map(corrigirPTBR)
           : [
-              'Campanhas educativas sobre respeito e consentimento',
-              'Treinamentos preventivos regulares',
-              'Fortalecimento dos canais de denúncia'
+              corrigirPTBR('Campanhas educativas sobre respeito e consentimento'),
+              corrigirPTBR('Treinamentos preventivos regulares'),
+              corrigirPTBR('Fortalecimento dos canais de denúncia')
             ];
         
         cor = 'from-purple-500 to-pink-500';
@@ -865,7 +888,7 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
           ? 'Baixa confiança nos canais de denúncia e processos.'
           : 'Desconfiança crítica nos sistemas de denúncia e proteção.';
         
-        interpretacao = 'Avalia a confiança nos canais de denúncia e na resposta organizacional.';
+        interpretacao = corrigirPTBR('Avalia a confiança nos canais de denúncia e na resposta organizacional.');
         
         recomendacoes = alertaCritico
           ? [
@@ -873,11 +896,11 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
               'Garantia de anonimato e proteção contra retaliações',
               'Treinamento especializado para equipes de RH e ética',
               'Comunicação transparente sobre processos e resultados'
-            ]
+            ].map(corrigirPTBR)
           : [
-              'Melhoria da comunicação sobre canais disponíveis',
-              'Treinamento para gestores sobre acolhimento de denúncias',
-              'Feedback regular sobre ações tomadas'
+              corrigirPTBR('Melhoria da comunicação sobre canais disponíveis'),
+              corrigirPTBR('Treinamento para gestores sobre acolhimento de denúncias'),
+              corrigirPTBR('Feedback regular sobre ações tomadas')
             ];
         
         cor = 'from-blue-500 to-cyan-500';
@@ -892,7 +915,7 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
           ? 'Alto impacto emocional negativo - bem-estar comprometido.'
           : 'Impacto emocional crítico - risco à saúde mental dos colaboradores.';
         
-        interpretacao = 'Avalia os impactos na segurança emocional e bem-estar dos colaboradores.';
+        interpretacao = corrigirPTBR('Avalia os impactos na segurança emocional e bem-estar dos colaboradores.');
         
         recomendacoes = alertaCritico
           ? [
@@ -900,11 +923,11 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
               'Avaliação de riscos psicossociais urgente',
               'Implementação de medidas de proteção à saúde mental',
               'Monitoramento contínuo do bem-estar dos colaboradores'
-            ]
+            ].map(corrigirPTBR)
           : [
-              'Programas de bem-estar e qualidade de vida',
-              'Suporte psicológico preventivo',
-              'Ações para melhoria do clima organizacional'
+              corrigirPTBR('Programas de bem-estar e qualidade de vida'),
+              corrigirPTBR('Suporte psicológico preventivo'),
+              corrigirPTBR('Ações para melhoria do clima organizacional')
             ];
         
         cor = 'from-green-500 to-emerald-500';
@@ -915,14 +938,14 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
     const percentualDimensao = ((mediaDimensao - 1) / 4) * 100;
     
     dimensoes.push({
-      nome: dimensaoConfig.nome,
+      nome: corrigirPTBR(dimensaoConfig.nome),
       pontuacao: Math.round(mediaDimensao * 100) / 100,
       percentual: Math.round(percentualDimensao * 100) / 100,
       nivel,
-      descricao,
+      descricao: corrigirPTBR(descricao),
       interpretacao,
       alertaCritico,
-      recomendacoes,
+      recomendacoes: recomendacoes.map(corrigirPTBR),
       cor,
       icone: dimensaoConfig.icone || 'AlertTriangle'
     });
@@ -954,37 +977,37 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
   // Gerar alertas críticos
   const alertasCriticos = dimensoes
     .filter(d => d.alertaCritico)
-    .map(d => `Alerta crítico na dimensão "${d.nome}": ${d.descricao}`);
+    .map(d => corrigirPTBR(`Alerta crítico na dimensão "${d.nome}": ${d.descricao}`));
   
   // Gerar insights
   const insights = [
-    `Índice geral de percepção de assédio: ${Math.round(indiceGeral * 100) / 100} (${nivelRiscoGeral})`,
-    `${alertasCriticos.length} dimensão(ões) em estado crítico ou de alto risco`,
+    corrigirPTBR(`Índice geral de percepção de assédio: ${Math.round(indiceGeral * 100) / 100} (${nivelRiscoGeral})`),
+    corrigirPTBR(`${alertasCriticos.length} dimensão(ões) em estado crítico ou de alto risco`),
     dimensoes.find(d => d.nivel === 'Baixo Risco') 
-      ? `Pontos positivos identificados em: ${dimensoes.filter(d => d.nivel === 'Baixo Risco').map(d => d.nome).join(', ')}`
-      : 'Todas as dimensões apresentam algum nível de risco - atenção necessária'
+      ? corrigirPTBR(`Pontos positivos identificados em: ${dimensoes.filter(d => d.nivel === 'Baixo Risco').map(d => d.nome).join(', ')}`)
+      : corrigirPTBR('Todas as dimensões apresentam algum nível de risco - atenção necessária')
   ];
   
   // Gerar recomendações educativas
   const recomendacoesEducativas = [
-    'Implementar programa abrangente de educação sobre assédio moral e sexual',
-    'Realizar campanhas de conscientização sobre respeito e diversidade',
-    'Desenvolver treinamentos específicos para lideranças sobre prevenção ao assédio',
-    'Criar materiais educativos sobre direitos e deveres no ambiente de trabalho',
-    'Estabelecer programa de mentoria e apoio entre colaboradores'
+    corrigirPTBR('Implementar programa abrangente de educação sobre assédio moral e sexual'),
+    corrigirPTBR('Realizar campanhas de conscientização sobre respeito e diversidade'),
+    corrigirPTBR('Desenvolver treinamentos específicos para lideranças sobre prevenção ao assédio'),
+    corrigirPTBR('Criar materiais educativos sobre direitos e deveres no ambiente de trabalho'),
+    corrigirPTBR('Estabelecer programa de mentoria e apoio entre colaboradores')
   ];
   
   // Gerar recomendações disciplinares
   const recomendacoesDisciplinares = alertasCriticos.length > 0 ? [
-    'Investigar imediatamente todas as situações de risco crítico identificadas',
-    'Aplicar medidas disciplinares apropriadas para casos confirmados de assédio',
-    'Implementar política de tolerância zero para comportamentos abusivos',
-    'Estabelecer consequências claras e progressivas para violações',
-    'Documentar adequadamente todos os casos e ações tomadas'
+    corrigirPTBR('Investigar imediatamente todas as situações de risco crítico identificadas'),
+    corrigirPTBR('Aplicar medidas disciplinares apropriadas para casos confirmados de assédio'),
+    corrigirPTBR('Implementar política de tolerância zero para comportamentos abusivos'),
+    corrigirPTBR('Estabelecer consequências claras e progressivas para violações'),
+    corrigirPTBR('Documentar adequadamente todos os casos e ações tomadas')
   ] : [
-    'Manter política preventiva de monitoramento comportamental',
-    'Estabelecer protocolos claros para situações futuras',
-    'Reforçar consequências para comportamentos inadequados'
+    corrigirPTBR('Manter política preventiva de monitoramento comportamental'),
+    corrigirPTBR('Estabelecer protocolos claros para situações futuras'),
+    corrigirPTBR('Reforçar consequências para comportamentos inadequados')
   ];
   
   // Calcular percentual geral
@@ -992,12 +1015,12 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
   
   // Gerar classificação geral
   const classificacaoGeral = nivelRiscoGeral === 'Baixo Risco' 
-    ? 'Ambiente Seguro e Respeitoso'
+    ? corrigirPTBR('Ambiente Seguro e Respeitoso')
     : nivelRiscoGeral === 'Risco Moderado'
-    ? 'Ambiente com Sinais de Alerta'
+    ? corrigirPTBR('Ambiente com Sinais de Alerta')
     : nivelRiscoGeral === 'Alto Risco'
-    ? 'Ambiente de Risco Elevado'
-    : 'Ambiente Altamente Tóxico';
+    ? corrigirPTBR('Ambiente de Risco Elevado')
+    : corrigirPTBR('Ambiente Altamente Tóxico');
 
   // Calcular indicadores ESG
   const indicadoresESG = {
@@ -1009,7 +1032,7 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
   return {
     id: `pas-${Date.now()}`,
     testeId: 'percepcao-assedio',
-    nomeTeste: 'HumaniQ PAS - Percepção de Assédio Moral e Sexual',
+    nomeTeste: corrigirPTBR('HumaniQ PAS - Percepção de Assédio Moral e Sexual'),
     dataRealizacao: new Date().toISOString(),
     indiceGeralAssedio: Math.round(indiceGeral * 100) / 100,
     percentualGeral: Math.round(percentualGeral * 100) / 100,
@@ -1026,11 +1049,11 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
         .filter(d => d.alertaCritico)
         .map(d => `${d.nome}: ${d.nivel}`),
       acoesPreventivasRecomendadas: [
-        'Fortalecimento da cultura organizacional inclusiva',
-        'Implementação de políticas anti-assédio robustas',
-        'Treinamentos regulares para todos os colaboradores',
-        'Monitoramento contínuo do clima organizacional',
-        'Canais de denúncia seguros e efetivos'
+        corrigirPTBR('Fortalecimento da cultura organizacional inclusiva'),
+        corrigirPTBR('Implementação de políticas anti-assédio robustas'),
+        corrigirPTBR('Treinamentos regulares para todos os colaboradores'),
+        corrigirPTBR('Monitoramento contínuo do clima organizacional'),
+        corrigirPTBR('Canais de denúncia seguros e efetivos')
       ],
       indicadoresESG
     },
@@ -1044,10 +1067,11 @@ export function calcularResultadoPercepacaoAssedio(respostas: Record<number, num
 }
 
 // Escala Likert para o teste PAS
-export const escalaLikertPAS = [
+const escalaLikertPASRaw = [
   { valor: 1, texto: "Discordo totalmente" },
   { valor: 2, texto: "Discordo" },
   { valor: 3, texto: "Neutro" },
   { valor: 4, texto: "Concordo" },
   { valor: 5, texto: "Concordo totalmente" }
 ];
+export const escalaLikertPAS = escalaLikertPASRaw.map(o => ({ ...o, texto: corrigirPTBR(o.texto) }));

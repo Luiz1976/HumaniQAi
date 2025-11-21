@@ -22,6 +22,7 @@ import { ResultadoPopup } from '@/components/ResultadoPopup';
 import { GerenciamentoTestesColaborador } from '@/components/GerenciamentoTestesColaborador';
 import { GerenciamentoCursosColaborador } from '@/components/GerenciamentoCursosColaborador';
 import { PainelCursosColaborador } from '@/components/PainelCursosColaborador';
+import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface Colaborador {
   id: string;
@@ -282,14 +283,14 @@ export default function EmpresaColaboradorResultados() {
               <Avatar className="h-16 w-16">
                 <AvatarImage 
                   src={colaborador.avatar} 
-                  alt={colaborador.nome}
+                  alt={corrigirPTBR(colaborador.nome)}
                 />
                 <AvatarFallback className="bg-blue-100 text-blue-600 text-xl font-semibold">
                   {colaborador.nome.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{colaborador.nome}</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{corrigirPTBR(colaborador.nome)}</h1>
                 <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
                   <div className="flex items-center">
                     <Mail className="w-4 h-4 mr-1" />
@@ -298,13 +299,13 @@ export default function EmpresaColaboradorResultados() {
                   {colaborador.cargo && (
                     <div className="flex items-center">
                       <FileText className="w-4 h-4 mr-1" />
-                      {colaborador.cargo}
+                      {corrigirPTBR(colaborador.cargo)}
                     </div>
                   )}
                   {colaborador.departamento && (
                     <div className="flex items-center">
                       <BarChart3 className="w-4 h-4 mr-1" />
-                      {colaborador.departamento}
+                      {corrigirPTBR(colaborador.departamento)}
                     </div>
                   )}
                 </div>
@@ -430,7 +431,7 @@ export default function EmpresaColaboradorResultados() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{resultado.nomeTest}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">{corrigirPTBR(resultado.nomeTest)}</h3>
                       <span className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(resultado.status)}`}>
                         {getStatusIcon(resultado.status)}
                         <span className="ml-1">
@@ -442,7 +443,7 @@ export default function EmpresaColaboradorResultados() {
                         <span className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
                           {resultado.tipoTabela === 'resultados_qvt' ? 'QVT' : 
                            resultado.tipoTabela === 'resultados_rpo' ? 'RPO' : 
-                           resultado.tipoTabela === 'resultados' ? 'Padrão' : resultado.tipoTabela}
+                           resultado.tipoTabela === 'resultados' ? 'Padrão' : corrigirPTBR(resultado.tipoTabela)}
                         </span>
                       )}
                     </div>
@@ -478,14 +479,14 @@ export default function EmpresaColaboradorResultados() {
                     {resultado.categoria && (
                       <div className="mb-3">
                         <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded">
-                          {resultado.categoria}
+                          {corrigirPTBR(resultado.categoria)}
                         </span>
                       </div>
                     )}
 
                     {resultado.observacoes && (
                       <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-sm text-gray-600">{resultado.observacoes}</p>
+                        <p className="text-sm text-gray-600">{corrigirPTBR(resultado.observacoes)}</p>
                       </div>
                     )}
                   </div>
@@ -527,7 +528,7 @@ export default function EmpresaColaboradorResultados() {
           {colaborador && (
             <GerenciamentoTestesColaborador
               colaboradorId={colaborador.id}
-              colaboradorNome={colaborador.nome}
+              colaboradorNome={corrigirPTBR(colaborador.nome)}
             />
           )}
         </TabsContent>
@@ -536,7 +537,7 @@ export default function EmpresaColaboradorResultados() {
           {colaborador && (
             <GerenciamentoCursosColaborador
               colaboradorId={colaborador.id}
-              colaboradorNome={colaborador.nome}
+              colaboradorNome={corrigirPTBR(colaborador.nome)}
             />
           )}
         </TabsContent>

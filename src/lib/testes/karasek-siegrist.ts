@@ -2,6 +2,8 @@
 // Base científica: Karasek (1979), Siegrist (1996), Theorell & Karasek (1996)
 // Modelos: Job Demand-Control-Support e Effort-Reward Imbalance
 
+import { corrigirPTBR } from "../../utils/corrigirPTBR";
+
 export interface DimensaoKarasekSiegrist {
   id: string;
   nome: string;
@@ -40,30 +42,37 @@ export interface ResultadoKarasekSiegrist {
 }
 
 // Escalas de resposta
-export const escalaLikert4 = [
+const escalaLikert4Raw = [
   "Nunca",
   "Raramente", 
   "Frequentemente",
   "Sempre"
 ];
+export const escalaLikert4 = escalaLikert4Raw.map(corrigirPTBR);
 
-export const escalaLikert5 = [
+const escalaLikert5Raw = [
   "Discordo totalmente",
   "Discordo",
   "Neutro",
   "Concordo",
   "Concordo totalmente"
 ];
+export const escalaLikert5 = escalaLikert5Raw.map(corrigirPTBR);
 
 // Classificação dos níveis de risco
-export const classificacaoRisco = {
+const classificacaoRiscoRaw = {
   baixo: { min: 0, max: 39, label: "Baixo Risco", cor: "🟢" },
   moderado: { min: 40, max: 69, label: "Risco Moderado", cor: "🟡" },
   alto: { min: 70, max: 100, label: "Alto Risco", cor: "🔴" }
 };
+export const classificacaoRisco = {
+  baixo: { ...classificacaoRiscoRaw.baixo, label: corrigirPTBR(classificacaoRiscoRaw.baixo.label) },
+  moderado: { ...classificacaoRiscoRaw.moderado, label: corrigirPTBR(classificacaoRiscoRaw.moderado.label) },
+  alto: { ...classificacaoRiscoRaw.alto, label: corrigirPTBR(classificacaoRiscoRaw.alto.label) }
+};
 
 // Dimensões e perguntas do teste
-export const dimensoesKarasekSiegrist: DimensaoKarasekSiegrist[] = [
+const dimensoesKarasekSiegristRaw: DimensaoKarasekSiegrist[] = [
   {
     id: "demanda-psicologica",
     nome: "Demanda Psicológica",
@@ -174,6 +183,17 @@ export const dimensoesKarasekSiegrist: DimensaoKarasekSiegrist[] = [
   }
 ];
 
+function corrigirDimensaoKS(d: DimensaoKarasekSiegrist): DimensaoKarasekSiegrist {
+  return {
+    ...d,
+    nome: corrigirPTBR(d.nome),
+    descricao: corrigirPTBR(d.descricao),
+    perguntas: d.perguntas.map(p => ({ ...p, texto: corrigirPTBR(p.texto) }))
+  };
+}
+
+export const dimensoesKarasekSiegrist: DimensaoKarasekSiegrist[] = dimensoesKarasekSiegristRaw.map(corrigirDimensaoKS);
+
 // Função para calcular resultado do teste Karasek-Siegrist
 export function calcularResultadoKarasekSiegrist(respostas: Record<number, number>): ResultadoKarasekSiegrist {
   const resultadoDimensoes: Record<string, any> = {};
@@ -281,7 +301,7 @@ export function obterTodasPerguntasKS(): PerguntaKarasekSiegrist[] {
 }
 
 // Informações do teste
-export const infoTesteKarasekSiegrist = {
+const infoTesteKarasekSiegristRaw = {
   id: "karasek-siegrist",
   nome: "HumaniQ - Karasek-Siegrist",
   descricao: "Avaliação avançada de risco psicossocial baseada nos modelos científicos de Karasek e Siegrist, analisando demanda, controle, apoio social, esforço-recompensa e hipercomprometimento.",
@@ -310,4 +330,14 @@ export const infoTesteKarasekSiegrist = {
     "Seja honesto sobre suas condições de trabalho",
     "Suas respostas são confidenciais e anônimas"
   ]
+};
+
+export const infoTesteKarasekSiegrist = {
+  ...infoTesteKarasekSiegristRaw,
+  nome: corrigirPTBR(infoTesteKarasekSiegristRaw.nome),
+  descricao: corrigirPTBR(infoTesteKarasekSiegristRaw.descricao),
+  categoria: corrigirPTBR(infoTesteKarasekSiegristRaw.categoria),
+  basesCientificas: infoTesteKarasekSiegristRaw.basesCientificas.map(corrigirPTBR),
+  objetivos: infoTesteKarasekSiegristRaw.objetivos.map(corrigirPTBR),
+  instrucoes: infoTesteKarasekSiegristRaw.instrucoes.map(corrigirPTBR)
 };

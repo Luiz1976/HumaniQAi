@@ -94,12 +94,17 @@ class ApiService {
         credentials: 'include',
       });
 
-      let data: any = null;
-      try {
-        data = await response.json();
-      } catch (_) {
-        data = null;
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        const err = new Error(`Resposta não JSON do backend: ${text.slice(0, 120)}`) as any;
+        err.status = response.status;
+        err.url = url;
+        err.text = text;
+        throw err;
       }
+
+      const data = await response.json();
 
       if (!response.ok) {
         const err = new Error(data?.error || `HTTP ${response.status}: ${response.statusText}`) as any;

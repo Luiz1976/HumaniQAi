@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/AuthContext";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import Login from './pages/Login';
@@ -87,6 +87,14 @@ import { Chatbot } from "./components/Chatbot";
 import { OnlineStatus } from "./components/OnlineStatus";
 import HomeRoute from "./components/layout/HomeRoute";
 
+function OnlineStatusGuard() {
+  const location = useLocation();
+  if (location.pathname === "/landing") {
+    return null;
+  }
+  return <OnlineStatus />;
+}
+
 function App() {
   console.log('🔍 [APP] Componente App iniciado');
   console.log('🔍 [APP] Location atual:', window.location.href);
@@ -101,7 +109,7 @@ function App() {
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AuthProvider>
             <Chatbot />
-            <OnlineStatus />
+            <OnlineStatusGuard />
             <Routes>
               {/* Rotas públicas - SEM autenticação */}
               <Route path="/landing" element={<LandingPage />} />

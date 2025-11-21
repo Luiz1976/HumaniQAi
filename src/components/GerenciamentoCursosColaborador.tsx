@@ -9,6 +9,7 @@ import { Lock, Unlock, Calendar, CheckCircle2, Clock, AlertCircle, BookOpen } fr
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface CursoInfo {
   id: number;
@@ -201,7 +202,7 @@ export function GerenciamentoCursosColaborador({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          Gerenciar Cursos - {colaboradorNome}
+          Gerenciar Cursos - {corrigirPTBR(colaboradorNome)}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Configure a disponibilidade e periodicidade dos cursos para este colaborador
@@ -222,7 +223,7 @@ export function GerenciamentoCursosColaborador({
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base font-semibold flex-1 line-clamp-2">
-                  {curso.titulo}
+                  {corrigirPTBR(curso.titulo)}
                 </CardTitle>
                 {curso.foiConcluido && (
                   <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 shrink-0">
@@ -233,10 +234,10 @@ export function GerenciamentoCursosColaborador({
               </div>
               <div className="flex gap-2 flex-wrap">
                 <Badge variant="secondary" className="text-xs">
-                  {curso.categoria}
+                  {corrigirPTBR(curso.categoria)}
                 </Badge>
                 <Badge variant="outline" className="text-xs">
-                  {curso.nivel}
+                  {corrigirPTBR(curso.nivel)}
                 </Badge>
               </div>
             </CardHeader>
@@ -246,7 +247,7 @@ export function GerenciamentoCursosColaborador({
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs text-gray-600">
                   <BookOpen className="h-3 w-3" />
-                  <span>Duração: {curso.duracao}</span>
+                  <span>Duração: {corrigirPTBR(curso.duracao)}</span>
                 </div>
 
                 {/* Status do Curso */}
@@ -354,7 +355,7 @@ export function GerenciamentoCursosColaborador({
           <DialogHeader>
             <DialogTitle>Configurar Periodicidade</DialogTitle>
             <DialogDescription>
-              Defina o intervalo de tempo (em dias) para que o curso "{cursoAtual?.titulo}" fique
+              Defina o intervalo de tempo (em dias) para que o curso "{cursoAtual ? corrigirPTBR(cursoAtual.titulo) : ''}" fique
               disponível novamente após a conclusão.
             </DialogDescription>
           </DialogHeader>

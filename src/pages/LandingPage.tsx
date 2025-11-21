@@ -32,6 +32,8 @@ export default function LandingPage() {
     ? 'text-gray-800 hover:text-indigo-700 font-semibold'
     : 'text-gray-100 hover:text-indigo-300 drop-shadow-lg font-semibold';
 
+  const mobileButtonTextClass = scrolled ? 'text-gray-800' : 'text-white';
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -157,12 +159,51 @@ export default function LandingPage() {
                 Entrar
               </Button>
             </nav>
+            <div className="md:hidden flex-1">
+              <nav role="navigation" aria-label="primary" className="mt-2">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-1">
+                  <button onClick={() => scrollToSection('solucao')} className={`${navLinkClass} text-xs sm:text-sm`}>Solução</button>
+                  <button onClick={() => scrollToSection('modulos')} className={`${navLinkClass} text-xs sm:text-sm`}>Módulos</button>
+                  <button onClick={() => scrollToSection('planos')} className={`${navLinkClass} text-xs sm:text-sm`}>Planos</button>
+                  <button onClick={() => scrollToSection('depoimentos')} className={`${navLinkClass} text-xs sm:text-sm`}>Casos</button>
+                  <button
+                    onClick={() => {
+                      try {
+                        window.dispatchEvent(new CustomEvent('chatbot:open'));
+                      } catch (e) {
+                        console.warn('Falha ao disparar evento chatbot:open', e);
+                      }
+                    }}
+                    className={`${navLinkClass} text-xs sm:text-sm`}
+                    data-testid="button-chatbot-header-mobile"
+                    title="Abrir Chatbot"
+                  >
+                    Chatbot
+                  </button>
+                  <Button 
+                    onClick={() => navigate('/quick-check')} 
+                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-xs px-3 py-1.5"
+                    data-testid="button-diagnostico-header-mobile"
+                  >
+                    Diagnóstico
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => navigate('/login')}
+                    className={`text-xs px-3 py-1.5 ${mobileButtonTextClass}`}
+                    data-testid="button-login-mobile"
+                  >
+                    Entrar
+                  </Button>
+                </div>
+              </nav>
+            </div>
           </div>
         </div>
       </header>
 
       {/* SEÇÃO 1: HERO */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section className="pt-24 md:pt-32 pb-12 md:pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <video
             data-testid="hero-video"
@@ -195,11 +236,11 @@ export default function LandingPage() {
               ⚠️ URGENTE: Prazo NR-01 - Fiscalização ativa a partir de 25/05/2026
             </Badge>
             
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
               Sua empresa está <span className="text-yellow-400">protegida</span> contra os riscos psicossociais?
             </h1>
             
-            <p className="text-xl md:text-2xl text-white mb-8 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-base sm:text-lg md:text-2xl text-white mb-8 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               A partir de maio de 2026, mapear e controlar riscos psicossociais será obrigatório. 
               Empresas sem evidências documentadas enfrentarão multas de até <strong className="text-yellow-400 font-semibold">R$ 6.708</strong> e 
               passivos trabalhistas que podem ultrapassar <strong className="text-yellow-400 font-semibold">R$ 100 mil</strong> por caso.
@@ -220,11 +261,11 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button 
                 size="lg" 
                 onClick={() => scrollToSection('diagnostico')}
-                className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all text-gray-900 font-bold relative z-30"
+                className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 shadow-lg hover:shadow-xl transition-all text-gray-900 font-bold relative z-30"
                 data-testid="button-diagnostico-hero"
               >
                 <Sparkles className="mr-2 h-5 w-5" />
@@ -234,7 +275,7 @@ export default function LandingPage() {
                 size="lg" 
                 variant="outline"
                 onClick={() => scrollToSection('demo')}
-                className="text-lg px-8 py-6 border-2 border-indigo-400 text-indigo-700 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 font-semibold transition-all bg-white shadow-lg hover:shadow-xl group relative z-30"
+                className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 border-2 border-indigo-400 text-indigo-700 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 font-semibold transition-all bg-white shadow-lg hover:shadow-xl group relative z-30"
                 data-testid="button-demo"
               >
                 <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
@@ -246,18 +287,18 @@ export default function LandingPage() {
       </section>
 
       {/* SEÇÃO 2: O PROBLEMA (DOR) */}
-      <section className="py-20 bg-white">
+      <section className="py-12 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
               O custo invisível que está <span className="text-red-600">devorando sua empresa</span>
             </h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto font-medium">
+            <p className="text-base sm:text-lg text-gray-700 max-w-3xl mx-auto font-medium">
               Enquanto você lê esta página, colaboradores da sua organização podem estar enfrentando:
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-12">
             <Card className="border-2 border-red-100 hover:border-red-300 transition-all">
               <CardContent className="pt-6">
                 <div className="flex items-start mb-4">
@@ -329,25 +370,25 @@ export default function LandingPage() {
             </Card>
           </div>
 
-          <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white rounded-2xl p-8 text-center shadow-2xl border-2 border-indigo-400">
+          <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white rounded-2xl p-6 md:p-8 text-center shadow-2xl border-2 border-indigo-400">
             <p className="text-3xl font-bold mb-3 text-yellow-300">
               🇧🇷 O Brasil está entre os países MAIS estressados do mundo
             </p>
-            <p className="text-xl text-indigo-200 font-semibold">
-              <span className="text-4xl text-yellow-400 font-black">54%</span> da população reporta alta preocupação com saúde mental
+            <p className="text-base sm:text-lg text-indigo-200 font-semibold">
+              <span className="text-2xl sm:text-3xl md:text-4xl text-yellow-400 font-black">54%</span> da população reporta alta preocupação com saúde mental
             </p>
           </div>
         </div>
       </section>
 
       {/* SEÇÃO 3: MUDANÇA REGULATÓRIA (URGÊNCIA) */}
-      <section id="urgencia" className="py-20 bg-gradient-to-br from-amber-50 to-orange-50">
+      <section id="urgencia" className="py-12 md:py-20 bg-gradient-to-br from-amber-50 to-orange-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-3 text-lg font-bold shadow-xl" data-testid="badge-nr01">
               🚨 NOVA EXIGÊNCIA NR-01 - MULTAS DE ATÉ R$ 6.708
             </Badge>
-            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
               O que mudou na NR-01 — e por que sua empresa precisa agir <span className="text-red-600 font-black">AGORA</span>
             </h2>
             <p className="text-xl text-gray-700 max-w-4xl mx-auto font-medium">
@@ -355,7 +396,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             <div>
               <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-green-200">
                 <h3 className="text-2xl font-bold mb-6 text-gray-900 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">✅ A NR-01 agora exige que você:</h3>
@@ -431,11 +472,11 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-12 bg-gradient-to-r from-red-600 via-orange-500 to-red-500 text-white rounded-2xl p-8 text-center shadow-2xl border-4 border-yellow-400 transform hover:scale-105 transition-transform">
-            <p className="text-2xl md:text-3xl font-bold mb-4">
+          <div className="mt-12 bg-gradient-to-r from-red-600 via-orange-500 to-red-500 text-white rounded-2xl p-6 md:p-8 text-center shadow-2xl border-4 border-yellow-400 transform hover:scale-105 transition-transform">
+            <p className="text-lg sm:text-xl md:text-3xl font-bold mb-4">
               🚨 Empresas que começarem apenas em maio de 2026 estarão <strong className="text-yellow-300 bg-red-800 px-2 py-1 rounded">12 MESES ATRASADAS</strong> na construção de evidências
             </p>
-            <p className="text-lg text-orange-100 font-medium">
+            <p className="text-base sm:text-lg text-orange-100 font-medium">
               Auditores avaliarão o <strong className="text-white">histórico completo de ações</strong>, não apenas a situação presente. 
               Com a <strong className="text-yellow-300">HumaniQ AI</strong>, você constrói esse histórico <strong className="text-white">automaticamente desde o primeiro dia</strong>.
             </p>
@@ -444,27 +485,27 @@ export default function LandingPage() {
       </section>
 
       {/* SEÇÃO 5: SOLUÇÃO COMPLETA */}
-      <section id="solucao" className="py-20 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900 text-white relative overflow-hidden">
+      <section id="solucao" className="py-12 md:py-20 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] -z-0" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <Badge className="mb-6 bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 text-gray-900 px-8 py-3 text-lg font-bold shadow-2xl animate-bounce" data-testid="badge-solucao">
               🎯 SOLUÇÃO 360° COMPLETA - NR-01
             </Badge>
-            <h2 className="text-4xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-white via-yellow-100 to-white bg-clip-text text-transparent drop-shadow-2xl">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold mb-8 bg-gradient-to-r from-white via-yellow-100 to-white bg-clip-text text-transparent drop-shadow-2xl">
               HumaniQ AI: A Única Plataforma Completa para Gestão de Riscos Psicossociais
             </h2>
-            <p className="text-xl md:text-3xl text-indigo-200 max-w-5xl mx-auto font-medium">
+            <p className="text-base sm:text-lg md:text-2xl text-indigo-200 max-w-5xl mx-auto font-medium">
               A <span className="text-yellow-300 font-bold">única solução integrada</span> que entrega <span className="text-white font-bold">tudo o que a NR-01 exige</span> — do mapeamento online à capacitação de lideranças — 
               em um sistema <span className="text-emerald-300 font-bold">totalmente automatizado e auditável</span>.
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 transform hover:scale-105 transition-transform">
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 md:p-8 border border-white/20 transform hover:scale-105 transition-transform">
             <p className="text-center text-2xl font-semibold mb-2 text-indigo-200">
               Não é apenas software.
             </p>
-            <p className="text-center text-4xl font-black text-transparent bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 bg-clip-text animate-pulse">
+            <p className="text-center text-2xl sm:text-3xl md:text-4xl font-black text-transparent bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 bg-clip-text animate-pulse">
               É TODO O ECOSISTEMA DE CONFORMIDADE PSICOSSOCIAL
             </p>
           </div>
@@ -472,10 +513,10 @@ export default function LandingPage() {
       </section>
 
       {/* SEÇÃO 6: MÓDULOS DA PLATAFORMA */}
-      <section id="modulos" className="py-20 bg-white">
+      <section id="modulos" className="py-12 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
               9 Módulos Integrados. Uma Solução Completa.
             </h2>
             <p className="text-xl text-gray-600">
@@ -483,7 +524,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
               {
                 icon: Target,
@@ -561,7 +602,7 @@ export default function LandingPage() {
       </section>
 
       {/* SEÇÃO 6.5: TRILHA DE CAPACITAÇÃO NR-01 COM CERTIFICAÇÃO PROFISSIONAL */}
-      <section className="py-20 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 text-white relative overflow-hidden">
+      <section className="py-12 md:py-20 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] -z-0" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
@@ -571,7 +612,7 @@ export default function LandingPage() {
               🎓 EXCLUSIVO: Trilha Completa NR-01 + Certificação Digital
             </Badge>
             
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               Capacite Suas Lideranças com a{' '}
               <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
                 Única Trilha Certificada
@@ -579,7 +620,7 @@ export default function LandingPage() {
               para Gestão de Riscos Psicossociais
             </h2>
             
-            <p className="text-xl md:text-2xl text-indigo-200 max-w-4xl mx-auto mb-8">
+            <p className="text-base sm:text-lg md:text-2xl text-indigo-200 max-w-4xl mx-auto mb-8">
               <strong className="text-yellow-300">8 cursos profissionais</strong> baseados nas exigências da NR-01, 
               com <strong className="text-yellow-300">certificação digital reconhecida</strong> que comprova a capacitação 
               de suas lideranças perante auditores do MTE e processos trabalhistas.
@@ -720,14 +761,14 @@ export default function LandingPage() {
 
           {/* Seção de Certificação Digital */}
           <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border-2 border-white/20">
-            <div className="text-center mb-12">
+            <div className="text-center mb-10 md:mb-12">
               <Badge className="mb-4 bg-gradient-to-r from-green-400 to-emerald-400 text-gray-900 px-4 py-2 text-sm font-bold" data-testid="badge-certificacao">
                 ✅ CERTIFICAÇÃO DIGITAL PROFISSIONAL
               </Badge>
-              <h3 className="text-3xl md:text-4xl font-bold mb-4">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
                 Certificados Reconhecidos e Auditáveis
               </h3>
-              <p className="text-xl text-indigo-200 max-w-3xl mx-auto">
+              <p className="text-base sm:text-lg text-indigo-200 max-w-3xl mx-auto">
                 Cada curso concluído gera um <strong className="text-white">certificado digital profissional</strong> com 
                 validade jurídica, aceito em auditorias do MTE e processos trabalhistas.
               </p>
@@ -809,11 +850,11 @@ export default function LandingPage() {
 
           {/* Âncoragem de Valor */}
           <div className="mt-12 text-center">
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 max-w-3xl mx-auto">
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 max-w-3xl mx-auto">
               <p className="text-xl mb-2 text-indigo-200">
                 <span className="line-through">Valor de Mercado: R$ 12.800</span>
               </p>
-              <p className="text-4xl font-bold text-yellow-300 mb-4">
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-300 mb-4">
                 INCLUSO em todos os planos HumaniQ AI
               </p>
               <p className="text-lg text-gray-300">
@@ -827,13 +868,13 @@ export default function LandingPage() {
       </section>
 
       {/* SEÇÃO 7: BENEFÍCIOS POR PÚBLICO */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100">
+      <section className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
               Benefícios para Cada Área da Sua Empresa
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-base sm:text-lg text-gray-600">
               Uma solução que atende todos os stakeholders
             </p>
           </div>
@@ -947,10 +988,10 @@ export default function LandingPage() {
       </section>
 
       {/* SEÇÃO 10: PROVA SOCIAL */}
-      <section id="depoimentos" className="py-20 bg-white">
+      <section id="depoimentos" className="py-12 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
               Empresas que já transformaram sua gestão de riscos
             </h2>
             <div className="flex justify-center items-center gap-2 text-yellow-500">
@@ -997,15 +1038,15 @@ export default function LandingPage() {
       </section>
 
       {/* SEÇÃO 11: ROI E ECONOMIA */}
-      <section id="preco" className="py-20 bg-gradient-to-br from-green-50 to-emerald-50">
+      <section id="preco" className="py-12 md:py-20 bg-gradient-to-br from-green-50 to-emerald-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
               Quanto sua empresa pode <span className="text-green-600">economizar</span> com a HumaniQ AI?
             </h2>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="bg-white rounded-2xl p-8 shadow-xl">
               <h3 className="text-2xl font-bold text-red-600 mb-6">Cenário Atual (sem gestão completa)</h3>
               <div className="space-y-4">
@@ -1036,18 +1077,18 @@ export default function LandingPage() {
               <div className="space-y-6">
                 <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
                   <p className="text-lg mb-2">Investimento Anual</p>
-                  <p className="text-5xl font-bold">R$ 29.900</p>
+                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold">R$ 29.900</p>
                   <p className="text-green-200 mt-2">Tudo incluído. Sem custos extras.</p>
                 </div>
 
                 <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
                   <p className="text-lg mb-2">Economia Potencial</p>
-                  <p className="text-5xl font-bold">R$ 370.000/ano</p>
+                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold">R$ 370.000/ano</p>
                 </div>
 
                 <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 p-6 rounded-xl">
                   <p className="text-lg mb-2 font-semibold">Retorno sobre Investimento</p>
-                  <p className="text-6xl font-bold">1.238%</p>
+                  <p className="text-4xl sm:text-5xl md:text-6xl font-bold">1.238%</p>
                   <p className="text-gray-800 mt-2 font-medium">Para cada R$ 1 investido, você economiza R$ 12,38</p>
                 </div>
 
@@ -1055,7 +1096,7 @@ export default function LandingPage() {
                   <Button 
                     size="lg" 
                     onClick={() => scrollToSection('diagnostico')}
-                    className="bg-white text-green-600 hover:bg-gray-100 text-lg px-8 py-6 shadow-xl"
+                    className="bg-white text-green-600 hover:bg-gray-100 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 shadow-xl"
                     data-testid="button-diagnostico-roi"
                   >
                     Comece Seu Diagnóstico Gratuito
@@ -1069,21 +1110,21 @@ export default function LandingPage() {
       </section>
 
       {/* SEÇÃO 12: PLANOS E PREÇOS */}
-      <section id="planos" className="py-20 bg-white">
+      <section id="planos" className="py-12 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-indigo-100 text-indigo-800 border-indigo-200 px-4 py-2">
               Investimento Transparente
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
               Escolha o Plano Ideal para Sua Empresa
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
               Preços claros, sem surpresas. Pague apenas pelo que usar, com todos os recursos para manter sua empresa em compliance.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8 mb-12">
+          <div className="grid lg:grid-cols-3 gap-6 md:gap-8 mb-12">
             {/* PLANO ESSENCIAL */}
             <Card className="border-2 border-gray-200 hover:border-gray-300 transition-all hover:shadow-xl" data-testid="card-plano-essencial">
               <CardContent className="pt-8 pb-8">
@@ -1091,7 +1132,7 @@ export default function LandingPage() {
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Essencial</h3>
                   <p className="text-gray-600 mb-4">Para pequenas empresas começando</p>
                   <div className="mb-6">
-                    <span className="text-5xl font-bold text-gray-900">R$ 15</span>
+                    <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">R$ 15</span>
                     <span className="text-gray-600">/colaborador/mês</span>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-lg">
@@ -1207,7 +1248,7 @@ export default function LandingPage() {
                 </ul>
 
                 <Button 
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-lg py-6" 
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-base sm:text-lg py-4 sm:py-6" 
                   data-testid="button-plano-profissional"
                   onClick={() => window.location.href = '/checkout/profissional'}
                 >
@@ -1224,7 +1265,7 @@ export default function LandingPage() {
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
                   <p className="text-gray-600 mb-4">Para grandes empresas</p>
                   <div className="mb-6">
-                    <span className="text-5xl font-bold text-gray-900">R$ 35</span>
+                    <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">R$ 35</span>
                     <span className="text-gray-600">/colaborador/mês</span>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-lg">
@@ -1355,17 +1396,17 @@ export default function LandingPage() {
       </section>
 
       {/* SEÇÃO 14: CTA FINAL */}
-      <section id="diagnostico" className="py-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 text-white">
+      <section id="diagnostico" className="py-12 md:py-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
             Comece Hoje. Proteja Sua Empresa Amanhã.
           </h2>
           
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 mb-8 border border-white/20">
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 md:p-8 mb-8 border border-white/20">
             <div className="flex items-center justify-center mb-6">
               <Sparkles className="h-12 w-12 text-yellow-400" />
             </div>
-            <h3 className="text-3xl font-bold mb-6">Diagnóstico Gratuito Completo + Demo da Plataforma</h3>
+            <h3 className="text-2xl sm:text-3xl font-bold mb-6">Diagnóstico Gratuito Completo + Demo da Plataforma</h3>
             
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div className="bg-white/10 p-6 rounded-xl">
@@ -1589,20 +1630,20 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-      <section id="contato-demo" className="py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50">
+      <section id="contato-demo" className="py-12 md:py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <Badge className="mb-4 bg-yellow-400 text-gray-900 px-4 py-2 font-bold" data-testid="badge-contato-demo">
               Agende sua Demonstração
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-3">
               Experimente o HumaniQ AI ao vivo
             </h2>
-            <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
               Imagine sua diretoria visualizando, em poucos minutos, o mapa real de riscos psicossociais da empresa. Decida agora: uma conversa rápida pode evitar meses de incerteza.
             </p>
           </div>
-          <div className="bg-white rounded-2xl shadow-2xl border-2 border-amber-200 p-8">
+            <div className="bg-white rounded-2xl shadow-2xl border-2 border-amber-200 p-6 md:p-8">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
                 <div className="flex items-center gap-3 mb-4">

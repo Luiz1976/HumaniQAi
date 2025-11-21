@@ -7,6 +7,7 @@ import QRCode from "qrcode";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import Logo from "@/components/Logo";
+import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface CertificadoViewProps {
   certificado: any;
@@ -167,11 +168,11 @@ export default function CertificadoView({ certificado, curso }: CertificadoViewP
                 </p>
 
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-900 border-b-2 border-blue-200 pb-2 inline-block px-6 sm:px-8" style={{ fontFamily: 'Georgia, serif' }}>
-                  {certificado.colaboradorNome}
+                  {corrigirPTBR(certificado.colaboradorNome)}
                 </h2>
 
                 <p className="text-base sm:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed px-4" style={{ fontFamily: 'Georgia, serif' }}>
-                  concluiu com êxito o curso de <strong>{curso.titulo}</strong>, 
+                  concluiu com êxito o curso de <strong>{corrigirPTBR(curso.titulo)}</strong>, 
                   com carga horária de <strong>{certificado.cargaHoraria}</strong>, 
                   ministrado pela plataforma <strong>HumaniQ AI</strong>.
                 </p>

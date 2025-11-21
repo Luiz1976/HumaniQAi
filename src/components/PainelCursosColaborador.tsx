@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface PainelCursosColaboradorProps {
   colaboradorId: string;
@@ -197,7 +198,7 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-bold text-green-900 mb-1 truncate">
-                          {curso.titulo}
+                          {corrigirPTBR(curso.titulo)}
                         </h3>
                         <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
                           <Calendar className="h-4 w-4 flex-shrink-0" />
@@ -267,18 +268,18 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
                       <div className="flex-1">
                         <div className="flex items-center gap-3 flex-wrap mb-2">
                           <h3 className="text-xl font-bold text-gray-900">
-                            {curso.titulo}
+                            {corrigirPTBR(curso.titulo)}
                           </h3>
                           <Badge className={`${statusInfo.color} border`}>
                             <StatusIcon className="h-3 w-3 mr-1" />
                             {statusInfo.label}
                           </Badge>
                           <Badge variant="outline" className="text-xs">
-                            {curso.categoria}
+                            {corrigirPTBR(curso.categoria)}
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-3">
-                          {curso.subtitulo}
+                          {corrigirPTBR(curso.subtitulo)}
                         </p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <div className="flex items-center gap-1">
@@ -290,7 +291,7 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
                             {curso.modulos?.length || 0} módulos
                           </div>
                           <Badge variant="outline" className="text-xs">
-                            {curso.nivel}
+                            {corrigirPTBR(curso.nivel)}
                           </Badge>
                         </div>
                       </div>

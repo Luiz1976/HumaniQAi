@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { apiService } from '@/services/apiService';
 import { ResultadoVisualizacao } from '@/components/ResultadoVisualizacao';
+import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface ResultadoTeste {
   id: string;
@@ -102,8 +103,8 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
 
   // Obter nome do teste de várias fontes
   const obterNomeTeste = (): string => {
-    if (resultado?.nomeTest) return resultado.nomeTest;
-    if (dadosResultado?.metadados?.teste_nome) return dadosResultado.metadados.teste_nome;
+    if (resultado?.nomeTest) return corrigirPTBR(resultado.nomeTest);
+    if (dadosResultado?.metadados?.teste_nome) return corrigirPTBR(dadosResultado.metadados.teste_nome);
     if (dadosResultado?.metadados?.tipo_teste) {
       const tipo = dadosResultado.metadados.tipo_teste;
       if (tipo === 'clima-organizacional') return 'Pesquisa de Clima Organizacional';

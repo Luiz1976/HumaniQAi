@@ -4,6 +4,8 @@
 // Diretrizes da OIT sobre Fatores Psicossociais no Trabalho,
 // ISO 45003 - Gestão de Saúde e Segurança Ocupacional - Riscos Psicossociais
 
+import { corrigirPTBR } from "../../utils/corrigirPTBR";
+
 export interface DimensaoRPO {
   id: string;
   nome: string;
@@ -31,24 +33,31 @@ export interface ResultadoRPO {
 }
 
 // Escala Likert de 5 pontos
-export const escalaLikert = [
+const escalaLikertRaw = [
   "Nunca",
   "Raramente", 
   "Às vezes",
   "Frequentemente",
   "Sempre"
 ];
+export const escalaLikert = escalaLikertRaw.map(corrigirPTBR);
 
 // Classificação do Índice Geral de Risco Psicossocial
-export const classificacaoRisco = {
+const classificacaoRiscoRaw = {
   baixo: { min: 1.0, max: 2.0, label: "Baixo risco" },
   moderado: { min: 2.1, max: 3.0, label: "Risco moderado" },
   alto: { min: 3.1, max: 4.0, label: "Alto risco" },
   critico: { min: 4.1, max: 5.0, label: "Risco crítico" }
 };
+export const classificacaoRisco = {
+  baixo: { ...classificacaoRiscoRaw.baixo, label: corrigirPTBR(classificacaoRiscoRaw.baixo.label) },
+  moderado: { ...classificacaoRiscoRaw.moderado, label: corrigirPTBR(classificacaoRiscoRaw.moderado.label) },
+  alto: { ...classificacaoRiscoRaw.alto, label: corrigirPTBR(classificacaoRiscoRaw.alto.label) },
+  critico: { ...classificacaoRiscoRaw.critico, label: corrigirPTBR(classificacaoRiscoRaw.critico.label) }
+};
 
 // Dimensões e perguntas do teste RPO
-export const dimensoesRPO: DimensaoRPO[] = [
+const dimensoesRPORaw: DimensaoRPO[] = [
   {
     id: "demandas_trabalho",
     nome: "Demandas do Trabalho",
@@ -202,6 +211,17 @@ export const dimensoesRPO: DimensaoRPO[] = [
     ]
   }
 ];
+
+function corrigirDimensaoRPO(d: DimensaoRPO): DimensaoRPO {
+  return {
+    ...d,
+    nome: corrigirPTBR(d.nome),
+    descricao: corrigirPTBR(d.descricao),
+    perguntas: d.perguntas.map(p => ({ ...p, texto: corrigirPTBR(p.texto) }))
+  };
+}
+
+export const dimensoesRPO: DimensaoRPO[] = dimensoesRPORaw.map(corrigirDimensaoRPO);
 
 // Função para calcular o resultado do teste RPO
 export function calcularResultadoRPO(
@@ -483,7 +503,7 @@ export function obterTodasPerguntasRPO(): PerguntaRPO[] {
 }
 
 // Informações do teste para exibição
-export const infoTesteRPO = {
+const infoTesteRPORaw = {
   id: "rpo",
   nome: "HumaniQ RPO - Riscos Psicossociais Ocupacionais",
   descricao: "Avaliação científica abrangente dos fatores psicossociais no ambiente de trabalho que podem impactar a saúde mental e o bem-estar dos colaboradores, baseada em modelos internacionalmente validados.",
@@ -518,4 +538,15 @@ export const infoTesteRPO = {
     "Compliance com normas de saúde e segurança ocupacional",
     "Base para políticas de bem-estar e qualidade de vida no trabalho"
   ]
+};
+
+export const infoTesteRPO = {
+  ...infoTesteRPORaw,
+  nome: corrigirPTBR(infoTesteRPORaw.nome),
+  descricao: corrigirPTBR(infoTesteRPORaw.descricao),
+  categoria: corrigirPTBR(infoTesteRPORaw.categoria),
+  basesCientificas: infoTesteRPORaw.basesCientificas.map(corrigirPTBR),
+  objetivos: infoTesteRPORaw.objetivos.map(corrigirPTBR),
+  instrucoes: infoTesteRPORaw.instrucoes.map(corrigirPTBR),
+  beneficios: infoTesteRPORaw.beneficios.map(corrigirPTBR)
 };

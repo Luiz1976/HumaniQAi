@@ -14,6 +14,7 @@ import AvaliacaoFinal from "@/components/cursos/AvaliacaoFinal";
 import CertificadoView from "@/components/cursos/CertificadoView";
 import Cookies from "js-cookie";
 import { authServiceNew } from "@/services/authServiceNew";
+import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 export default function CursoDetalhes() {
   const { slug } = useParams<{ slug: string }>();
@@ -148,9 +149,10 @@ export default function CursoDetalhes() {
     }
     if (m === 'bloqueado_empresa') return 'Curso bloqueado pela empresa';
     if (m === 'curso_nao_liberado') return 'Curso não liberado pela empresa';
-    if (m === 'curso_concluido') return 'Curso já concluído';
-    return null;
-  }
+  if (m === 'curso_concluido') return 'Curso já concluído';
+  return null;
+}
+
 
   // Buscar certificado (se existir)
   const { data: certificado, refetch: refetchCertificado } = useQuery({
@@ -289,19 +291,19 @@ export default function CursoDetalhes() {
               <div className="flex-1 space-y-4">
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    {curso.categoria}
+                    {corrigirPTBR(curso.categoria)}
                   </Badge>
                   <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    {curso.nivel}
+                    {corrigirPTBR(curso.nivel)}
                   </Badge>
                   <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
                     <Clock className="h-3 w-3 mr-1" />
-                    {curso.duracao}
+                    {corrigirPTBR(curso.duracao)}
                   </Badge>
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold">{curso.titulo}</h1>
-                <p className="text-lg opacity-90">{curso.subtitulo}</p>
-                <p className="text-base opacity-80">{curso.descricao}</p>
+                <h1 className="text-3xl md:text-4xl font-bold">{corrigirPTBR(curso.titulo)}</h1>
+                <p className="text-lg opacity-90">{corrigirPTBR(curso.subtitulo)}</p>
+                <p className="text-base opacity-80">{corrigirPTBR(curso.descricao)}</p>
               </div>
             </div>
           </CardContent>
@@ -391,7 +393,7 @@ export default function CursoDetalhes() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 leading-relaxed">{curso.objetivo}</p>
+                <p className="text-gray-700 leading-relaxed">{corrigirPTBR(curso.objetivo)}</p>
               </CardContent>
             </Card>
 
@@ -407,7 +409,7 @@ export default function CursoDetalhes() {
                   {curso.resultadosEsperados.map((resultado, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{resultado}</span>
+                      <span className="text-gray-700">{corrigirPTBR(resultado)}</span>
                     </li>
                   ))}
                 </ul>
@@ -445,7 +447,7 @@ export default function CursoDetalhes() {
                         </div>
                         <div className="flex-1">
                           <CardTitle className="text-lg mb-2 flex items-center gap-2">
-                            {modulo.titulo}
+                            {corrigirPTBR(modulo.titulo)}
                             {moduloConcluido && (
                               <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
                                 Concluído
@@ -454,7 +456,7 @@ export default function CursoDetalhes() {
                           </CardTitle>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Clock className="h-4 w-4" />
-                            <span>{modulo.duracao}</span>
+                            <span>{corrigirPTBR(modulo.duracao)}</span>
                           </div>
                         </div>
                       </div>
@@ -473,7 +475,7 @@ export default function CursoDetalhes() {
                             {modulo.topicos.map((item, idx) => (
                               <li key={idx} className="flex items-start gap-2 text-sm text-blue-800">
                                 <CheckCircle2 className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                                <span>{item}</span>
+                                <span>{corrigirPTBR(item)}</span>
                               </li>
                             ))}
                           </ul>
@@ -492,7 +494,7 @@ export default function CursoDetalhes() {
                               color: '#374151'
                             }}
                           >
-                            {modulo.materialDidatico}
+                            {corrigirPTBR(modulo.materialDidatico)}
                           </div>
                         </div>
                       </div>

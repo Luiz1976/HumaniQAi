@@ -9,6 +9,7 @@ import { Lock, Unlock, Calendar, CheckCircle2, Clock, AlertCircle } from 'lucide
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface TesteInfo {
   id: string;
@@ -170,7 +171,7 @@ export function GerenciamentoTestesColaborador({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          Gerenciar Testes - {colaboradorNome}
+          Gerenciar Testes - {corrigirPTBR(colaboradorNome)}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Configure a disponibilidade e periodicidade dos testes para este colaborador
@@ -191,7 +192,7 @@ export function GerenciamentoTestesColaborador({
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base font-semibold flex-1">
-                  {teste.nome}
+                  {corrigirPTBR(teste.nome)}
                 </CardTitle>
                 {teste.foiConcluido && (
                   <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -202,7 +203,7 @@ export function GerenciamentoTestesColaborador({
               </div>
               {teste.categoria && (
                 <Badge variant="secondary" className="w-fit text-xs">
-                  {teste.categoria}
+                  {corrigirPTBR(teste.categoria)}
                 </Badge>
               )}
             </CardHeader>
@@ -300,7 +301,7 @@ export function GerenciamentoTestesColaborador({
           <DialogHeader>
             <DialogTitle>Configurar Periodicidade</DialogTitle>
             <DialogDescription>
-              Defina o intervalo de tempo (em dias) para que o teste "{testeAtual?.nome}" fique
+              Defina o intervalo de tempo (em dias) para que o teste "{testeAtual ? corrigirPTBR(testeAtual.nome) : ''}" fique
               disponível novamente após a conclusão.
             </DialogDescription>
           </DialogHeader>
