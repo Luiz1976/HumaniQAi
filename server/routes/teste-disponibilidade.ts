@@ -51,6 +51,59 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
     
     console.log('📊 [DISPONIBILIDADE]', requestId, 'Total de testes ativos encontrados:', todosTestes.length);
 
+    const [existeDisponibilidade] = await db
+      .select()
+      .from(testeDisponibilidade)
+      .where(eq(testeDisponibilidade.colaboradorId, colaboradorId))
+      .limit(1);
+    const [existeResultado] = await db
+      .select()
+      .from(resultados)
+      .where(or(eq(resultados.colaboradorId, colaboradorId), eq(resultados.usuarioId, colaboradorId)))
+      .limit(1);
+    const primeiroAcesso = !existeDisponibilidade && !existeResultado;
+    if (primeiroAcesso && todosTestes.length > 0) {
+      const agora = new Date();
+      if (isSqlite) {
+        const stmt = sqliteDb.prepare(`
+          INSERT INTO teste_disponibilidade (
+            id, colaborador_id, teste_id, empresa_id, disponivel,
+            ultima_liberacao, proxima_disponibilidade, historico_liberacoes,
+            created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        `);
+        for (const t of todosTestes) {
+          const id = (await import('crypto')).randomUUID();
+          stmt.run(
+            id,
+            colaboradorId,
+            t.id,
+            empresaId,
+            1,
+            agora.toISOString(),
+            null,
+            JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_primeiro_acesso' }])
+          );
+        }
+      } else {
+        for (const t of todosTestes) {
+          await db
+            .insert(testeDisponibilidade)
+            .values({
+              colaboradorId,
+              testeId: t.id,
+              empresaId,
+              disponivel: true,
+              ultimaLiberacao: agora,
+              proximaDisponibilidade: null,
+              historicoLiberacoes: [{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_primeiro_acesso' }],
+            })
+            .onConflictDoNothing();
+        }
+      }
+      console.log('✅ [DISPONIBILIDADE]', requestId, 'Primeiro acesso detectado, testes liberados automaticamente');
+    }
+
     // Buscar disponibilidade para cada teste
     const testesComDisponibilidade = await Promise.all(
       todosTestes.map(async (teste) => {
