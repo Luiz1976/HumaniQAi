@@ -89,7 +89,7 @@ import HomeRoute from "./components/layout/HomeRoute";
 
 function OnlineStatusGuard() {
   const location = useLocation();
-  if (location.pathname === "/landing") {
+  if (location.pathname === "/landing" || location.pathname === "/") {
     return null;
   }
   return <OnlineStatus />;
