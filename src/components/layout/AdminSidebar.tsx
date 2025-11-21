@@ -50,22 +50,34 @@ export function AdminSidebar() {
     return currentPath === url || currentPath.startsWith(url + '/');
   };
 
+  const isCollapsed = state === "collapsed";
+
   return (
-    <Sidebar className="border-r border-gray-200 bg-white">
+    <Sidebar 
+      className="border-r border-gray-200 bg-white"
+      collapsible="icon"
+    >
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">H</span>
-            </div>
-            {state === "expanded" && (
+          {!isCollapsed && (
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">H</span>
+              </div>
               <div>
                 <h2 className="font-semibold text-gray-900">HumaniQ</h2>
                 <p className="text-xs text-gray-500">Admin</p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+          {isCollapsed && (
+            <div className="flex items-center justify-center w-full">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">H</span>
+              </div>
+            </div>
+          )}
           <SidebarTrigger className="h-9 w-9 hover:bg-accent/50 rounded-xl transition-colors" />
         </div>
 
@@ -88,7 +100,9 @@ export function AdminSidebar() {
                           }`}
                         >
                           <item.icon className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-gray-400'}`} />
-                          <span className="font-medium">{item.title}</span>
+                          {!isCollapsed && (
+                            <span className="font-medium">{item.title}</span>
+                          )}
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -127,7 +141,9 @@ export function AdminSidebar() {
                   className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors w-full"
                 >
                   <LogOut className="w-5 h-5 text-gray-400" />
-                  <span className="font-medium">Sair</span>
+                  {!isCollapsed && (
+                    <span className="font-medium">Sair</span>
+                  )}
                 </button>
               </SidebarMenuButton>
             </SidebarMenuItem>

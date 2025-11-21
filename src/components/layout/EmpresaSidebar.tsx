@@ -2,6 +2,8 @@ import { Building2, UserPlus, Users, Menu, LogOut, Home, Activity, FileText } fr
 import Logo from "@/components/Logo";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/AuthContext";
+import { apiService } from "@/services/apiService";
+import { useEffect, useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -46,13 +48,35 @@ export function EmpresaSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const [empresaLogo, setEmpresaLogo] = useState<string | null>(null);
+  const [isLoadingLogo, setIsLoadingLogo] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  useEffect(() => {
+    const fetchEmpresaData = async () => {
+      if (user?.empresaId) {
+        setIsLoadingLogo(true);
+        try {
+          const response = await apiService.obterDadosEmpresa();
+          if (response.empresa?.logoBase64) {
+            setEmpresaLogo(response.empresa.logoBase64);
+          }
+        } catch (error) {
+          console.error('Erro ao buscar dados da empresa:', error);
+        } finally {
+          setIsLoadingLogo(false);
+        }
+      }
+    };
+
+    fetchEmpresaData();
+  }, [user?.empresaId]);
 
   const isActive = (path: string) => currentPath === path || currentPath.startsWith(path);
   const isCollapsed = state === "collapsed";
@@ -64,18 +88,44 @@ export function EmpresaSidebar() {
     >
       <div className="flex h-full flex-col">
         {/* Header - Logo e Toggle */}
-        <div className="flex h-20 items-center justify-between px-6 border-b border-border/10">
-          {!isCollapsed && (
-            <Logo size="xl" showText={true} />
-          )}
-          {isCollapsed && (
-            <div className="flex items-center justify-center w-full">
-              <Logo size="lg" showText={false} />
+        <div className="flex flex-col py-4 px-6 border-b border-border/10">
+          <div className="flex h-16 items-center justify-between">
+            {!isCollapsed && (
+              <Logo size="xl" showText={true} />
+            )}
+            {isCollapsed && (
+              <div className="flex items-center justify-center w-full">
+                <Logo size="lg" showText={false} />
+              </div>
+            )}
+            <SidebarTrigger className="h-8 w-8 hover:bg-accent/50 transition-colors">
+              <Menu className="h-4 w-4" />
+            </SidebarTrigger>
+          </div>
+          
+          {/* Logo da Empresa - apenas se disponível e não estiver colapsado */}
+          {empresaLogo && !isCollapsed && (
+            <div className="mt-3 flex justify-center">
+              <img
+                src={empresaLogo}
+                alt="Logo da Empresa"
+                className="h-12 w-auto max-w-32 object-contain rounded-lg bg-white/50 p-1"
+                onError={() => setEmpresaLogo(null)}
+              />
             </div>
           )}
-          <SidebarTrigger className="h-8 w-8 hover:bg-accent/50 transition-colors">
-            <Menu className="h-4 w-4" />
-          </SidebarTrigger>
+          
+          {/* Logo da Empresa quando colapsado - versão menor */}
+          {empresaLogo && isCollapsed && (
+            <div className="mt-2 flex justify-center">
+              <img
+                src={empresaLogo}
+                alt="Logo da Empresa"
+                className="h-8 w-auto max-w-8 object-contain rounded bg-white/50 p-1"
+                onError={() => setEmpresaLogo(null)}
+              />
+            </div>
+          )}
         </div>
 
         {/* Navigation */}
