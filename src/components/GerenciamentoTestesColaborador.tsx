@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { corrigirPTBR } from '@/utils/corrigirPTBR';
+import { apiRequest } from '@/lib/queryClient';
 
 interface TesteInfo {
   id: string;
@@ -56,23 +57,9 @@ export function GerenciamentoTestesColaborador({
   const carregarTestes = async () => {
     try {
       setCarregando(true);
-      const token = localStorage.getItem('authToken');
-
-      const response = await fetch(
-        `/api/teste-disponibilidade/empresa/colaborador/${colaboradorId}/testes`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
+      const data = await apiRequest<{ testes: TesteInfo[] }>(
+        `/api/teste-disponibilidade/empresa/colaborador/${colaboradorId}/testes`
       );
-
-      if (!response.ok) {
-        throw new Error('Erro ao carregar testes');
-      }
-
-      const data = await response.json();
       setTestes(data.testes || []);
     } catch (error) {
       console.error('Erro ao carregar testes:', error);
@@ -85,23 +72,10 @@ export function GerenciamentoTestesColaborador({
   const liberarTeste = async (testeId: string) => {
     try {
       setProcessando(true);
-      const token = localStorage.getItem('authToken');
-
-      const response = await fetch(
+      await apiRequest(
         `/api/teste-disponibilidade/empresa/colaborador/${colaboradorId}/teste/${testeId}/liberar`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
+        { method: 'POST' }
       );
-
-      if (!response.ok) {
-        throw new Error('Erro ao liberar teste');
-      }
-
       toast.success('Teste liberado com sucesso');
       await carregarTestes();
     } catch (error) {
@@ -117,26 +91,14 @@ export function GerenciamentoTestesColaborador({
 
     try {
       setProcessando(true);
-      const token = localStorage.getItem('authToken');
-
-      const response = await fetch(
+      await apiRequest(
         `/api/teste-disponibilidade/empresa/colaborador/${colaboradorId}/teste/${testeAtual.id}/periodicidade`,
         {
           method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            periodicidadeDias: periodicidade,
-          }),
+          body: JSON.stringify({ periodicidadeDias: periodicidade }),
+          headers: { 'Content-Type': 'application/json' },
         }
       );
-
-      if (!response.ok) {
-        throw new Error('Erro ao configurar periodicidade');
-      }
-
       toast.success('Periodicidade configurada com sucesso');
       setShowPeriodicidadeModal(false);
       setTesteAtual(null);
