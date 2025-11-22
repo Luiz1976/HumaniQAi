@@ -626,6 +626,9 @@ router.get('/resultados/meus', authenticateToken, async (req: AuthRequest, res) 
 router.get('/resultado/:id', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
+    
+    logger.info(`[DEBUG] Buscando resultado ID: ${id}`);
+    logger.info(`[DEBUG] Usuário atual - ID: ${req.user!.userId}, Empresa: ${req.user!.empresaId}, Role: ${req.user!.role}`);
 
     // Buscar resultado com JOIN nas tabelas de colaboradores e testes
     const [resultado] = await db
@@ -658,8 +661,19 @@ router.get('/resultado/:id', authenticateToken, async (req: AuthRequest, res) =>
       .where(eq(resultados.id, id))
       .limit(1);
 
+    logger.info(`[DEBUG] Resultado encontrado: ${!!resultado}`);
+    if (resultado) {
+      logger.info(`[DEBUG] Detalhes do resultado - usuarioId: ${resultado.usuarioId}, colaboradorId: ${resultado.colaboradorId}, empresaId: ${resultado.empresaId}`);
+    }
+
     if (!resultado) {
-      return res.status(404).json({ error: 'Resultado não encontrado' });
+      logger.warn(`[DEBUG] Resultado ${id} não encontrado no banco`);
+      logger.warn(`[DEBUG] Verifique se: 1) ID está correto, 2) Resultado existe, 3) Permissões estão corretas`);
+      return res.status(404).json({ 
+        error: 'Resultado não encontrado',
+        details: 'O resultado pode ter sido removido ou o ID está incorreto',
+        id: id
+      });
     }
 
     // Verificar permissão: usuário pode ver se for dele ou da mesma empresa
@@ -669,7 +683,9 @@ router.get('/resultado/:id', authenticateToken, async (req: AuthRequest, res) =>
       (resultado.empresaId && resultado.empresaId === req.user!.empresaId) ||
       (req.user!.role === 'admin');
 
+    logger.info(`[DEBUG] Verificação de permissão: ${temPermissao}`);
     if (!temPermissao) {
+      logger.warn(`[DEBUG] Acesso negado para usuário ${req.user!.userId} ao resultado ${id}`);
       return res.status(403).json({ error: 'Acesso negado' });
     }
 

@@ -30,10 +30,15 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
   useEffect(() => {
     if (isOpen && resultado && resultado.id) {
       console.log('🔍 [ResultadoPopup] useEffect - resultado válido:', resultado);
+      console.log('🔍 [ResultadoPopup] ID do resultado:', resultado.id);
+      console.log('🔍 [ResultadoPopup] Nome do teste:', resultado.nomeTest);
       carregarDadosResultado();
     } else if (isOpen && !resultado) {
       console.warn('⚠️ [ResultadoPopup] useEffect - resultado é null/undefined');
       setErro('Resultado não encontrado');
+    } else if (isOpen && resultado && !resultado.id) {
+      console.warn('⚠️ [ResultadoPopup] useEffect - resultado sem ID:', resultado);
+      setErro('ID do resultado não encontrado');
     }
   }, [isOpen, resultado]);
 
@@ -51,12 +56,15 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
       console.log('🔍 [ResultadoPopup] Carregando dados para resultado:', resultado.id);
       console.log('🔍 [ResultadoPopup] Tipo de tabela:', resultado.tipoTabela);
       console.log('🔍 [ResultadoPopup] Nome do teste:', resultado.nomeTest || 'Nome não disponível');
+      console.log('🔍 [ResultadoPopup] Usuário logado:', localStorage.getItem('userEmail') || 'Não identificado');
 
       const { resultado: dadosCompletos } = await apiService.obterResultadoPorId(resultado.id);
       console.log('📊 [ResultadoPopup] Dados recebidos via API:', !!dadosCompletos);
+      console.log('📊 [ResultadoPopup] Dados completos:', dadosCompletos);
 
       if (!dadosCompletos) {
-        throw new Error('Resultado não encontrado');
+        console.warn('⚠️ [ResultadoPopup] API retornou dados vazios para resultado:', resultado.id);
+        throw new Error('Resultado não encontrado. O teste pode ter sido removido ou o ID está incorreto.');
       }
 
       // Verificar se é teste Karasek-Siegrist e tem análise completa
