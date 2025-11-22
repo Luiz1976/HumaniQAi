@@ -70,6 +70,7 @@ export default function EmpresaColaboradorResultados() {
   useEffect(() => {
     console.log('🔄 [EmpresaColaboradorResultados] useEffect executado');
     console.log('🔍 [EmpresaColaboradorResultados] colaboradorId:', colaboradorId);
+    console.log('🔍 [EmpresaColaboradorResultados] URL atual:', window.location.href);
     
     const initializeAndLoad = async () => {
       try {
@@ -81,15 +82,18 @@ export default function EmpresaColaboradorResultados() {
         
         if (colaboradorId) {
           console.log('✅ [EmpresaColaboradorResultados] Iniciando carregamento de dados...');
+          setError(null); // Limpar erro anterior
           await carregarDadosColaborador();
           await carregarResultadosTestes();
         } else {
           console.error('❌ [EmpresaColaboradorResultados] colaboradorId não encontrado na URL');
+          setError('ID do colaborador não encontrado na URL');
           toast.error('ID do colaborador não encontrado na URL');
           navigate('/empresa/gestao-colaboradores');
         }
       } catch (error) {
         console.error('💥 [EmpresaColaboradorResultados] Erro na inicialização:', error);
+        setError('Erro ao inicializar a página: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
         toast.error('Erro ao inicializar a página');
         navigate('/empresa/gestao-colaboradores');
       }
@@ -104,6 +108,7 @@ export default function EmpresaColaboradorResultados() {
       
       if (!colaboradorId) {
         console.error('❌ [EmpresaColaboradorResultados] ID do colaborador não fornecido');
+        setError('ID do colaborador não fornecido');
         toast.error('ID do colaborador não fornecido');
         navigate('/empresa/gestao-colaboradores');
         return;
@@ -117,11 +122,13 @@ export default function EmpresaColaboradorResultados() {
         setColaborador(response.data);
       } else {
         console.error('❌ [EmpresaColaboradorResultados] Erro ao carregar colaborador:', response.message);
+        setError(response.message || 'Erro ao carregar dados do colaborador');
         toast.error(response.message || 'Erro ao carregar dados do colaborador');
         navigate('/empresa/gestao-colaboradores');
       }
     } catch (error) {
       console.error('💥 [EmpresaColaboradorResultados] Erro interno ao carregar colaborador:', error);
+      setError('Erro ao carregar dados do colaborador: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
       toast.error('Erro ao carregar dados do colaborador');
       navigate('/empresa/gestao-colaboradores');
     }
@@ -137,10 +144,26 @@ export default function EmpresaColaboradorResultados() {
       const response = await authService.getResultadosColaborador(colaboradorId!);
       console.log('📊 [EmpresaColaboradorResultados] Resposta COMPLETA do getResultadosColaborador:', JSON.stringify(response, null, 2));
       
-      if (response.success && response.data) {
-        console.log('✅ [EmpresaColaboradorResultados] Resultados carregados:', response.data.length, 'resultados');
-        console.log('📋 [EmpresaColaboradorResultados] Detalhes dos resultados:', response.data);
-        setResultados(response.data);
+      // Verificar estrutura da resposta
+      if (response.success) {
+        // A resposta pode ter diferentes estruturas
+        let resultadosData = response.data || response.resultados || [];
+        
+        console.log('✅ [EmpresaColaboradorResultados] Resultados carregados:', resultadosData.length, 'resultados');
+        console.log('📋 [EmpresaColaboradorResultados] Primeiros 3 resultados:', resultadosData.slice(0, 3));
+        
+        // Garantir que é um array
+        if (!Array.isArray(resultadosData)) {
+          console.warn('⚠️ [EmpresaColaboradorResultados] resultadosData não é array, convertendo...');
+          resultadosData = [resultadosData];
+        }
+        
+        setResultados(resultadosData);
+        
+        // Se houver informações do colaborador na resposta, atualizar
+        if (response.colaborador) {
+          console.log('👤 [EmpresaColaboradorResultados] Dados do colaborador na resposta:', response.colaborador);
+        }
       } else {
         console.error('❌ [EmpresaColaboradorResultados] Erro ao carregar resultados:', response.message);
         console.error('❌ [EmpresaColaboradorResultados] Response completo:', response);
@@ -255,6 +278,26 @@ export default function EmpresaColaboradorResultados() {
               <div key={i} className="h-24 bg-gray-200 rounded"></div>
             ))}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <div className="flex items-center mb-4">
+            <AlertCircle className="h-6 w-6 text-red-500 mr-2" />
+            <h2 className="text-lg font-semibold text-red-800">Erro ao carregar resultados</h2>
+          </div>
+          <p className="text-red-700 mb-4">{error}</p>
+          <button
+            onClick={() => navigate('/empresa/gestao-colaboradores')}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Voltar para lista de colaboradores
+          </button>
         </div>
       </div>
     );

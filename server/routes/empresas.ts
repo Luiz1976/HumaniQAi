@@ -300,6 +300,9 @@ router.get('/colaboradores/:id', authenticateToken, requireEmpresa, async (req: 
 router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
+    const empresaId = req.user!.empresaId!;
+    
+    logger.info(`🔍 [RESULTADOS] Buscando resultados para colaborador: ${id}, empresa: ${empresaId}`);
     
     // Verificar se o colaborador pertence à empresa
     const [colaborador] = await db
@@ -308,17 +311,22 @@ router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, a
       .where(
         and(
           eq(colaboradores.id, id),
-          eq(colaboradores.empresaId, req.user!.empresaId!)
+          eq(colaboradores.empresaId, empresaId)
         )
       )
       .limit(1);
 
     if (!colaborador) {
+      logger.warn(`⚠️ [RESULTADOS] Colaborador ${id} não encontrado ou não pertence à empresa ${empresaId}`);
       return res.status(404).json({ error: 'Colaborador não encontrado' });
     }
+    
+    logger.info(`✅ [RESULTADOS] Colaborador encontrado: ${colaborador.nome} (${colaborador.id})`);
 
     // Buscar resultados do colaborador com JOIN na tabela de testes
     // Busca por colaboradorId OU usuarioId (para compatibilidade com testes antigos)
+    logger.info(`🔍 [RESULTADOS] Buscando resultados no banco de dados...`);
+    
     const resultadosList = await db
       .select({
         id: resultados.id,
@@ -343,43 +351,82 @@ router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, a
             eq(resultados.usuarioId, id)
           ),
           or(
-            eq(resultados.empresaId, req.user!.empresaId!),
+            eq(resultados.empresaId, empresaId),
             sql`(${resultados.empresaId}) IS NULL`
           )
         )
       )
       .orderBy(desc(resultados.dataRealizacao));
+      
+    logger.info(`✅ [RESULTADOS] Encontrados ${resultadosList.length} resultados brutos`);
 
     // Enriquecer os resultados com informações formatadas
-    const resultadosEnriquecidos = resultadosList.map(resultado => {
-      const metadadosBase = resultado.metadados as Record<string, any> || {};
-      
-      // Calcular pontuação máxima e percentual
-      const pontuacaoMaxima = metadadosBase.pontuacao_maxima || 100;
-      const pontuacao = resultado.pontuacaoTotal || 0;
-      const percentual = pontuacaoMaxima > 0 
-        ? Math.round((pontuacao / pontuacaoMaxima) * 100) 
-        : 0;
-      
-      return {
-        id: resultado.id,
-        testeId: resultado.testeId,
-        nomeTest: resultado.testeNome || metadadosBase.teste_nome || 'Teste sem nome',
-        categoria: resultado.testeCategoria || metadadosBase.teste_categoria || '',
-        pontuacao: pontuacao,
-        pontuacaoMaxima: pontuacaoMaxima,
-        percentual: percentual,
-        status: resultado.status || 'concluido',
-        dataRealizacao: resultado.dataRealizacao,
-        tempoDuracao: resultado.tempoGasto ? Math.round(resultado.tempoGasto / 60) : undefined, // converter segundos para minutos
-        tipoTabela: metadadosBase.tipo_teste || '',
-      };
+    logger.info(`🔍 [RESULTADOS] Processando ${resultadosList.length} resultados...`);
+    
+    const resultadosEnriquecidos = resultadosList.map((resultado, index) => {
+      try {
+        const metadadosBase = resultado.metadados as Record<string, any> || {};
+        
+        // Calcular pontuação máxima e percentual
+        const pontuacaoMaxima = metadadosBase.pontuacao_maxima || 100;
+        const pontuacao = resultado.pontuacaoTotal || 0;
+        const percentual = pontuacaoMaxima > 0 
+          ? Math.round((pontuacao / pontuacaoMaxima) * 100) 
+          : 0;
+        
+        const resultadoProcessado = {
+          id: resultado.id,
+          testeId: resultado.testeId,
+          nomeTest: resultado.testeNome || metadadosBase.teste_nome || 'Teste sem nome',
+          categoria: resultado.testeCategoria || metadadosBase.teste_categoria || '',
+          pontuacao: pontuacao,
+          pontuacaoMaxima: pontuacaoMaxima,
+          percentual: percentual,
+          status: resultado.status || 'concluido',
+          dataRealizacao: resultado.dataRealizacao,
+          tempoDuracao: resultado.tempoGasto ? Math.round(resultado.tempoGasto / 60) : undefined, // converter segundos para minutos
+          tipoTabela: metadadosBase.tipo_teste || '',
+        };
+        
+        logger.debug(`✅ [RESULTADOS] Processado resultado ${index + 1}/${resultadosList.length}: ${resultadoProcessado.nomeTest}`);
+        return resultadoProcessado;
+      } catch (error) {
+        logger.error(`❌ [RESULTADOS] Erro ao processar resultado ${index + 1}:`, error);
+        return {
+          id: resultado.id,
+          testeId: resultado.testeId,
+          nomeTest: 'Erro ao processar resultado',
+          categoria: '',
+          pontuacao: 0,
+          pontuacaoMaxima: 100,
+          percentual: 0,
+          status: 'erro',
+          dataRealizacao: resultado.dataRealizacao,
+          tempoDuracao: undefined,
+          tipoTabela: '',
+        };
+      }
     });
 
-    res.json({ resultados: resultadosEnriquecidos, total: resultadosEnriquecidos.length });
+    logger.info(`✅ [RESULTADOS] Processamento concluído. ${resultadosEnriquecidos.length} resultados enriquecidos`);
+    
+    res.json({ 
+      success: true, 
+      resultados: resultadosEnriquecidos, 
+      total: resultadosEnriquecidos.length,
+      colaborador: {
+        id: colaborador.id,
+        nome: colaborador.nome,
+        email: colaborador.email
+      }
+    });
   } catch (error) {
-    console.error('Erro ao buscar resultados do colaborador:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    logger.error('💥 [RESULTADOS] Erro catastrófico ao buscar resultados do colaborador:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Erro interno do servidor ao buscar resultados',
+      message: error instanceof Error ? error.message : 'Erro desconhecido'
+    });
   }
 });
 
