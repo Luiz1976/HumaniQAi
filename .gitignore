@@ -138,3 +138,6 @@ server/*.db-wal
 attached_assets/*.pdf
 attached_assets/generated_images/
 .vercel
+
+# Local Netlify folder
+.netlify
