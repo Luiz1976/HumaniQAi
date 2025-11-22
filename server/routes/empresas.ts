@@ -2143,6 +2143,67 @@ router.post('/:id/restaurar-acesso', authenticateToken, requireAdmin, async (req
   }
 });
 
+// Empresa: listar resultados de um colaborador
+router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    const empresaId = req.user!.empresaId!;
+
+    const [colab] = await db
+      .select({ id: colaboradores.id, empresaId: colaboradores.empresaId })
+      .from(colaboradores)
+      .where(and(eq(colaboradores.id, id), eq(colaboradores.empresaId, empresaId)))
+      .limit(1);
+    if (!colab) {
+      return res.status(404).json({ error: 'Colaborador não encontrado' });
+    }
+
+    const rows = await db
+      .select({
+        id: resultados.id,
+        testeId: resultados.testeId,
+        pontuacaoTotal: resultados.pontuacaoTotal,
+        tempoGasto: resultados.tempoGasto,
+        dataRealizacao: resultados.dataRealizacao,
+        status: resultados.status,
+        metadados: resultados.metadados,
+        testeNome: testes.nome,
+        testeCategoria: testes.categoria,
+      })
+      .from(resultados)
+      .leftJoin(testes, eq(resultados.testeId, testes.id))
+      .where(and(eq(resultados.colaboradorId, id), eq(resultados.empresaId, empresaId)))
+      .orderBy(desc(resultados.dataRealizacao));
+
+    const mapped = rows.map((r) => {
+      const md = (r.metadados as Record<string, any>) || {};
+      const nome = r.testeNome || md.teste_nome || 'Teste';
+      const categoria = r.testeCategoria || md.teste_categoria || '';
+      const total = Number(r.pontuacaoTotal || 0);
+      const percentual = Math.max(0, Math.min(100, Math.round(total)));
+      const tempoMin = typeof r.tempoGasto === 'number' ? Math.round(r.tempoGasto) : undefined;
+      return {
+        id: r.id,
+        testeId: r.testeId,
+        nomeTest: nome,
+        categoria,
+        pontuacao: total,
+        pontuacaoMaxima: 100,
+        percentual,
+        status: r.status || 'concluido',
+        dataRealizacao: r.dataRealizacao,
+        tempoDuracao: tempoMin,
+        tipoTabela: 'resultados',
+      };
+    });
+
+    return res.json({ resultados: mapped, data: mapped });
+  } catch (error) {
+    logger.error('Erro ao listar resultados do colaborador:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 // Admin: Bloquear manualmente uma empresa
 router.post('/:id/bloquear-acesso', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {

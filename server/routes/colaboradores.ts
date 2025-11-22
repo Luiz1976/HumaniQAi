@@ -1,8 +1,8 @@
 import express from 'express';
 import { db, dbType } from '../db-config';
-import { colaboradores, cursoProgresso, cursoCertificados, cursoDisponibilidade } from '../../shared/schema';
+import { colaboradores, cursoProgresso, cursoCertificados, cursoDisponibilidade, resultados } from '../../shared/schema';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { cursos } from '../../src/data/cursosData';
 import logger from '../utils/logger';
@@ -33,7 +33,52 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
         .from(colaboradores)
         .where(eq(colaboradores.empresaId, req.user.empresaId));
 
-      return res.json({ data: lista });
+      const enriquecidos = await Promise.all(
+        lista.map(async (c) => {
+          let totalTestes = 0;
+          let ultimoTeste: string | null = null;
+          try {
+            const [countRow] = await db
+              .select({ count: sql<number>`count(*)` })
+              .from(resultados)
+              .where(and(eq(resultados.colaboradorId, c.id), eq(resultados.status, 'concluido')));
+            totalTestes = Number((countRow as any)?.count || 0);
+
+            const [last] = await db
+              .select({ dataRealizacao: resultados.dataRealizacao })
+              .from(resultados)
+              .where(eq(resultados.colaboradorId, c.id))
+              .orderBy(desc(resultados.dataRealizacao))
+              .limit(1);
+            ultimoTeste = last?.dataRealizacao || null;
+          } catch (_) {}
+
+          const situacaoPsicossocial = totalTestes > 0
+            ? {
+                status: 'bom',
+                descricao: 'Participação ativa',
+                cor: 'blue',
+                totalTestes,
+                ultimoTeste,
+              }
+            : {
+                status: 'nao_avaliado',
+                descricao: 'Nenhum teste realizado',
+                cor: 'gray',
+                totalTestes: 0,
+                ultimoTeste: null,
+              };
+
+          return {
+            ...c,
+            total_testes: totalTestes,
+            ultimo_teste: ultimoTeste,
+            situacaoPsicossocial,
+          };
+        })
+      );
+
+      return res.json({ data: enriquecidos });
     }
 
     // Admin: pode listar por empresaId via query param

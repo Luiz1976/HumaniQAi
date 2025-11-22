@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "scripts": {
     "start": "npm run server & npm run dev:strict",
     "start:prod": "NODE_ENV=production tsx server/index.ts",

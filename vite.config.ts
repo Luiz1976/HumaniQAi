@@ -51,5 +51,19 @@ export default defineConfig(async ({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+    build: {
+      outDir: 'dist',
+      sourcemap: mode === 'production',
+      minify: 'esbuild',
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            ui: ['lucide-react'],
+            utils: ['date-fns', 'zod'],
+          },
+        },
+      },
+    },
   });
 });

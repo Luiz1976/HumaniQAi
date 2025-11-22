@@ -65,8 +65,21 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
                         resultado.nomeTest?.toLowerCase().includes('karasek') ||
                         resultado.nomeTest?.toLowerCase().includes('siegrist');
                         
+      const isEstresseOcupacional = tipoTeste === 'estresse-ocupacional' || 
+                                   resultado.nomeTest?.toLowerCase().includes('estresse') ||
+                                   resultado.nomeTest?.toLowerCase().includes('burnout');
+      
+      console.log('🔍 [ResultadoPopup] Tipo de teste detectado:', tipoTeste);
+      console.log('🔍 [ResultadoPopup] Nome do teste:', resultado.nomeTest);
+      console.log('🔍 [ResultadoPopup] É Karasek?', isKarasek);
+      console.log('🔍 [ResultadoPopup] É Estresse Ocupacional?', isEstresseOcupacional);
+      console.log('🔍 [ResultadoPopup] Tem metadados.analise_completa?', !!dadosCompletos.metadados?.analise_completa);
+                        
       if (isKarasek && dadosCompletos.metadados?.analise_completa) {
         console.log('✅ [ResultadoPopup] Teste Karasek-Siegrist com análise completa encontrada');
+        setDadosResultado(dadosCompletos.metadados.analise_completa);
+      } else if (isEstresseOcupacional && dadosCompletos.metadados?.analise_completa) {
+        console.log('✅ [ResultadoPopup] Teste Estresse Ocupacional com análise completa encontrada');
         setDadosResultado(dadosCompletos.metadados.analise_completa);
       } else {
         console.log('⚠️ [ResultadoPopup] Teste genérico ou sem análise completa');
