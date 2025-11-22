@@ -139,6 +139,20 @@ class ApiService {
         } catch (_) {}
       }
 
+      if (error?.status === 404 && canFallback) {
+        const fallbackUrl404 = buildUrl(API_FALLBACK_BASE);
+        try {
+          return await tryFetch(fallbackUrl404);
+        } catch (_) {}
+      }
+
+      if (error?.status === 401 || error?.status === 403) {
+        const relativeUrl = endpoint;
+        try {
+          return await tryFetch(relativeUrl);
+        } catch (_) {}
+      }
+
       throw error;
     }
   }
@@ -382,6 +396,15 @@ class ApiService {
     };
   }> {
     return this.makeRequest('/api/convites/metricas-empresa');
+  }
+
+  async registrarLogAuditoria(payload: Record<string, unknown>): Promise<void> {
+    try {
+      await this.makeRequest('/api/audit/logs', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    } catch (_) { void 0; }
   }
 }
 

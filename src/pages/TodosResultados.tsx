@@ -132,18 +132,14 @@ export default function TodosResultados() {
       // Exibir todos os resultados sem filtragem por tipos para garantir visibilidade completa
       setResultados(resultadosMapeadosRaw);
       try {
-        fetch('http://localhost:3001/api/audit/logs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            tipo: 'todos_resultados_carregados',
-            totalRecebidos: response.resultados.length,
-            totalExibidos: resultadosMapeadosRaw.length,
-            usuario: user?.email,
-            timestamp: new Date().toISOString()
-          })
-        }).catch(() => {});
-      } catch (_) {}
+        await apiService.registrarLogAuditoria({
+          tipo: 'todos_resultados_carregados',
+          totalRecebidos: response.resultados.length,
+          totalExibidos: resultadosMapeadosRaw.length,
+          usuario: user?.email,
+          timestamp: new Date().toISOString()
+        });
+      } catch (_) { void 0; }
       setTotalResultados(response.total || response.resultados.length);
       
       // Calcular estatísticas

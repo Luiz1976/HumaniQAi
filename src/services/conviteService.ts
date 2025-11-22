@@ -296,11 +296,19 @@ class ConviteService {
   }
 
   // Configuração de persistência
-  private configuracao = {
-    tipo: 'api' as 'memoria' | 'localStorage' | 'api',
-    apiUrl: import.meta.env.VITE_API_URL,
-    apiKey: import.meta.env.VITE_API_KEY
-  };
+  private configuracao = (() => {
+    const rawPrimary = import.meta.env.VITE_API_URL || '';
+    const rawFallback = import.meta.env.VITE_API_FALLBACK_URL || '';
+    const primary = rawPrimary.replace(/\/+$/, '').replace(/\/api$/, '');
+    const fallback = rawFallback.replace(/\/+$/, '').replace(/\/api$/, '');
+    const tipo = primary || fallback ? 'api' : 'localStorage';
+    return {
+      tipo: tipo as 'memoria' | 'localStorage' | 'api',
+      apiUrl: primary,
+      apiKey: import.meta.env.VITE_API_KEY,
+      apiFallbackUrl: fallback,
+    };
+  })();
 
   // Funções de persistência
   private salvarDados(): void {
