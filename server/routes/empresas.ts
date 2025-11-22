@@ -3,7 +3,7 @@ import { db, dbType } from '../db-config';
 import logger from '../utils/logger';
 import { empresas, colaboradores, convitesColaborador, resultados, testes } from '../../shared/schema';
 import { authenticateToken, requireEmpresa, requireAdmin, AuthRequest } from '../middleware/auth';
-import { eq, and, gt, desc, or } from 'drizzle-orm';
+import { eq, and, gt, desc, or, sql } from 'drizzle-orm';
 import { generatePsychosocialAnalysis } from '../services/aiAnalysisService';
 
 const router = express.Router();
@@ -342,7 +342,10 @@ router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, a
             eq(resultados.colaboradorId, id),
             eq(resultados.usuarioId, id)
           ),
-          eq(resultados.empresaId, req.user!.empresaId!)
+          or(
+            eq(resultados.empresaId, req.user!.empresaId!),
+            sql`(${resultados.empresaId}) IS NULL`
+          )
         )
       )
       .orderBy(desc(resultados.dataRealizacao));

@@ -160,8 +160,17 @@ export async function finalizarTesteQVT(
     
     // Salvar resultado via API local
     const dadosAPI = {
-      // Não enviar testeId para deixar o backend encontrar pelo metadados.teste_nome
+      testeId: (() => {
+        try {
+          const v = typeof window !== 'undefined' ? sessionStorage.getItem('current_teste_id') : null;
+          return v && v.length > 0 ? v : (configQualidadeVidaTrabalho.id || 'qualidade-vida-trabalho');
+        } catch (_) {
+          return configQualidadeVidaTrabalho.id || 'qualidade-vida-trabalho';
+        }
+      })(),
       pontuacaoTotal: analiseQVT.indiceGeral || 0,
+      sessionId: sessaoId,
+      status: 'concluido',
       metadados: {
         teste_nome: 'HumaniQ QVT - Qualidade de Vida no Trabalho',
         teste_categoria: configQualidadeVidaTrabalho.categoria,

@@ -56,28 +56,18 @@ export function AppSidebar() {
   const hasLoadedRef = useRef(false);
   useEffect(() => {
     const carregarDadosColaborador = async () => {
-      console.log('🔄 [AppSidebar] Iniciando carregamento de dados do colaborador...');
-      console.log('👤 [AppSidebar] Usuário atual:', user);
-      
       if (user) {
-        if (hasLoadedRef.current) {
-          return;
-        }
-        hasLoadedRef.current = true;
         setLoadingColaborador(true);
         try {
-          console.log('📞 [AppSidebar] Chamando colaboradorService.getDadosColaboradorLogado()...');
           const dadosColaborador = await colaboradorService.getDadosColaboradorLogado();
-          console.log('📋 [AppSidebar] Dados do colaborador recebidos:', dadosColaborador);
           setColaborador(dadosColaborador);
         } catch (error) {
           console.error('❌ [AppSidebar] Erro ao carregar dados do colaborador:', error);
         } finally {
           setLoadingColaborador(false);
-          console.log('✅ [AppSidebar] Carregamento finalizado');
+          hasLoadedRef.current = true;
         }
       } else {
-        console.log('⚠️ [AppSidebar] Usuário não autenticado, limpando dados do colaborador');
         setColaborador(null);
         setLoadingColaborador(false);
         hasLoadedRef.current = false;
@@ -211,10 +201,10 @@ export function AppSidebar() {
                   className="h-20 w-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border border-primary/20 hover:from-primary/30 hover:to-primary/20 transition-all duration-200 cursor-pointer"
                   title="Clique para alterar avatar"
                 >
-                  {colaborador?.avatar ? (
+                  {colaborador?.avatar || user?.avatar ? (
                     <img 
-                      src={colaborador.avatar} 
-                      alt={colaborador.nome} 
+                      src={colaborador?.avatar || user?.avatar || ''} 
+                      alt={colaborador?.nome || user?.name || ''} 
                       className="h-20 w-20 rounded-full object-cover"
                     />
                   ) : (
