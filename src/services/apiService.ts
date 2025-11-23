@@ -2,7 +2,17 @@
 // Em desenvolvimento: usa URL relativa (proxy Vite)
 // Em produção: usa VITE_API_URL do ambiente
 import Cookies from 'js-cookie';
-const RAW_API_BASE = import.meta.env.VITE_API_URL || '';
+
+// Debug das variáveis de ambiente
+console.log('🔍 [ApiService] Variáveis de ambiente carregadas:');
+console.log('🔍 [ApiService] VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('🔍 [ApiService] VITE_API_FALLBACK_URL:', import.meta.env.VITE_API_FALLBACK_URL);
+console.log('🔍 [ApiService] MODE:', import.meta.env.MODE);
+console.log('🔍 [ApiService] PROD:', import.meta.env.PROD);
+
+// Fallback hardcoded para produção
+const PRODUCTION_API_URL = 'https://humaniqai-server.up.railway.app/api';
+const RAW_API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PRODUCTION_API_URL : '');
 const API_BASE_URL = RAW_API_BASE.replace(/\/+$/, '').replace(/\/api$/, '');
 // Fallback opcional para produção
 const RAW_FALLBACK_BASE = import.meta.env.VITE_API_FALLBACK_URL || '';

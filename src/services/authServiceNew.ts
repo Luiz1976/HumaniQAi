@@ -1,7 +1,16 @@
 import Cookies from 'js-cookie';
 
-// Base URL da API
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+// Debug das variáveis de ambiente
+console.log('🔍 [AuthService] Variáveis de ambiente carregadas:');
+console.log('🔍 [AuthService] VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('🔍 [AuthService] VITE_API_FALLBACK_URL:', import.meta.env.VITE_API_FALLBACK_URL);
+console.log('🔍 [AuthService] MODE:', import.meta.env.MODE);
+console.log('🔍 [AuthService] PROD:', import.meta.env.PROD);
+console.log('🔍 [AuthService] DEV:', import.meta.env.DEV);
+
+// Base URL da API - com fallback hardcoded para produção
+const PRODUCTION_API_URL = 'https://humaniqai-server.up.railway.app/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PRODUCTION_API_URL : '');
 // Normalizar base para evitar duplicações de "/api" e barras finais
 const NORMALIZED_BASE = (API_BASE_URL || '').replace(/\/api\/?$/, '').replace(/\/+$/, '');
 // NOVO: Fallback opcional via variável de ambiente
