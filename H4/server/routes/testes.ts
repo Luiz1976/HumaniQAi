@@ -622,7 +622,87 @@ router.get('/resultados/meus', authenticateToken, async (req: AuthRequest, res) 
   }
 });
 
-// Obter detalhes de um resultado específico
+// Obter detalhes de um resultado específico (ROTA PÚBLICA - sem autenticação)
+router.get('/resultado/publico/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    logger.info(`[DEBUG] Buscando resultado público ID: ${id}`);
+
+    // Buscar resultado com JOIN nas tabelas de colaboradores e testes
+    const [resultado] = await db
+      .select({
+        id: resultados.id,
+        testeId: resultados.testeId,
+        usuarioId: resultados.usuarioId,
+        pontuacaoTotal: resultados.pontuacaoTotal,
+        tempoGasto: resultados.tempoGasto,
+        dataRealizacao: resultados.dataRealizacao,
+        status: resultados.status,
+        metadados: resultados.metadados,
+        sessionId: resultados.sessionId,
+        userAgent: resultados.userAgent,
+        ipAddress: resultados.ipAddress,
+        colaboradorId: resultados.colaboradorId,
+        empresaId: resultados.empresaId,
+        userEmail: resultados.userEmail,
+        // Dados do colaborador (apenas nome)
+        colaboradorNome: colaboradores.nome,
+        // Dados do teste
+        testeNome: testes.nome,
+        testeCategoria: testes.categoria,
+      })
+      .from(resultados)
+      .leftJoin(colaboradores, eq(resultados.colaboradorId, colaboradores.id))
+      .leftJoin(testes, eq(resultados.testeId, testes.id))
+      .where(eq(resultados.id, id))
+      .limit(1);
+
+    if (!resultado) {
+      return res.status(404).json({ 
+        error: 'Resultado não encontrado',
+        details: 'O resultado pode ter sido removido ou o ID está incorreto',
+        id: id
+      });
+    }
+
+    // Para rota pública, só retornar dados básicos e seguros
+    const respostasResultado = await db
+      .select()
+      .from(respostas)
+      .where(eq(respostas.resultadoId, id));
+
+    // Enriquecer metadados com informações limitadas
+    const metadadosBase = resultado.metadados as Record<string, any> || {};
+    const metadadosPublicos = {
+      ...metadadosBase,
+      // Remover dados sensíveis
+      usuario_nome: undefined,
+      usuario_cargo: undefined,
+      usuario_departamento: undefined,
+      // Manter apenas dados do teste
+      teste_nome: resultado.testeNome || metadadosBase.teste_nome,
+      teste_categoria: resultado.testeCategoria || metadadosBase.teste_categoria,
+    };
+
+    res.json({
+      resultado: {
+        id: resultado.id,
+        pontuacaoTotal: resultado.pontuacaoTotal,
+        tempoGasto: resultado.tempoGasto,
+        dataRealizacao: resultado.dataRealizacao,
+        status: resultado.status,
+        metadados: metadadosPublicos,
+      },
+      respostas: respostasResultado,
+    });
+  } catch (error) {
+    logger.error('Erro ao buscar resultado público:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// Obter detalhes de um resultado específico (ROTA AUTENTICADA)
 router.get('/resultado/:id', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;

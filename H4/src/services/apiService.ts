@@ -301,20 +301,28 @@ class ApiService {
     return this.makeRequest('/api/testes/resultados/meus');
   }
 
-  // Obter resultado por ID
+  // Obter resultado por ID (com fallback para rota pública)
   async obterResultadoPorId(id: string): Promise<{ resultado: any; respostas: any[] }> {
     try {
+      // Primeiro tenta a rota autenticada
       return await this.makeRequest(`/api/testes/resultado/${id}`);
     } catch (err: any) {
       if (err?.status === 401 || err?.status === 403) {
         try {
-          const cacheRaw = localStorage.getItem('resultadosCache');
-          const cache = cacheRaw ? JSON.parse(cacheRaw) : {};
-          const item = cache[id];
-          if (item) {
-            return { resultado: item, respostas: [] };
-          }
-        } catch (_) {}
+          // Se falhar por autenticação, tenta a rota pública
+          return await this.makeRequest(`/api/testes/resultado/publico/${id}`);
+        } catch (publicErr: any) {
+          // Se a rota pública também falhar, tenta o cache local
+          try {
+            const cacheRaw = localStorage.getItem('resultadosCache');
+            const cache = cacheRaw ? JSON.parse(cacheRaw) : {};
+            const item = cache[id];
+            if (item) {
+              return { resultado: item, respostas: [] };
+            }
+          } catch (_) {}
+          throw publicErr;
+        }
       }
       throw err;
     }
