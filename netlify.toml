@@ -1,14 +1,18 @@
 [build]
-  command = "npm run build"
+  base = "H4"
+  command = "npm install --include=dev && npm run build"
   publish = "dist"
-  
+
 [build.environment]
+  NETLIFY_USE_NPM = "true"
+  NETLIFY_USE_PNPM = "false"
+  NETLIFY_USE_YARN = "false"
   NODE_VERSION = "18"
-  NPM_VERSION = "10.9.4"
+  NPM_FLAGS = "--include=dev --no-audit --no-fund"
 
 [[redirects]]
   from = "/api/*"
-  to = "https://humaniqai-server.up.railway.app/api/:splat"
+  to = "https://h2-8xej.onrender.com/api/:splat"
   status = 200
 
 [[redirects]]
@@ -16,11 +20,15 @@
   to = "/index.html"
   status = 200
 
-[context.production.environment]
-  NODE_ENV = "production"
+[[redirects]]
+  from = "/health"
+  to = "https://h2-8xej.onrender.com/health"
+  status = 200
 
-[context.deploy-preview.environment]
-  NODE_ENV = "development"
-
-[context.branch-deploy.environment]
-  NODE_ENV = "development"
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer-when-downgrade"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
