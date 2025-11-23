@@ -116,7 +116,21 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
 
     } catch (error) {
       console.error('❌ [ResultadoPopup] Erro ao carregar dados:', error);
-      setErro('Não foi possível carregar os dados do resultado');
+      
+      // Mensagem de erro mais informativa baseada no tipo de erro
+      let mensagemErro = 'Não foi possível carregar os dados do resultado.';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('servidor pode estar atualizando')) {
+          mensagemErro = 'O servidor está sendo atualizado. Por favor, aguarde alguns minutos e tente novamente.';
+        } else if (error.message.includes('Endpoint não encontrado')) {
+          mensagemErro = 'Serviço temporariamente indisponível. A atualização está em andamento.';
+        } else {
+          mensagemErro = error.message;
+        }
+      }
+      
+      setErro(mensagemErro);
     } finally {
       setCarregando(false);
     }

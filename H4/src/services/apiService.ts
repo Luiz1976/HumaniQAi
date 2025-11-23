@@ -312,7 +312,8 @@ class ApiService {
           // Se falhar por autenticação, tenta a rota pública
           return await this.makeRequest(`/api/testes/resultado/publico/${id}`);
         } catch (publicErr: any) {
-          // Se a rota pública também falhar, tenta o cache local
+          // Se a rota pública também falhar (404 porque ainda não foi deployada),
+          // tenta o cache local ou retorna erro mais amigável
           try {
             const cacheRaw = localStorage.getItem('resultadosCache');
             const cache = cacheRaw ? JSON.parse(cacheRaw) : {};
@@ -321,7 +322,9 @@ class ApiService {
               return { resultado: item, respostas: [] };
             }
           } catch (_) {}
-          throw publicErr;
+          
+          // Se nada funcionar, retorna um erro mais informativo
+          throw new Error(`Não foi possível carregar o resultado. O servidor pode estar atualizando. Tente novamente em alguns minutos. (Erro: ${publicErr?.message || 'Desconhecido'})`);
         }
       }
       throw err;
