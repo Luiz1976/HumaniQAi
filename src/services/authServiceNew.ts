@@ -1,9 +1,7 @@
 import Cookies from 'js-cookie';
 
 // Base URL da API
-// Em produção, usa VITE_API_URL (ex.: https://api.humaniqai.com.br)
-// Em desenvolvimento, faz fallback para http://localhost:3000 (backend local)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 // Normalizar base para evitar duplicações de "/api" e barras finais
 const NORMALIZED_BASE = (API_BASE_URL || '').replace(/\/api\/?$/, '').replace(/\/+$/, '');
 // NOVO: Fallback opcional via variável de ambiente
@@ -121,6 +119,22 @@ class AuthServiceNew {
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`❌ [AuthService] Erro HTTP ${response.status}:`, errorText);
+        if (response.status === 404 && canFallback) {
+          const fb404 = `${FALLBACK_BASE}${endpoint}`;
+          try {
+            const fbResp = await fetch(fb404, {
+              ...options,
+              headers,
+              mode: 'cors',
+              credentials: 'include',
+            });
+            if (fbResp.ok) {
+              const fbData = await fbResp.json();
+              console.warn(`✅ [AuthService] Fallback 404 bem-sucedido em ${fb404}`);
+              return fbData;
+            }
+          } catch (_) {}
+        }
         if (response.status >= 500) {
           if (canFallback) {
             const fallbackUrl = `${FALLBACK_BASE}${endpoint}`;
