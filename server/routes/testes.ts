@@ -1,6 +1,6 @@
 import express from 'express';
 import { db, dbType } from '../db-config';
-import { testes, perguntas, resultados, respostas, colaboradores, testeDisponibilidade, insertResultadoSchema, insertRespostaSchema } from '../../shared/schema';
+import { testes, perguntas, resultados, respostas, colaboradores, empresas, testeDisponibilidade, insertResultadoSchema, insertRespostaSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { eq, and, desc, or } from 'drizzle-orm';
 import { z } from 'zod';
@@ -272,33 +272,35 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
       }
     }
 
-    // Validar se testeIdFinal existe na tabela testes para evitar FOREIGN KEY constraint
     if (testeIdFinal) {
       try {
-        const { sqlite } = await import('../db-sqlite');
-        const testeExistente = sqlite.prepare('SELECT id FROM testes WHERE id = ?').get(testeIdFinal);
-        if (!testeExistente) {
-          logger.warn(`⚠️ [RESULTADO] Teste ID ${testeIdFinal} não existe na tabela testes. Usando null.`);
-          testeIdFinal = null;
+        const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+        if (isSqlite) {
+          const { sqlite } = await import('../db-sqlite');
+          const testeExistente = sqlite.prepare('SELECT id FROM testes WHERE id = ?').get(testeIdFinal);
+          if (!testeExistente) testeIdFinal = null;
+        } else {
+          const [testeExistente] = await db.select({ id: testes.id }).from(testes).where(eq(testes.id, testeIdFinal)).limit(1);
+          if (!testeExistente) testeIdFinal = null;
         }
-      } catch (error) {
-        logger.error('❌ [RESULTADO] Erro ao validar teste_id:', error);
+      } catch {
         testeIdFinal = null;
       }
     }
 
-    // Validar empresa_id do usuário para evitar FOREIGN KEY constraint
     let empresaIdFinal = req.user!.empresaId;
     if (empresaIdFinal) {
       try {
-        const { sqlite } = await import('../db-sqlite');
-        const empresaExistente = sqlite.prepare('SELECT id FROM empresas WHERE id = ?').get(empresaIdFinal);
-        if (!empresaExistente) {
-          logger.warn(`⚠️ [RESULTADO] Empresa ID ${empresaIdFinal} não existe na tabela empresas. Usando null.`);
-          empresaIdFinal = null;
+        const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+        if (isSqlite) {
+          const { sqlite } = await import('../db-sqlite');
+          const empresaExistente = sqlite.prepare('SELECT id FROM empresas WHERE id = ?').get(empresaIdFinal);
+          if (!empresaExistente) empresaIdFinal = null;
+        } else {
+          const [empresaExistente] = await db.select({ id: empresas.id }).from(empresas).where(eq(empresas.id, empresaIdFinal)).limit(1);
+          if (!empresaExistente) empresaIdFinal = null;
         }
-      } catch (error) {
-        logger.error('❌ [RESULTADO] Erro ao validar empresa_id:', error);
+      } catch {
         empresaIdFinal = null;
       }
     }
