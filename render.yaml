@@ -2,14 +2,34 @@ services:
   - type: web
     name: humaniq-backend
     env: node
-    buildCommand: npm install --legacy-peer-deps
+    buildCommand: npm ci
     startCommand: npm run start:prod
     autoDeploy: true
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: CORS_ORIGIN
-        value: https://humaniqai.com.br
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://humaniqai.com.br,https://www.humaniqai.com.br
       - key: FRONTEND_URL
         value: https://humaniqai.com.br
+      - key: DATABASE_URL
+        fromSecret: DATABASE_URL
+      - key: JWT_SECRET
+        fromSecret: JWT_SECRET
+      - key: SESSION_SECRET
+        fromSecret: SESSION_SECRET
+      - key: STRIPE_SECRET_KEY
+        fromSecret: STRIPE_SECRET_KEY
+      - key: STRIPE_PUBLIC_KEY
+        fromSecret: STRIPE_PUBLIC_KEY
+      - key: STRIPE_WEBHOOK_SECRET
+        fromSecret: STRIPE_WEBHOOK_SECRET
+      - key: SMTP_HOST
+        fromSecret: SMTP_HOST
+      - key: SMTP_PORT
+        fromSecret: SMTP_PORT
+      - key: SMTP_USER
+        fromSecret: SMTP_USER
+      - key: SMTP_PASS
+        fromSecret: SMTP_PASS

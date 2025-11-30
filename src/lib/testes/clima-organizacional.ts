@@ -1,5 +1,4 @@
 // Teste de Clima Organizacional - HumaniQ
-import { corrigirPTBR } from "../../utils/corrigirPTBR";
 // Base científica: Chiavenato (2014), Likert (1961), Bass (1990), Spector (1997), 
 // Herzberg (1966), Maslow (1954), Litwin & Stringer (1968), Greenhaus & Beutell (1985), 
 // Schaufeli & Bakker (2004)
@@ -31,33 +30,25 @@ export interface ResultadoClimaOrganizacional {
 }
 
 // Escala Likert de 5 pontos
-const escalaLikertRaw = [
+export const escalaLikert = [
   "Discordo totalmente",
   "Discordo", 
   "Neutro",
   "Concordo",
   "Concordo totalmente"
 ];
-export const escalaLikert = escalaLikertRaw.map(corrigirPTBR);
 
 // Classificação das médias
-const classificacaoMediaRaw = {
+export const classificacaoMedia = {
   critico: { min: 1.00, max: 1.50, label: "Clima crítico" },
   ruim: { min: 1.51, max: 2.50, label: "Clima ruim" },
   regular: { min: 2.51, max: 3.50, label: "Clima regular" },
   bom: { min: 3.51, max: 4.20, label: "Clima bom" },
   excelente: { min: 4.21, max: 5.00, label: "Clima excelente" }
 };
-export const classificacaoMedia = {
-  critico: { ...classificacaoMediaRaw.critico, label: corrigirPTBR(classificacaoMediaRaw.critico.label) },
-  ruim: { ...classificacaoMediaRaw.ruim, label: corrigirPTBR(classificacaoMediaRaw.ruim.label) },
-  regular: { ...classificacaoMediaRaw.regular, label: corrigirPTBR(classificacaoMediaRaw.regular.label) },
-  bom: { ...classificacaoMediaRaw.bom, label: corrigirPTBR(classificacaoMediaRaw.bom.label) },
-  excelente: { ...classificacaoMediaRaw.excelente, label: corrigirPTBR(classificacaoMediaRaw.excelente.label) }
-};
 
 // Dimensões e perguntas do teste
-const dimensoesClimaOrganizacionalRaw: DimensaoClimaOrganizacional[] = [
+export const dimensoesClimaOrganizacional: DimensaoClimaOrganizacional[] = [
   {
     id: "comunicacao",
     nome: "Comunicação",
@@ -172,17 +163,6 @@ const dimensoesClimaOrganizacionalRaw: DimensaoClimaOrganizacional[] = [
   }
 ];
 
-function corrigirDimensaoClima(d: DimensaoClimaOrganizacional): DimensaoClimaOrganizacional {
-  return {
-    ...d,
-    nome: corrigirPTBR(d.nome),
-    descricao: corrigirPTBR(d.descricao),
-    perguntas: d.perguntas.map(p => ({ ...p, texto: corrigirPTBR(p.texto) }))
-  };
-}
-
-export const dimensoesClimaOrganizacional: DimensaoClimaOrganizacional[] = dimensoesClimaOrganizacionalRaw.map(corrigirDimensaoClima);
-
 // Função para calcular resultado do teste
 export function calcularResultadoClimaOrganizacional(
   respostas: Record<number, number>
@@ -249,11 +229,11 @@ function obterNivelPorMedia(media: number): 'critico' | 'ruim' | 'regular' | 'bo
 
 // Função para obter todas as perguntas em ordem
 export function obterTodasPerguntas(): PerguntaClimaOrganizacional[] {
-  return dimensoesClimaOrganizacional.flatMap(dimensao => dimensao.perguntas).map(p => ({ ...p, texto: corrigirPTBR(p.texto) }));
+  return dimensoesClimaOrganizacional.flatMap(dimensao => dimensao.perguntas);
 }
 
 // Informações do teste
-const infoTesteClimaOrganizacionalRaw = {
+export const infoTesteClimaOrganizacional = {
   id: "clima-organizacional",
   nome: "Pesquisa de Clima Organizacional",
   descricao: "Avalia a percepção dos colaboradores sobre o ambiente de trabalho através de 8 dimensões fundamentais baseadas em modelos científicos validados.",
@@ -284,15 +264,4 @@ const infoTesteClimaOrganizacionalRaw = {
     "Seja honesto e objetivo em suas respostas",
     "Não há respostas certas ou erradas"
   ]
-};
-
-export const infoTesteClimaOrganizacional = {
-  ...infoTesteClimaOrganizacionalRaw,
-  nome: corrigirPTBR(infoTesteClimaOrganizacionalRaw.nome),
-  descricao: corrigirPTBR(infoTesteClimaOrganizacionalRaw.descricao),
-  duracao: corrigirPTBR(infoTesteClimaOrganizacionalRaw.duracao),
-  categoria: corrigirPTBR(infoTesteClimaOrganizacionalRaw.categoria),
-  basesCientificas: infoTesteClimaOrganizacionalRaw.basesCientificas.map(corrigirPTBR),
-  objetivos: infoTesteClimaOrganizacionalRaw.objetivos.map(corrigirPTBR),
-  instrucoes: infoTesteClimaOrganizacionalRaw.instrucoes.map(corrigirPTBR)
 };

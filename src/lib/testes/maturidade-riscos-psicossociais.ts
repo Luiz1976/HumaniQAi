@@ -1,5 +1,4 @@
 // Teste HumaniQ MGRP – Maturidade em Gestão de Riscos Psicossociais
-import { corrigirPTBR } from "../../utils/corrigirPTBR";
 // Base científica: NR 01 (Avaliação de Riscos Psicossociais), ISO 45003, OIT
 // Modelos de maturidade organizacional e gestão contínua
 
@@ -32,33 +31,25 @@ export interface ResultadoMaturidadeRiscosPsicossociais {
 }
 
 // Escala Likert de 5 pontos
-const escalaLikertRaw = [
+export const escalaLikert = [
   "Discordo totalmente",
   "Discordo", 
   "Neutro",
   "Concordo",
   "Concordo totalmente"
 ];
-export const escalaLikert = escalaLikertRaw.map(corrigirPTBR);
 
 // Classificação dos níveis de maturidade
-const classificacaoMaturidadeRaw = {
+export const classificacaoMaturidade = {
   baixa: { min: 1.00, max: 2.00, label: "Maturidade Baixa" },
   inicial: { min: 2.01, max: 2.80, label: "Maturidade Inicial" },
   intermediaria: { min: 2.81, max: 3.60, label: "Maturidade Intermediária" },
   avancada: { min: 3.61, max: 4.20, label: "Maturidade Avançada" },
   otimizada: { min: 4.21, max: 5.00, label: "Maturidade Otimizada" }
 };
-export const classificacaoMaturidade = {
-  baixa: { ...classificacaoMaturidadeRaw.baixa, label: corrigirPTBR(classificacaoMaturidadeRaw.baixa.label) },
-  inicial: { ...classificacaoMaturidadeRaw.inicial, label: corrigirPTBR(classificacaoMaturidadeRaw.inicial.label) },
-  intermediaria: { ...classificacaoMaturidadeRaw.intermediaria, label: corrigirPTBR(classificacaoMaturidadeRaw.intermediaria.label) },
-  avancada: { ...classificacaoMaturidadeRaw.avancada, label: corrigirPTBR(classificacaoMaturidadeRaw.avancada.label) },
-  otimizada: { ...classificacaoMaturidadeRaw.otimizada, label: corrigirPTBR(classificacaoMaturidadeRaw.otimizada.label) }
-};
 
 // Dimensões e perguntas do teste
-const dimensoesMaturidadeRiscosPsicossociaisRaw: DimensaoMaturidadeRiscosPsicossociais[] = [
+export const dimensoesMaturidadeRiscosPsicossociais: DimensaoMaturidadeRiscosPsicossociais[] = [
   {
     id: "prevencao-mapeamento",
     nome: "Prevenção e Mapeamento",
@@ -296,17 +287,6 @@ const dimensoesMaturidadeRiscosPsicossociaisRaw: DimensaoMaturidadeRiscosPsicoss
   }
 ];
 
-function corrigirDimensaoMRP(d: DimensaoMaturidadeRiscosPsicossociais): DimensaoMaturidadeRiscosPsicossociais {
-  return {
-    ...d,
-    nome: corrigirPTBR(d.nome),
-    descricao: corrigirPTBR(d.descricao),
-    perguntas: d.perguntas.map(p => ({ ...p, texto: corrigirPTBR(p.texto) }))
-  };
-}
-
-export const dimensoesMaturidadeRiscosPsicossociais: DimensaoMaturidadeRiscosPsicossociais[] = dimensoesMaturidadeRiscosPsicossociaisRaw.map(corrigirDimensaoMRP);
-
 // Função para calcular o resultado do teste
 export function calcularResultadoMaturidadeRiscosPsicossociais(respostas: Record<number, number>): ResultadoMaturidadeRiscosPsicossociais {
   console.log('🔍 [CALC-MGRP] Iniciando cálculo do resultado MGRP');
@@ -377,8 +357,8 @@ export function calcularResultadoMaturidadeRiscosPsicossociais(respostas: Record
   });
 
   // Gerar recomendações e plano de melhoria
-  resultado.recomendacoes = gerarRecomendacoesMaturidade(resultado).map(corrigirPTBR);
-  resultado.planoMelhoria = gerarPlanoMelhoria(resultado).map(corrigirPTBR);
+  resultado.recomendacoes = gerarRecomendacoesMaturidade(resultado);
+  resultado.planoMelhoria = gerarPlanoMelhoria(resultado);
 
   return resultado;
 }
@@ -438,19 +418,19 @@ function gerarRecomendacoesMaturidade(resultado: ResultadoMaturidadeRiscosPsicos
       if (dimensao) {
         switch (dimensaoId) {
           case 'prevencao-mapeamento':
-            recomendacoes.push(corrigirPTBR(`Fortalecer ${dimensao.nome}: Implementar avaliações periódicas de riscos psicossociais`));
+            recomendacoes.push(`Fortalecer ${dimensao.nome}: Implementar avaliações periódicas de riscos psicossociais`);
             break;
           case 'monitoramento-acompanhamento':
-            recomendacoes.push(corrigirPTBR(`Melhorar ${dimensao.nome}: Estabelecer indicadores e canais de feedback efetivos`));
+            recomendacoes.push(`Melhorar ${dimensao.nome}: Estabelecer indicadores e canais de feedback efetivos`);
             break;
           case 'acolhimento-suporte':
-            recomendacoes.push(corrigirPTBR(`Desenvolver ${dimensao.nome}: Criar programas estruturados de apoio psicológico`));
+            recomendacoes.push(`Desenvolver ${dimensao.nome}: Criar programas estruturados de apoio psicológico`);
             break;
           case 'conformidade-legal':
-            recomendacoes.push(corrigirPTBR(`Adequar ${dimensao.nome}: Garantir conformidade com NR 01 e ISO 45003`));
+            recomendacoes.push(`Adequar ${dimensao.nome}: Garantir conformidade com NR 01 e ISO 45003`);
             break;
           case 'cultura-comunicacao':
-            recomendacoes.push(corrigirPTBR(`Transformar ${dimensao.nome}: Promover cultura de valorização da saúde mental`));
+            recomendacoes.push(`Transformar ${dimensao.nome}: Promover cultura de valorização da saúde mental`);
             break;
         }
       }
@@ -499,7 +479,7 @@ export function obterPerguntasMaturidadeRiscosPsicossociais(): PerguntaMaturidad
 }
 
 // Informações do teste para exibição
-const infoTesteMaturidadeRiscosPsicossociaisRaw = {
+export const infoTesteMaturidadeRiscosPsicossociais = {
   nome: "HumaniQ MGRP – Maturidade em Gestão de Riscos Psicossociais",
   categoria: "Gestão de Riscos",
   descricao: "Avalia o grau de maturidade da organização na gestão de riscos psicossociais, com foco em prevenção, conformidade legal e cultura organizacional.",
@@ -508,13 +488,4 @@ const infoTesteMaturidadeRiscosPsicossociaisRaw = {
   totalPerguntas: 40,
   dimensoes: 5,
   baseCientifica: "NR 01, ISO 45003, OIT e modelos de maturidade organizacional"
-};
-
-export const infoTesteMaturidadeRiscosPsicossociais = {
-  ...infoTesteMaturidadeRiscosPsicossociaisRaw,
-  nome: corrigirPTBR(infoTesteMaturidadeRiscosPsicossociaisRaw.nome),
-  categoria: corrigirPTBR(infoTesteMaturidadeRiscosPsicossociaisRaw.categoria),
-  descricao: corrigirPTBR(infoTesteMaturidadeRiscosPsicossociaisRaw.descricao),
-  duracao: corrigirPTBR(infoTesteMaturidadeRiscosPsicossociaisRaw.duracao),
-  baseCientifica: corrigirPTBR(infoTesteMaturidadeRiscosPsicossociaisRaw.baseCientifica)
 };

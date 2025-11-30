@@ -9,8 +9,6 @@ import { Lock, Unlock, Calendar, CheckCircle2, Clock, AlertCircle } from 'lucide
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { corrigirPTBR } from '@/utils/corrigirPTBR';
-import { apiRequest } from '@/lib/queryClient';
 
 interface TesteInfo {
   id: string;
@@ -57,9 +55,23 @@ export function GerenciamentoTestesColaborador({
   const carregarTestes = async () => {
     try {
       setCarregando(true);
-      const data = await apiRequest<{ testes: TesteInfo[] }>(
-        `/api/teste-disponibilidade/empresa/colaborador/${colaboradorId}/testes`
+      const token = localStorage.getItem('authToken');
+
+      const response = await fetch(
+        `/api/teste-disponibilidade/empresa/colaborador/${colaboradorId}/testes`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
       );
+
+      if (!response.ok) {
+        throw new Error('Erro ao carregar testes');
+      }
+
+      const data = await response.json();
       setTestes(data.testes || []);
     } catch (error) {
       console.error('Erro ao carregar testes:', error);
@@ -72,10 +84,23 @@ export function GerenciamentoTestesColaborador({
   const liberarTeste = async (testeId: string) => {
     try {
       setProcessando(true);
-      await apiRequest(
+      const token = localStorage.getItem('authToken');
+
+      const response = await fetch(
         `/api/teste-disponibilidade/empresa/colaborador/${colaboradorId}/teste/${testeId}/liberar`,
-        { method: 'POST' }
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
       );
+
+      if (!response.ok) {
+        throw new Error('Erro ao liberar teste');
+      }
+
       toast.success('Teste liberado com sucesso');
       await carregarTestes();
     } catch (error) {
@@ -91,14 +116,26 @@ export function GerenciamentoTestesColaborador({
 
     try {
       setProcessando(true);
-      await apiRequest(
+      const token = localStorage.getItem('authToken');
+
+      const response = await fetch(
         `/api/teste-disponibilidade/empresa/colaborador/${colaboradorId}/teste/${testeAtual.id}/periodicidade`,
         {
           method: 'PATCH',
-          body: JSON.stringify({ periodicidadeDias: periodicidade }),
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            periodicidadeDias: periodicidade,
+          }),
         }
       );
+
+      if (!response.ok) {
+        throw new Error('Erro ao configurar periodicidade');
+      }
+
       toast.success('Periodicidade configurada com sucesso');
       setShowPeriodicidadeModal(false);
       setTesteAtual(null);
@@ -133,7 +170,7 @@ export function GerenciamentoTestesColaborador({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          Gerenciar Testes - {corrigirPTBR(colaboradorNome)}
+          Gerenciar Testes - {colaboradorNome}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Configure a disponibilidade e periodicidade dos testes para este colaborador
@@ -154,7 +191,7 @@ export function GerenciamentoTestesColaborador({
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base font-semibold flex-1">
-                  {corrigirPTBR(teste.nome)}
+                  {teste.nome}
                 </CardTitle>
                 {teste.foiConcluido && (
                   <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -165,7 +202,7 @@ export function GerenciamentoTestesColaborador({
               </div>
               {teste.categoria && (
                 <Badge variant="secondary" className="w-fit text-xs">
-                  {corrigirPTBR(teste.categoria)}
+                  {teste.categoria}
                 </Badge>
               )}
             </CardHeader>
@@ -263,7 +300,7 @@ export function GerenciamentoTestesColaborador({
           <DialogHeader>
             <DialogTitle>Configurar Periodicidade</DialogTitle>
             <DialogDescription>
-              Defina o intervalo de tempo (em dias) para que o teste "{testeAtual ? corrigirPTBR(testeAtual.nome) : ''}" fique
+              Defina o intervalo de tempo (em dias) para que o teste "{testeAtual?.nome}" fique
               disponível novamente após a conclusão.
             </DialogDescription>
           </DialogHeader>

@@ -2,19 +2,20 @@
 // Em desenvolvimento: usa URL relativa (proxy Vite)
 // Em produção: usa VITE_API_URL do ambiente
 import Cookies from 'js-cookie';
-
-// Debug das variáveis de ambiente
-console.log('🔍 [ApiService] Variáveis de ambiente carregadas:');
-console.log('🔍 [ApiService] VITE_API_URL:', import.meta.env.VITE_API_URL);
-console.log('🔍 [ApiService] VITE_API_FALLBACK_URL:', import.meta.env.VITE_API_FALLBACK_URL);
-console.log('🔍 [ApiService] MODE:', import.meta.env.MODE);
-console.log('🔍 [ApiService] PROD:', import.meta.env.PROD);
-
-// Fallback hardcoded para produção
-const PRODUCTION_API_URL = 'https://humaniqai-server.up.railway.app/api';
-const RAW_API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PRODUCTION_API_URL : '');
-const API_BASE_URL = RAW_API_BASE.replace(/\/+$/, '').replace(/\/api$/, '');
-// Fallback opcional para produção
+const getApiBase = () => {
+  const envRaw = import.meta.env.VITE_API_URL || '';
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const raw = envRaw || origin;
+  const trimmed = raw.replace(/\/+$/, '').replace(/\/api$/, '');
+  try {
+    const host = new URL(trimmed).hostname;
+    if (host === 'www.humaniqai.com.br') {
+      return 'https://api.humaniqai.com.br';
+    }
+  } catch (_) {}
+  return trimmed;
+};
+const API_BASE_URL = getApiBase();
 const RAW_FALLBACK_BASE = import.meta.env.VITE_API_FALLBACK_URL || '';
 const API_FALLBACK_BASE = RAW_FALLBACK_BASE.replace(/\/+$/, '').replace(/\/api$/, '');
 
@@ -94,7 +95,7 @@ class ApiService {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const primaryUrl = API_BASE_URL ? buildUrl(API_BASE_URL) : endpoint; // relativo se base vazia
+    const primaryUrl = API_BASE_URL ? buildUrl(API_BASE_URL) : endpoint;
 
     const tryFetch = async (url: string) => {
       const response = await fetch(url, {
@@ -143,20 +144,6 @@ class ApiService {
       }
 
       if (isNetworkError || (error?.status && error.status >= 500)) {
-        const relativeUrl = endpoint;
-        try {
-          return await tryFetch(relativeUrl);
-        } catch (_) {}
-      }
-
-      if (error?.status === 404 && canFallback) {
-        const fallbackUrl404 = buildUrl(API_FALLBACK_BASE);
-        try {
-          return await tryFetch(fallbackUrl404);
-        } catch (_) {}
-      }
-
-      if (error?.status === 401 || error?.status === 403) {
         const relativeUrl = endpoint;
         try {
           return await tryFetch(relativeUrl);
@@ -325,6 +312,14 @@ class ApiService {
     return this.makeRequest('/api/empresas/me');
   }
 
+  // Atualizar configurações da empresa (inclui logo)
+  async atualizarConfiguracoesEmpresa(configuracoes: any): Promise<{ empresa: any }> {
+    return this.makeRequest('/api/empresas/configuracoes', {
+      method: 'PATCH',
+      body: JSON.stringify({ configuracoes }),
+    });
+  }
+
   // Listar colaboradores da empresa
   async listarColaboradores(): Promise<{ colaboradores: any[]; total: number }> {
     return this.makeRequest('/api/empresas/colaboradores');
@@ -406,15 +401,6 @@ class ApiService {
     };
   }> {
     return this.makeRequest('/api/convites/metricas-empresa');
-  }
-
-  async registrarLogAuditoria(payload: Record<string, unknown>): Promise<void> {
-    try {
-      await this.makeRequest('/api/audit/logs', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-    } catch (_) { void 0; }
   }
 }
 

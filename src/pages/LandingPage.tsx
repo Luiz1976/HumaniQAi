@@ -32,8 +32,6 @@ export default function LandingPage() {
     ? 'text-gray-800 hover:text-indigo-700 font-semibold'
     : 'text-gray-100 hover:text-indigo-300 drop-shadow-lg font-semibold';
 
-  const mobileButtonTextClass = scrolled ? 'text-gray-800' : 'text-white';
-
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -114,10 +112,12 @@ export default function LandingPage() {
           scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg' : 'bg-white/10 backdrop-blur-md border-b border-white/20'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center">
-            <Logo size="md" showText={true} />
-            <nav className="hidden md:flex space-x-8 items-center ml-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex md:items-center md:flex-row flex-col gap-2">
+            <div className="w-full md:w-auto flex items-center justify-between">
+              <Logo size="md" showText={true} />
+            </div>
+            <nav className="hidden md:flex space-x-8 items-center md:ml-12">
               <button onClick={() => scrollToSection('solucao')} className={`${navLinkClass} transition-colors`}>
                 Solução
               </button>
@@ -159,45 +159,53 @@ export default function LandingPage() {
                 Entrar
               </Button>
             </nav>
-            <div className="md:hidden flex-1">
-              <nav role="navigation" aria-label="primary" className="mt-2">
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-1">
-                  <button onClick={() => scrollToSection('solucao')} className={`${navLinkClass} text-xs sm:text-sm`}>Solução</button>
-                  <button onClick={() => scrollToSection('modulos')} className={`${navLinkClass} text-xs sm:text-sm`}>Módulos</button>
-                  <button onClick={() => scrollToSection('planos')} className={`${navLinkClass} text-xs sm:text-sm`}>Planos</button>
-                  <button onClick={() => scrollToSection('depoimentos')} className={`${navLinkClass} text-xs sm:text-sm`}>Casos</button>
-                  <button
-                    onClick={() => {
-                      try {
-                        window.dispatchEvent(new CustomEvent('chatbot:open'));
-                      } catch (e) {
-                        console.warn('Falha ao disparar evento chatbot:open', e);
-                      }
-                    }}
-                    className={`${navLinkClass} text-xs sm:text-sm`}
-                    data-testid="button-chatbot-header-mobile"
-                    title="Abrir Chatbot"
-                  >
-                    Chatbot
-                  </button>
-                  <Button 
-                    onClick={() => navigate('/quick-check')} 
-                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-xs px-3 py-1.5"
-                    data-testid="button-diagnostico-header-mobile"
-                  >
-                    Diagnóstico
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => navigate('/login')}
-                    className={`text-xs px-3 py-1.5 ${mobileButtonTextClass}`}
-                    data-testid="button-login-mobile"
-                  >
-                    Entrar
-                  </Button>
-                </div>
-              </nav>
-            </div>
+            <nav className="flex md:hidden w-full">
+              <div className="flex flex-wrap items-center gap-2">
+                <button onClick={() => scrollToSection('solucao')} className={`${navLinkClass} transition-colors text-xs`}>
+                  Solução
+                </button>
+                <button onClick={() => scrollToSection('modulos')} className={`${navLinkClass} transition-colors text-xs`}>
+                  Módulos
+                </button>
+                <button onClick={() => scrollToSection('planos')} className={`${navLinkClass} transition-colors text-xs`}>
+                  Planos
+                </button>
+                <button onClick={() => scrollToSection('depoimentos')} className={`${navLinkClass} transition-colors text-xs`}>
+                  Casos de Sucesso
+                </button>
+                <button
+                  onClick={() => {
+                    try {
+                      window.dispatchEvent(new CustomEvent('chatbot:open'));
+                    } catch (e) {
+                      console.warn('Falha ao disparar evento chatbot:open', e);
+                    }
+                  }}
+                  className={`${navLinkClass} transition-colors text-xs`}
+                  data-testid="button-chatbot-header"
+                  title="Abrir Chatbot"
+                >
+                  Chatbot
+                </button>
+                <Button 
+                  onClick={() => navigate('/quick-check')} 
+                  size="sm"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-xs px-3 py-1"
+                  data-testid="button-diagnostico-header"
+                >
+                  Diagnóstico Gratuito
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/login')}
+                  className="text-xs px-3 py-1"
+                  data-testid="button-login"
+                >
+                  Entrar
+                </Button>
+              </div>
+            </nav>
           </div>
         </div>
       </header>

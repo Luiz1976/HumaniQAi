@@ -7,14 +7,15 @@ import QRCode from "qrcode";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import Logo from "@/components/Logo";
-import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface CertificadoViewProps {
   certificado: any;
   curso: Curso;
+  autoDownload?: boolean;
+  onDownloadComplete?: () => void;
 }
 
-export default function CertificadoView({ certificado, curso }: CertificadoViewProps) {
+export default function CertificadoView({ certificado, curso, autoDownload, onDownloadComplete }: CertificadoViewProps) {
   const certificadoRef = useRef<HTMLDivElement>(null);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [baixando, setBaixando] = useState(false);
@@ -33,14 +34,20 @@ export default function CertificadoView({ certificado, curso }: CertificadoViewP
     }
   }, [certificado]);
 
+  useEffect(() => {
+    if (autoDownload && qrCodeDataUrl && !baixando) {
+      baixarPDF();
+    }
+  }, [autoDownload, qrCodeDataUrl]);
+
   const baixarPDF = async () => {
     if (!certificadoRef.current) return;
-    
+
     setBaixando(true);
     try {
       // Aguardar um momento para garantir que tudo está renderizado
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       // Capturar o certificado como imagem com alta qualidade
       const canvas = await html2canvas(certificadoRef.current, {
         scale: 2,
@@ -63,14 +70,14 @@ export default function CertificadoView({ certificado, curso }: CertificadoViewP
 
       // Converter canvas para imagem e adicionar ao PDF
       const imgData = canvas.toDataURL('image/png', 1.0);
-      
+
       // Calcular dimensões mantendo a proporção
       const canvasAspectRatio = canvas.width / canvas.height;
       const pdfAspectRatio = pdfWidth / pdfHeight;
-      
+
       let finalWidth = pdfWidth;
       let finalHeight = pdfHeight;
-      
+
       if (canvasAspectRatio > pdfAspectRatio) {
         // Canvas é mais largo - ajustar pela largura
         finalHeight = pdfWidth / canvasAspectRatio;
@@ -78,17 +85,20 @@ export default function CertificadoView({ certificado, curso }: CertificadoViewP
         // Canvas é mais alto - ajustar pela altura
         finalWidth = pdfHeight * canvasAspectRatio;
       }
-      
+
       // Centralizar no PDF
       const xOffset = (pdfWidth - finalWidth) / 2;
       const yOffset = (pdfHeight - finalHeight) / 2;
-      
+
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
       pdf.save(`certificado-${curso.slug}-${certificado.codigoAutenticacao}.pdf`);
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
     } finally {
       setBaixando(false);
+      if (onDownloadComplete) {
+        onDownloadComplete();
+      }
     }
   };
 
@@ -132,13 +142,13 @@ export default function CertificadoView({ certificado, curso }: CertificadoViewP
         <div
           ref={certificadoRef}
           className="bg-white shadow-2xl rounded-lg border-4 sm:border-6 md:border-8 border-double border-blue-900 w-full mx-auto"
-          style={{ 
+          style={{
             maxWidth: '1200px',
           }}
         >
           {/* Header Decorativo */}
           <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 h-2 sm:h-3 md:h-4"></div>
-          
+
           <div className="p-6 sm:p-8 md:p-12 lg:p-16 relative">
             {/* Marca d'água de fundo */}
             <div className="absolute inset-0 opacity-5 flex items-center justify-center pointer-events-none">
@@ -168,12 +178,12 @@ export default function CertificadoView({ certificado, curso }: CertificadoViewP
                 </p>
 
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-900 border-b-2 border-blue-200 pb-2 inline-block px-6 sm:px-8" style={{ fontFamily: 'Georgia, serif' }}>
-                  {corrigirPTBR(certificado.colaboradorNome)}
+                  {certificado.colaboradorNome}
                 </h2>
 
                 <p className="text-base sm:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed px-4" style={{ fontFamily: 'Georgia, serif' }}>
-                  concluiu com êxito o curso de <strong>{corrigirPTBR(curso.titulo)}</strong>, 
-                  com carga horária de <strong>{certificado.cargaHoraria}</strong>, 
+                  Concluiu com êxito o curso de <strong>{(curso as any).título ?? (curso as any).titulo ?? ''}</strong>,
+                  com carga horária de <strong>{certificado.cargaHoraria}</strong>,
                   ministrado pela plataforma <strong>HumaniQ AI</strong>.
                 </p>
 
@@ -217,14 +227,14 @@ export default function CertificadoView({ certificado, curso }: CertificadoViewP
                             <stop offset="100%" style={{ stopColor: '#2563eb', stopOpacity: 1 }} />
                           </linearGradient>
                         </defs>
-                        <text 
-                          x="90" 
-                          y="40" 
-                          fontSize="32" 
-                          fontFamily="'Brush Script MT', 'Lucida Handwriting', cursive" 
+                        <text
+                          x="90"
+                          y="40"
+                          fontSize="32"
+                          fontFamily="'Brush Script MT', 'Lucida Handwriting', cursive"
                           fontStyle="italic"
                           fontWeight="bold"
-                          fill="url(#signatureGradient)" 
+                          fill="url(#signatureGradient)"
                           textAnchor="middle"
                           transform="rotate(-2 90 30)"
                         >
@@ -232,12 +242,12 @@ export default function CertificadoView({ certificado, curso }: CertificadoViewP
                         </text>
                       </svg>
                     </div>
-                    
+
                     {/* Linha de assinatura */}
                     <div className="border-t-2 border-gray-900 pt-2 mx-auto w-48">
                       <p className="text-sm font-semibold text-gray-900">Certificado por HumaniQ AI</p>
                     </div>
-                    
+
                     {/* Código de Autenticação */}
                     <div className="space-y-1 mt-3">
                       <p className="text-xs text-gray-600">Código de Autenticação:</p>

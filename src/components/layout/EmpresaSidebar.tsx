@@ -1,9 +1,10 @@
+import { useEffect, useRef, useState } from "react";
 import { Building2, UserPlus, Users, Menu, LogOut, Home, Activity, FileText } from "lucide-react";
 import Logo from "@/components/Logo";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/AuthContext";
 import { apiService } from "@/services/apiService";
-import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,
   SidebarContent,
@@ -48,38 +49,61 @@ export function EmpresaSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [empresaLogo, setEmpresaLogo] = useState<string | null>(null);
-  const [isLoadingLogo, setIsLoadingLogo] = useState(false);
+  const [configuracoes, setConfiguracoes] = useState<any>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  useEffect(() => {
-    const fetchEmpresaData = async () => {
-      if (user?.empresaId) {
-        setIsLoadingLogo(true);
-        try {
-          const response = await apiService.obterDadosEmpresa();
-          if (response.empresa?.logoBase64) {
-            setEmpresaLogo(response.empresa.logoBase64);
-          }
-        } catch (error) {
-          console.error('Erro ao buscar dados da empresa:', error);
-        } finally {
-          setIsLoadingLogo(false);
-        }
-      }
-    };
-
-    fetchEmpresaData();
-  }, [user?.empresaId]);
-
   const isActive = (path: string) => currentPath === path || currentPath.startsWith(path);
   const isCollapsed = state === "collapsed";
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { empresa } = await apiService.obterDadosEmpresa();
+        const cfg = empresa?.configuracoes || {};
+        if (!mounted) return;
+        setConfiguracoes(cfg);
+        const logo = typeof cfg.logo === 'string' ? cfg.logo : null;
+        setEmpresaLogo(logo);
+      } catch (e) {
+        console.warn('Falha ao carregar dados da empresa', e);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const onTrocarLogoClick = () => fileInputRef.current?.click();
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Selecione um arquivo de imagem');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = String(reader.result);
+      setEmpresaLogo(base64);
+      try {
+        const novoCfg = { ...configuracoes, logo: base64 };
+        setConfiguracoes(novoCfg);
+        await apiService.atualizarConfiguracoesEmpresa(novoCfg);
+      } catch (err) {
+        console.error('Erro ao atualizar logo da empresa', err);
+        alert('Não foi possível salvar o novo logo. Tente novamente.');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <Sidebar
@@ -88,44 +112,45 @@ export function EmpresaSidebar() {
     >
       <div className="flex h-full flex-col">
         {/* Header - Logo e Toggle */}
-        <div className="flex flex-col py-4 px-6 border-b border-border/10">
-          <div className="flex h-16 items-center justify-between">
-            {!isCollapsed && (
-              <Logo size="xl" showText={true} />
-            )}
-            {isCollapsed && (
-              <div className="flex items-center justify-center w-full">
-                <Logo size="lg" showText={false} />
-              </div>
-            )}
-            <SidebarTrigger className="h-8 w-8 hover:bg-accent/50 transition-colors">
-              <Menu className="h-4 w-4" />
-            </SidebarTrigger>
+        <div className="flex h-20 items-center justify-between px-6 border-b border-border/10">
+          {!isCollapsed && (
+            <Logo size="xl" showText={true} className="ml-12" />
+          )}
+          {isCollapsed && (
+            <div className="flex items-center justify-center w-full">
+              <Logo size="lg" showText={false} className="ml-12" />
+            </div>
+          )}
+          <SidebarTrigger className="h-8 w-8 hover:bg-accent/50 transition-colors">
+            <Menu className="h-4 w-4" />
+          </SidebarTrigger>
+        </div>
+
+        <div className="px-6 pt-4">
+          <div className={`flex ${isCollapsed ? 'justify-center' : ''} ml-12`}>
+            <div className="h-24 w-24 rounded-xl border border-gray-200 bg-white flex items-center justify-center overflow-hidden">
+              {empresaLogo ? (
+                <img src={empresaLogo} alt="Logo da Empresa" className="h-full w-full object-contain" />
+              ) : (
+                <Building2 className="h-8 w-8 text-gray-400" />
+              )}
+            </div>
           </div>
-          
-          {/* Logo da Empresa - apenas se disponível e não estiver colapsado */}
-          {empresaLogo && !isCollapsed && (
-            <div className="mt-3 flex justify-center">
-              <img
-                src={empresaLogo}
-                alt="Logo da Empresa"
-                className="h-12 w-auto max-w-32 object-contain rounded-lg bg-white/50 p-1"
-                onError={() => setEmpresaLogo(null)}
-              />
-            </div>
-          )}
-          
-          {/* Logo da Empresa quando colapsado - versão menor */}
-          {empresaLogo && isCollapsed && (
-            <div className="mt-2 flex justify-center">
-              <img
-                src={empresaLogo}
-                alt="Logo da Empresa"
-                className="h-8 w-auto max-w-8 object-contain rounded bg-white/50 p-1"
-                onError={() => setEmpresaLogo(null)}
-              />
-            </div>
-          )}
+          <div className={`mt-2 ${isCollapsed ? 'flex justify-center' : ''} ml-12`}>
+            <Badge
+              onClick={onTrocarLogoClick}
+              className="cursor-pointer px-3 py-1 text-xs bg-blue-50 text-blue-700 border border-blue-200"
+            >
+              Trocar Logo
+            </Badge>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={onFileChange}
+          />
         </div>
 
         {/* Navigation */}

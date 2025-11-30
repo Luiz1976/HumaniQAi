@@ -1,7 +1,7 @@
 import express from 'express';
 import crypto from 'crypto';
 import { db, dbType } from '../db-config';
-import { convitesEmpresa, convitesColaborador, empresas, colaboradores, configuracoesSistema, insertConviteEmpresaSchema, insertConviteColaboradorSchema, insertEmpresaSchema, insertColaboradorSchema } from '../../shared/schema';
+import { convitesEmpresa, convitesColaborador, empresas, colaboradores, insertConviteEmpresaSchema, insertConviteColaboradorSchema, insertEmpresaSchema, insertColaboradorSchema } from '../../shared/schema';
 import { hashPassword, generateInviteToken } from '../utils/auth';
 import { authenticateToken, requireAdmin, requireEmpresa, AuthRequest } from '../middleware/auth';
 import { eq, and, gt, sql, or } from 'drizzle-orm';
@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { enviarConviteEmpresa, enviarConviteColaborador, enviarBoasVindas } from '../services/emailService';
 import logger from '../utils/logger';
 
-  const router = express.Router();
+const router = express.Router();
 
 // Admin cria convite para empresa
 router.post('/empresa', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
@@ -52,16 +52,8 @@ router.post('/empresa', authenticateToken, requireAdmin, async (req: AuthRequest
     if (numeroColaboradores) {
       try {
         let limiteMaximo = 1000;
-        if (typeof configuracoesSistema !== 'undefined') {
-          // Buscar configuração de limite máximo de colaboradores por empresa (se tabela existir)
-          const [configLimite] = await db
-            .select()
-            .from(configuracoesSistema)
-            .where(eq(configuracoesSistema.chave, 'max_colaboradores_por_empresa'))
-            .limit(1);
-
-          limiteMaximo = configLimite ? parseInt((configLimite as any).valor) : 1000;
-        }
+        // Configuração de sistema removida temporariamente
+        // if (typeof configuracoesSistema !== 'undefined') { ... }
 
         // Verificar se já existe empresa com este email de contato
         const [empresaExistente] = await db
@@ -81,8 +73,8 @@ router.post('/empresa', authenticateToken, requireAdmin, async (req: AuthRequest
           const totalAposConvite = colaboradoresAtuais + (numeroColaboradores || 0);
 
           if (totalAposConvite > limiteMaximo) {
-            return res.status(400).json({ 
-              error: `Limite de colaboradores excedido. A empresa já possui ${colaboradoresAtuais} colaboradores. O máximo permitido é ${limiteMaximo} colaboradores.` 
+            return res.status(400).json({
+              error: `Limite de colaboradores excedido. A empresa já possui ${colaboradoresAtuais} colaboradores. O máximo permitido é ${limiteMaximo} colaboradores.`
             });
           }
         }
@@ -240,7 +232,7 @@ router.post('/empresa', authenticateToken, requireAdmin, async (req: AuthRequest
       console.error('Stack:', String(error.stack).split('\n').slice(0, 3).join(' | '));
     }
     const isProd = (process.env.NODE_ENV || 'development') === 'production';
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Erro interno do servidor',
       ...(isProd ? {} : { details: { message: error?.message, code: error?.code, name: error?.name } })
     });
@@ -266,76 +258,76 @@ router.post('/colaborador', authenticateToken, requireEmpresa, async (req: AuthR
       return res.status(400).json({ error: 'Dados inválidos', details: validationResult.error.issues });
     }
 
-  const { nome, email, diasValidade, cargo, departamento, status } = validationResult.data as any;
-  logger.debug('🔎 [Convites/Colaborador] Dados validados', {
-    nome,
-    email,
-    diasValidade,
-    cargo,
-    departamento,
-    status
-  });
+    const { nome, email, diasValidade, cargo, departamento, status } = validationResult.data as any;
+    logger.debug('🔎 [Convites/Colaborador] Dados validados', {
+      nome,
+      email,
+      diasValidade,
+      cargo,
+      departamento,
+      status
+    });
 
-  // Verificar existência da empresa antes de inserir (evita erro de FK)
-  const [empresaExiste] = await db
-    .select()
-    .from(empresas)
-    .where(eq(empresas.id, req.user!.empresaId!))
-    .limit(1);
+    // Verificar existência da empresa antes de inserir (evita erro de FK)
+    const [empresaExiste] = await db
+      .select()
+      .from(empresas)
+      .where(eq(empresas.id, req.user!.empresaId!))
+      .limit(1);
 
-  if (!empresaExiste) {
-    logger.warn('⚠️ [Convites/Colaborador] Empresa não encontrada para empresaId', { empresaId: req.user!.empresaId });
-    return res.status(404).json({ error: 'Empresa não encontrada' });
-  }
-
-  // Verificação de limite de convites por empresa
-  try {
-    const limiteConvites = (empresaExiste as any).numeroColaboradores || 0;
-    if (limiteConvites > 0) {
-      const [countResult] = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(convitesColaborador)
-        .where(
-          and(
-            eq(convitesColaborador.empresaId, req.user!.empresaId!),
-            or(
-              eq(convitesColaborador.status, 'pendente'),
-              eq(convitesColaborador.status, 'aceito')
-            )
-          )
-        );
-
-      const convitesCriados = (countResult as any)?.count || 0;
-      const convitesDisponiveis = Math.max(0, limiteConvites - convitesCriados);
-
-      logger.info('📊 [Convites/Colaborador] Limite verificado', {
-        limiteConvites,
-        convitesCriados,
-        convitesDisponiveis
-      });
-
-      if (convitesDisponiveis <= 0) {
-        return res.status(403).json({
-          success: false,
-          error: 'Limite de convites atingido',
-          message: `Limite de ${limiteConvites} convites atingido. Não é possível criar novos convites.`,
-        });
-      }
+    if (!empresaExiste) {
+      logger.warn('⚠️ [Convites/Colaborador] Empresa não encontrada para empresaId', { empresaId: req.user!.empresaId });
+      return res.status(404).json({ error: 'Empresa não encontrada' });
     }
-  } catch (limitError) {
-    logger.error('❌ [Convites/Colaborador] Erro ao verificar limite de convites', { error: (limitError as any)?.message });
-    // Em caso de erro na verificação de limite, seguir com a criação para não bloquear indevidamente
-  }
-  if (!empresaExiste) {
-    logger.warn('⚠️ [Convites/Colaborador] Empresa não encontrada para empresaId', { empresaId: req.user!.empresaId });
-    return res.status(404).json({ error: 'Empresa não encontrada', message: 'empresaId inválido no token' });
-  }
 
-  const [existingColaborador] = await db.select().from(colaboradores).where(eq(colaboradores.email, email)).limit(1);
-  if (existingColaborador) {
-    logger.info('ℹ️ [Convites/Colaborador] Email já cadastrado, retornando 409', { email });
-    return res.status(409).json({ error: 'Email já cadastrado' });
-  }
+    // Verificação de limite de convites por empresa
+    try {
+      const limiteConvites = (empresaExiste as any).numeroColaboradores || 0;
+      if (limiteConvites > 0) {
+        const [countResult] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(convitesColaborador)
+          .where(
+            and(
+              eq(convitesColaborador.empresaId, req.user!.empresaId!),
+              or(
+                eq(convitesColaborador.status, 'pendente'),
+                eq(convitesColaborador.status, 'aceito')
+              )
+            )
+          );
+
+        const convitesCriados = (countResult as any)?.count || 0;
+        const convitesDisponiveis = Math.max(0, limiteConvites - convitesCriados);
+
+        logger.info('📊 [Convites/Colaborador] Limite verificado', {
+          limiteConvites,
+          convitesCriados,
+          convitesDisponiveis
+        });
+
+        if (convitesDisponiveis <= 0) {
+          return res.status(403).json({
+            success: false,
+            error: 'Limite de convites atingido',
+            message: `Limite de ${limiteConvites} convites atingido. Não é possível criar novos convites.`,
+          });
+        }
+      }
+    } catch (limitError) {
+      logger.error('❌ [Convites/Colaborador] Erro ao verificar limite de convites', { error: (limitError as any)?.message });
+      // Em caso de erro na verificação de limite, seguir com a criação para não bloquear indevidamente
+    }
+    if (!empresaExiste) {
+      logger.warn('⚠️ [Convites/Colaborador] Empresa não encontrada para empresaId', { empresaId: req.user!.empresaId });
+      return res.status(404).json({ error: 'Empresa não encontrada', message: 'empresaId inválido no token' });
+    }
+
+    const [existingColaborador] = await db.select().from(colaboradores).where(eq(colaboradores.email, email)).limit(1);
+    if (existingColaborador) {
+      logger.info('ℹ️ [Convites/Colaborador] Email já cadastrado, retornando 409', { email });
+      return res.status(409).json({ error: 'Email já cadastrado' });
+    }
 
     const token = generateInviteToken();
     // Garantir Date válido independentemente do ambiente
@@ -462,8 +454,8 @@ router.post('/colaborador', authenticateToken, requireEmpresa, async (req: AuthR
       errorMessage: (error as any)?.message,
       stack: (error as any)?.stack
     });
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       error: 'Erro interno do servidor',
       message: 'Não foi possível criar o convite'
     });
@@ -611,12 +603,12 @@ router.post('/empresa/aceitar/:token', async (req, res) => {
 
     const hashedPassword = await hashPassword(validationResult.data.senha);
 
-    const dataExpiracao = convite.diasAcesso 
+    const dataExpiracao = convite.diasAcesso
       ? (() => {
-          const data = new Date();
-          data.setDate(data.getDate() + convite.diasAcesso);
-          return data;
-        })()
+        const data = new Date();
+        data.setDate(data.getDate() + convite.diasAcesso);
+        return data;
+      })()
       : null;
 
     const configuracoesObj: any = {};
@@ -636,18 +628,18 @@ router.post('/empresa/aceitar/:token', async (req, res) => {
       const configStr = JSON.stringify(configuracoesObj || {});
       const dataExpStr = dataExpiracao ? dataExpiracao.toISOString() : null;
       logger.debug('🛠️ [Convites/Empresa/Aceitar] Inserindo empresa via SQLite raw', {
-        emailContato: convite.emailContato,
+        emailContato: convite.emailContato.trim(),
         dataExp: dataExpStr,
       });
       const insertStmt = sqlite.prepare(`
         INSERT INTO empresas (
           nome_empresa, email_contato, senha, cnpj, numero_colaboradores,
-          dias_acesso, data_expiracao, admin_id, configuracoes, ativo
+          dias_acesso, data_expiracao, admin_id, configuracoes, ativa
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
       `);
       insertStmt.run(
         convite.nomeEmpresa,
-        convite.emailContato,
+        convite.emailContato.trim(),
         hashedPassword,
         convite.cnpj || null,
         convite.numeroColaboradores || null,
@@ -686,7 +678,7 @@ router.post('/empresa/aceitar/:token', async (req, res) => {
         .insert(empresas)
         .values({
           nomeEmpresa: convite.nomeEmpresa,
-          emailContato: convite.emailContato,
+          emailContato: convite.emailContato.trim(),
           senha: hashedPassword,
           cnpj: convite.cnpj || null,
           numeroColaboradores: convite.numeroColaboradores || null,
@@ -784,7 +776,7 @@ router.post('/colaborador/aceitar/:token', async (req, res) => {
       stmt.run(
         localId,
         convite.nome,
-        convite.email,
+        convite.email.trim(),
         hashedPassword,
         convite.cargo || null,
         convite.departamento || null,
@@ -802,7 +794,7 @@ router.post('/colaborador/aceitar/:token', async (req, res) => {
         .insert(colaboradores)
         .values({
           nome: convite.nome,
-          email: convite.email,
+          email: convite.email.trim(),
           senha: hashedPassword,
           cargo: convite.cargo,
           departamento: convite.departamento,
@@ -816,7 +808,7 @@ router.post('/colaborador/aceitar/:token', async (req, res) => {
       try {
         const { cursos } = await import('../../src/data/cursosData');
         const { cursoDisponibilidade } = await import('../../shared/schema');
-        
+
         const cursosDisponibilidadeData = cursos.map(curso => ({
           colaboradorId: novoColaborador.id,
           cursoId: curso.slug,
@@ -932,9 +924,9 @@ router.delete('/colaborador/:token', authenticateToken, requireEmpresa, async (r
       .set({ status: 'cancelado' })
       .where(eq(convitesColaborador.id, convite.id));
 
-    res.json({ 
-      success: true, 
-      message: 'Convite cancelado com sucesso' 
+    res.json({
+      success: true,
+      message: 'Convite cancelado com sucesso'
     });
   } catch (error) {
     console.error('Erro ao cancelar convite colaborador:', error);
@@ -969,9 +961,9 @@ router.delete('/empresa/:token', authenticateToken, requireAdmin, async (req: Au
       .set({ status: 'cancelado' })
       .where(eq(convitesEmpresa.id, convite.id));
 
-    res.json({ 
-      success: true, 
-      message: 'Convite cancelado com sucesso' 
+    res.json({
+      success: true,
+      message: 'Convite cancelado com sucesso'
     });
   } catch (error) {
     console.error('Erro ao cancelar convite empresa:', error);
@@ -985,23 +977,13 @@ router.get('/configuracoes/limite-colaboradores', authenticateToken, async (req:
     let limiteMaximo = 1000;
     let descricao = 'Número máximo de colaboradores por empresa';
 
-    if (typeof configuracoesSistema !== 'undefined') {
-      const [configLimite] = await db
-        .select()
-        .from(configuracoesSistema)
-        .where(eq(configuracoesSistema.chave, 'max_colaboradores_por_empresa'))
-        .limit(1);
-
-      if (configLimite) {
-        limiteMaximo = parseInt((configLimite as any).valor) || 1000;
-        descricao = (configLimite as any).descricao || descricao;
-      }
-    }
+    // Configuração de sistema removida temporariamente
+    // if (typeof configuracoesSistema !== 'undefined') { ... }
 
     res.json({ limiteMaximo, descricao });
   } catch (error) {
     console.error('Erro ao buscar configuração de limite:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Erro ao buscar configuração',
       limiteMaximo: 1000
     });
@@ -1034,11 +1016,11 @@ router.get('/metricas-empresa', authenticateToken, requireEmpresa, async (req: A
 
     const agora = new Date();
     // Contagens robustas: não considerar cancelados como "criados"
-    const usados = convites.filter(c => c.status === 'aceito').length;
-    const pendentes = convites.filter(c => c.status === 'pendente' && new Date(c.validade) > agora).length;
-    const cancelados = convites.filter(c => c.status === 'cancelado').length;
+    const usados = convites.filter((c: any) => c.status === 'aceito').length;
+    const pendentes = convites.filter((c: any) => c.status === 'pendente' && new Date(c.validade) > agora).length;
+    const cancelados = convites.filter((c: any) => c.status === 'cancelado').length;
     // "Criados" reflete convites ativos (pendentes + aceitos), ignorando cancelados
-    const criados = convites.filter(c => c.status !== 'cancelado').length;
+    const criados = convites.filter((c: any) => c.status !== 'cancelado').length;
     // Disponíveis calculados sobre convites ativos
     const disponiveis = Math.max(0, (limiteTotal || 0) - criados);
 

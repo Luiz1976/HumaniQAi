@@ -3,7 +3,7 @@ import { db, dbType } from '../db-config';
 import logger from '../utils/logger';
 import { empresas, colaboradores, convitesColaborador, resultados, testes } from '../../shared/schema';
 import { authenticateToken, requireEmpresa, requireAdmin, AuthRequest } from '../middleware/auth';
-import { eq, and, gt, desc, or, sql } from 'drizzle-orm';
+import { eq, and, gt, desc, or } from 'drizzle-orm';
 import { generatePsychosocialAnalysis } from '../services/aiAnalysisService';
 
 const router = express.Router();
@@ -300,9 +300,6 @@ router.get('/colaboradores/:id', authenticateToken, requireEmpresa, async (req: 
 router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
-    const empresaId = req.user!.empresaId!;
-    
-    logger.info(`🔍 [RESULTADOS] Buscando resultados para colaborador: ${id}, empresa: ${empresaId}`);
     
     // Verificar se o colaborador pertence à empresa
     const [colaborador] = await db
@@ -311,22 +308,17 @@ router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, a
       .where(
         and(
           eq(colaboradores.id, id),
-          eq(colaboradores.empresaId, empresaId)
+          eq(colaboradores.empresaId, req.user!.empresaId!)
         )
       )
       .limit(1);
 
     if (!colaborador) {
-      logger.warn(`⚠️ [RESULTADOS] Colaborador ${id} não encontrado ou não pertence à empresa ${empresaId}`);
       return res.status(404).json({ error: 'Colaborador não encontrado' });
     }
-    
-    logger.info(`✅ [RESULTADOS] Colaborador encontrado: ${colaborador.nome} (${colaborador.id})`);
 
     // Buscar resultados do colaborador com JOIN na tabela de testes
     // Busca por colaboradorId OU usuarioId (para compatibilidade com testes antigos)
-    logger.info(`🔍 [RESULTADOS] Buscando resultados no banco de dados...`);
-    
     const resultadosList = await db
       .select({
         id: resultados.id,
@@ -350,83 +342,41 @@ router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, a
             eq(resultados.colaboradorId, id),
             eq(resultados.usuarioId, id)
           ),
-          or(
-            eq(resultados.empresaId, empresaId),
-            sql`(${resultados.empresaId}) IS NULL`
-          )
+          eq(resultados.empresaId, req.user!.empresaId!)
         )
       )
       .orderBy(desc(resultados.dataRealizacao));
-      
-    logger.info(`✅ [RESULTADOS] Encontrados ${resultadosList.length} resultados brutos`);
 
     // Enriquecer os resultados com informações formatadas
-    logger.info(`🔍 [RESULTADOS] Processando ${resultadosList.length} resultados...`);
-    
-    const resultadosEnriquecidos = resultadosList.map((resultado, index) => {
-      try {
-        const metadadosBase = resultado.metadados as Record<string, any> || {};
-        
-        // Calcular pontuação máxima e percentual
-        const pontuacaoMaxima = metadadosBase.pontuacao_maxima || 100;
-        const pontuacao = resultado.pontuacaoTotal || 0;
-        const percentual = pontuacaoMaxima > 0 
-          ? Math.round((pontuacao / pontuacaoMaxima) * 100) 
-          : 0;
-        
-        const resultadoProcessado = {
-          id: resultado.id,
-          testeId: resultado.testeId,
-          nomeTest: resultado.testeNome || metadadosBase.teste_nome || 'Teste sem nome',
-          categoria: resultado.testeCategoria || metadadosBase.teste_categoria || '',
-          pontuacao: pontuacao,
-          pontuacaoMaxima: pontuacaoMaxima,
-          percentual: percentual,
-          status: resultado.status || 'concluido',
-          dataRealizacao: resultado.dataRealizacao,
-          tempoDuracao: resultado.tempoGasto ? Math.round(resultado.tempoGasto / 60) : undefined, // converter segundos para minutos
-          tipoTabela: metadadosBase.tipo_teste || '',
-        };
-        
-        logger.debug(`✅ [RESULTADOS] Processado resultado ${index + 1}/${resultadosList.length}: ${resultadoProcessado.nomeTest}`);
-        return resultadoProcessado;
-      } catch (error) {
-        logger.error(`❌ [RESULTADOS] Erro ao processar resultado ${index + 1}:`, error);
-        return {
-          id: resultado.id,
-          testeId: resultado.testeId,
-          nomeTest: 'Erro ao processar resultado',
-          categoria: '',
-          pontuacao: 0,
-          pontuacaoMaxima: 100,
-          percentual: 0,
-          status: 'erro',
-          dataRealizacao: resultado.dataRealizacao,
-          tempoDuracao: undefined,
-          tipoTabela: '',
-        };
-      }
+    const resultadosEnriquecidos = resultadosList.map(resultado => {
+      const metadadosBase = resultado.metadados as Record<string, any> || {};
+      
+      // Calcular pontuação máxima e percentual
+      const pontuacaoMaxima = metadadosBase.pontuacao_maxima || 100;
+      const pontuacao = resultado.pontuacaoTotal || 0;
+      const percentual = pontuacaoMaxima > 0 
+        ? Math.round((pontuacao / pontuacaoMaxima) * 100) 
+        : 0;
+      
+      return {
+        id: resultado.id,
+        testeId: resultado.testeId,
+        nomeTest: resultado.testeNome || metadadosBase.teste_nome || 'Teste sem nome',
+        categoria: resultado.testeCategoria || metadadosBase.teste_categoria || '',
+        pontuacao: pontuacao,
+        pontuacaoMaxima: pontuacaoMaxima,
+        percentual: percentual,
+        status: resultado.status || 'concluido',
+        dataRealizacao: resultado.dataRealizacao,
+        tempoDuracao: resultado.tempoGasto ? Math.round(resultado.tempoGasto / 60) : undefined, // converter segundos para minutos
+        tipoTabela: metadadosBase.tipo_teste || '',
+      };
     });
 
-    logger.info(`✅ [RESULTADOS] Processamento concluído. ${resultadosEnriquecidos.length} resultados enriquecidos`);
-    
-    res.json({ 
-      success: true, 
-      resultados: resultadosEnriquecidos, 
-      total: resultadosEnriquecidos.length,
-      colaborador: {
-        id: colaborador.id,
-        nome: colaborador.nome,
-        email: colaborador.email
-      }
-    });
+    res.json({ resultados: resultadosEnriquecidos, total: resultadosEnriquecidos.length });
   } catch (error) {
-    logger.error('💥 [RESULTADOS] Erro catastrófico ao buscar resultados do colaborador:', error);
-    res.status(500).json({ 
-      success: false,
-      error: 'Erro interno do servidor ao buscar resultados',
-      message: error instanceof Error ? error.message : 'Erro desconhecido'
-    });
+    console.error('Erro ao buscar resultados do colaborador:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
 
@@ -851,6 +801,7 @@ router.get('/todas', authenticateToken, requireAdmin, async (req: AuthRequest, r
         emailContato: empresas.emailContato,
         ativa: empresas.ativa,
         createdAt: empresas.createdAt,
+        configuracoes: empresas.configuracoes,
       })
       .from(empresas);
 
@@ -874,6 +825,7 @@ router.get('/todas', authenticateToken, requireAdmin, async (req: AuthRequest, r
           ativo: empresa.ativa,
           created_at: empresa.createdAt,
           total_colaboradores: colaboradoresList.length,
+          configuracoes: empresa.configuracoes,
         };
         
         logger.info('🏢 [ADMIN] Empresa formatada:', empresaFormatada);
@@ -1664,7 +1616,8 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
         nome: empresa.nomeEmpresa,
         cnpj: empresa.cnpj || 'Não informado',
         endereco: empresa.endereco || 'Não informado',
-        setor: empresa.setor || 'Não informado'
+        setor: empresa.setor || 'Não informado',
+        logo: (empresa.configuracoes as any)?.logo || null,
       },
       prg: {
         indiceGlobal,
@@ -2143,67 +2096,6 @@ router.post('/:id/restaurar-acesso', authenticateToken, requireAdmin, async (req
   }
 });
 
-// Empresa: listar resultados de um colaborador
-router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
-  try {
-    const { id } = req.params;
-    const empresaId = req.user!.empresaId!;
-
-    const [colab] = await db
-      .select({ id: colaboradores.id, empresaId: colaboradores.empresaId })
-      .from(colaboradores)
-      .where(and(eq(colaboradores.id, id), eq(colaboradores.empresaId, empresaId)))
-      .limit(1);
-    if (!colab) {
-      return res.status(404).json({ error: 'Colaborador não encontrado' });
-    }
-
-    const rows = await db
-      .select({
-        id: resultados.id,
-        testeId: resultados.testeId,
-        pontuacaoTotal: resultados.pontuacaoTotal,
-        tempoGasto: resultados.tempoGasto,
-        dataRealizacao: resultados.dataRealizacao,
-        status: resultados.status,
-        metadados: resultados.metadados,
-        testeNome: testes.nome,
-        testeCategoria: testes.categoria,
-      })
-      .from(resultados)
-      .leftJoin(testes, eq(resultados.testeId, testes.id))
-      .where(and(eq(resultados.colaboradorId, id), eq(resultados.empresaId, empresaId)))
-      .orderBy(desc(resultados.dataRealizacao));
-
-    const mapped = rows.map((r) => {
-      const md = (r.metadados as Record<string, any>) || {};
-      const nome = r.testeNome || md.teste_nome || 'Teste';
-      const categoria = r.testeCategoria || md.teste_categoria || '';
-      const total = Number(r.pontuacaoTotal || 0);
-      const percentual = Math.max(0, Math.min(100, Math.round(total)));
-      const tempoMin = typeof r.tempoGasto === 'number' ? Math.round(r.tempoGasto) : undefined;
-      return {
-        id: r.id,
-        testeId: r.testeId,
-        nomeTest: nome,
-        categoria,
-        pontuacao: total,
-        pontuacaoMaxima: 100,
-        percentual,
-        status: r.status || 'concluido',
-        dataRealizacao: r.dataRealizacao,
-        tempoDuracao: tempoMin,
-        tipoTabela: 'resultados',
-      };
-    });
-
-    return res.json({ resultados: mapped, data: mapped });
-  } catch (error) {
-    logger.error('Erro ao listar resultados do colaborador:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
-});
-
 // Admin: Bloquear manualmente uma empresa
 router.post('/:id/bloquear-acesso', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
@@ -2347,6 +2239,7 @@ router.get('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) =
         emailContato: empresas.emailContato,
         ativa: empresas.ativa,
         createdAt: empresas.createdAt,
+        configuracoes: empresas.configuracoes,
       })
       .from(empresas);
 
@@ -2364,6 +2257,7 @@ router.get('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) =
           ativo: empresa.ativa,
           created_at: empresa.createdAt,
           total_colaboradores: colaboradoresList.length,
+          configuracoes: empresa.configuracoes,
         };
       })
     );

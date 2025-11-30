@@ -1,5 +1,4 @@
 // Teste HumaniQ MGRP – Maturidade em Gestão de Riscos Psicossociais
-import { corrigirPTBR } from "../../utils/corrigirPTBR";
 // Base científica: NR 01 (Avaliação de Riscos Psicossociais), ISO 45003, OIT
 // Modelos de maturidade organizacional e gestão contínua
 
@@ -39,31 +38,24 @@ export interface ResultadoMGRP {
 }
 
 // Escala Likert de 5 pontos para MGRP
-const escalaLikertMGRPRaw = [
+export const escalaLikertMGRP = [
   { valor: 1, texto: "Discordo totalmente" },
   { valor: 2, texto: "Discordo" },
   { valor: 3, texto: "Neutro" },
   { valor: 4, texto: "Concordo" },
   { valor: 5, texto: "Concordo totalmente" }
 ];
-export const escalaLikertMGRP = escalaLikertMGRPRaw.map(o => ({ ...o, texto: corrigirPTBR(o.texto) }));
 
 // Classificação dos níveis de maturidade
-const classificacaoMaturidadeMGRPRaw = {
+export const classificacaoMaturidadeMGRP = {
   inicial: { min: 0, max: 40, label: "Inicial" },
   'em-desenvolvimento': { min: 41, max: 60, label: "Em Desenvolvimento" },
   estruturado: { min: 61, max: 80, label: "Estruturado" },
   otimizado: { min: 81, max: 100, label: "Otimizado" }
 };
-export const classificacaoMaturidadeMGRP = {
-  inicial: { ...classificacaoMaturidadeMGRPRaw.inicial, label: corrigirPTBR(classificacaoMaturidadeMGRPRaw.inicial.label) },
-  'em-desenvolvimento': { ...classificacaoMaturidadeMGRPRaw['em-desenvolvimento'], label: corrigirPTBR(classificacaoMaturidadeMGRPRaw['em-desenvolvimento'].label) },
-  estruturado: { ...classificacaoMaturidadeMGRPRaw.estruturado, label: corrigirPTBR(classificacaoMaturidadeMGRPRaw.estruturado.label) },
-  otimizado: { ...classificacaoMaturidadeMGRPRaw.otimizado, label: corrigirPTBR(classificacaoMaturidadeMGRPRaw.otimizado.label) }
-};
 
 // Dimensões e perguntas do teste MGRP
-const dimensoesMGRPRaw: DimensaoMGRP[] = [
+export const dimensoesMGRP: DimensaoMGRP[] = [
   {
     id: "identificacao-riscos",
     nome: "Identificação de Riscos",
@@ -154,17 +146,6 @@ const dimensoesMGRPRaw: DimensaoMGRP[] = [
   }
 ];
 
-function corrigirDimensaoMGRP(d: DimensaoMGRP): DimensaoMGRP {
-  return {
-    ...d,
-    nome: corrigirPTBR(d.nome),
-    descricao: corrigirPTBR(d.descricao),
-    perguntas: d.perguntas.map(p => ({ ...p, texto: corrigirPTBR(p.texto) }))
-  };
-}
-
-export const dimensoesMGRP: DimensaoMGRP[] = dimensoesMGRPRaw.map(corrigirDimensaoMGRP);
-
 // Função para calcular resultado do teste MGRP
 export function calcularResultadoMGRP(respostas: Record<number, number>): ResultadoMGRP {
   const resultadoDimensoes: Record<string, DimensaoResultadoMGRP> = {};
@@ -190,7 +171,7 @@ export function calcularResultadoMGRP(respostas: Record<number, number>): Result
       percentual,
       nivel,
       classificacao: classificacaoMaturidadeMGRP[nivel].label,
-      descricao: corrigirPTBR(dimensao.descricao)
+      descricao: dimensao.descricao
     };
 
     pontuacaoTotal += pontuacaoDimensao;
@@ -295,20 +276,20 @@ function gerarInterpretacaoMGRP(
   nivel: 'inicial' | 'em-desenvolvimento' | 'estruturado' | 'otimizado',
   percentual: number
 ): string {
-  let interpretacao = corrigirPTBR(`Sua organização apresenta nível de maturidade "${nivel.replace('-', ' ')}" na gestão de riscos psicossociais, com ${percentual}% de desenvolvimento.`) + " ";
+  let interpretacao = `Sua organização apresenta nível de maturidade "${nivel.replace('-', ' ')}" na gestão de riscos psicossociais, com ${percentual}% de desenvolvimento. `;
   
   switch (nivel) {
     case 'inicial':
-      interpretacao += corrigirPTBR("A organização está nos estágios iniciais da gestão de riscos psicossociais. É fundamental estabelecer bases sólidas e processos estruturados para evoluir na maturidade.");
+      interpretacao += "A organização está nos estágios iniciais da gestão de riscos psicossociais. É fundamental estabelecer bases sólidas e processos estruturados para evoluir na maturidade.";
       break;
     case 'em-desenvolvimento':
-      interpretacao += corrigirPTBR("A organização demonstra progresso na implementação de práticas de gestão de riscos psicossociais, mas ainda há oportunidades significativas de melhoria.");
+      interpretacao += "A organização demonstra progresso na implementação de práticas de gestão de riscos psicossociais, mas ainda há oportunidades significativas de melhoria.";
       break;
     case 'estruturado':
-      interpretacao += corrigirPTBR("A organização possui processos bem definidos e estruturados para gestão de riscos psicossociais, com práticas consistentes e resultados mensuráveis.");
+      interpretacao += "A organização possui processos bem definidos e estruturados para gestão de riscos psicossociais, com práticas consistentes e resultados mensuráveis.";
       break;
     case 'otimizado':
-      interpretacao += corrigirPTBR("A organização demonstra excelência na gestão de riscos psicossociais, com processos maduros, cultura preventiva consolidada e melhoria contínua.");
+      interpretacao += "A organização demonstra excelência na gestão de riscos psicossociais, com processos maduros, cultura preventiva consolidada e melhoria contínua.";
       break;
   }
   
@@ -321,7 +302,7 @@ export function obterTodasPerguntasMGRP(): PerguntaMGRP[] {
 }
 
 // Informações do teste
-const infoTesteMGRPRaw = {
+export const infoTesteMGRP = {
   id: "maturidade-gestao-riscos",
   nome: "HumaniQ MGRP - Maturidade em Gestão de Riscos Psicossociais",
   categoria: "Gestão de Riscos",
@@ -332,13 +313,4 @@ const infoTesteMGRPRaw = {
   dimensoes: 6,
   baseCientifica: "NR 01, ISO 45003, OIT e modelos de maturidade organizacional",
   versao: "1.0"
-};
-
-export const infoTesteMGRP = {
-  ...infoTesteMGRPRaw,
-  nome: corrigirPTBR(infoTesteMGRPRaw.nome),
-  categoria: corrigirPTBR(infoTesteMGRPRaw.categoria),
-  descricao: corrigirPTBR(infoTesteMGRPRaw.descricao),
-  duracao: corrigirPTBR(infoTesteMGRPRaw.duracao),
-  baseCientifica: corrigirPTBR(infoTesteMGRPRaw.baseCientifica)
 };

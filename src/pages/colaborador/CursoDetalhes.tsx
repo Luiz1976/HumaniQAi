@@ -14,7 +14,6 @@ import AvaliacaoFinal from "@/components/cursos/AvaliacaoFinal";
 import CertificadoView from "@/components/cursos/CertificadoView";
 import Cookies from "js-cookie";
 import { authServiceNew } from "@/services/authServiceNew";
-import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 export default function CursoDetalhes() {
   const { slug } = useParams<{ slug: string }>();
@@ -24,6 +23,13 @@ export default function CursoDetalhes() {
   const [moduloExpandido, setModuloExpandido] = useState<number | null>(null);
   const [cursoBloqueado, setCursoBloqueado] = useState<boolean>(false);
   const [motivoBloqueio, setMotivoBloqueio] = useState<string | null>(null);
+
+  const modulosCurso = Array.isArray(curso?.módulos) ? curso!.módulos : [];
+  const duracaoCurso = curso?.duração ?? "";
+  const nivelCurso = curso?.nível ?? "";
+  const resultadosCurso = Array.isArray(curso?.resultadosEsperados)
+    ? curso!.resultadosEsperados
+    : [];
 
   if (!curso) {
     return (
@@ -45,28 +51,28 @@ export default function CursoDetalhes() {
     queryKey: ['/api/cursos/progresso', slug],
     queryFn: async () => {
       try {
-        console.log('📚 [CURSO-FRONTEND] Buscando progresso do curso:', slug);
+        console.log('[CURSO-FRONTEND] Buscando progresso do curso:', slug);
         const token = authServiceNew.getToken() || Cookies.get('authToken') || localStorage.getItem('authToken');
         if (!token) {
           throw new Error('Token de autenticação não encontrado. Por favor, faça login novamente.');
         }
-        
+
         const response = await fetch(`/api/cursos/progresso/${slug}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        
-        console.log('📚 [CURSO-FRONTEND] Status da busca:', response.status);
-        
+
+        console.log('[CURSO-FRONTEND] Status da busca:', response.status);
+
         if (response.status === 404) {
-          console.log('📚 [CURSO-FRONTEND] Progresso não existe, criando...');
-          console.log('📚 [CURSO-FRONTEND] Dados para criação:', {
+          console.log('[CURSO-FRONTEND] Progresso não existe, criando...');
+          console.log('[CURSO-FRONTEND] Dados para criação:', {
             cursoId: curso.id.toString(),
             cursoSlug: slug,
-            totalModulos: curso.modulos.length
+            totalModulos: modulosCurso.length || 0
           });
-          
+
           // Criar novo progresso
           const createResponse = await fetch('/api/cursos/progresso', {
             method: 'POST',
@@ -77,26 +83,26 @@ export default function CursoDetalhes() {
             body: JSON.stringify({
               cursoId: curso.id.toString(),
               cursoSlug: slug,
-              totalModulos: curso.modulos.length
+              totalModulos: modulosCurso.length || 0
             })
           });
-          
-          console.log('📚 [CURSO-FRONTEND] Status da criação:', createResponse.status);
-          
+
+          console.log('[CURSO-FRONTEND] Status da criação:', createResponse.status);
+
           if (!createResponse.ok) {
             const errorText = await createResponse.text();
-            console.error('❌ [CURSO-FRONTEND] Erro ao criar progresso:', errorText);
+            console.error('[CURSO-FRONTEND] Erro ao criar progresso:', errorText);
             throw new Error(`Erro ao criar progresso: ${errorText}`);
           }
-          
+
           const novoProgresso = await createResponse.json();
-          console.log('✅ [CURSO-FRONTEND] Progresso criado com sucesso:', novoProgresso);
+          console.log('[CURSO-FRONTEND] Progresso criado com sucesso:', novoProgresso);
           return novoProgresso;
         }
-        
+
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('❌ [CURSO-FRONTEND] Erro ao buscar progresso:', errorText);
+          console.error('[CURSO-FRONTEND] Erro ao buscar progresso:', errorText);
           const msg = `Erro ao buscar progresso: ${errorText}`;
           const lower = msg.toLowerCase();
           if (lower.includes('bloqueado') || lower.includes('não liberado')) {
@@ -106,12 +112,12 @@ export default function CursoDetalhes() {
           }
           throw new Error(msg);
         }
-        
+
         const progressoExistente = await response.json();
-        console.log('✅ [CURSO-FRONTEND] Progresso encontrado:', progressoExistente);
+        console.log('[CURSO-FRONTEND] Progresso encontrado:', progressoExistente);
         return progressoExistente;
       } catch (error) {
-        console.error('❌ [CURSO-FRONTEND] Erro geral:', error);
+        console.error('[CURSO-FRONTEND] Erro geral:', error);
         const msg = (error as any)?.message?.toString()?.toLowerCase() || '';
         if (msg.includes('bloqueado') || msg.includes('não liberado')) {
           setCursoBloqueado(true);
@@ -123,7 +129,7 @@ export default function CursoDetalhes() {
     }
   });
 
-  const { data: disponibilidadeCursos } = useQuery<{cursos: any[], total: number}>({
+  const { data: disponibilidadeCursos } = useQuery<{ cursos: any[], total: number }>({
     queryKey: ['/api/curso-disponibilidade/colaborador/cursos'],
     queryFn: async () => {
       return apiRequest('/api/curso-disponibilidade/colaborador/cursos');
@@ -149,10 +155,9 @@ export default function CursoDetalhes() {
     }
     if (m === 'bloqueado_empresa') return 'Curso bloqueado pela empresa';
     if (m === 'curso_nao_liberado') return 'Curso não liberado pela empresa';
-  if (m === 'curso_concluido') return 'Curso já concluído';
-  return null;
-}
-
+    if (m === 'curso_concluido') return 'Curso já concluído';
+    return null;
+  }
 
   // Buscar certificado (se existir)
   const { data: certificado, refetch: refetchCertificado } = useQuery({
@@ -161,26 +166,47 @@ export default function CursoDetalhes() {
       return apiRequest(`/api/cursos/certificado/${slug}`, {
         method: 'GET'
       }).catch(error => {
-        // Se for 404, retorna null (certificado não existe)
         if (error.message?.includes('404') || error.message?.includes('não encontrado')) {
           console.log('⚠️ [CERTIFICADO] Certificado não encontrado');
           return null;
         }
-        // Outros erros, lança exceção
         console.error('❌ [CERTIFICADO] Erro ao buscar certificado:', error);
         throw error;
       });
     },
-    enabled: !!slug && !!progresso && (
-      (Array.isArray(progresso?.modulosCompletados) ? progresso.modulosCompletados.length : 0) === curso.modulos.length
-    ) && !!progresso?.avaliacaoFinalRealizada,
-    // Polling automático: verifica a cada 2 segundos se o certificado foi criado (se avaliação foi realizada mas certificado não existe)
+    enabled: !!slug && !!progresso,
     refetchInterval: (query) => {
       const avaliacaoRealizada = progresso?.avaliacaoFinalRealizada || false;
       const temCertificado = !!query.state.data;
-      // Se avaliação foi realizada mas certificado não existe, faz polling a cada 2s
       return (avaliacaoRealizada && !temCertificado) ? 2000 : false;
     }
+  });
+
+  // Emitir certificado (se necessário)
+  const emitirCertificadoMutation = useMutation({
+    mutationFn: async () => {
+      console.log('✉️ [CERTIFICADO] Emitindo certificado...');
+      return apiRequest(`/api/cursos/certificado/${slug}`, {
+        method: 'POST',
+        body: JSON.stringify({ cursoId: curso.id }),
+      });
+    },
+    onSuccess: () => {
+      console.log('✅ [CERTIFICADO] Emissão com sucesso, buscando dados...');
+      toast({
+        title: "Certificado Emitido!",
+        description: "Seu certificado foi gerado com sucesso.",
+      });
+      refetchCertificado();
+    },
+    onError: (error: any) => {
+      console.error('❌ [CERTIFICADO] Erro ao emitir certificado:', error);
+      toast({
+        title: "Erro ao Emitir Certificado",
+        description: error?.message || "Não foi possível gerar seu certificado no momento.",
+        variant: "destructive",
+      });
+    },
   });
 
   // Marcar módulo como completado
@@ -189,7 +215,7 @@ export default function CursoDetalhes() {
       return apiRequest(`/api/cursos/progresso/${slug}/modulo/${moduloId}`, {
         method: 'POST',
         body: JSON.stringify({
-          totalModulos: curso.modulos.length
+          totalModulos: modulosCurso.length || 0
         })
       });
     },
@@ -199,7 +225,7 @@ export default function CursoDetalhes() {
       if (previous) {
         const mods = Array.isArray(previous.modulosCompletados) ? previous.modulosCompletados.slice() : [];
         if (!mods.includes(moduloId)) mods.push(moduloId);
-        const total = curso.modulos.length || 1;
+        const total = modulosCurso.length || 1;
         const pct = Math.round((mods.length / total) * 100);
         const optimistic = {
           ...previous,
@@ -213,10 +239,8 @@ export default function CursoDetalhes() {
       return { previous }; // contexto para rollback
     },
     onSuccess: (data) => {
-      // Forçar recarga imediata dos dados
       queryClient.setQueryData(['/api/cursos/progresso', slug], data);
       queryClient.invalidateQueries({ queryKey: ['/api/cursos/progresso', slug] });
-      
       toast({
         title: "Módulo concluído!",
         description: "Continue progredindo no curso.",
@@ -236,21 +260,137 @@ export default function CursoDetalhes() {
     }
   });
 
-  const modulosCompletados = Array.isArray(progresso?.modulosCompletados) 
-    ? progresso.modulosCompletados 
+  const modulosCompletados = Array.isArray(progresso?.modulosCompletados)
+    ? progresso.modulosCompletados
     : [];
   
+  const todosModulosCompletados = modulosCurso.length > 0 && modulosCompletados.length === modulosCurso.length;
+  const avaliacaoRealizada = !!progresso?.avaliacaoFinalRealizada;
+  const pontuacaoMinima = Math.ceil(10 * 0.7);
+  const avaliacaoAprovada = avaliacaoRealizada && ((progresso?.avaliacaoFinalPontuacao ?? 0) >= pontuacaoMinima);
+
+  useEffect(() => {
+    const podeEmitir = todosModulosCompletados && avaliacaoAprovada && !certificado && !emitirCertificadoMutation.isPending;
+    if (podeEmitir) {
+      emitirCertificadoMutation.mutate();
+    }
+  }, [todosModulosCompletados, avaliacaoAprovada, certificado, emitirCertificadoMutation.isPending]);
+
   const progressoPorcentagem = progresso?.progressoPorcentagem || 0;
-  const todosModulosCompletados = modulosCompletados.length === curso.modulos.length;
   const avaliacaoHabilitada = todosModulosCompletados && !progresso?.avaliacaoFinalRealizada;
-  const avaliacaoRealizada = progresso?.avaliacaoFinalRealizada || false;
-  const possuiCertificado = !!certificado && todosModulosCompletados && progressoPorcentagem === 100 && !!progresso?.dataConclusao && avaliacaoRealizada;
+  const possuiCertificado = !!certificado;
+  const certificadoTabDisponivel = avaliacaoAprovada;
+
+  // Painel de Diagnóstico
+  const DiagnosticoPainel = () => (
+    <Card className="bg-yellow-50 border-yellow-200 my-4">
+      <CardHeader>
+        <CardTitle className="text-yellow-800">Painel de Diagnóstico</CardTitle>
+        <CardDescription className="text-yellow-600">
+          Valores de estado atuais para depuração do certificado.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="text-sm text-gray-800 space-y-2">
+        <p><strong>Módulos Completados:</strong> {todosModulosCompletados ? 'Sim' : 'Não'}</p>
+        <p><strong>Avaliação Realizada:</strong> {avaliacaoRealizada ? 'Sim' : 'Não'}</p>
+        <p><strong>Certificado Existe:</strong> {certificado ? 'Sim' : 'Não'}</p>
+        <p><strong>Tentando Emitir Certificado:</strong> {emitirCertificadoMutation.isPending ? 'Sim' : 'Não'}</p>
+        <p><strong>Pode Emitir (lógica useEffect):</strong> {(todosModulosCompletados && avaliacaoRealizada && !certificado && !emitirCertificadoMutation.isPending) ? 'Sim' : 'Não'}</p>
+        <details>
+          <summary className="cursor-pointer"><strong>Ver Objeto de Progresso</strong></summary>
+          <pre className="bg-gray-100 p-2 rounded mt-2 text-xs overflow-auto">
+            {JSON.stringify(progresso, null, 2)}
+          </pre>
+        </details>
+      </CardContent>
+    </Card>
+  );
+
+
+  const normalizarPalavra = (s: string) => {
+    const map: Record<string, string> = {
+      Introducao: "Introdução",
+      INTRODUCAO: "INTRODUÇÃO",
+      Integracao: "Integração",
+      INTEGRACAO: "INTEGRAÇÃO",
+      Lideranca: "Liderança",
+      LIDERANCA: "LIDERANÇA",
+      Gestao: "Gestão",
+      GESTAO: "GESTÃO",
+      Tecnicos: "Técnicos",
+      Tecnicas: "Técnicas",
+      Tecnica: "Técnica",
+      Comunicacao: "Comunicação",
+      COMUNICACAO: "COMUNICAÇÃO",
+      Nao: "Não",
+      Violenta: "Violenta",
+      Saude: "Saúde",
+      SAUDE: "SAÚDE",
+      Relacoes: "Relações",
+      RELACOES: "RELAÇÕES",
+      Inclusao: "Inclusão",
+      INCLUSAO: "INCLUSÃO",
+      Intermediario: "Intermediário",
+      Avancado: "Avançado",
+      Avaliacao: "Avaliação",
+      AVALIACAO: "AVALIAÇÃO",
+      prevencao: "prevenção",
+      Prevencao: "Prevenção",
+      PREVENCAO: "PREVENÇÃO",
+      doencas: "doenças",
+      Doencas: "Doenças",
+      DOENCAS: "DOENÇAS",
+      analise: "análise",
+      Analise: "Análise",
+      periodico: "periódico",
+      Atualizacoes: "Atualizações",
+      atualizacoes: "atualizações",
+      disposicoes: "disposições",
+      Disposicoes: "Disposições",
+      vibracao: "vibração",
+      VIBRACAO: "VIBRAÇÃO",
+      radiacao: "radiação",
+      RADIACAO: "RADIAÇÃO",
+      virus: "vírus",
+      VIRUS: "VÍRUS",
+      bacterias: "bactérias",
+      Bacterias: "Bactérias",
+      biologicos: "biológicos",
+      Biologicos: "Biológicos",
+      ergonomicos: "ergonômicos",
+      Ergonomicos: "Ergonômicos",
+      esforco: "esforço",
+      Esforco: "Esforço",
+      monotono: "monótono",
+      Monotono: "Monótono",
+      ocupacional: "ocupacional",
+      ocupacionais: "ocupacionais",
+      Sao: "São",
+      sao: "são",
+      Pos: "Pós",
+      Traumatico: "Traumático",
+    };
+    return map[s] || s;
+  };
+
+  const normalizarLinha = (texto: any): string => {
+    const s = String(texto || "");
+    return s
+      .split(/([A-Za-zÀ-ÿ]+)/)
+      .map((p) => normalizarPalavra(p))
+      .join("");
+  };
 
   const handleCompletarModulo = (moduloId: number) => {
     const bloqueado = bloqueioEfetivo;
     const msg = motivoBloqueio || mapMotivo(disponibilidadeAtual?.motivo, proximaData) || 'Entre em contato com sua empresa para liberação.';
     if (bloqueado) {
       toast({ title: 'Curso bloqueado', description: msg, variant: 'destructive' });
+      return;
+    }
+    const idsValidos = modulosCurso.map((m: any) => Number((m as any).id)).filter((v) => Number.isFinite(v));
+    if (!idsValidos.includes(moduloId)) {
+      toast({ title: 'Módulo inválido', description: 'Este módulo não pertence a este curso.', variant: 'destructive' });
       return;
     }
     if (!modulosCompletados.includes(moduloId)) {
@@ -284,26 +424,26 @@ export default function CursoDetalhes() {
         </Button>
 
         {/* Hero Section */}
-        <Card className={`border-2 bg-gradient-to-r ${curso.cor} text-white overflow-hidden`}>
+        <Card className={`border-2 bg-gradient-to-r ${((curso as any)?.cor) || ''} text-white overflow-hidden`}>
           <CardContent className="p-8 md:p-12">
             <div className="flex items-start gap-6">
-              <div className="text-7xl">{curso.icone}</div>
+              <div className="text-7xl">{(curso as any)?.icone ?? (curso as any)?.['ícone'] ?? ''}</div>
               <div className="flex-1 space-y-4">
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    {corrigirPTBR(curso.categoria)}
+                    {(curso as any)?.categoria ?? ''}
                   </Badge>
                   <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    {corrigirPTBR(curso.nivel)}
+                    {nivelCurso}
                   </Badge>
                   <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
                     <Clock className="h-3 w-3 mr-1" />
-                    {corrigirPTBR(curso.duracao)}
+                    {duracaoCurso}
                   </Badge>
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold">{corrigirPTBR(curso.titulo)}</h1>
-                <p className="text-lg opacity-90">{corrigirPTBR(curso.subtitulo)}</p>
-                <p className="text-base opacity-80">{corrigirPTBR(curso.descricao)}</p>
+                <h1 className="text-3xl md:text-4xl font-bold">{(curso as any)?.titulo ?? (curso as any)?.['título'] ?? ''}</h1>
+                <p className="text-lg opacity-90">{(curso as any)?.subtitulo ?? (curso as any)?.['subtítulo'] ?? ''}</p>
+                <p className="text-base opacity-80">{(curso as any)?.descricao ?? (curso as any)?.['descrição'] ?? ''}</p>
               </div>
             </div>
           </CardContent>
@@ -318,7 +458,7 @@ export default function CursoDetalhes() {
             </div>
             <Progress value={progressoPorcentagem} className="h-3" />
             <p className="text-xs text-gray-600 mt-2">
-              {modulosCompletados.length} de {curso.modulos.length} módulos concluídos
+              {modulosCompletados.length} de {modulosCurso.length || 0} módulos concluídos
             </p>
             {(cursoBloqueado || bloqueadoPorDisponibilidade) && (
               <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
@@ -328,7 +468,7 @@ export default function CursoDetalhes() {
                 </p>
               </div>
             )}
-            
+
             {todosModulosCompletados && !avaliacaoRealizada && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                 <p className="text-sm text-green-700 font-medium">
@@ -340,7 +480,7 @@ export default function CursoDetalhes() {
             {!avaliacaoRealizada && (
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-700 font-medium">
-                  Curso em andamento — requisitos pendentes para o diploma:
+                  Curso em andamento — requisitos pendentes para o certificado:
                 </p>
                 <ul className="mt-2 text-xs text-blue-800 list-disc list-inside">
                   <li>Concluir todas as questões da avaliação final</li>
@@ -360,24 +500,26 @@ export default function CursoDetalhes() {
           </CardContent>
         </Card>
 
+        {import.meta.env.DEV && <DiagnosticoPainel />}
+
         {/* Tabs de Conteúdo */}
         <Tabs defaultValue="visao-geral" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 bg-white border-2">
             <TabsTrigger value="visao-geral" data-testid="tab-visao-geral">Visão Geral</TabsTrigger>
             <TabsTrigger value="modulos" data-testid="tab-modulos">Módulos</TabsTrigger>
-            <TabsTrigger 
-              value="avaliacao" 
+            <TabsTrigger
+              value="avaliacao"
               data-testid="tab-avaliacao"
               disabled={!todosModulosCompletados || cursoBloqueado || bloqueadoPorDisponibilidade}
               className={todosModulosCompletados ? "bg-green-50" : ""}
             >
               Avaliação
             </TabsTrigger>
-            <TabsTrigger 
-              value="certificado" 
+            <TabsTrigger
+              value="certificado"
               data-testid="tab-certificado"
-              disabled={!possuiCertificado}
-              className={possuiCertificado ? "bg-yellow-50" : ""}
+              disabled={!certificadoTabDisponivel}
+              className={certificadoTabDisponivel ? "bg-yellow-50" : ""}
             >
               Certificado
             </TabsTrigger>
@@ -393,7 +535,7 @@ export default function CursoDetalhes() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 leading-relaxed">{corrigirPTBR(curso.objetivo)}</p>
+                <p className="text-gray-700 leading-relaxed">{curso.objetivo}</p>
               </CardContent>
             </Card>
 
@@ -406,10 +548,10 @@ export default function CursoDetalhes() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  {curso.resultadosEsperados.map((resultado, index) => (
+                  {resultadosCurso.map((resultado, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{corrigirPTBR(resultado)}</span>
+                      <span className="text-gray-700">{resultado}</span>
                     </li>
                   ))}
                 </ul>
@@ -419,26 +561,30 @@ export default function CursoDetalhes() {
 
           {/* Módulos */}
           <TabsContent value="modulos" className="space-y-4">
-            {curso.modulos.map((modulo, index) => {
+            {modulosCurso.map((modulo, index) => {
               const moduloConcluido = modulosCompletados.includes(modulo.id);
               const expandido = moduloExpandido === modulo.id;
+              const duracaoModulo = (modulo as any)?.duração ?? (modulo as any)?.duracao ?? "";
+              const topicosModulo = Array.isArray((modulo as any)?.['tópicos'])
+                ? (modulo as any)['tópicos']
+                : Array.isArray((modulo as any)?.topicos)
+                  ? (modulo as any).topicos
+                  : [];
 
               return (
                 <Card
                   key={modulo.id}
-                  className={`border-2 transition-all ${
-                    moduloConcluido
-                      ? "border-green-200 bg-green-50/50"
-                      : "border-gray-100"
-                  }`}
+                  className={`border-2 transition-all ${moduloConcluido
+                    ? "border-green-200 bg-green-50/50"
+                    : "border-gray-100"
+                    }`}
                   data-testid={`card-modulo-${modulo.id}`}
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                          moduloConcluido ? "bg-green-600 text-white" : "bg-gray-200 text-gray-600"
-                        }`}>
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-full ${moduloConcluido ? "bg-green-600 text-white" : "bg-gray-200 text-gray-600"
+                          }`}>
                           {moduloConcluido ? (
                             <CheckCircle2 className="h-5 w-5" />
                           ) : (
@@ -447,7 +593,7 @@ export default function CursoDetalhes() {
                         </div>
                         <div className="flex-1">
                           <CardTitle className="text-lg mb-2 flex items-center gap-2">
-                            {corrigirPTBR(modulo.titulo)}
+                            {normalizarLinha((modulo as any)?.['título'] || (modulo as any)?.titulo || '')}
                             {moduloConcluido && (
                               <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
                                 Concluído
@@ -456,7 +602,7 @@ export default function CursoDetalhes() {
                           </CardTitle>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Clock className="h-4 w-4" />
-                            <span>{corrigirPTBR(modulo.duracao)}</span>
+                            <span>{duracaoModulo}</span>
                           </div>
                         </div>
                       </div>
@@ -472,10 +618,10 @@ export default function CursoDetalhes() {
                             Tópicos Abordados:
                           </h4>
                           <ul className="space-y-2">
-                            {modulo.topicos.map((item, idx) => (
+                            {topicosModulo.map((item, idx) => (
                               <li key={idx} className="flex items-start gap-2 text-sm text-blue-800">
                                 <CheckCircle2 className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                                <span>{corrigirPTBR(item)}</span>
+                                <span>{normalizarLinha(item)}</span>
                               </li>
                             ))}
                           </ul>
@@ -486,7 +632,7 @@ export default function CursoDetalhes() {
                           <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-lg">
                             📚 Material de Estudo Completo
                           </h4>
-                          <div 
+                          <div
                             className="prose prose-sm max-w-none"
                             style={{
                               whiteSpace: 'pre-wrap',
@@ -494,12 +640,12 @@ export default function CursoDetalhes() {
                               color: '#374151'
                             }}
                           >
-                            {corrigirPTBR(modulo.materialDidatico)}
+                            {normalizarLinha((modulo as any)?.['materialDidático'] || (modulo as any)?.materialDidatico || '')}
                           </div>
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="flex gap-2">
                       <Button
                         className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
@@ -509,7 +655,7 @@ export default function CursoDetalhes() {
                         <BookOpen className="h-4 w-4 mr-2" />
                         {expandido ? "Ocultar Conteúdo" : "Ver Conteúdo"}
                       </Button>
-                      
+
                       {!moduloConcluido && expandido && (
                         <Button
                           variant="outline"
@@ -540,7 +686,7 @@ export default function CursoDetalhes() {
 
           {/* Avaliação Final */}
           <TabsContent value="avaliacao">
-            <AvaliacaoFinal 
+            <AvaliacaoFinal
               curso={curso}
               progresso={progresso}
               avaliacaoRealizada={avaliacaoRealizada}
@@ -551,7 +697,7 @@ export default function CursoDetalhes() {
           <TabsContent value="certificado">
             {certificado ? (
               <CertificadoView certificado={certificado} curso={curso} />
-            ) : avaliacaoRealizada ? (
+            ) : certificadoTabDisponivel ? (
               <Card className="border-2 border-blue-200">
                 <CardContent className="p-12 text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>

@@ -4,8 +4,6 @@
 // Diretrizes da OIT e ISO 45003,
 // Escalas de estresse organizacional e resiliência (versões adaptadas)
 
-import { corrigirPTBR } from "../../utils/corrigirPTBR";
-
 export interface DimensaoEstresseOcupacional {
   id: string;
   nome: string;
@@ -35,29 +33,23 @@ export interface ResultadoEstresseOcupacional {
 }
 
 // Escala Likert de 5 pontos
-const escalaLikertRaw = [
+export const escalaLikert = [
   "Discordo totalmente",
   "Discordo", 
   "Neutro",
   "Concordo",
   "Concordo totalmente"
 ];
-export const escalaLikert = escalaLikertRaw.map(corrigirPTBR);
 
 // Classificação do Índice de Vulnerabilidade ao Estresse
-const classificacaoVulnerabilidadeRaw = {
+export const classificacaoVulnerabilidade = {
   baixa: { min: 1.0, max: 2.0, label: "Baixa vulnerabilidade" },
   media: { min: 2.1, max: 3.5, label: "Média vulnerabilidade" },
   alta: { min: 3.6, max: 5.0, label: "Alta vulnerabilidade" }
 };
-export const classificacaoVulnerabilidade = {
-  baixa: { ...classificacaoVulnerabilidadeRaw.baixa, label: corrigirPTBR(classificacaoVulnerabilidadeRaw.baixa.label) },
-  media: { ...classificacaoVulnerabilidadeRaw.media, label: corrigirPTBR(classificacaoVulnerabilidadeRaw.media.label) },
-  alta: { ...classificacaoVulnerabilidadeRaw.alta, label: corrigirPTBR(classificacaoVulnerabilidadeRaw.alta.label) }
-};
 
 // Dimensões e perguntas do teste
-const dimensoesEstresseOcupacionalRaw: DimensaoEstresseOcupacional[] = [
+export const dimensoesEstresseOcupacional: DimensaoEstresseOcupacional[] = [
   {
     id: "estresse",
     nome: "Estresse Ocupacional",
@@ -136,17 +128,6 @@ const dimensoesEstresseOcupacionalRaw: DimensaoEstresseOcupacional[] = [
     ]
   }
 ];
-
-function corrigirDimensaoEO(d: DimensaoEstresseOcupacional): DimensaoEstresseOcupacional {
-  return {
-    ...d,
-    nome: corrigirPTBR(d.nome),
-    descricao: corrigirPTBR(d.descricao),
-    perguntas: d.perguntas.map(p => ({ ...p, texto: corrigirPTBR(p.texto) }))
-  };
-}
-
-export const dimensoesEstresseOcupacional: DimensaoEstresseOcupacional[] = dimensoesEstresseOcupacionalRaw.map(corrigirDimensaoEO);
 
 // Função para calcular o resultado do teste
 export function calcularResultadoEstresseOcupacional(
@@ -321,7 +302,7 @@ export function obterTodasPerguntasEO(): PerguntaEstresseOcupacional[] {
 }
 
 // Informações do teste para exibição
-const infoTesteEstresseOcupacionalRaw = {
+export const infoTesteEstresseOcupacional = {
   id: "estresse-ocupacional",
   nome: "HumaniQ EO – Estresse Ocupacional, Burnout e Resiliência",
   descricao: "Avaliação científica que identifica o nível de estresse ocupacional, esgotamento emocional e capacidade de resiliência dos colaboradores, baseada em modelos validados internacionalmente.",
@@ -343,10 +324,10 @@ const infoTesteEstresseOcupacionalRaw = {
     "Fornecer recomendações personalizadas de autocuidado"
   ],
   instrucoes: [
-    "Responda com base em sua experiência atual no trabalho",
+    "Responda com base na sua experiência atual no trabalho",
     "Use a escala de 1 (Discordo totalmente) a 5 (Concordo totalmente)",
-    "Seja honesto quanto às suas percepções e sentimentos",
-    "Considere situações típicas de seu dia a dia profissional",
+    "Seja honesto sobre suas percepções e sentimentos",
+    "Considere situações típicas do seu dia a dia profissional",
     "Suas respostas são confidenciais e protegidas"
   ],
   beneficios: [
@@ -355,15 +336,4 @@ const infoTesteEstresseOcupacionalRaw = {
     "Redução de passivos e melhora da produtividade",
     "Base para ações corretivas e de promoção de saúde organizacional"
   ]
-};
-
-export const infoTesteEstresseOcupacional = {
-  ...infoTesteEstresseOcupacionalRaw,
-  nome: corrigirPTBR(infoTesteEstresseOcupacionalRaw.nome),
-  descricao: corrigirPTBR(infoTesteEstresseOcupacionalRaw.descricao),
-  categoria: corrigirPTBR(infoTesteEstresseOcupacionalRaw.categoria),
-  basesCientificas: infoTesteEstresseOcupacionalRaw.basesCientificas.map(corrigirPTBR),
-  objetivos: infoTesteEstresseOcupacionalRaw.objetivos.map(corrigirPTBR),
-  instrucoes: infoTesteEstresseOcupacionalRaw.instrucoes.map(corrigirPTBR),
-  beneficios: infoTesteEstresseOcupacionalRaw.beneficios.map(corrigirPTBR)
 };

@@ -90,20 +90,40 @@ export default function EmpresaColaboradores() {
       }
 
       const reais = filtrarReais(lista);
-      const normalizados: Colaborador[] = reais.map((c: any) => ({
-        id: c.id,
-        nome: typeof c.nome === 'string' && c.nome.length > 0 ? c.nome : (c.name || 'Sem nome'),
-        email: typeof c.email === 'string' && c.email.length > 0 ? c.email : 'sem-email@local',
-        cargo: (typeof c.cargo === 'string' && c.cargo.length > 0) ? c.cargo : undefined,
-        departamento: (typeof c.departamento === 'string' && c.departamento.length > 0) ? c.departamento : undefined,
-        avatar: c.avatar,
-        ativo: Boolean(c.ativo),
-        created_at: (typeof c.created_at !== 'undefined' && c.created_at !== null) ? c.created_at : (c.createdAt ?? c.created_at),
-        updated_at: (typeof c.updated_at !== 'undefined' && c.updated_at !== null) ? c.updated_at : (c.updatedAt ?? c.updated_at),
-        total_testes: (typeof c.total_testes === 'number') ? c.total_testes : (typeof c.totalTestes === 'number' ? c.totalTestes : 0),
-        ultimo_teste: c.ultimo_teste ?? c.ultimoTeste ?? undefined,
-        situacaoPsicossocial: c.situacaoPsicossocial,
-      }));
+      const normalizados: Colaborador[] = reais.map((c: any) => {
+        const cargoReal =
+          (typeof c.cargo === 'string' && c.cargo.trim()) ? c.cargo :
+          (typeof c.funcao === 'string' && c.funcao.trim()) ? c.funcao :
+          (typeof c.role === 'string' && c.role.trim()) ? c.role :
+          (typeof c.jobTitle === 'string' && c.jobTitle.trim()) ? c.jobTitle :
+          (typeof c.cargo_nome === 'string' && c.cargo_nome.trim()) ? c.cargo_nome :
+          (typeof c.perfil?.cargo === 'string' && c.perfil.cargo.trim()) ? c.perfil.cargo :
+          undefined;
+
+        const departamentoReal =
+          (typeof c.departamento === 'string' && c.departamento.trim()) ? c.departamento :
+          (typeof c.setor === 'string' && c.setor.trim()) ? c.setor :
+          (typeof c.department === 'string' && c.department.trim()) ? c.department :
+          (typeof c.departamento_nome === 'string' && c.departamento_nome.trim()) ? c.departamento_nome :
+          (typeof c.area === 'string' && c.area.trim()) ? c.area :
+          (typeof c.perfil?.departamento === 'string' && c.perfil.departamento.trim()) ? c.perfil.departamento :
+          undefined;
+
+        return {
+          id: c.id,
+          nome: typeof c.nome === 'string' && c.nome.length > 0 ? c.nome : (c.name || 'Sem nome'),
+          email: typeof c.email === 'string' && c.email.length > 0 ? c.email : 'sem-email@local',
+          cargo: cargoReal,
+          departamento: departamentoReal,
+          avatar: c.avatar,
+          ativo: Boolean(c.ativo ?? c.status === 'ativo'),
+          created_at: (typeof c.created_at !== 'undefined' && c.created_at !== null) ? c.created_at : (c.createdAt ?? c.created_at),
+          updated_at: (typeof c.updated_at !== 'undefined' && c.updated_at !== null) ? c.updated_at : (c.updatedAt ?? c.updated_at),
+          total_testes: (typeof c.total_testes === 'number') ? c.total_testes : (typeof c.totalTestes === 'number' ? c.totalTestes : 0),
+          ultimo_teste: c.ultimo_teste ?? c.ultimoTeste ?? undefined,
+          situacaoPsicossocial: c.situacaoPsicossocial,
+        };
+      });
       console.log('🔍 [FRONT] Colaboradores normalizados:', normalizados.map(c => ({ nome: c.nome, email: c.email, created_at: c.created_at })));
       setColaboradores(normalizados);
     } catch (error) {

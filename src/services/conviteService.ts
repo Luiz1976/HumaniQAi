@@ -296,27 +296,11 @@ class ConviteService {
   }
 
   // Configuração de persistência
-  private configuracao = (() => {
-    // Debug das variáveis de ambiente
-    console.log('🔍 [ConviteService] Variáveis de ambiente carregadas:');
-    console.log('🔍 [ConviteService] VITE_API_URL:', import.meta.env.VITE_API_URL);
-    console.log('🔍 [ConviteService] VITE_API_FALLBACK_URL:', import.meta.env.VITE_API_FALLBACK_URL);
-    console.log('🔍 [ConviteService] PROD:', import.meta.env.PROD);
-    
-    // Fallback hardcoded para produção
-    const PRODUCTION_API_URL = 'https://humaniqai-server.up.railway.app/api';
-    const rawPrimary = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PRODUCTION_API_URL : '');
-    const rawFallback = import.meta.env.VITE_API_FALLBACK_URL || '';
-    const primary = rawPrimary.replace(/\/+$/, '').replace(/\/api$/, '');
-    const fallback = rawFallback.replace(/\/+$/, '').replace(/\/api$/, '');
-    const tipo = primary || fallback ? 'api' : 'localStorage';
-    return {
-      tipo: tipo as 'memoria' | 'localStorage' | 'api',
-      apiUrl: primary,
-      apiKey: import.meta.env.VITE_API_KEY,
-      apiFallbackUrl: fallback,
-    };
-  })();
+  private configuracao = {
+    tipo: 'api' as 'memoria' | 'localStorage' | 'api',
+    apiUrl: import.meta.env.VITE_API_URL,
+    apiKey: import.meta.env.VITE_API_KEY
+  };
 
   // Funções de persistência
   private salvarDados(): void {

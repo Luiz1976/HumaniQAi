@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,8 @@ import { Lock, Unlock, Calendar, CheckCircle2, Clock, AlertCircle, BookOpen } fr
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { corrigirPTBR } from '@/utils/corrigirPTBR';
+import { getCursoBySlug } from '@/data/cursosData';
+import type { Curso } from '@/data/cursosData';
 
 interface CursoInfo {
   id: number;
@@ -19,6 +20,10 @@ interface CursoInfo {
   duracao: string;
   nivel: string;
   categoria: string;
+  subtitulo?: string;
+  icone?: string;
+  modulos?: unknown[];
+  cor?: string;
   disponibilidade: {
     id: string;
     disponivel: boolean;
@@ -50,11 +55,7 @@ export function GerenciamentoCursosColaborador({
   const [periodicidade, setPeriodicidade] = useState<number | null>(null);
   const [processando, setProcessando] = useState(false);
 
-  useEffect(() => {
-    carregarCursos();
-  }, [colaboradorId]);
-
-  const carregarCursos = async () => {
+  const carregarCursos = useCallback(async () => {
     try {
       setCarregando(true);
       const token = localStorage.getItem('authToken');
@@ -81,7 +82,13 @@ export function GerenciamentoCursosColaborador({
     } finally {
       setCarregando(false);
     }
-  };
+  }, [colaboradorId]);
+
+  useEffect(() => {
+    carregarCursos();
+  }, [carregarCursos]);
+
+  
 
   const liberarCurso = async (cursoSlug: string) => {
     try {
@@ -202,14 +209,14 @@ export function GerenciamentoCursosColaborador({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          Gerenciar Cursos - {corrigirPTBR(colaboradorNome)}
+          Gerenciar Cursos - {colaboradorNome}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Configure a disponibilidade e periodicidade dos cursos para este colaborador
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cursos.map((curso) => (
           <Card
             key={curso.slug}
@@ -217,38 +224,69 @@ export function GerenciamentoCursosColaborador({
               curso.disponibilidade?.disponivel === false
                 ? 'bg-gray-50 dark:bg-gray-800/50'
                 : 'bg-white dark:bg-gray-800'
-            } border border-gray-200 dark:border-gray-700`}
+            } border-2 border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group hover:border-blue-200`}
             data-testid={`card-curso-${curso.slug}`}
           >
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between gap-2">
-                <CardTitle className="text-base font-semibold flex-1 line-clamp-2">
-                  {corrigirPTBR(curso.titulo)}
-                </CardTitle>
-                {curso.foiConcluido && (
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 shrink-0">
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                    Concluído
-                  </Badge>
-                )}
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <Badge variant="secondary" className="text-xs">
-                  {corrigirPTBR(curso.categoria)}
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  {corrigirPTBR(curso.nivel)}
-                </Badge>
+            <CardHeader className="pb-4">
+              <div className="flex items-start gap-4">
+                <div className="text-5xl transform group-hover:scale-110 transition-transform duration-300">
+                  {(() => {
+                    const info = getCursoBySlug(curso.slug) as Curso | undefined;
+                    const iconStr = curso.icone ?? info?.['ícone'] ?? '';
+                    return iconStr || <BookOpen className="h-12 w-12 text-blue-600" />;
+                  })()}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <CardTitle className="text-xl md:text-2xl font-bold leading-snug">
+                      {(() => {
+                        const info = getCursoBySlug(curso.slug) as Curso | undefined;
+                        return curso.titulo || info?.['título'] || '';
+                      })()}
+                    </CardTitle>
+                    {curso.foiConcluido && (
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 shrink-0">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Concluído
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="secondary" className="text-xs">
+                      {(() => {
+                        const info = getCursoBySlug(curso.slug) as Curso | undefined;
+                        return curso.categoria || info?.['categoria'] || '';
+                      })()}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {(() => {
+                        const info = getCursoBySlug(curso.slug) as Curso | undefined;
+                        return curso.nivel || info?.['nível'] || '';
+                      })()}
+                    </Badge>
+                  </div>
+                </div>
               </div>
             </CardHeader>
 
             <CardContent className="space-y-4">
               {/* Informações do Curso */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs text-gray-600">
-                  <BookOpen className="h-3 w-3" />
-                  <span>Duração: {corrigirPTBR(curso.duracao)}</span>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    <span>{(() => { const info = getCursoBySlug(curso.slug) as Curso | undefined; return curso.duracao || info?.['duração'] || ''; })()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" />
+                    <span>{(() => { const info = getCursoBySlug(curso.slug) as Curso | undefined; const m = Array.isArray(curso.modulos) ? curso.modulos.length : Array.isArray(info?.['módulos']) ? (info as Curso)['módulos'].length : 0; return `${m} módulos`; })()}</span>
+                  </div>
                 </div>
+                {(() => { const info = getCursoBySlug(curso.slug) as Curso | undefined; const subt = curso.subtitulo || info?.['subtítulo'] || ''; return subt; })() && (
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    {(() => { const info = getCursoBySlug(curso.slug) as Curso | undefined; return curso.subtitulo || info?.['subtítulo'] || ''; })()}
+                  </p>
+                )}
 
                 {/* Status do Curso */}
                 <div className="flex items-center gap-2 text-sm">
@@ -355,7 +393,7 @@ export function GerenciamentoCursosColaborador({
           <DialogHeader>
             <DialogTitle>Configurar Periodicidade</DialogTitle>
             <DialogDescription>
-              Defina o intervalo de tempo (em dias) para que o curso "{cursoAtual ? corrigirPTBR(cursoAtual.titulo) : ''}" fique
+              Defina o intervalo de tempo (em dias) para que o curso "{cursoAtual?.titulo}" fique
               disponível novamente após a conclusão.
             </DialogDescription>
           </DialogHeader>

@@ -48,61 +48,8 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
       .select()
       .from(testes)
       .where(eq(testes.ativo, isSqlite ? 1 : true));
-    
-    console.log('📊 [DISPONIBILIDADE]', requestId, 'Total de testes ativos encontrados:', todosTestes.length);
 
-    const [existeDisponibilidade] = await db
-      .select()
-      .from(testeDisponibilidade)
-      .where(eq(testeDisponibilidade.colaboradorId, colaboradorId))
-      .limit(1);
-    const [existeResultado] = await db
-      .select()
-      .from(resultados)
-      .where(or(eq(resultados.colaboradorId, colaboradorId), eq(resultados.usuarioId, colaboradorId)))
-      .limit(1);
-    const primeiroAcesso = !existeDisponibilidade && !existeResultado;
-    if (primeiroAcesso && todosTestes.length > 0) {
-      const agora = new Date();
-      if (isSqlite) {
-        const stmt = sqliteDb.prepare(`
-          INSERT INTO teste_disponibilidade (
-            id, colaborador_id, teste_id, empresa_id, disponivel,
-            ultima_liberacao, proxima_disponibilidade, historico_liberacoes,
-            created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-        `);
-        for (const t of todosTestes) {
-          const id = (await import('crypto')).randomUUID();
-          stmt.run(
-            id,
-            colaboradorId,
-            t.id,
-            empresaId,
-            1,
-            agora.toISOString(),
-            null,
-            JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_primeiro_acesso' }])
-          );
-        }
-      } else {
-        for (const t of todosTestes) {
-          await db
-            .insert(testeDisponibilidade)
-            .values({
-              colaboradorId,
-              testeId: t.id,
-              empresaId,
-              disponivel: true,
-              ultimaLiberacao: agora,
-              proximaDisponibilidade: null,
-              historicoLiberacoes: [{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_primeiro_acesso' }],
-            })
-            .onConflictDoNothing();
-        }
-      }
-      console.log('✅ [DISPONIBILIDADE]', requestId, 'Primeiro acesso detectado, testes liberados automaticamente');
-    }
+    console.log('📊 [DISPONIBILIDADE]', requestId, 'Total de testes ativos encontrados:', todosTestes.length);
 
     // Buscar disponibilidade para cada teste
     const testesComDisponibilidade = await Promise.all(
@@ -153,17 +100,17 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
         if (disponibilidade) {
           // Se existe configuração, usar ela
           disponivel = disponibilidade.disponivel;
-          
+
           if (!disponivel && disponibilidade.periodicidadeDias && disponibilidade.proximaDisponibilidade) {
             const agora = new Date();
             const proxima = new Date(disponibilidade.proximaDisponibilidade);
-            
+
             if (agora >= proxima) {
               // Período expirou, liberar automaticamente
               disponivel = true;
               await db
                 .update(testeDisponibilidade)
-                .set({ 
+                .set({
                   disponivel: true,
                   updatedAt: new Date()
                 })
@@ -173,13 +120,17 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
               motivo = 'aguardando_periodicidade';
             }
           } else if (!disponivel) {
-            motivo = 'bloqueado_empresa';
+            if (resultado) {
+              motivo = 'teste_concluido';
+            } else {
+              motivo = 'bloqueado_empresa';
+            }
           }
         } else if (resultado) {
           // Se não tem configuração mas já completou, bloquear por padrão
           disponivel = false;
           motivo = 'teste_concluido';
-          
+
           // Criar registro de disponibilidade
           try {
             await db
@@ -192,7 +143,7 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
                 ultimaLiberacao: null,
                 proximaDisponibilidade: null,
               })
-              // onConflictDoNothing removido - erro será tratado no catch
+            // onConflictDoNothing removido - erro será tratado no catch
           } catch (e: unknown) {
             const msg = typeof e === 'object' && e && 'message' in e ? String((e as { message?: unknown }).message) : '';
             if (!/no such table|does not exist/i.test(msg)) {
@@ -200,8 +151,9 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
             }
           }
         } else {
-          disponivel = false;
-          motivo = 'bloqueado_empresa';
+          // Se não tem configuração nem resultado, liberar por padrão (novo colaborador)
+          disponivel = true;
+          motivo = null;
         }
 
         const testeInfo = {
@@ -243,9 +195,9 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
       bloqueados: testesComDisponibilidade.filter(t => !t.disponivel).length
     });
 
-    res.json({ 
+    res.json({
       testes: testesComDisponibilidade,
-      total: testesComDisponibilidade.length 
+      total: testesComDisponibilidade.length
     });
   } catch (error: unknown) {
     const requestId = Math.random().toString(36).slice(2);
@@ -338,9 +290,9 @@ router.get('/empresa/colaborador/:colaboradorId/testes', authenticateToken, requ
       })
     );
 
-    res.json({ 
+    res.json({
       testes: testesComInfo,
-      total: testesComInfo.length 
+      total: testesComInfo.length
     });
   } catch (error) {
     console.error('Erro ao buscar informações de testes:', error);
@@ -351,7 +303,7 @@ router.get('/empresa/colaborador/:colaboradorId/testes', authenticateToken, requ
 /**
  * Empresa: Liberar teste novamente para um colaborador
  */
-router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authenticateToken, requireRole('empresa','admin'), async (req: AuthRequest, res) => {
+router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authenticateToken, requireRole('empresa', 'admin'), async (req: AuthRequest, res) => {
   try {
     const { colaboradorId, testeId } = req.params;
     const empresaId = req.user!.empresaId!;
@@ -408,74 +360,56 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
       .limit(1);
 
     if (disponibilidadeExistente) {
+      // Atualizar registro existente
       const historicoAtual = (disponibilidadeExistente.historicoLiberacoes as Array<{ data: string; liberadoPor: string; motivo: string }>) || [];
       const novoHistorico = [
         ...historicoAtual,
-        { data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_manual' },
+        {
+          data: agora.toISOString(),
+          liberadoPor: req.user!.userId,
+          motivo: 'liberacao_manual',
+        },
       ];
 
-      const proxDate = disponibilidadeExistente.periodicidadeDias
-        ? new Date(agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000)
+      // Usar caminho SQLite raw para garantir compatibilidade (ambiente dev)
+      console.log('⚙️ [LIBERAR/EMPRESA] Usando caminho SQLite (UPDATE)');
+      const prox = disponibilidadeExistente.periodicidadeDias
+        ? new Date(agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000).toISOString()
         : null;
-
-      if (isSqlite) {
-        const stmt = sqliteDb.prepare(
-          `UPDATE teste_disponibilidade SET disponivel = ?, ultima_liberacao = ?, proxima_disponibilidade = ?, historico_liberacoes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`
-        );
-        stmt.run(1, agora.toISOString(), proxDate ? proxDate.toISOString() : null, JSON.stringify(novoHistorico), disponibilidadeExistente.id as unknown as string);
-        const atualizado = sqliteDb.prepare('SELECT * FROM teste_disponibilidade WHERE id = ?').get(disponibilidadeExistente.id as unknown as string);
-        logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: atualizado.id, ts: new Date().toISOString() });
-        return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: atualizado });
-      } else {
-        const [atualizado] = await db
-          .update(testeDisponibilidade)
-          .set({
-            disponivel: true,
-            ultimaLiberacao: agora,
-            proximaDisponibilidade: proxDate,
-            historicoLiberacoes: novoHistorico,
-            updatedAt: agora,
-          })
-          .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id))
-          .returning();
-        logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: atualizado.id, ts: new Date().toISOString() });
-        return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: atualizado });
-      }
+      const stmt = sqliteDb.prepare(`
+        UPDATE teste_disponibilidade
+        SET disponivel = ?, ultima_liberacao = ?, proxima_disponibilidade = ?, historico_liberacoes = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `);
+      stmt.run(1, agora.toISOString(), prox, JSON.stringify(novoHistorico), disponibilidadeExistente.id as unknown as string);
+      const atualizado = sqliteDb.prepare('SELECT * FROM teste_disponibilidade WHERE id = ?').get(disponibilidadeExistente.id as unknown as string);
+      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: atualizado.id, ts: new Date().toISOString() });
+      return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: atualizado });
     } else {
-      if (isSqlite) {
-        const id = (await import('crypto')).randomUUID();
-        const stmt2 = sqliteDb.prepare(
-          `INSERT INTO teste_disponibilidade (id, colaborador_id, teste_id, empresa_id, disponivel, ultima_liberacao, proxima_disponibilidade, historico_liberacoes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
-        );
-        stmt2.run(
-          id,
-          colaboradorId,
-          teste.id,
-          empresaId,
-          1,
-          agora.toISOString(),
-          null,
-          JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_manual' }])
-        );
-        const novo = sqliteDb.prepare('SELECT * FROM teste_disponibilidade WHERE id = ?').get(id);
-        logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: novo.id, ts: new Date().toISOString() });
-        return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: novo });
-      } else {
-        const [novo] = await db
-          .insert(testeDisponibilidade)
-          .values({
-            colaboradorId,
-            testeId: teste.id,
-            empresaId,
-            disponivel: true,
-            ultimaLiberacao: agora,
-            proximaDisponibilidade: null,
-            historicoLiberacoes: [{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_manual' }],
-          })
-          .returning();
-        logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: novo.id, ts: new Date().toISOString() });
-        return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: novo });
-      }
+      // Criar novo registro
+      // Usar caminho SQLite raw para garantir compatibilidade (ambiente dev)
+      console.log('⚙️ [LIBERAR/EMPRESA] Usando caminho SQLite (INSERT)');
+      const id = (await import('crypto')).randomUUID();
+      const stmt2 = sqliteDb.prepare(`
+        INSERT INTO teste_disponibilidade (
+          id, colaborador_id, teste_id, empresa_id, disponivel,
+          ultima_liberacao, proxima_disponibilidade, historico_liberacoes,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      `);
+      stmt2.run(
+        id,
+        colaboradorId,
+        teste.id,
+        empresaId,
+        1,
+        agora.toISOString(),
+        null,
+        JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_manual' }])
+      );
+      const novo = sqliteDb.prepare('SELECT * FROM teste_disponibilidade WHERE id = ?').get(id);
+      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: novo.id, ts: new Date().toISOString() });
+      return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: novo });
     }
   } catch (error) {
     console.error('Erro ao liberar teste:', error);
@@ -483,7 +417,7 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
   }
 });
 
-router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/bloquear', authenticateToken, requireRole('empresa','admin'), async (req: AuthRequest, res) => {
+router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/bloquear', authenticateToken, requireRole('empresa', 'admin'), async (req: AuthRequest, res) => {
   try {
     const { colaboradorId, testeId } = req.params;
     const empresaId = req.user!.empresaId!;
@@ -600,7 +534,7 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/bloquear', authe
   }
 });
 
-router.post('/empresa/colaborador/:colaboradorId/testes/bloquear', authenticateToken, requireRole('empresa','admin'), async (req: AuthRequest, res) => {
+router.post('/empresa/colaborador/:colaboradorId/testes/bloquear', authenticateToken, requireRole('empresa', 'admin'), async (req: AuthRequest, res) => {
   try {
     const { colaboradorId } = req.params;
     const empresaId = req.user!.empresaId!;
@@ -700,7 +634,7 @@ router.post('/empresa/colaborador/:colaboradorId/testes/bloquear', authenticateT
 /**
  * Empresa: Configurar periodicidade de um teste para um colaborador
  */
-router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade', authenticateToken, requireRole('empresa','admin'), async (req: AuthRequest, res) => {
+router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade', authenticateToken, requireRole('empresa', 'admin'), async (req: AuthRequest, res) => {
   try {
     const { colaboradorId, testeId } = req.params;
     const empresaId = req.user!.empresaId!;
@@ -720,9 +654,9 @@ router.patch('/empresa/colaborador/:colaboradorId/teste/:testeId/periodicidade',
     }).safeParse(req.body);
 
     if (!validationResult.success) {
-      return res.status(400).json({ 
-        error: 'Dados inválidos', 
-        details: validationResult.error.issues 
+      return res.status(400).json({
+        error: 'Dados inválidos',
+        details: validationResult.error.issues
       });
     }
 
@@ -846,9 +780,9 @@ router.post('/marcar-concluido', authenticateToken, async (req: AuthRequest, res
     }).safeParse(req.body);
 
     if (!validationResult.success) {
-      return res.status(400).json({ 
-        error: 'Dados inválidos', 
-        details: validationResult.error.issues 
+      return res.status(400).json({
+        error: 'Dados inválidos',
+        details: validationResult.error.issues
       });
     }
 
@@ -909,9 +843,9 @@ router.post('/marcar-concluido', authenticateToken, async (req: AuthRequest, res
       logger.info('BLOQUEIO_AUTOMATICO_TESTE', { empresaId, colaboradorId, testeId, disponibilidadeCriada: true, byUser: req.user!.userId, ts: agora.toISOString() });
     }
 
-    res.json({ 
-      success: true, 
-      message: 'Teste marcado como concluído' 
+    res.json({
+      success: true,
+      message: 'Teste marcado como concluído'
     });
   } catch (error) {
     console.error('Erro ao marcar teste como concluído:', error);

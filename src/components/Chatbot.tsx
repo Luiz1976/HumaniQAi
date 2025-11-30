@@ -19,9 +19,17 @@ interface DateGroup {
 
 // Função util para obter base da API de forma segura
 const getApiBase = () => {
-  const raw = import.meta.env.VITE_API_URL || '';
-  const trimmed = raw.replace(/\/+$/, '');
-  return trimmed.replace(/\/api$/, '');
+  const envRaw = import.meta.env.VITE_API_URL || '';
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const raw = envRaw || origin;
+  const trimmed = raw.replace(/\/+$/, '').replace(/\/api$/, '');
+  try {
+    const host = new URL(trimmed).hostname;
+    if (host === 'www.humaniqai.com.br') {
+      return 'https://api.humaniqai.com.br';
+    }
+  } catch (_) {}
+  return trimmed;
 };
 
 // Funções auxiliares para formatação e agrupamento
@@ -164,7 +172,9 @@ export function Chatbot() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chatbot/message', {
+      const apiBase = getApiBase();
+      const url = `${apiBase}/api/chatbot/message`;
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -176,6 +186,8 @@ export function Chatbot() {
             content: msg.content,
           })),
         }),
+        credentials: 'include',
+        mode: 'cors',
       });
 
       const data = await response.json();
@@ -192,7 +204,7 @@ export function Chatbot() {
       
       const errorMessage: Message = {
         role: 'assistant',
-        content: 'Desculpe. Ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.',
+        content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.',
         timestamp: new Date(),
       };
       

@@ -1,8 +1,7 @@
 {
-  "type": "module",
   "scripts": {
     "start": "npm run server & npm run dev:strict",
-    "start:prod": "cross-env NODE_ENV=production tsx server/index.ts",
+    "start:prod": "NODE_ENV=production tsx server/index.ts",
     "dev": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1",
     "dev:strict": "vite --port 5000 --host 0.0.0.0",
     "dev:ps": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1",
@@ -23,8 +22,7 @@
     "port:check": "powershell -ExecutionPolicy Bypass -File scripts/manage-port-5000.ps1 -Action check",
     "port:prepare": "powershell -ExecutionPolicy Bypass -File scripts/manage-port-5000.ps1 -Action prepare",
     "port:force-stop": "powershell -ExecutionPolicy Bypass -File scripts/manage-port-5000.ps1 -Action force-stop",
-    "frontend:force": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1 -Force",
-    "seed:tests:pg": "node scripts/seed-postgres-tests.mjs"
+    "frontend:force": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1 -Force"
   },
   "engines": {
     "node": ">=18.18.0 <23.0.0"
@@ -78,7 +76,6 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
     "date-fns": "^3.6.0",
     "dotenv": "^17.2.3",
     "drizzle-kit": "^0.31.5",

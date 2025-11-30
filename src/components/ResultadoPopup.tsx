@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { apiService } from '@/services/apiService';
 import { ResultadoVisualizacao } from '@/components/ResultadoVisualizacao';
-import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface ResultadoTeste {
   id: string;
@@ -30,15 +29,10 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
   useEffect(() => {
     if (isOpen && resultado && resultado.id) {
       console.log('🔍 [ResultadoPopup] useEffect - resultado válido:', resultado);
-      console.log('🔍 [ResultadoPopup] ID do resultado:', resultado.id);
-      console.log('🔍 [ResultadoPopup] Nome do teste:', resultado.nomeTest);
       carregarDadosResultado();
     } else if (isOpen && !resultado) {
       console.warn('⚠️ [ResultadoPopup] useEffect - resultado é null/undefined');
       setErro('Resultado não encontrado');
-    } else if (isOpen && resultado && !resultado.id) {
-      console.warn('⚠️ [ResultadoPopup] useEffect - resultado sem ID:', resultado);
-      setErro('ID do resultado não encontrado');
     }
   }, [isOpen, resultado]);
 
@@ -56,15 +50,12 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
       console.log('🔍 [ResultadoPopup] Carregando dados para resultado:', resultado.id);
       console.log('🔍 [ResultadoPopup] Tipo de tabela:', resultado.tipoTabela);
       console.log('🔍 [ResultadoPopup] Nome do teste:', resultado.nomeTest || 'Nome não disponível');
-      console.log('🔍 [ResultadoPopup] Usuário logado:', localStorage.getItem('userEmail') || 'Não identificado');
 
       const { resultado: dadosCompletos } = await apiService.obterResultadoPorId(resultado.id);
       console.log('📊 [ResultadoPopup] Dados recebidos via API:', !!dadosCompletos);
-      console.log('📊 [ResultadoPopup] Dados completos:', dadosCompletos);
 
       if (!dadosCompletos) {
-        console.warn('⚠️ [ResultadoPopup] API retornou dados vazios para resultado:', resultado.id);
-        throw new Error('Resultado não encontrado. O teste pode ter sido removido ou o ID está incorreto.');
+        throw new Error('Resultado não encontrado');
       }
 
       // Verificar se é teste Karasek-Siegrist e tem análise completa
@@ -73,21 +64,8 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
                         resultado.nomeTest?.toLowerCase().includes('karasek') ||
                         resultado.nomeTest?.toLowerCase().includes('siegrist');
                         
-      const isEstresseOcupacional = tipoTeste === 'estresse-ocupacional' || 
-                                   resultado.nomeTest?.toLowerCase().includes('estresse') ||
-                                   resultado.nomeTest?.toLowerCase().includes('burnout');
-      
-      console.log('🔍 [ResultadoPopup] Tipo de teste detectado:', tipoTeste);
-      console.log('🔍 [ResultadoPopup] Nome do teste:', resultado.nomeTest);
-      console.log('🔍 [ResultadoPopup] É Karasek?', isKarasek);
-      console.log('🔍 [ResultadoPopup] É Estresse Ocupacional?', isEstresseOcupacional);
-      console.log('🔍 [ResultadoPopup] Tem metadados.analise_completa?', !!dadosCompletos.metadados?.analise_completa);
-                        
       if (isKarasek && dadosCompletos.metadados?.analise_completa) {
         console.log('✅ [ResultadoPopup] Teste Karasek-Siegrist com análise completa encontrada');
-        setDadosResultado(dadosCompletos.metadados.analise_completa);
-      } else if (isEstresseOcupacional && dadosCompletos.metadados?.analise_completa) {
-        console.log('✅ [ResultadoPopup] Teste Estresse Ocupacional com análise completa encontrada');
         setDadosResultado(dadosCompletos.metadados.analise_completa);
       } else {
         console.log('⚠️ [ResultadoPopup] Teste genérico ou sem análise completa');
@@ -124,8 +102,8 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
 
   // Obter nome do teste de várias fontes
   const obterNomeTeste = (): string => {
-    if (resultado?.nomeTest) return corrigirPTBR(resultado.nomeTest);
-    if (dadosResultado?.metadados?.teste_nome) return corrigirPTBR(dadosResultado.metadados.teste_nome);
+    if (resultado?.nomeTest) return resultado.nomeTest;
+    if (dadosResultado?.metadados?.teste_nome) return dadosResultado.metadados.teste_nome;
     if (dadosResultado?.metadados?.tipo_teste) {
       const tipo = dadosResultado.metadados.tipo_teste;
       if (tipo === 'clima-organizacional') return 'Pesquisa de Clima Organizacional';

@@ -81,9 +81,9 @@ function getWellbeingMessage(score: number): { title: string; message: string; c
   }
 }
 
-function CircularProgress({ value, size = 160, strokeWidth = 12, label, sublabel }: { 
-  value: number; 
-  size?: number; 
+function CircularProgress({ value, size = 160, strokeWidth = 12, label, sublabel }: {
+  value: number;
+  size?: number;
   strokeWidth?: number;
   label: string;
   sublabel: string;
@@ -91,7 +91,7 @@ function CircularProgress({ value, size = 160, strokeWidth = 12, label, sublabel
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (value / 100) * circumference;
-  
+
   const getColor = (val: number) => {
     if (val >= 75) return "#10b981";
     if (val >= 60) return "#3b82f6";
@@ -177,9 +177,18 @@ export default function EmpresaEstadoPsicossocial() {
       try {
         // Validação prévia do token para evitar 403 e limpar sessão inválida
         try {
-          const checkResp = await fetch('/api/auth/check', {
+          const apiBase = (() => {
+            const envRaw = import.meta.env.VITE_API_URL || '';
+            const origin = typeof window !== 'undefined' ? window.location.origin : '';
+            const raw = envRaw || origin;
+            const trimmed = raw.replace(/\/+$/, '').replace(/\/api$/, '');
+            return /www\.humaniqai\.com\.br$/.test(trimmed) ? 'https://api.humaniqai.com.br' : trimmed;
+          })();
+          const checkResp = await fetch(`${apiBase}/api/auth/check`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
+            credentials: 'include',
+            mode: 'cors',
           });
           if (!checkResp.ok) {
             console.warn('⚠️ [EmpresaEstadoPsicossocial] Token inválido/expirado. Limpando sessão...');
@@ -191,11 +200,20 @@ export default function EmpresaEstadoPsicossocial() {
           throw checkErr instanceof Error ? checkErr : new Error('Falha ao validar token');
         }
 
-        const response = await fetch('/api/empresas/estado-psicossocial', {
+        const apiBase2 = (() => {
+          const envRaw = import.meta.env.VITE_API_URL || '';
+          const origin = typeof window !== 'undefined' ? window.location.origin : '';
+          const raw = envRaw || origin;
+          const trimmed = raw.replace(/\/+$/, '').replace(/\/api$/, '');
+          return /www\.humaniqai\.com\.br$/.test(trimmed) ? 'https://api.humaniqai.com.br' : trimmed;
+        })();
+        const response = await fetch(`${apiBase2}/api/empresas/estado-psicossocial`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
+          mode: 'cors',
         });
 
         if (!response.ok) {
@@ -217,33 +235,7 @@ export default function EmpresaEstadoPsicossocial() {
     carregarAnalise();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-        {/* Animated background */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-600/20 via-transparent to-transparent"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent"></div>
-        
-        <div className="relative max-w-7xl mx-auto p-6 space-y-8">
-          <div className="text-center space-y-4 py-12">
-            <div className="inline-block p-6 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl">
-              Ⓛh-16 w-16 text-white animate-pulseⓁ
-            </div>
-            <h2 className="text-3xl font-bold text-white animate-pulse">
-              Analisando o Pulso da sua Organização...
-            </h2>
-            <p className="text-white/70">Preparando insights que transformam</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-40 bg-white/10 backdrop-blur-xl rounded-2xl" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Loading state removed for non-blocking rendering
 
   if (error) {
     return (
@@ -263,7 +255,7 @@ export default function EmpresaEstadoPsicossocial() {
     );
   }
 
-  if (!analise) {
+  if (!analise && !isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 p-6 flex items-center justify-center">
         <div className="max-w-2xl mx-auto">
@@ -288,7 +280,7 @@ export default function EmpresaEstadoPsicossocial() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-600/20 via-transparent to-transparent"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-pink-600/10 via-transparent to-transparent animate-pulse"></div>
-      
+
       {/* Floating particles effect */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
@@ -309,11 +301,11 @@ export default function EmpresaEstadoPsicossocial() {
         {/* HERO SECTION - IMPACTO EMOCIONAL IMEDIATO */}
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-3xl -z-10"></div>
-          
+
           <Card className="border-0 bg-white/10 backdrop-blur-2xl shadow-2xl rounded-3xl overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/30 to-cyan-500/30 rounded-full blur-3xl -z-10 -translate-x-1/2 translate-y-1/2"></div>
-            
+
             <CardContent className="p-8 md:p-12">
               <div className="flex items-start justify-between gap-8 flex-wrap">
                 <div className="flex-1 min-w-[300px] space-y-6">
@@ -343,12 +335,21 @@ export default function EmpresaEstadoPsicossocial() {
 
                   {/* Emotional Connection Message */}
                   <div className="space-y-3">
-                    <h2 className={`text-3xl font-black bg-gradient-to-r ${wellbeingInfo.color} bg-clip-text text-transparent`}>
-                      {wellbeingInfo.title}
-                    </h2>
-                    <p className="text-white/90 text-lg leading-relaxed">
-                      {wellbeingInfo.message}
-                    </p>
+                    {isLoading ? (
+                      <>
+                        <Skeleton className="h-10 w-3/4 bg-white/10" />
+                        <Skeleton className="h-20 w-full bg-white/10" />
+                      </>
+                    ) : (
+                      <>
+                        <h2 className={`text-3xl font-black bg-gradient-to-r ${wellbeingInfo.color} bg-clip-text text-transparent`}>
+                          {wellbeingInfo.title}
+                        </h2>
+                        <p className="text-white/90 text-lg leading-relaxed">
+                          {wellbeingInfo.message}
+                        </p>
+                      </>
+                    )}
                   </div>
 
                   {/* Trust Indicators */}
@@ -370,11 +371,15 @@ export default function EmpresaEstadoPsicossocial() {
 
                 {/* Risk Gauge - Energy Efficiency Style */}
                 <div className="flex items-center justify-center">
-                  <RiskGauge 
-                    value={analise?.indiceGeralBemEstar || 0}
-                    totalTests={analise?.totalTestesRealizados || 0}
-                    size="medium"
-                  />
+                  {isLoading ? (
+                    <Skeleton className="h-48 w-48 rounded-full bg-white/10" />
+                  ) : (
+                    <RiskGauge
+                      value={analise?.indiceGeralBemEstar || 0}
+                      totalTests={analise?.totalTestesRealizados || 0}
+                      size="medium"
+                    />
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -383,105 +388,125 @@ export default function EmpresaEstadoPsicossocial() {
 
         {/* INDICADORES VITAIS - Design Premium com Glassmorphism */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Colaboradores */}
-          <Card className="group border-0 bg-white/10 backdrop-blur-2xl hover:bg-white/15 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-blue-500/20 hover:scale-105" data-testid="card-colaboradores">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <CardContent className="p-6 relative">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-blue-500/20 rounded-xl backdrop-blur-xl border border-blue-500/30">
-                  <Users className="h-6 w-6 text-blue-300" />
-                </div>
-                <TrendingUp className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div className="space-y-2">
-                <div className="text-sm font-bold text-blue-300 uppercase tracking-wider">
-                  Colaboradores
-                </div>
-                <AnimatedCounter value={analise?.totalColaboradores || 0} />
-                <div className="text-sm text-white/60">
-                  Fazem parte desta jornada
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {isLoading ? (
+            [1, 2, 3, 4].map((i) => (
+              <Card key={i} className="border-0 bg-slate-800/40 backdrop-blur-2xl rounded-2xl overflow-hidden shadow-2xl">
+                <CardContent className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <Skeleton className="h-12 w-12 rounded-xl bg-white/10" />
+                    <Skeleton className="h-5 w-5 rounded-full bg-white/10" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24 bg-white/10" />
+                    <Skeleton className="h-10 w-16 bg-white/10" />
+                    <Skeleton className="h-4 w-32 bg-white/10" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <>
+              {/* Colaboradores */}
+              <Card className="group border-0 bg-slate-800/40 backdrop-blur-2xl hover:bg-slate-800/60 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-blue-500/20 hover:scale-105" data-testid="card-colaboradores">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <CardContent className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 bg-blue-500/20 rounded-xl backdrop-blur-xl border border-blue-500/30">
+                      <Users className="h-6 w-6 text-blue-300" />
+                    </div>
+                    <TrendingUp className="h-5 w-5 text-emerald-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-sm font-bold text-blue-300 uppercase tracking-wider">
+                      Colaboradores
+                    </div>
+                    <AnimatedCounter value={analise?.totalColaboradores || 0} />
+                    <div className="text-sm text-white/60">
+                      Fazem parte desta jornada
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Cobertura */}
-          <Card className="group border-0 bg-white/10 backdrop-blur-2xl hover:bg-white/15 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-emerald-500/20 hover:scale-105" data-testid="card-cobertura">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <CardContent className="p-6 relative">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-emerald-500/20 rounded-xl backdrop-blur-xl border border-emerald-500/30">
-                  <Eye className="h-6 w-6 text-emerald-300" />
-                </div>
-                <Activity className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div className="space-y-2">
-                <div className="text-sm font-bold text-emerald-300 uppercase tracking-wider">
-                  Cobertura
-                </div>
-                <AnimatedCounter value={analise?.cobertura || 0} suffix="%" />
-                <Progress value={analise?.cobertura || 0} className="h-2 bg-white/10" />
-                <div className="text-sm text-white/60">
-                  Participação ativa
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              {/* Cobertura */}
+              <Card className="group border-0 bg-slate-800/40 backdrop-blur-2xl hover:bg-slate-800/60 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-emerald-500/20 hover:scale-105" data-testid="card-cobertura">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <CardContent className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 bg-emerald-500/20 rounded-xl backdrop-blur-xl border border-emerald-500/30">
+                      <Eye className="h-6 w-6 text-emerald-300" />
+                    </div>
+                    <Activity className="h-5 w-5 text-emerald-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-sm font-bold text-emerald-300 uppercase tracking-wider">
+                      Cobertura
+                    </div>
+                    <AnimatedCounter value={analise?.cobertura || 0} suffix="%" />
+                    <Progress value={analise?.cobertura || 0} className="h-2 bg-white/10" />
+                    <div className="text-sm text-white/60">
+                      Participação ativa
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Avaliações */}
-          <Card className="group border-0 bg-white/10 backdrop-blur-2xl hover:bg-white/15 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 hover:scale-105" data-testid="card-avaliacoes">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <CardContent className="p-6 relative">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-purple-500/20 rounded-xl backdrop-blur-xl border border-purple-500/30">
-                  <Star className="h-6 w-6 text-purple-300" />
-                </div>
-                <Sparkles className="h-5 w-5 text-purple-400 animate-pulse" />
-              </div>
-              <div className="space-y-2">
-                <div className="text-sm font-bold text-purple-300 uppercase tracking-wider">
-                  Avaliações
-                </div>
-                <AnimatedCounter value={analise?.totalTestesRealizados || 0} />
-                <div className="text-sm text-white/60">
-                  Insights coletados
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              {/* Avaliações */}
+              <Card className="group border-0 bg-slate-800/40 backdrop-blur-2xl hover:bg-slate-800/60 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 hover:scale-105" data-testid="card-avaliacoes">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <CardContent className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 bg-purple-500/20 rounded-xl backdrop-blur-xl border border-purple-500/30">
+                      <Star className="h-6 w-6 text-purple-300" />
+                    </div>
+                    <Sparkles className="h-5 w-5 text-purple-400 animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-sm font-bold text-purple-300 uppercase tracking-wider">
+                      Avaliações
+                    </div>
+                    <AnimatedCounter value={analise?.totalTestesRealizados || 0} />
+                    <div className="text-sm text-white/60">
+                      Insights coletados
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Alertas */}
-          <Card className="group border-0 bg-white/10 backdrop-blur-2xl hover:bg-white/15 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-orange-500/20 hover:scale-105" data-testid="card-alertas">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <CardContent className="p-6 relative">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-orange-500/20 rounded-xl backdrop-blur-xl border border-orange-500/30">
-                  <Zap className="h-6 w-6 text-orange-300" />
-                </div>
-                {(analise?.alertasCriticos.length || 0) > 0 && (
-                  <div className="h-3 w-3 bg-red-500 rounded-full animate-pulse"></div>
-                )}
-              </div>
-              <div className="space-y-2">
-                <div className="text-sm font-bold text-orange-300 uppercase tracking-wider">
-                  Pontos de Atenção
-                </div>
-                <AnimatedCounter value={analise?.alertasCriticos.length || 0} />
-                <div className="text-sm text-white/60">
-                  {(analise?.alertasCriticos.length || 0) === 0 
-                    ? "Tudo sob controle!" 
-                    : "Requerem sua atenção"}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              {/* Alertas */}
+              <Card className="group border-0 bg-slate-800/40 backdrop-blur-2xl hover:bg-slate-800/60 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-orange-500/20 hover:scale-105" data-testid="card-alertas">
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <CardContent className="p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 bg-orange-500/20 rounded-xl backdrop-blur-xl border border-orange-500/30">
+                      <Zap className="h-6 w-6 text-orange-300" />
+                    </div>
+                    {(analise?.alertasCriticos.length || 0) > 0 && (
+                      <div className="h-3 w-3 bg-red-500 rounded-full animate-pulse"></div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-sm font-bold text-orange-300 uppercase tracking-wider">
+                      Pontos de Atenção
+                    </div>
+                    <AnimatedCounter value={analise?.alertasCriticos.length || 0} />
+                    <div className="text-sm text-white/60">
+                      {(analise?.alertasCriticos.length || 0) === 0
+                        ? "Tudo sob controle!"
+                        : "Requerem sua atenção"}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
 
         {/* CONTEÚDO PRINCIPAL - Tabs Modernos */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 bg-white/10 backdrop-blur-2xl border-0 p-2 rounded-2xl shadow-2xl">
-            <TabsTrigger 
-              value="ia" 
+            <TabsTrigger
+              value="ia"
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white rounded-xl transition-all duration-300"
               data-testid="tab-ia"
             >
@@ -489,7 +514,7 @@ export default function EmpresaEstadoPsicossocial() {
               <span className="hidden sm:inline">Análise IA</span>
               <span className="sm:hidden">IA</span>
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="nr1"
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-600 data-[state=active]:text-white rounded-xl transition-all duration-300"
               data-testid="tab-nr1"
@@ -498,7 +523,7 @@ export default function EmpresaEstadoPsicossocial() {
               <span className="hidden sm:inline">NR1</span>
               <span className="sm:hidden">NR1</span>
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="dimensoes"
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white rounded-xl transition-all duration-300"
               data-testid="tab-dimensoes"
@@ -507,7 +532,7 @@ export default function EmpresaEstadoPsicossocial() {
               <span className="hidden sm:inline">Dimensões</span>
               <span className="sm:hidden">Dim</span>
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="acoes"
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-600 data-[state=active]:text-white rounded-xl transition-all duration-300"
               data-testid="tab-acoes"
@@ -520,150 +545,161 @@ export default function EmpresaEstadoPsicossocial() {
 
           {/* TAB: ANÁLISE POR IA - O Destaque Principal */}
           <TabsContent value="ia" className="space-y-6">
-            {/* Privacy & Transparency Banner */}
-            <Alert className="border-0 bg-gradient-to-r from-[#B85D45] to-[#C66B4E] backdrop-blur-2xl shadow-2xl rounded-2xl border-2 border-white/20">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-white/10 rounded-xl backdrop-blur-xl border border-white/20">
-                  <Info className="h-6 w-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <AlertTitle className="text-white font-bold text-lg mb-2">
-                    Transparência Total: Como Funciona Nossa IA
-                  </AlertTitle>
-                  <AlertDescription className="text-white space-y-2 leading-relaxed">
-                    <p><strong className="text-white font-extrabold">Metodologia:</strong> Análise de padrões em dados agregados e 100% anônimos dos seus colaboradores.</p>
-                    <p><strong className="text-white font-extrabold">Frameworks Científicos:</strong> ISO 45003, OMS, Karasek-Siegrist, validados internacionalmente.</p>
-                    <p><strong className="text-white font-extrabold">Sua Privacidade:</strong> Nenhum dado individual é exposto. LGPD Art. 20 garantido.</p>
-                    <p><strong className="text-white font-extrabold">Próximo Passo:</strong> Valide com RH e Saúde Ocupacional para ação estratégica.</p>
-                  </AlertDescription>
-                </div>
-              </div>
-            </Alert>
-
-            {/* AI-Generated Insights - Cards Premium */}
-            {analise && analise.recomendacoes.length > 0 ? (
+            {isLoading ? (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-black text-white flex items-center gap-3">
-                    <Sparkles className="h-7 w-7 text-purple-400" />
-                    Insights que Transformam
-                  </h3>
-                </div>
-
-                <div className="grid gap-4">
-                  {analise.recomendacoes.map((rec, index) => {
-                    const isPriority = rec.prioridade === 'Alta';
-                    return (
-                      <Card 
-                        key={index}
-                        className={`group border-0 backdrop-blur-2xl shadow-2xl rounded-2xl overflow-hidden hover:scale-[1.02] transition-all duration-500 ${
-                          isPriority 
-                            ? 'bg-gradient-to-r from-red-600/35 to-orange-600/35 hover:from-red-600/45 hover:to-orange-600/45 border-2 border-red-500/40' 
-                            : 'bg-white/10 hover:bg-white/15'
-                        }`}
-                        data-testid={`recomendacao-${index}`}
-                      >
-                        <CardContent className="p-6">
-                          <div className="flex gap-4">
-                            <div className="flex-shrink-0">
-                              <div className={`p-4 rounded-2xl backdrop-blur-xl ${
-                                isPriority ? 'bg-red-500/30 border border-red-500/50' : 'bg-purple-500/30 border border-purple-500/50'
-                              }`}>
-                                {isPriority ? (
-                                  <Zap className="h-6 w-6 text-red-300" />
-                                ) : (
-                                  <Star className="h-6 w-6 text-purple-300" />
-                                )}
-                              </div>
-                            </div>
-                            
-                            <div className="flex-1 space-y-3">
-                              <div className="flex items-start justify-between gap-4 flex-wrap">
-                                <div className="flex-1 min-w-[200px]">
-                                  <div className="flex items-center gap-3 mb-2">
-                                    <Badge className={isPriority 
-                                      ? "bg-red-500 text-white border-0" 
-                                      : "bg-orange-500 text-white border-0"
-                                    }>
-                                      {rec.prioridade === 'Alta' ? 'URGENTE' : 'IMPORTANTE'}
-                                    </Badge>
-                                    <Badge variant="outline" className="bg-white/10 text-white/80 border-white/20 backdrop-blur-xl">
-                                      {rec.categoria}
-                                    </Badge>
-                                  </div>
-                                  <h4 className="text-xl font-bold text-white mb-2">
-                                    {rec.titulo}
-                                  </h4>
-                                  <p className={`leading-relaxed ${isPriority ? 'text-red-50/95' : 'text-white/80'}`}>
-                                    {rec.descricao}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                <Skeleton className="h-32 w-full rounded-2xl bg-white/10" />
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-64 bg-white/10" />
+                  <Skeleton className="h-48 w-full rounded-2xl bg-white/10" />
+                  <Skeleton className="h-48 w-full rounded-2xl bg-white/10" />
                 </div>
               </div>
             ) : (
-              <Card className="border-0 bg-white/10 backdrop-blur-2xl shadow-2xl rounded-2xl">
-                <CardContent className="p-12 text-center">
-                  <div className="max-w-md mx-auto space-y-4">
-                    <div className="inline-block p-6 bg-purple-500/20 rounded-3xl backdrop-blur-xl">
-                      Ⓛh-16 w-16 text-purple-300Ⓛ
-                    </div>
-                    <h3 className="text-2xl font-bold text-white">
-                      IA Aprendendo Sobre Sua Organização
-                    </h3>
-                    <p className="text-white/70 text-lg">
-                      Precisamos de mais dados para gerar insights personalizados. 
-                      Incentive seus colaboradores a participarem das avaliações.
-                    </p>
-                    <div className="pt-4">
-                      <Button className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white border-0 shadow-xl">
-                        Ver Testes Disponíveis
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Alertas Críticos */}
-            {analise && analise.alertasCriticos.length > 0 && (
-              <Card className="border-0 bg-gradient-to-r from-red-500/20 to-rose-500/20 backdrop-blur-2xl shadow-2xl rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent"></div>
-                <CardHeader className="relative">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 bg-red-500/30 rounded-xl backdrop-blur-xl border border-red-500/50 animate-pulse">
-                      <AlertCircle className="h-6 w-6 text-red-300" />
+              <>
+                {/* Privacy & Transparency Banner */}
+                <Alert className="border-0 bg-gradient-to-r from-[#B85D45] to-[#C66B4E] backdrop-blur-2xl shadow-2xl rounded-2xl border-2 border-white/20">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-white/10 rounded-xl backdrop-blur-xl border border-white/20">
+                      <Info className="h-6 w-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <CardTitle className="text-white text-2xl font-black">
-                        Situações que Pedem Sua Coragem
-                      </CardTitle>
-                      <CardDescription className="text-white/70 text-base mt-1">
-                        Liderar é agir quando mais importa. Você tem o poder de transformar estas situações.
-                      </CardDescription>
+                      <AlertTitle className="text-white font-bold text-lg mb-2">
+                        Transparência Total: Como Funciona Nossa IA
+                      </AlertTitle>
+                      <AlertDescription className="text-white space-y-2 leading-relaxed">
+                        <p><strong className="text-white font-extrabold">Metodologia:</strong> Análise de padrões em dados agregados e 100% anônimos dos seus colaboradores.</p>
+                        <p><strong className="text-white font-extrabold">Frameworks Científicos:</strong> ISO 45003, OMS, Karasek-Siegrist, validados internacionalmente.</p>
+                        <p><strong className="text-white font-extrabold">Sua Privacidade:</strong> Nenhum dado individual é exposto. LGPD Art. 20 garantido.</p>
+                        <p><strong className="text-white font-extrabold">Próximo Passo:</strong> Valide com RH e Saúde Ocupacional para ação estratégica.</p>
+                      </AlertDescription>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent className="relative space-y-3">
-                  {analise.alertasCriticos.map((alerta, index) => (
-                    <div 
-                      key={index}
-                      className="flex items-start gap-4 p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 hover:bg-white/15 transition-all duration-300"
-                      data-testid={`alerta-critico-${index}`}
-                    >
-                      <ChevronRight className="h-5 w-5 text-red-300 flex-shrink-0 mt-0.5" />
-                      <p className="text-white/90 leading-relaxed flex-1">{alerta}</p>
+                </Alert>
+
+                {/* AI-Generated Insights - Cards Premium */}
+                {analise && analise.recomendacoes.length > 0 ? (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-black text-white flex items-center gap-3">
+                        <Sparkles className="h-7 w-7 text-purple-400" />
+                        Insights que Transformam
+                      </h3>
                     </div>
-                  ))}
-                </CardContent>
-              </Card>
+
+                    <div className="grid gap-4">
+                      {analise.recomendacoes.map((rec, index) => {
+                        const isPriority = rec.prioridade === 'Alta';
+                        return (
+                          <Card
+                            key={index}
+                            className={`group border-0 backdrop-blur-2xl shadow-2xl rounded-2xl overflow-hidden hover:scale-[1.02] transition-all duration-500 ${isPriority
+                              ? 'bg-gradient-to-r from-red-900/60 to-orange-900/60 hover:from-red-900/80 hover:to-orange-900/80 border-2 border-red-500/40'
+                              : 'bg-slate-800/50 hover:bg-slate-800/70 border border-white/5'
+                              }`}
+                            data-testid={`recomendacao-${index}`}
+                          >
+                            <CardContent className="p-6">
+                              <div className="flex gap-4">
+                                <div className="flex-shrink-0">
+                                  <div className={`p-4 rounded-2xl backdrop-blur-xl ${isPriority ? 'bg-red-500/30 border border-red-500/50' : 'bg-purple-500/30 border border-purple-500/50'
+                                    }`}>
+                                    {isPriority ? (
+                                      <Zap className="h-6 w-6 text-red-300" />
+                                    ) : (
+                                      <Star className="h-6 w-6 text-purple-300" />
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="flex-1 space-y-3">
+                                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                                    <div className="flex-1 min-w-[200px]">
+                                      <div className="flex items-center gap-3 mb-2">
+                                        <Badge className={isPriority
+                                          ? "bg-red-500 text-white border-0"
+                                          : "bg-orange-500 text-white border-0"
+                                        }>
+                                          {rec.prioridade === 'Alta' ? 'URGENTE' : 'IMPORTANTE'}
+                                        </Badge>
+                                        <Badge variant="outline" className="bg-white/10 text-white/80 border-white/20 backdrop-blur-xl">
+                                          {rec.categoria}
+                                        </Badge>
+                                      </div>
+                                      <h4 className="text-xl font-bold text-white mb-2">
+                                        {rec.titulo}
+                                      </h4>
+                                      <p className={`leading-relaxed ${isPriority ? 'text-red-50' : 'text-slate-200'}`}>
+                                        {rec.descricao}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <Card className="border-0 bg-white/10 backdrop-blur-2xl shadow-2xl rounded-2xl">
+                    <CardContent className="p-12 text-center">
+                      <div className="max-w-md mx-auto space-y-4">
+                        <div className="inline-block p-6 bg-purple-500/20 rounded-3xl backdrop-blur-xl">
+                          Ⓛh-16 w-16 text-purple-300Ⓛ
+                        </div>
+                        <h3 className="text-2xl font-bold text-white">
+                          IA Aprendendo Sobre Sua Organização
+                        </h3>
+                        <p className="text-white/70 text-lg">
+                          Precisamos de mais dados para gerar insights personalizados.
+                          Incentive seus colaboradores a participarem das avaliações.
+                        </p>
+                        <div className="pt-4">
+                          <Button className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white border-0 shadow-xl">
+                            Ver Testes Disponíveis
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Alertas Críticos */}
+                {analise && analise.alertasCriticos.length > 0 && (
+                  <Card className="border-0 bg-gradient-to-r from-red-900/50 to-rose-900/50 backdrop-blur-2xl shadow-2xl rounded-2xl overflow-hidden border border-red-500/20">
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent"></div>
+                    <CardHeader className="relative">
+                      <div className="flex items-center gap-3">
+                        <div className="p-3 bg-red-500/30 rounded-xl backdrop-blur-xl border border-red-500/50 animate-pulse">
+                          <AlertCircle className="h-6 w-6 text-red-300" />
+                        </div>
+                        <div className="flex-1">
+                          <CardTitle className="text-white text-2xl font-black">
+                            Situações que Pedem Sua Coragem
+                          </CardTitle>
+                          <CardDescription className="text-white/70 text-base mt-1">
+                            Liderar é agir quando mais importa. Você tem o poder de transformar estas situações.
+                          </CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="relative space-y-3">
+                      {analise.alertasCriticos.map((alerta, index) => (
+                        <div
+                          key={index}
+                          className="flex items-start gap-4 p-4 bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 hover:bg-black/30 transition-all duration-300"
+                          data-testid={`alerta-critico-${index}`}
+                        >
+                          <ChevronRight className="h-5 w-5 text-red-300 flex-shrink-0 mt-0.5" />
+                          <p className="text-white/90 leading-relaxed flex-1">{alerta}</p>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             )}
           </TabsContent>
 
@@ -689,18 +725,18 @@ export default function EmpresaEstadoPsicossocial() {
                 {analise?.nr1Fatores.map((fator, index) => {
                   const nivel = fator.nivel.toLowerCase();
                   const isCritico = nivel.includes('crítico') || nivel.includes('alto');
-                  
+
                   return (
-                    <div 
-                      key={index} 
+                    <div
+                      key={index}
                       className="space-y-3 p-4 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 hover:border-white/20 transition-all"
                       data-testid={`nr1-fator-${index}`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <span className="text-white font-bold text-lg">{fator.fator}</span>
-                          <Badge className={isCritico 
-                            ? "bg-red-500 text-white border-0" 
+                          <Badge className={isCritico
+                            ? "bg-red-500 text-white border-0"
                             : "bg-emerald-500 text-white border-0"
                           }>
                             {fator.nivel}
@@ -708,8 +744,8 @@ export default function EmpresaEstadoPsicossocial() {
                         </div>
                         <span className="text-white/70 font-bold text-lg">{fator.percentual}%</span>
                       </div>
-                      <Progress 
-                        value={fator.percentual} 
+                      <Progress
+                        value={fator.percentual}
                         className={`h-3 ${isCritico ? 'bg-red-500/20' : 'bg-emerald-500/20'}`}
                       />
                     </div>
@@ -722,7 +758,7 @@ export default function EmpresaEstadoPsicossocial() {
                   <Info className="h-5 w-5 text-blue-300" />
                   <AlertTitle className="text-white font-bold">Sobre a NR1 (Maio 2025)</AlertTitle>
                   <AlertDescription className="text-white/80 mt-2">
-                    As empresas devem avaliar e gerenciar riscos como carga excessiva, falta de autonomia, 
+                    As empresas devem avaliar e gerenciar riscos como carga excessiva, falta de autonomia,
                     assédio e conflitos. Nossa análise identifica áreas críticas e propõe ações preventivas baseadas em ciência.
                   </AlertDescription>
                 </Alert>
@@ -751,7 +787,7 @@ export default function EmpresaEstadoPsicossocial() {
               <CardContent className="space-y-4">
                 {analise && analise.dimensoes.length > 0 ? (
                   analise.dimensoes.map((dimensao, index) => (
-                    <div 
+                    <div
                       key={index}
                       className="space-y-3 p-4 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 hover:border-white/20 transition-all"
                       data-testid={`dimensao-${index}`}
@@ -819,7 +855,7 @@ export default function EmpresaEstadoPsicossocial() {
                   {analise.recomendacoes
                     .filter(r => r.prioridade === 'Alta')
                     .map((rec, index) => (
-                      <Card 
+                      <Card
                         key={index}
                         className="border-0 bg-red-600/25 backdrop-blur-xl shadow-xl rounded-2xl overflow-hidden border-2 border-red-500/40 hover:border-red-400/60 transition-all hover:scale-[1.02]"
                         data-testid={`acao-alta-${index}`}
@@ -839,7 +875,7 @@ export default function EmpresaEstadoPsicossocial() {
                                 </Badge>
                               </div>
                               <p className="text-red-50/90 leading-relaxed">{rec.descricao}</p>
-                              
+
                               {rec.categoria && (
                                 <div className="flex items-center gap-2 pt-2 border-t border-red-400/20">
                                   <Badge className="bg-red-500/30 text-red-100 border-red-400/40">
@@ -874,7 +910,7 @@ export default function EmpresaEstadoPsicossocial() {
                   {analise.recomendacoes
                     .filter(r => r.prioridade === 'Média')
                     .map((rec, index) => (
-                      <Card 
+                      <Card
                         key={index}
                         className="border-0 bg-orange-600/25 backdrop-blur-xl shadow-xl rounded-2xl overflow-hidden border-2 border-orange-500/40 hover:border-orange-400/60 transition-all hover:scale-[1.02]"
                         data-testid={`acao-media-${index}`}
@@ -894,7 +930,7 @@ export default function EmpresaEstadoPsicossocial() {
                                 </Badge>
                               </div>
                               <p className="text-orange-50/90 leading-relaxed">{rec.descricao}</p>
-                              
+
                               {rec.categoria && (
                                 <div className="flex items-center gap-2 pt-2 border-t border-orange-400/20">
                                   <Badge className="bg-orange-500/30 text-orange-100 border-orange-400/40">
@@ -948,8 +984,8 @@ export default function EmpresaEstadoPsicossocial() {
                     descricao: "Autonomia e flexibilidade reduzem estresse e aumentam satisfação no trabalho"
                   }
                 ].map((pratica, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="p-4 bg-blue-600/15 backdrop-blur-xl rounded-xl border border-blue-500/30 hover:bg-blue-600/20 transition-all"
                     data-testid={`pratica-${index}`}
                   >

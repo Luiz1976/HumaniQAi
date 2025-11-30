@@ -22,6 +22,7 @@ interface Empresa {
   ativo: boolean;
   created_at: string;
   total_colaboradores?: number;
+  configuracoes?: { logo?: string };
 }
 
 interface NovoConvite {
@@ -162,11 +163,10 @@ export default function AdminEmpresas() {
   const empresasFiltradas = empresas.filter(empresa => {
     const matchesSearch = (empresa.nome_empresa?.toLowerCase() || '').includes(filtroEmpresas.toLowerCase()) ||
                          (empresa.email_contato?.toLowerCase() || '').includes(filtroEmpresas.toLowerCase());
-    
+    const isAtiva = !!empresa.ativo || (empresa.total_colaboradores || 0) > 0;
     const matchesStatus = statusFiltro === 'todos' || 
-                         (statusFiltro === 'ativo' && empresa.ativo) ||
-                         (statusFiltro === 'inativo' && !empresa.ativo);
-    
+                         (statusFiltro === 'ativo' && isAtiva) ||
+                         (statusFiltro === 'inativo' && !isAtiva);
     return matchesSearch && matchesStatus;
   });
 
@@ -257,10 +257,16 @@ export default function AdminEmpresas() {
                 <tr key={empresa.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <div className="flex-shrink-0 h-10 w-10 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center">
+                        {empresa.configuracoes?.logo ? (
+                          <img
+                            src={empresa.configuracoes.logo}
+                            alt={`Logo de ${empresa.nome_empresa}`}
+                            className="h-full w-full object-contain"
+                          />
+                        ) : (
                           <Building2 className="w-5 h-5 text-blue-600" />
-                        </div>
+                        )}
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
@@ -279,13 +285,16 @@ export default function AdminEmpresas() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      empresa.ativo 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {empresa.ativo ? 'Ativa' : 'Inativa'}
-                    </span>
+                    {(() => {
+                      const isAtiva = !!empresa.ativo || (empresa.total_colaboradores || 0) > 0;
+                      const cls = isAtiva ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                      const label = isAtiva ? 'Ativa' : 'Inativa';
+                      return (
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${cls}`}>
+                          {label}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatarData(empresa.created_at)}

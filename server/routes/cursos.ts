@@ -5,6 +5,7 @@ import { eq, and } from 'drizzle-orm';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import logger from '../utils/logger';
 import { randomUUID } from 'crypto';
+import { cursos } from '../../src/data/cursosData';
 
 const router = express.Router();
 
@@ -45,65 +46,65 @@ async function verificarDisponibilidadeCurso(
   }
 }
 
-  // Obter progresso de um curso específico
-  router.get('/progresso/:cursoSlug', authenticateToken, async (req: AuthRequest, res) => {
-    try {
-      const { cursoSlug } = req.params;
-      const colaboradorId = req.user?.userId;
+// Obter progresso de um curso específico
+router.get('/progresso/:cursoSlug', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const { cursoSlug } = req.params;
+    const colaboradorId = req.user?.userId;
 
-      if (!colaboradorId) {
-        return res.status(401).json({ error: 'Não autorizado' });
-      }
-
-      // Permitir leitura do progresso mesmo se o curso estiver bloqueado
-      const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
-      let progresso: any = null;
-      if (isSqlite) {
-        const { sqlite } = await import('../db-sqlite');
-        const row = sqlite.prepare(
-          'SELECT * FROM curso_progresso WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
-        ).get(colaboradorId, String(cursoSlug));
-        if (row) {
-          let mods: number[] = [];
-          if (typeof row.modulos_completados === 'string') {
-            try { mods = JSON.parse(row.modulos_completados) || []; } catch { mods = []; }
-          }
-          progresso = {
-            id: row.id,
-            colaboradorId: row.colaborador_id,
-            cursoId: row.curso_id,
-            cursoSlug: row.curso_slug,
-            modulosCompletados: mods,
-            totalModulos: Number(row.total_modulos || 0),
-            progressoPorcentagem: Number(row.progresso_porcentagem || 0),
-            avaliacaoFinalRealizada: !!row.avaliacao_final_realizada,
-            avaliacaoFinalPontuacao: Number(row.avaliacao_final_pontuacao || 0),
-            dataInicio: row.data_inicio,
-            dataUltimaAtualizacao: row.data_ultima_atualizacao,
-            dataConclusao: row.data_conclusao || null,
-          };
-        } else {
-          progresso = null;
-        }
-      } else {
-        progresso = await db.query.cursoProgresso.findFirst({
-          where: and(
-            eq(cursoProgresso.colaboradorId, colaboradorId),
-            eq(cursoProgresso.cursoSlug, cursoSlug)
-          )
-        });
-      }
-
-      if (!progresso) {
-        return res.status(404).json({ error: 'Progresso não encontrado' });
-      }
-
-      return res.json(progresso);
-    } catch (error) {
-      logger.error('Erro ao buscar progresso:', error);
-      return res.status(500).json({ error: 'Erro ao buscar progresso' });
+    if (!colaboradorId) {
+      return res.status(401).json({ error: 'Não autorizado' });
     }
-  });
+
+    // Permitir leitura do progresso mesmo se o curso estiver bloqueado
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    let progresso: any = null;
+    if (isSqlite) {
+      const { sqlite } = await import('../db-sqlite');
+      const row = sqlite.prepare(
+        'SELECT * FROM curso_progresso WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
+      ).get(colaboradorId, String(cursoSlug));
+      if (row) {
+        let mods: number[] = [];
+        if (typeof row.modulos_completados === 'string') {
+          try { mods = JSON.parse(row.modulos_completados) || []; } catch { mods = []; }
+        }
+        progresso = {
+          id: row.id,
+          colaboradorId: row.colaborador_id,
+          cursoId: row.curso_id,
+          cursoSlug: row.curso_slug,
+          modulosCompletados: mods,
+          totalModulos: Number(row.total_modulos || 0),
+          progressoPorcentagem: Number(row.progresso_porcentagem || 0),
+          avaliacaoFinalRealizada: !!row.avaliacao_final_realizada,
+          avaliacaoFinalPontuacao: Number(row.avaliacao_final_pontuacao || 0),
+          dataInicio: row.data_inicio,
+          dataUltimaAtualizacao: row.data_ultima_atualizacao,
+          dataConclusao: row.data_conclusao || null,
+        };
+      } else {
+        progresso = null;
+      }
+    } else {
+      progresso = await db.query.cursoProgresso.findFirst({
+        where: and(
+          eq(cursoProgresso.colaboradorId, colaboradorId),
+          eq(cursoProgresso.cursoSlug, cursoSlug)
+        )
+      });
+    }
+
+    if (!progresso) {
+      return res.status(404).json({ error: 'Progresso não encontrado' });
+    }
+
+    return res.json(progresso);
+  } catch (error) {
+    logger.error('Erro ao buscar progresso:', error);
+    return res.status(500).json({ error: 'Erro ao buscar progresso' });
+  }
+});
 
 // Iniciar ou atualizar progresso de um curso
 router.post('/progresso', authenticateToken, async (req: AuthRequest, res) => {
@@ -180,13 +181,22 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
     const { cursoSlug, moduloId } = req.params;
     const colaboradorId = req.user?.userId;
     const { totalModulos } = req.body; // Aceitar totalModulos do frontend
-    
+
     logger.info('📝 [CURSOS] Params:', { cursoSlug, moduloId, colaboradorId, totalModulos });
 
     if (!colaboradorId) {
       logger.error('❌ [CURSOS] Colaborador não autenticado');
       return res.status(401).json({ error: 'Não autorizado' });
     }
+
+    const cursoCatalogo = cursos.find((c) => c.slug === cursoSlug);
+    if (!cursoCatalogo) {
+      logger.warn('⚠️  [CURSOS] Curso não encontrado no catálogo:', cursoSlug);
+      return res.status(404).json({ error: 'Curso não encontrado' });
+    }
+    const modulosCatalogo = Array.isArray(cursoCatalogo['módulos'])
+      ? cursoCatalogo['módulos'].map((mod) => Number((mod as any).id)).filter(Number.isFinite)
+      : [];
 
     // Verificar disponibilidade do curso
     const { disponivel, motivo } = await verificarDisponibilidadeCurso(colaboradorId, cursoSlug);
@@ -215,12 +225,12 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
 
     if (!progresso) {
       logger.warn('⚠️  [CURSOS] Progresso não encontrado, criando automaticamente...');
-      
+
       if (!totalModulos) {
         logger.error('❌ [CURSOS] totalModulos não foi fornecido');
         return res.status(400).json({ error: 'totalModulos é obrigatório para criar progresso' });
       }
-      
+
       const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
       if (isSqlite) {
         const { sqlite } = await import('../db-sqlite');
@@ -266,9 +276,9 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
     } else {
       modulosCompletadosArray = Array.isArray(progresso.modulosCompletados) ? progresso.modulosCompletados : [];
     }
-    
+
     logger.info('📝 [CURSOS] Módulos completados antes:', modulosCompletadosArray);
-    
+
     const moduloIdNum = parseInt(moduloId);
     if (isNaN(moduloIdNum)) {
       logger.warn('⚠️  [CURSOS] moduloId inválido recebido:', moduloId);
@@ -279,13 +289,42 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
       return res.status(400).json({ error: 'Módulo inexistente para este curso' });
     }
 
-    const totalMods = Number(isSqliteFind ? progresso.total_modulos : progresso.totalModulos);
+    let totalMods = Number(isSqliteFind ? progresso.total_modulos : progresso.totalModulos);
+    const providedTotal = typeof totalModulos === 'number' ? Number(totalModulos) : undefined;
+    if ((!Number.isFinite(totalMods) || totalMods <= 0) && providedTotal && Number.isFinite(providedTotal) && providedTotal > 0) {
+      if (isSqliteFind) {
+        const { sqlite } = await import('../db-sqlite');
+        sqlite.prepare(
+          'UPDATE curso_progresso SET total_modulos = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+        ).run(providedTotal, progresso.id);
+      } else {
+        await db
+          .update(cursoProgresso)
+          .set({ totalModulos: providedTotal, dataUltimaAtualizacao: new Date() })
+          .where(eq(cursoProgresso.id, progresso.id));
+      }
+      totalMods = providedTotal;
+    }
     if (typeof totalMods !== 'number' || !Number.isFinite(totalMods) || totalMods <= 0) {
-      logger.error('❌ [CURSOS] totalMods inválido ao validar módulo:', totalMods);
       return res.status(400).json({ error: 'Total de módulos inválido para este curso' });
     }
-    if (moduloIdNum > totalMods) {
-      logger.warn('⚠️  [CURSOS] moduloId excede total de módulos:', { moduloIdNum, totalMods });
+    if (providedTotal && Number.isFinite(providedTotal) && providedTotal > totalMods) {
+      if (isSqliteFind) {
+        const { sqlite } = await import('../db-sqlite');
+        sqlite.prepare(
+          'UPDATE curso_progresso SET total_modulos = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+        ).run(providedTotal, progresso.id);
+      } else {
+        await db
+          .update(cursoProgresso)
+          .set({ totalModulos: providedTotal, dataUltimaAtualizacao: new Date() })
+          .where(eq(cursoProgresso.id, progresso.id));
+      }
+      totalMods = providedTotal;
+    }
+
+
+    if (modulosCatalogo.length > 0 && !modulosCatalogo.includes(moduloIdNum)) {
       return res.status(400).json({ error: 'Módulo não pertence a este curso' });
     }
 
@@ -353,9 +392,9 @@ router.post('/progresso/:cursoSlug/modulo/:moduloId', authenticateToken, async (
   } catch (error) {
     logger.error('❌ [CURSOS] Erro ao atualizar progresso:', error);
     logger.error('❌ [CURSOS] Stack trace:', (error as Error).stack);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Erro ao atualizar progresso',
-      details: (error as Error).message 
+      details: (error as Error).message
     });
   }
 });
@@ -386,12 +425,12 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
     // Se o colaborador já tem progresso, significa que o curso foi liberado em algum momento
     // Permitir avaliação mesmo se disponibilidade foi alterada posteriormente
 
-    const modulosCompletadosArray = Array.isArray(progresso.modulosCompletados) 
-      ? progresso.modulosCompletados 
+    const modulosCompletadosArray = Array.isArray(progresso.modulosCompletados)
+      ? progresso.modulosCompletados
       : [];
 
     if (modulosCompletadosArray.length < progresso.totalModulos) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Complete todos os módulos antes da avaliação',
         modulosCompletados: modulosCompletadosArray.length,
         totalModulos: progresso.totalModulos
@@ -408,7 +447,7 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
       return res.status(400).json({ error: 'Total de questões inválido' });
     }
     if (respostasCount !== totalQuestoes) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Avaliação incompleta: todas as questões devem ser respondidas',
         respondidas: respostasCount,
         totalQuestoes
@@ -420,9 +459,9 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
 
     // Verificar número de tentativas (máximo 3)
     const tentativasAtuais = progresso.tentativasAvaliacao || 0;
-    
+
     if (tentativasAtuais >= 3) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Você já utilizou todas as 3 tentativas disponíveis para esta avaliação',
         tentativasRestantes: 0
       });
@@ -430,7 +469,7 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
 
     // Verificar se já foi aprovado anteriormente
     if (progresso.avaliacaoFinalRealizada && progresso.avaliacaoFinalPontuacao && progresso.avaliacaoFinalPontuacao >= (totalQuestoes * 0.7)) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Avaliação já aprovada anteriormente',
         aprovado: true
       });
@@ -443,7 +482,7 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
     // Criar avaliação
     const isSqliteEval = (process.env.NODE_ENV !== 'production') || ((dbType || '').toLowerCase().includes('sqlite'));
     let avaliacao: any;
-    try { logger.info('🧪 [AVALIACAO] DB detection', { dbType, nodeEnv: process.env.NODE_ENV, isSqliteEval }); } catch (_) {}
+    try { logger.info('🧪 [AVALIACAO] DB detection', { dbType, nodeEnv: process.env.NODE_ENV, isSqliteEval }); } catch (_) { }
     if (isSqliteEval) {
       const { sqlite } = await import('../db-sqlite');
       const insertStmt = sqlite.prepare(
@@ -534,14 +573,14 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
           if (disponibilidadeExistente) {
             await db
               .update(cursoDisponibilidade)
-              .set({ 
+              .set({
                 disponivel: false,
                 updatedAt: new Date()
               })
               .where(eq(cursoDisponibilidade.id, disponibilidadeExistente.id));
           }
         }
-      } catch (_) {}
+      } catch (_) { }
     }
 
     return res.status(201).json({
@@ -557,106 +596,106 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
 });
 
 // Emitir certificado
-  router.post('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest, res) => {
-    try {
-      const { cursoSlug } = req.params;
-      const colaboradorId = req.user?.userId;
-      const { cursoId } = req.body;
+router.post('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const { cursoSlug } = req.params;
+    const colaboradorId = req.user?.userId;
+    const { cursoId } = req.body;
 
     if (!colaboradorId) {
       return res.status(401).json({ error: 'Não autorizado' });
     }
 
     // Verificar se avaliação foi aprovada
-      let avaliacao: any = null;
-      const isSqliteEnv = (dbType || '').toLowerCase().includes('sqlite');
-      if (isSqliteEnv) {
-        const { sqlite } = await import('../db-sqlite');
-        const avRow = sqlite.prepare(
-          'SELECT * FROM curso_avaliacoes WHERE colaborador_id = ? AND curso_slug = ? AND aprovado = 1 ORDER BY data_realizacao DESC LIMIT 1'
-        ).get(colaboradorId, String(cursoSlug));
-        avaliacao = avRow ? { id: avRow.id, aprovado: !!avRow.aprovado } : null;
-      } else {
-        avaliacao = await db.query.cursoAvaliacoes.findFirst({
-          where: and(
-            eq(cursoAvaliacoes.colaboradorId, colaboradorId),
-            eq(cursoAvaliacoes.cursoSlug, cursoSlug),
-            eq(cursoAvaliacoes.aprovado, true)
-          )
-        });
-      }
+    let avaliacao: any = null;
+    const isSqliteEnv = (dbType || '').toLowerCase().includes('sqlite');
+    if (isSqliteEnv) {
+      const { sqlite } = await import('../db-sqlite');
+      const avRow = sqlite.prepare(
+        'SELECT * FROM curso_avaliacoes WHERE colaborador_id = ? AND curso_slug = ? AND aprovado = 1 ORDER BY data_realizacao DESC LIMIT 1'
+      ).get(colaboradorId, String(cursoSlug));
+      avaliacao = avRow ? { id: avRow.id, aprovado: !!avRow.aprovado } : null;
+    } else {
+      avaliacao = await db.query.cursoAvaliacoes.findFirst({
+        where: and(
+          eq(cursoAvaliacoes.colaboradorId, colaboradorId),
+          eq(cursoAvaliacoes.cursoSlug, cursoSlug),
+          eq(cursoAvaliacoes.aprovado, true)
+        )
+      });
+    }
 
-      if (!avaliacao) {
-        return res.status(400).json({ error: 'Avaliação não aprovada ou não realizada' });
-      }
+    if (!avaliacao) {
+      return res.status(400).json({ error: 'Avaliação não aprovada ou não realizada' });
+    }
 
-      const isSqliteForProgress = (dbType || '').toLowerCase().includes('sqlite');
-      let progressoAny: any = null;
-      if (isSqliteForProgress) {
-        const { sqlite } = await import('../db-sqlite');
-        const stmt = sqlite.prepare(
-          'SELECT * FROM curso_progresso WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
-        );
-        progressoAny = stmt.get(colaboradorId, String(cursoSlug));
-      } else {
-        progressoAny = await db.query.cursoProgresso.findFirst({
-          where: and(
-            eq(cursoProgresso.colaboradorId, colaboradorId),
-            eq(cursoProgresso.cursoSlug, cursoSlug)
-          )
-        });
-      }
+    const isSqliteForProgress = (dbType || '').toLowerCase().includes('sqlite');
+    let progressoAny: any = null;
+    if (isSqliteForProgress) {
+      const { sqlite } = await import('../db-sqlite');
+      const stmt = sqlite.prepare(
+        'SELECT * FROM curso_progresso WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
+      );
+      progressoAny = stmt.get(colaboradorId, String(cursoSlug));
+    } else {
+      progressoAny = await db.query.cursoProgresso.findFirst({
+        where: and(
+          eq(cursoProgresso.colaboradorId, colaboradorId),
+          eq(cursoProgresso.cursoSlug, cursoSlug)
+        )
+      });
+    }
 
-      if (!progressoAny) {
-        return res.status(400).json({ error: 'Complete todos os módulos antes da certificação' });
-      }
+    if (!progressoAny) {
+      return res.status(400).json({ error: 'Complete todos os módulos antes da certificação' });
+    }
 
-      const totalModulosVal = Number(progressoAny.totalModulos || progressoAny.total_modulos || 0);
-      let modulosCompletadosCount = 0;
-      if (Array.isArray(progressoAny.modulosCompletados)) {
-        modulosCompletadosCount = progressoAny.modulosCompletados.length;
-      } else if (typeof progressoAny.modulos_completados === 'string') {
-        try { modulosCompletadosCount = JSON.parse(progressoAny.modulos_completados).length || 0; } catch { modulosCompletadosCount = 0; }
-      }
-      const porcent = Number(progressoAny.progressoPorcentagem || progressoAny.progresso_porcentagem || 0);
-      const conclusao = progressoAny.dataConclusao || progressoAny.data_conclusao || null;
+    const totalModulosVal = Number(progressoAny.totalModulos || progressoAny.total_modulos || 0);
+    let modulosCompletadosCount = 0;
+    if (Array.isArray(progressoAny.modulosCompletados)) {
+      modulosCompletadosCount = progressoAny.modulosCompletados.length;
+    } else if (typeof progressoAny.modulos_completados === 'string') {
+      try { modulosCompletadosCount = JSON.parse(progressoAny.modulos_completados).length || 0; } catch { modulosCompletadosCount = 0; }
+    }
+    const porcent = Number(progressoAny.progressoPorcentagem || progressoAny.progresso_porcentagem || 0);
+    const conclusao = progressoAny.dataConclusao || progressoAny.data_conclusao || null;
 
-      if (modulosCompletadosCount < totalModulosVal || porcent < 100 || !conclusao) {
-        return res.status(400).json({ error: 'Curso não concluído. Conclua todos os módulos para emitir o certificado' });
-      }
+    if (modulosCompletadosCount < totalModulosVal || porcent < 100 || !conclusao) {
+      return res.status(400).json({ error: 'Curso não concluído. Conclua todos os módulos para emitir o certificado' });
+    }
 
     // Verificar se certificado já existe
-      let certificadoExistente: any = null;
-      const isSqliteCert = (dbType || '').toLowerCase().includes('sqlite');
-      if (isSqliteCert) {
-        const { sqlite } = await import('../db-sqlite');
-        const certRow = sqlite.prepare(
-          'SELECT * FROM curso_certificados WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
-        ).get(colaboradorId, String(cursoSlug));
-        if (certRow) {
-          certificadoExistente = {
-            id: certRow.id,
-            colaboradorId: certRow.colaborador_id,
-            cursoId: certRow.curso_id,
-            cursoSlug: certRow.curso_slug,
-            cursoTitulo: certRow.curso_titulo,
-            colaboradorNome: certRow.colaborador_nome,
-            cargaHoraria: String(certRow.carga_horaria || ''),
-            codigoAutenticacao: certRow.codigo_autenticacao,
-            qrCodeUrl: certRow.qr_code_url,
-            assinaturaDigital: certRow.assinatura_digital,
-            validado: !!certRow.validado,
-            dataEmissao: new Date(certRow.data_emissao || Date.now()).toISOString(),
-          };
-        }
-      } else {
-        certificadoExistente = await db.query.cursoCertificados.findFirst({
-          where: and(
-            eq(cursoCertificados.colaboradorId, colaboradorId),
-            eq(cursoCertificados.cursoSlug, cursoSlug)
-          )
-        });
+    let certificadoExistente: any = null;
+    const isSqliteCert = (dbType || '').toLowerCase().includes('sqlite');
+    if (isSqliteCert) {
+      const { sqlite } = await import('../db-sqlite');
+      const certRow = sqlite.prepare(
+        'SELECT * FROM curso_certificados WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
+      ).get(colaboradorId, String(cursoSlug));
+      if (certRow) {
+        certificadoExistente = {
+          id: certRow.id,
+          colaboradorId: certRow.colaborador_id,
+          cursoId: certRow.curso_id,
+          cursoSlug: certRow.curso_slug,
+          cursoTitulo: certRow.curso_titulo,
+          colaboradorNome: certRow.colaborador_nome,
+          cargaHoraria: String(certRow.carga_horaria || ''),
+          codigoAutenticacao: certRow.codigo_autenticacao,
+          qrCodeUrl: certRow.qr_code_url,
+          assinaturaDigital: certRow.assinatura_digital,
+          validado: !!certRow.validado,
+          dataEmissao: new Date(certRow.data_emissao || Date.now()).toISOString(),
+        };
       }
+    } else {
+      certificadoExistente = await db.query.cursoCertificados.findFirst({
+        where: and(
+          eq(cursoCertificados.colaboradorId, colaboradorId),
+          eq(cursoCertificados.cursoSlug, cursoSlug)
+        )
+      });
+    }
 
     if (certificadoExistente) {
       try {
@@ -667,7 +706,7 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
           certificadoId: certificadoExistente.id,
           codigoAutenticacao: certificadoExistente.codigoAutenticacao
         });
-      } catch (_) {}
+      } catch (_) { }
       return res.json(certificadoExistente);
     }
 
@@ -769,7 +808,7 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
           ip: (req as any).ip,
           userAgent: req.headers['user-agent']
         });
-      } catch (_) {}
+      } catch (_) { }
       return res.status(201).json(certificado);
     } else {
       const [certificado] = await db.insert(cursoCertificados).values({
@@ -797,7 +836,7 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
           ip: (req as any).ip,
           userAgent: req.headers['user-agent']
         });
-      } catch (_) {}
+      } catch (_) { }
       return res.status(201).json(certificado);
     }
   } catch (error) {
@@ -823,7 +862,7 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
       if (!exists) {
         return res.status(404).json({ error: 'Curso não encontrado' });
       }
-    } catch (_) {}
+    } catch (_) { }
 
     if (!colaboradorId) {
       logger.error('❌ [BACKEND-CERTIFICADO] Colaborador não autorizado');
@@ -915,8 +954,8 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
         if (!carga) {
           try {
             const { cursos } = await import('../../src/data/cursosData');
-            const ci = (cursos as any[]).find(c => c.slug === cursoSlug);
-            carga = String(ci?.duracao || '1h');
+            const ci = (cursos as any[]).find((c: any) => c.slug === cursoSlug);
+            carga = String(ci?.['duração'] || '1h');
           } catch (_) {
             carga = '1h';
           }
@@ -965,7 +1004,7 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
         try {
           const { cursos } = await import('../../src/data/cursosData');
           const ci = (cursos as any[]).find((c: any) => c.slug === cursoSlug);
-          carga = String(ci?.duracao || '1h');
+          carga = String(ci?.['duração'] || '1h');
         } catch (_) {
           carga = '1h';
         }
@@ -995,7 +1034,7 @@ router.get('/certificado/:cursoSlug', authenticateToken, async (req: AuthRequest
             .where(eq(colaboradores.id, (certificado as any).colaboradorId))
             .limit(1);
           colaboradorNome = String(col?.nome || '');
-        } catch (_) {}
+        } catch (_) { }
       }
       const normalized = {
         ...certificado,
@@ -1025,9 +1064,9 @@ router.get('/validar-certificado/:codigo', async (req, res) => {
     });
 
     if (!certificado) {
-      return res.status(404).json({ 
-        valido: false, 
-        mensagem: 'Certificado não encontrado' 
+      return res.status(404).json({
+        valido: false,
+        mensagem: 'Certificado não encontrado'
       });
     }
 
@@ -1068,18 +1107,18 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Listar todos os certificados do colaborador
-  router.get('/meus-certificados', authenticateToken, async (req: AuthRequest, res) => {
-    try {
-      const colaboradorId = req.user?.userId;
+router.get('/meus-certificados', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const colaboradorId = req.user?.userId;
 
-      if (!colaboradorId) {
-        return res.status(401).json({ error: 'Não autorizado' });
-      }
+    if (!colaboradorId) {
+      return res.status(401).json({ error: 'Não autorizado' });
+    }
 
-      const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
-      let certificadosCamelCase: any[] = [];
-      if (isSqlite) {
-        const { sqlite } = await import('../db-sqlite');
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    let certificadosCamelCase: any[] = [];
+    if (isSqlite) {
+      const { sqlite } = await import('../db-sqlite');
       const rows = sqlite.prepare(
         'SELECT * FROM curso_certificados WHERE colaborador_id = ?'
       ).all(colaboradorId);
@@ -1093,7 +1132,7 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
             'SELECT total_modulos, modulos_completados, progresso_porcentagem, data_conclusao, avaliacao_final_realizada, avaliacao_final_pontuacao FROM curso_progresso WHERE colaborador_id = ? AND curso_slug = ? LIMIT 1'
           ).get(colaboradorId, String(row.curso_slug));
           if (!av || !pr) return false;
-          const minScoreOk = typeof av.total_questoes === 'number' && typeof av.pontuacao === 'number' 
+          const minScoreOk = typeof av.total_questoes === 'number' && typeof av.pontuacao === 'number'
             ? av.pontuacao >= Math.ceil(av.total_questoes * 0.7)
             : false;
           if (!minScoreOk) return false;
@@ -1114,7 +1153,7 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
             try {
               const { cursos } = require('../../src/data/cursosData');
               const ci = (cursos as any[]).find((c: any) => c.slug === row.curso_slug);
-              carga = String(ci?.duracao || '1h');
+              carga = String(ci?.['duração'] || '1h');
             } catch (_) {
               carga = '1h';
             }
@@ -1142,7 +1181,7 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
             validado: !!row.validado
           };
         });
-      } else {
+    } else {
       const certificados = await db.query.cursoCertificados.findMany({
         where: eq(cursoCertificados.colaboradorId, colaboradorId)
       });
@@ -1169,7 +1208,7 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
         if (av && typeof av.totalQuestoes === 'number' && typeof av.pontuacao === 'number') {
           minScoreOk = av.pontuacao >= Math.ceil(av.totalQuestoes * 0.7);
         }
-        const evalDone = !!pr?.avaliacaoFinalRealizada && typeof pr?.avaliacaoFinalPontuacao === 'number' 
+        const evalDone = !!pr?.avaliacaoFinalRealizada && typeof pr?.avaliacaoFinalPontuacao === 'number'
           ? pr!.avaliacaoFinalPontuacao >= Math.ceil((av?.totalQuestoes || 0) * 0.7)
           : false;
         if (av && comp >= tm && pct >= 100 && !!concl && minScoreOk && evalDone) {
@@ -1178,7 +1217,7 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
             try {
               const { cursos } = await import('../../src/data/cursosData');
               const ci = (cursos as any[]).find((c: any) => c.slug === cert.cursoSlug);
-              carga = String(ci?.duracao || '1h');
+              carga = String(ci?.['duração'] || '1h');
             } catch (_) {
               carga = '1h';
             }
@@ -1204,13 +1243,91 @@ router.get('/progresso', authenticateToken, async (req: AuthRequest, res) => {
         }
       }
       certificadosCamelCase = filtrados;
-      }
-
-      return res.json(certificadosCamelCase);
-    } catch (error) {
-      logger.error('Erro ao buscar certificados:', error);
-      return res.status(500).json({ error: 'Erro ao buscar certificados' });
     }
-  });
+
+    return res.json(certificadosCamelCase);
+  } catch (error) {
+    logger.error('Erro ao buscar certificados:', error);
+    return res.status(500).json({ error: 'Erro ao buscar certificados' });
+  }
+});
+
+router.delete('/admin/purge-cursos-dados', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    if (req.user?.role !== 'admin') {
+      return res.status(403).json({ error: 'Acesso negado' });
+    }
+
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+    if (isSqlite) {
+      const { sqlite } = await import('../db-sqlite');
+      const before = {
+        certificados: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_certificados').get() as any)?.c || 0),
+        avaliacoes: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_avaliacoes').get() as any)?.c || 0),
+        progresso: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_progresso').get() as any)?.c || 0),
+      };
+      sqlite.exec('BEGIN');
+      try {
+        sqlite.exec('DELETE FROM curso_certificados');
+        sqlite.exec('DELETE FROM curso_avaliacoes');
+        sqlite.exec('DELETE FROM curso_progresso');
+        sqlite.exec('COMMIT');
+      } catch (e) {
+        try { sqlite.exec('ROLLBACK'); } catch (_) { }
+        return res.status(500).json({ error: 'Erro ao purgar dados de cursos' });
+      }
+      const after = {
+        certificados: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_certificados').get() as any)?.c || 0),
+        avaliacoes: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_avaliacoes').get() as any)?.c || 0),
+        progresso: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_progresso').get() as any)?.c || 0),
+      };
+      try {
+        logger.info('AUDIT_PURGE_CURSOS', {
+          ts: new Date().toISOString(),
+          performedBy: req.user?.userId,
+          role: req.user?.role,
+          before,
+          after,
+        });
+      } catch (_) { }
+      return res.json({ success: true, before, after });
+    } else {
+      const beforeCertificados = await db.select().from(cursoCertificados);
+      const beforeAvaliacoes = await db.select().from(cursoAvaliacoes);
+      const beforeProgresso = await db.select().from(cursoProgresso);
+      await db.transaction(async (tx: any) => {
+        await tx.delete(cursoCertificados);
+        await tx.delete(cursoAvaliacoes);
+        await tx.delete(cursoProgresso);
+      });
+      const afterCertificados = await db.select().from(cursoCertificados);
+      const afterAvaliacoes = await db.select().from(cursoAvaliacoes);
+      const afterProgresso = await db.select().from(cursoProgresso);
+      const before = {
+        certificados: beforeCertificados.length,
+        avaliacoes: beforeAvaliacoes.length,
+        progresso: beforeProgresso.length,
+      };
+      const after = {
+        certificados: afterCertificados.length,
+        avaliacoes: afterAvaliacoes.length,
+        progresso: afterProgresso.length,
+      };
+      try {
+        logger.info('AUDIT_PURGE_CURSOS', {
+          ts: new Date().toISOString(),
+          performedBy: req.user?.userId,
+          role: req.user?.role,
+          before,
+          after,
+        });
+      } catch (_) { }
+      return res.json({ success: true, before, after });
+    }
+  } catch (error) {
+    logger.error('Erro ao purgar dados de cursos:', error);
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
 
 export default router;

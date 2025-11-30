@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, useMemo } from "react";
 import Cookies from 'js-cookie';
 import { authServiceNew } from '@/services/authServiceNew';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,17 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { 
-  FileText, 
-  Heart, 
-  Sparkles, 
-  TrendingUp, 
-  AlertTriangle, 
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  FileText,
+  Heart,
+  Sparkles,
+  TrendingUp,
+  AlertTriangle,
   CheckCircle2,
   Download,
   QrCode,
   FileSpreadsheet,
-  
+
   Users,
   Shield,
   Activity,
@@ -33,21 +34,21 @@ import {
   Briefcase,
   Clock
 } from "lucide-react";
-import QRCode from "qrcode";
 import Logo from '@/components/Logo';
-import MatrizRisco from "@/components/pgr/MatrizRisco";
-import GraficoDistribuicaoRiscos from "@/components/pgr/GraficoDistribuicaoRiscos";
-import GraficoRadarDimensoes from "@/components/pgr/GraficoRadarDimensoes";
-import GraficoParliament from "@/components/pgr/GraficoParliament";
-import GraficoSankey from "@/components/pgr/GraficoSankey";
-import AreasPrioritarias from "@/components/pgr/AreasPrioritarias";
-import RiskGauge from "@/components/RiskGauge";
+const MatrizRiscoLazy = React.lazy(() => import("@/components/pgr/MatrizRisco"));
+const GraficoDistribuicaoRiscosLazy = React.lazy(() => import("@/components/pgr/GraficoDistribuicaoRiscos"));
+const GraficoRadarDimensoesLazy = React.lazy(() => import("@/components/pgr/GraficoRadarDimensoes"));
+const GraficoParliamentLazy = React.lazy(() => import("@/components/pgr/GraficoParliament"));
+const GraficoSankeyLazy = React.lazy(() => import("@/components/pgr/GraficoSankey"));
+const AreasPrioritariasLazy = React.lazy(() => import("@/components/pgr/AreasPrioritarias"));
+const RiskGaugeLazy = React.lazy(() => import("@/components/RiskGauge"));
 
 interface EmpresaData {
   nome: string;
   cnpj: string;
   endereco: string;
   setor: string;
+  logo?: string;
 }
 
 interface PRGData {
@@ -130,11 +131,12 @@ export default function EmpresaPRG() {
 
   // Buscar dados do PGR ao carregar a página
   useEffect(() => {
+    const controller = new AbortController();
     const fetchPRGData = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Preferir token via serviço centralizado; fallback para cookies/localStorage
         const token = authServiceNew.getToken() || Cookies.get('authToken') || localStorage.getItem('authToken');
         if (!token) {
@@ -149,9 +151,19 @@ export default function EmpresaPRG() {
 
         // Validação prévia do token para evitar 403 na rota /pgr
         try {
-          const checkResp = await fetch('/api/auth/check', {
+          const apiBase = (() => {
+            const envRaw = import.meta.env.VITE_API_URL || '';
+            const origin = typeof window !== 'undefined' ? window.location.origin : '';
+            const raw = envRaw || origin;
+            const trimmed = raw.replace(/\/+$/, '').replace(/\/api$/, '');
+            return /www\.humaniqai\.com\.br$/.test(trimmed) ? 'https://api.humaniqai.com.br' : trimmed;
+          })();
+          const checkResp = await fetch(`${apiBase}/api/auth/check`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
+            signal: controller.signal,
+            credentials: 'include',
+            mode: 'cors',
           });
           if (!checkResp.ok) {
             console.warn('⚠️ [PGR Frontend] Token inválido/expirado. Limpando sessão...');
@@ -162,13 +174,23 @@ export default function EmpresaPRG() {
           console.error('❌ [PGR Frontend] Falha ao validar token:', checkErr);
           throw checkErr instanceof Error ? checkErr : new Error('Falha ao validar token');
         }
-        
-        const response = await fetch('/api/empresas/pgr', {
+
+        const apiBase = (() => {
+          const envRaw = import.meta.env.VITE_API_URL || '';
+          const origin = typeof window !== 'undefined' ? window.location.origin : '';
+          const raw = envRaw || origin;
+          const trimmed = raw.replace(/\/+$/, '').replace(/\/api$/, '');
+          return /www\.humaniqai\.com\.br$/.test(trimmed) ? 'https://api.humaniqai.com.br' : trimmed;
+        })();
+        const response = await fetch(`${apiBase}/api/empresas/pgr`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          }
+          },
+          signal: controller.signal,
+          credentials: 'include',
+          mode: 'cors',
         });
 
         if (!response.ok) {
@@ -180,7 +202,7 @@ export default function EmpresaPRG() {
         console.log('✅ [PGR Frontend] data.empresa existe?', !!data.empresa);
         console.log('✅ [PGR Frontend] data.prg existe?', !!data.prg);
         console.log('✅ [PGR Frontend] Chaves do objeto data:', Object.keys(data));
-        
+
         setPrgData(data.prg);
         setEmpresaData(data.empresa);
         console.log('✅ [PGR Frontend] Estados atualizados');
@@ -192,7 +214,8 @@ export default function EmpresaPRG() {
       }
     };
 
-    fetchPRGData();
+    const t = setTimeout(fetchPRGData, 150);
+    return () => { controller.abort(); clearTimeout(t); };
   }, [periodo, setor]); // Recarregar quando filtros mudarem
 
   // Toggle expansão de recomendação
@@ -229,8 +252,8 @@ export default function EmpresaPRG() {
     // Calcular total de colaboradores avaliados (exclui "Não Avaliado")
     const totalAvaliadosPlano = Array.isArray(prgData?.dadosParliament)
       ? prgData.dadosParliament
-          .filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado')
-          .reduce((acc, d) => acc + (d?.quantidade || 0), 0)
+        .filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado')
+        .reduce((acc, d) => acc + (d?.quantidade || 0), 0)
       : 0;
 
     // Gerar documento HTML completo com todas as recomendações
@@ -483,7 +506,7 @@ export default function EmpresaPRG() {
 
   const handleExportarExcel = () => {
     if (!prgData) return;
-    
+
     // Criar dados CSV simples
     let csv = 'Métrica,Valor,Status\n';
     csv += `Índice Global,${prgData.indiceGlobal}%,${getStatusBadge(prgData.indiceGlobal).label}\n`;
@@ -493,7 +516,7 @@ export default function EmpresaPRG() {
     csv += `Risco de Burnout,${prgData.kpis.riscoBurnout}%,${getStatusBadge(prgData.kpis.riscoBurnout).label}\n`;
     csv += `Maturidade PGR,${prgData.kpis.maturidadePRG}%,${getStatusBadge(prgData.kpis.maturidadePRG).label}\n`;
     csv += `Segurança Psicológica,${prgData.kpis.segurancaPsicologica}%,${getStatusBadge(prgData.kpis.segurancaPsicologica).label}\n`;
-    
+
     // Criar blob e download
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -511,7 +534,7 @@ export default function EmpresaPRG() {
     console.log('🔍 [PDF] prgData existe?', !!prgData);
     console.log('🔍 [PDF] empresaData existe?', !!empresaData);
     console.log('🔍 [PDF] empresaData:', empresaData);
-    
+
     if (!prgData || !empresaData) {
       console.error('❌ [PDF] Dados faltando! prgData:', !!prgData, 'empresaData:', !!empresaData);
       alert('Erro: Dados da empresa ou PGR não carregados. Por favor, recarregue a página.');
@@ -526,8 +549,8 @@ export default function EmpresaPRG() {
     // Calcular total de colaboradores avaliados (exclui "Não Avaliado") para uso consistente no PDF
     const totalAvaliadosPDF = Array.isArray(prgData?.dadosParliament)
       ? prgData.dadosParliament
-          .filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado')
-          .reduce((acc, d) => acc + (d?.quantidade || 0), 0)
+        .filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado')
+        .reduce((acc, d) => acc + (d?.quantidade || 0), 0)
       : 0;
 
     const htmlContent = `
@@ -899,29 +922,29 @@ export default function EmpresaPRG() {
     <div style="text-align: center; margin: 40px 0;">
       <svg width="100%" height="350" viewBox="0 0 500 300" style="max-width: 700px; margin: 0 auto;">
         ${(() => {
-          const categoriasValidas = Array.isArray(prgData.dadosParliament)
-            ? prgData.dadosParliament.filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado')
-            : [];
-          const totalAvaliados = categoriasValidas.reduce((acc, d) => acc + (d?.quantidade || 0), 0);
-          let currentIndex = 0;
-          const circles: string[] = [];
-          
-          categoriasValidas.forEach(categoria => {
-            for (let i = 0; i < (categoria.quantidade || 0); i++) {
-              const angle = totalAvaliados > 0 ? Math.PI - (currentIndex / totalAvaliados) * Math.PI : Math.PI;
-              const radius = 120 + (Math.floor(currentIndex / 15) * 20);
-              const x = 250 + radius * Math.cos(angle);
-              const y = 240 - radius * Math.sin(angle);
-              circles.push(`<circle cx="${x}" cy="${y}" r="5" fill="${categoria.cor}" opacity="0.85" />`);
-              currentIndex++;
-            }
-          });
-          
-          return circles.join('') + `
+        const categoriasValidas = Array.isArray(prgData.dadosParliament)
+          ? prgData.dadosParliament.filter(cat => (cat.categoria || cat.label) !== 'Não Avaliado')
+          : [];
+        const totalAvaliados = categoriasValidas.reduce((acc, d) => acc + (d?.quantidade || 0), 0);
+        let currentIndex = 0;
+        const circles: string[] = [];
+
+        categoriasValidas.forEach(categoria => {
+          for (let i = 0; i < (categoria.quantidade || 0); i++) {
+            const angle = totalAvaliados > 0 ? Math.PI - (currentIndex / totalAvaliados) * Math.PI : Math.PI;
+            const radius = 120 + (Math.floor(currentIndex / 15) * 20);
+            const x = 250 + radius * Math.cos(angle);
+            const y = 240 - radius * Math.sin(angle);
+            circles.push(`<circle cx="${x}" cy="${y}" r="5" fill="${categoria.cor}" opacity="0.85" />`);
+            currentIndex++;
+          }
+        });
+
+        return circles.join('') + `
             <text x="250" y="230" text-anchor="middle" font-size="48" font-weight="900" fill="#667eea">${totalAvaliados}</text>
             <text x="250" y="255" text-anchor="middle" font-size="14" fill="#666">colaboradores avaliados</text>
           `;
-        })()}
+      })()}
       </svg>
     </div>
 
@@ -956,12 +979,12 @@ export default function EmpresaPRG() {
 
       <div class="grid-2" style="gap: 20px;">
         ${prgData.dadosSankey.links.map((link, idx) => {
-          const sourceNode = prgData.dadosSankey.nodes[link.source];
-          const targetNode = prgData.dadosSankey.nodes[link.target];
-          const colors = ['#60a5fa', '#f97316', '#10b981'];
-          const color = colors[idx % colors.length];
-          
-          return `
+        const sourceNode = prgData.dadosSankey.nodes[link.source];
+        const targetNode = prgData.dadosSankey.nodes[link.target];
+        const colors = ['#60a5fa', '#f97316', '#10b981'];
+        const color = colors[idx % colors.length];
+
+        return `
             <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid ${color};">
               <div style="font-weight: 700; color: #1e293b; margin-bottom: 8px;">
                 ${sourceNode.name} → ${targetNode.name}
@@ -974,7 +997,7 @@ export default function EmpresaPRG() {
               </div>
             </div>
           `;
-        }).join('')}
+      }).join('')}
       </div>
 
       <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.9); border-radius: 8px;">
@@ -1010,10 +1033,10 @@ export default function EmpresaPRG() {
           <div class="progress-fill" style="width: ${dim.valor}%"></div>
         </div>
         <p style="margin-top: 8px; font-size: 13px; color: ${dim.valor >= dim.meta ? '#10b981' : '#ef4444'};">
-          ${dim.valor >= dim.meta 
-            ? `✓ Meta atingida (${(dim.valor - dim.meta).toFixed(1)}% acima)` 
-            : `⚠ Abaixo da meta (${(dim.meta - dim.valor).toFixed(1)}% para atingir)`
-          }
+          ${dim.valor >= dim.meta
+          ? `✓ Meta atingida (${(dim.valor - dim.meta).toFixed(1)}% acima)`
+          : `⚠ Abaixo da meta (${(dim.meta - dim.valor).toFixed(1)}% para atingir)`
+        }
         </p>
       </div>
     `).join('')}
@@ -1038,12 +1061,12 @@ export default function EmpresaPRG() {
       </thead>
       <tbody>
         ${prgData.matrizRiscos.map(risco => {
-          const nivel = risco.probabilidade <= 'B' && risco.severidade <= 2 ? 'Baixo' 
-                      : risco.probabilidade <= 'C' && risco.severidade <= 3 ? 'Moderado'
-                      : risco.probabilidade <= 'D' && risco.severidade <= 4 ? 'Alto' 
-                      : 'Crítico';
+          const nivel = risco.probabilidade <= 'B' && risco.severidade <= 2 ? 'Baixo'
+            : risco.probabilidade <= 'C' && risco.severidade <= 3 ? 'Moderado'
+              : risco.probabilidade <= 'D' && risco.severidade <= 4 ? 'Alto'
+                : 'Crítico';
           const cor = nivel === 'Baixo' ? '#10b981' : nivel === 'Moderado' ? '#f59e0b' : nivel === 'Alto' ? '#ef4444' : '#991b1b';
-          
+
           return `
             <tr>
               <td><strong>${risco.nome}</strong></td>
@@ -1106,9 +1129,9 @@ export default function EmpresaPRG() {
         </div>
       </div>
       
-      ${prgData.aiAnalysis.sintese.split('\n\n').map(paragrafo => 
-        `<p style="margin: 16px 0; text-align: justify;">${paragrafo}</p>`
-      ).join('')}
+      ${prgData.aiAnalysis.sintese.split('\n\n').map(paragrafo =>
+          `<p style="margin: 16px 0; text-align: justify;">${paragrafo}</p>`
+        ).join('')}
     </div>
   </div>
 
@@ -1287,13 +1310,13 @@ export default function EmpresaPRG() {
     <p style="font-weight: 600; margin-bottom: 8px;">HumaniQ AI - Plataforma de Avaliação Psicológica</p>
     <p>Programa de Gerenciamento de Riscos (PGR)</p>
     <p style="margin-top: 16px; font-size: 12px;">
-      Relatório gerado automaticamente em ${new Date().toLocaleDateString('pt-BR', { 
-        day: '2-digit', 
-        month: 'long', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })}
+      Relatório gerado automaticamente em ${new Date().toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })}
     </p>
     <p style="margin-top: 8px; font-size: 11px; color: #999;">
       © ${new Date().getFullYear()} HumaniQ AI. Todos os direitos reservados. | Conforme NR-01, ISO 45003 e LGPD
@@ -1332,6 +1355,7 @@ export default function EmpresaPRG() {
 
   const handleGerarQRCode = async () => {
     try {
+      const { default: QRCode } = await import("qrcode");
       // Garantir token válido usando serviço centralizado com fallback
       const token = authServiceNew.getToken() || Cookies.get('authToken') || localStorage.getItem('authToken');
       if (!token) {
@@ -1340,9 +1364,18 @@ export default function EmpresaPRG() {
       }
 
       // Validação prévia do token
-      const checkResp = await fetch('/api/auth/check', {
+      const apiBase = (() => {
+        const envRaw = import.meta.env.VITE_API_URL || '';
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        const raw = envRaw || origin;
+        const trimmed = raw.replace(/\/+$/, '').replace(/\/api$/, '');
+        return /www\.humaniqai\.com\.br$/.test(trimmed) ? 'https://api.humaniqai.com.br' : trimmed;
+      })();
+      const checkResp = await fetch(`${apiBase}/api/auth/check`, {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
+        mode: 'cors',
       });
       if (!checkResp.ok) {
         await authServiceNew.logout();
@@ -1351,7 +1384,14 @@ export default function EmpresaPRG() {
       }
 
       // Buscar dados da empresa para obter o ID
-      const empresaResponse = await fetch('/api/empresas/me', {
+      const apiBase2 = (() => {
+        const envRaw = import.meta.env.VITE_API_URL || '';
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        const raw = envRaw || origin;
+        const trimmed = raw.replace(/\/+$/, '').replace(/\/api$/, '');
+        return /www\.humaniqai\.com\.br$/.test(trimmed) ? 'https://api.humaniqai.com.br' : trimmed;
+      })();
+      const empresaResponse = await fetch(`${apiBase2}/api/empresas/me`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -1372,7 +1412,7 @@ export default function EmpresaPRG() {
       const shareToken = tokenRegex.test(rawToken)
         ? rawToken
         : `${String(empresaId).replace(/[^A-Za-z0-9_-]/g, '')}-${Date.now()}`;
-      
+
       // URL pública para compartilhamento (dev/prod, corrige localhost quando possível)
       const baseUrl = resolvePublicBaseUrl();
       const publicUrl = `${baseUrl}/pgr/compartilhado/${encodeURIComponent(shareToken)}`;
@@ -1387,10 +1427,10 @@ export default function EmpresaPRG() {
           light: '#ffffff'
         }
       });
-      
+
       const modal = document.createElement('div');
       modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 12px;';
-      
+
       const content = document.createElement('div');
       content.style.cssText = 'background: white; padding: 20px; border-radius: 16px; text-align: center; width: 100%; max-width: 560px; max-height: 90%; overflow: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);';
 
@@ -1419,7 +1459,7 @@ export default function EmpresaPRG() {
           <a href="${qrCodeDataUrl}" download="QRCode-PGR-Publico.png" style="display: inline-block; padding: 10px 22px; background: #10b981; color: white; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600;">Baixar QR Code</a>
         </div>
       `;
-      
+
       modal.appendChild(content);
       document.body.appendChild(modal);
       modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
@@ -1462,7 +1502,7 @@ export default function EmpresaPRG() {
       console.log('✅ [QR Code] Token de compartilhamento gerado:', shareToken);
       console.log('✅ [QR Code] Base utilizada:', baseUrl);
       console.log('✅ [QR Code] URL pública completa:', publicUrl);
-      
+
     } catch (error) {
       console.error('❌ [QR Code] Erro ao gerar QR Code:', error);
       alert('Erro ao gerar QR Code. Tente novamente.');
@@ -1479,17 +1519,7 @@ export default function EmpresaPRG() {
     }
   };
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-purple-950 p-6 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-400 mx-auto" />
-          <p className="text-white/70 text-lg">Carregando dados do PGR...</p>
-        </div>
-      </div>
-    );
-  }
+  // Loading state removed for non-blocking rendering
 
   // Error state
   if (error) {
@@ -1513,7 +1543,7 @@ export default function EmpresaPRG() {
   const statusGlobal = getStatusBadge(indiceGlobal);
 
   // Preparar KPIs com dados reais
-  const kpis = prgData ? [
+  const kpis = useMemo(() => prgData ? [
     {
       titulo: "Índice de Estresse Ocupacional",
       valor: prgData.kpis.indiceEstresse,
@@ -1556,22 +1586,42 @@ export default function EmpresaPRG() {
       color: "text-green-500",
       bgColor: "bg-green-500/10"
     }
-  ] : [];
+  ] : [], [prgData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-purple-950 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        
+
         {/* IDENTIFICAÇÃO DA EMPRESA */}
-        {empresaData && (
+        {loading ? (
           <Card className="border-0 bg-white/5 backdrop-blur-md shadow-lg">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-bold text-white">{empresaData.nome}</h2>
-                  <div className="flex gap-4 text-sm text-white/70 mt-1">
-                    
-                    {empresaData.setor !== 'Não informado' && <span>Setor: {empresaData.setor}</span>}
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-64 bg-white/10" />
+                  <Skeleton className="h-4 w-32 bg-white/10" />
+                </div>
+                <Skeleton className="h-6 w-24 bg-white/10" />
+              </div>
+            </CardContent>
+          </Card>
+        ) : empresaData && (
+          <Card className="border-0 bg-white/5 backdrop-blur-md shadow-lg">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full overflow-hidden bg-white/10 flex items-center justify-center border border-white/20">
+                    {empresaData.logo ? (
+                      <img src={empresaData.logo} alt={`Logo de ${empresaData.nome}`} className="h-full w-full object-contain" />
+                    ) : (
+                      <Logo size="sm" showText={false} className="h-6 w-6 text-white" />
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">{empresaData.nome}</h2>
+                    <div className="flex gap-4 text-sm text-white/70 mt-1">
+                      {empresaData.setor !== 'Não informado' && <span>Setor: {empresaData.setor}</span>}
+                    </div>
                   </div>
                 </div>
                 <Badge className="bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border-white/20">
@@ -1585,11 +1635,11 @@ export default function EmpresaPRG() {
         {/* HEADER - Inspirado no EmpresaEstadoPsicossocial */}
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-3xl -z-10"></div>
-          
+
           <Card className="border-0 bg-white/10 backdrop-blur-2xl shadow-2xl rounded-3xl overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/30 to-cyan-500/30 rounded-full blur-3xl -z-10 -translate-x-1/2 translate-y-1/2"></div>
-            
+
             <CardContent className="p-12">
               <div className="flex items-start justify-between gap-8 flex-wrap">
                 <div className="flex-1 min-w-[300px] space-y-6">
@@ -1646,11 +1696,17 @@ export default function EmpresaPRG() {
 
                 {/* Risk Gauge - Energy Efficiency Style */}
                 <div className="flex items-center justify-center">
-                  <RiskGauge 
-                    value={indiceGlobal}
-                    totalTests={prgData?.totalTestes || 0}
-                    size="medium"
-                  />
+                  {loading ? (
+                    <Skeleton className="h-48 w-48 rounded-full bg-white/10" />
+                  ) : (
+                    <Suspense fallback={<Skeleton className="h-48 w-48 rounded-full bg-white/10" />}>
+                      <RiskGaugeLazy
+                        value={indiceGlobal}
+                        totalTests={prgData?.totalTestes || 0}
+                        size="medium"
+                      />
+                    </Suspense>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -1726,27 +1782,45 @@ export default function EmpresaPRG() {
 
         {/* KPIS - INDICADORES-CHAVE */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {kpis.map((kpi, index) => (
-            <Card key={index} className="border-0 bg-white/10 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all" data-testid={`card-kpi-${index}`}>
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl ${kpi.bgColor}`}>
-                    <kpi.icon className={`h-6 w-6 ${kpi.color}`} />
+          {loading ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <Card key={index} className="border-0 bg-white/10 backdrop-blur-xl shadow-xl">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <Skeleton className="h-12 w-12 rounded-xl bg-white/10" />
+                    <Skeleton className="h-6 w-20 rounded-full bg-white/10" />
                   </div>
-                  <Badge className={getStatusBadge(kpi.valor).color + " backdrop-blur-xl"}>
-                    {getStatusBadge(kpi.valor).label}
-                  </Badge>
-                </div>
-                <h3 className="text-sm font-medium text-white/80 mb-3">{kpi.titulo}</h3>
-                <div className="space-y-2">
-                  <div className="flex items-end gap-2">
-                    <span className="text-4xl font-black text-white">{kpi.valor}%</span>
+                  <Skeleton className="h-4 w-32 mb-3 bg-white/10" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-10 w-16 bg-white/10" />
+                    <Skeleton className="h-2 w-full bg-white/10" />
                   </div>
-                  <Progress value={kpi.valor} className="h-2" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            kpis.map((kpi, index) => (
+              <Card key={index} className="border-0 bg-white/10 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all" data-testid={`card-kpi-${index}`}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`p-3 rounded-xl ${kpi.bgColor}`}>
+                      <kpi.icon className={`h-6 w-6 ${kpi.color}`} />
+                    </div>
+                    <Badge className={getStatusBadge(kpi.valor).color + " backdrop-blur-xl"}>
+                      {getStatusBadge(kpi.valor).label}
+                    </Badge>
+                  </div>
+                  <h3 className="text-sm font-medium text-white/80 mb-3">{kpi.titulo}</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-end gap-2">
+                      <span className="text-4xl font-black text-white">{kpi.valor}%</span>
+                    </div>
+                    <Progress value={kpi.valor} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
 
         {/* ANÁLISE INTELIGENTE DA IA - VERSÃO REVOLUCIONÁRIA */}
@@ -1839,45 +1913,45 @@ export default function EmpresaPRG() {
                   const texto = prgData.aiAnalysis.sintese
                     .replace(/\*\*/g, '') // Remover asteriscos
                     .replace(/\*/g, '');
-                  
+
                   // Dividir por parágrafos
                   const paragrafos = texto.split('\n\n').filter(p => p.trim());
-                  
+
                   // Filtrar para remover a seção de "ÁREAS PRIORITÁRIAS PARA INTERVENÇÃO"
                   // pois agora temos um componente visual moderno para isso
                   let pularProximo = false;
-                  
+
                   return paragrafos.map((paragrafo, idx) => {
                     // Detectar se é a seção de áreas prioritárias
-                    const ehSecaoAreasPrioritarias = paragrafo.includes('ÁREAS PRIORITÁRIAS') || 
-                                                      paragrafo.includes('áreas prioritárias') ||
-                                                      paragrafo.includes('Foram identificadas') && paragrafo.includes('dimensões');
-                    
+                    const ehSecaoAreasPrioritarias = paragrafo.includes('ÁREAS PRIORITÁRIAS') ||
+                      paragrafo.includes('áreas prioritárias') ||
+                      paragrafo.includes('Foram identificadas') && paragrafo.includes('dimensões');
+
                     // Se encontrou o título, pular este e o próximo (que é a lista)
                     if (ehSecaoAreasPrioritarias) {
                       pularProximo = true;
                       return null;
                     }
-                    
+
                     // Se deve pular este parágrafo (é a lista de áreas prioritárias)
                     if (pularProximo) {
                       const linhas = paragrafo.split('\n');
                       const temListaDePercentuais = linhas.some(l => l.match(/\d+%\s*\(/));
-                      
+
                       if (temListaDePercentuais) {
                         pularProximo = false;
                         return null;
                       }
                       pularProximo = false;
                     }
-                    
+
                     // Detectar se é um título (começa com letra maiúscula e tem menos de 80 chars sem ponto final)
                     const ehTitulo = paragrafo.length < 80 && !paragrafo.endsWith('.') && paragrafo === paragrafo.toUpperCase();
-                    
+
                     // Detectar listas (linhas que começam com •, -, ou número)
                     const linhas = paragrafo.split('\n');
                     const ehLista = linhas.some(l => l.trim().match(/^[•\-\d]/));
-                    
+
                     if (ehTitulo) {
                       return (
                         <div key={idx} className="flex items-center gap-3 pt-4 pb-2">
@@ -1888,7 +1962,7 @@ export default function EmpresaPRG() {
                         </div>
                       );
                     }
-                    
+
                     if (ehLista) {
                       return (
                         <div key={idx} className="bg-white/5 backdrop-blur-xl rounded-xl p-5 border border-white/10">
@@ -1896,7 +1970,7 @@ export default function EmpresaPRG() {
                             {linhas.map((linha, i) => {
                               const textoLimpo = linha.trim().replace(/^[•\-\d\.]+\s*/, '');
                               if (!textoLimpo) return null;
-                              
+
                               return (
                                 <div key={i} className="flex items-start gap-3">
                                   <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
@@ -1908,7 +1982,7 @@ export default function EmpresaPRG() {
                         </div>
                       );
                     }
-                    
+
                     // Parágrafo normal
                     return (
                       <div key={idx} className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl rounded-xl p-5 border border-white/10">
@@ -1919,10 +1993,14 @@ export default function EmpresaPRG() {
                 })()}
               </div>
             ) : (
-              <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-                <div className="flex items-center justify-center gap-3 py-8">
-                  <Loader2 className="h-6 w-6 text-blue-300 animate-spin" />
-                  <p className="text-white/70 text-sm">Gerando análise inteligente...</p>
+              <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 space-y-4">
+                <Skeleton className="h-6 w-3/4 bg-white/10" />
+                <Skeleton className="h-4 w-full bg-white/10" />
+                <Skeleton className="h-4 w-full bg-white/10" />
+                <Skeleton className="h-4 w-5/6 bg-white/10" />
+                <div className="pt-4 space-y-2">
+                  <Skeleton className="h-4 w-full bg-white/10" />
+                  <Skeleton className="h-4 w-full bg-white/10" />
                 </div>
               </div>
             )}
@@ -1930,7 +2008,9 @@ export default function EmpresaPRG() {
             {/* Áreas Prioritárias - Visualização Gráfica */}
             {prgData?.aiAnalysis.sintese && (
               <div className="mt-6">
-                <AreasPrioritarias texto={prgData.aiAnalysis.sintese} />
+                <Suspense fallback={<Skeleton className="h-64 w-full rounded-xl bg-white/10" />}>
+                  <AreasPrioritariasLazy texto={prgData.aiAnalysis.sintese} />
+                </Suspense>
               </div>
             )}
 
@@ -2000,23 +2080,51 @@ export default function EmpresaPRG() {
 
           {/* GERAL - Gráfico de Radar */}
           <TabsContent value="geral" className="space-y-6">
-            {/* 📊 GRÁFICO PARLIAMENT - Distribuição de Colaboradores */}
-            {prgData && <GraficoParliament dados={prgData.dadosParliament} />}
+            {loading ? (
+              <div className="space-y-6">
+                <Skeleton className="h-[400px] w-full rounded-xl bg-white/10" />
+                <Skeleton className="h-[300px] w-full rounded-xl bg-white/10" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Skeleton className="h-[300px] w-full rounded-xl bg-white/10" />
+                  <Skeleton className="h-[300px] w-full rounded-xl bg-white/10" />
+                </div>
+              </div>
+            ) : (
+              <>
+                {prgData && (
+                  <Suspense fallback={<Skeleton className="h-[400px] w-full rounded-xl bg-white/10" />}>
+                    <GraficoParliamentLazy dados={prgData.dadosParliament} />
+                  </Suspense>
+                )}
 
-            {/* 📊 GRÁFICO SANKEY - Fluxo entre Estados */}
-            {prgData && <GraficoSankey dados={prgData.dadosSankey} />}
+                {prgData && (
+                  <Suspense fallback={<Skeleton className="h-[300px] w-full rounded-xl bg-white/10" />}>
+                    <GraficoSankeyLazy dados={prgData.dadosSankey} />
+                  </Suspense>
+                )}
 
-            {/* Gráfico Radar - Dimensões Psicossociais */}
-            {prgData && <GraficoRadarDimensoes dados={prgData.dimensoesPsicossociais} />}
+                {prgData && (
+                  <Suspense fallback={<Skeleton className="h-[300px] w-full rounded-xl bg-white/10" />}>
+                    <GraficoRadarDimensoesLazy dados={prgData.dimensoesPsicossociais} />
+                  </Suspense>
+                )}
 
-            {/* Matriz de Risco Qualitativa */}
-            {prgData && <MatrizRisco riscos={prgData.matrizRiscos} />}
+                {prgData && (
+                  <Suspense fallback={<Skeleton className="h-[400px] w-full rounded-xl bg-white/10" />}>
+                    <MatrizRiscoLazy riscos={prgData.matrizRiscos} />
+                  </Suspense>
+                )}
+              </>
+            )}
           </TabsContent>
 
           {/* CLIMA ORGANIZACIONAL */}
           <TabsContent value="clima" className="space-y-6">
-            {/* Gráfico de Distribuição de Riscos */}
-            {prgData && <GraficoDistribuicaoRiscos dados={prgData.distribuicaoRiscos} />}
+            {prgData && (
+              <Suspense fallback={<Skeleton className="h-[300px] w-full rounded-xl bg-white/10" />}>
+                <GraficoDistribuicaoRiscosLazy dados={prgData.distribuicaoRiscos} />
+              </Suspense>
+            )}
 
             {/* Card com métricas de clima */}
             <Card className="border-0 bg-white/10 backdrop-blur-xl shadow-xl">
@@ -2038,8 +2146,11 @@ export default function EmpresaPRG() {
 
           {/* ESTRESSE OCUPACIONAL */}
           <TabsContent value="estresse" className="space-y-6">
-            {/* Gráfico Radar para Estresse */}
-            {prgData && <GraficoRadarDimensoes dados={prgData.dimensoesPsicossociais} />}
+            {prgData && (
+              <Suspense fallback={<Skeleton className="h-[300px] w-full rounded-xl bg-white/10" />}>
+                <GraficoRadarDimensoesLazy dados={prgData.dimensoesPsicossociais} />
+              </Suspense>
+            )}
 
             {/* Card com métricas de estresse */}
             <Card className="border-0 bg-white/10 backdrop-blur-xl shadow-xl">
@@ -2054,7 +2165,7 @@ export default function EmpresaPRG() {
                   </div>
                   <Progress value={prgData?.kpis.indiceEstresse} className="h-3" />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 mt-6">
                   <div className={`p-4 rounded-xl ${(prgData?.kpis.riscoBurnout || 0) > 60 ? 'bg-red-500/20 border-red-500/30' : 'bg-yellow-500/20 border-yellow-500/30'} border`}>
                     <p className={`text-sm font-semibold mb-1 ${(prgData?.kpis.riscoBurnout || 0) > 60 ? 'text-red-300' : 'text-yellow-300'}`}>Risco de Burnout</p>
@@ -2083,12 +2194,11 @@ export default function EmpresaPRG() {
                 <div className="bg-gradient-to-br from-red-500/20 to-orange-500/20 border border-red-500/30 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-white font-bold text-lg">Risco de Burnout</h3>
-                    <Badge className={`${
-                      (prgData?.kpis.riscoBurnout || 0) > 60 ? 'bg-red-500' : 
-                      (prgData?.kpis.riscoBurnout || 0) > 40 ? 'bg-yellow-500' : 'bg-green-500'
-                    } text-white`}>
-                      {(prgData?.kpis.riscoBurnout || 0) > 60 ? 'Crítico' : 
-                       (prgData?.kpis.riscoBurnout || 0) > 40 ? 'Atenção' : 'Controlado'}
+                    <Badge className={`${(prgData?.kpis.riscoBurnout || 0) > 60 ? 'bg-red-500' :
+                        (prgData?.kpis.riscoBurnout || 0) > 40 ? 'bg-yellow-500' : 'bg-green-500'
+                      } text-white`}>
+                      {(prgData?.kpis.riscoBurnout || 0) > 60 ? 'Crítico' :
+                        (prgData?.kpis.riscoBurnout || 0) > 40 ? 'Atenção' : 'Controlado'}
                     </Badge>
                   </div>
                   <div className="flex items-end gap-2">
@@ -2108,14 +2218,12 @@ export default function EmpresaPRG() {
                         <div key={idx} className="bg-white/5 rounded-xl p-4 border border-white/10">
                           <p className="text-white/70 text-sm mb-2">{dimensao.dimensao}</p>
                           <div className="flex items-end gap-2">
-                            <span className={`text-2xl font-bold ${
-                              dimensao.valor > 70 ? 'text-green-400' :
-                              dimensao.valor > 50 ? 'text-yellow-400' : 'text-red-400'
-                            }`}>{Math.round(dimensao.valor)}%</span>
-                            <Badge className={`mb-1 text-xs ${
-                              nivel === 'Crítico' ? 'bg-red-500/80' :
-                              nivel === 'Atenção' ? 'bg-yellow-500/80' : 'bg-green-500/80'
-                            }`}>{nivel}</Badge>
+                            <span className={`text-2xl font-bold ${dimensao.valor > 70 ? 'text-green-400' :
+                                dimensao.valor > 50 ? 'text-yellow-400' : 'text-red-400'
+                              }`}>{Math.round(dimensao.valor)}%</span>
+                            <Badge className={`mb-1 text-xs ${nivel === 'Crítico' ? 'bg-red-500/80' :
+                                nivel === 'Atenção' ? 'bg-yellow-500/80' : 'bg-green-500/80'
+                              }`}>{nivel}</Badge>
                           </div>
                           <Progress value={dimensao.valor} className="h-2 mt-2" />
                         </div>
@@ -2125,15 +2233,15 @@ export default function EmpresaPRG() {
                 </div>
 
                 {/* Se não houver dimensões específicas de burnout */}
-                {prgData?.dimensoesPsicossociais.filter(d => 
+                {prgData?.dimensoesPsicossociais.filter(d =>
                   d.dimensao && ['Burnout', 'Exaustão', 'Esgotamento'].some(termo => d.dimensao.includes(termo))
                 ).length === 0 && (
-                  <div className="text-center py-6 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                    <Logo size="sm" showText={false} className="h-12 w-12 text-blue-400 mx-auto mb-3" />
-                    <p className="text-white/70">Aguardando testes específicos de burnout</p>
-                    <p className="text-white/50 text-sm mt-1">O risco atual é calculado com base nos indicadores gerais de estresse</p>
-                  </div>
-                )}
+                    <div className="text-center py-6 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                      <Logo size="sm" showText={false} className="h-12 w-12 text-blue-400 mx-auto mb-3" />
+                      <p className="text-white/70">Aguardando testes específicos de burnout</p>
+                      <p className="text-white/50 text-sm mt-1">O risco atual é calculado com base nos indicadores gerais de estresse</p>
+                    </div>
+                  )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -2159,14 +2267,12 @@ export default function EmpresaPRG() {
                         <div key={idx} className="bg-white/5 rounded-xl p-4 border border-white/10">
                           <p className="text-white/70 text-sm mb-2">{dimensao.dimensao}</p>
                           <div className="flex items-end gap-2">
-                            <span className={`text-2xl font-bold ${
-                              dimensao.valor > 70 ? 'text-green-400' :
-                              dimensao.valor > 50 ? 'text-yellow-400' : 'text-red-400'
-                            }`}>{Math.round(dimensao.valor)}%</span>
-                            <Badge className={`mb-1 text-xs ${
-                              nivel === 'Crítico' ? 'bg-red-500/80' :
-                              nivel === 'Atenção' ? 'bg-yellow-500/80' : 'bg-green-500/80'
-                            }`}>{nivel}</Badge>
+                            <span className={`text-2xl font-bold ${dimensao.valor > 70 ? 'text-green-400' :
+                                dimensao.valor > 50 ? 'text-yellow-400' : 'text-red-400'
+                              }`}>{Math.round(dimensao.valor)}%</span>
+                            <Badge className={`mb-1 text-xs ${nivel === 'Crítico' ? 'bg-red-500/80' :
+                                nivel === 'Atenção' ? 'bg-yellow-500/80' : 'bg-green-500/80'
+                              }`}>{nivel}</Badge>
                           </div>
                           <Progress value={dimensao.valor} className="h-2 mt-2" />
                         </div>
@@ -2176,35 +2282,35 @@ export default function EmpresaPRG() {
                 </div>
 
                 {/* Indicador Geral de QVT */}
-                {prgData?.dimensoesPsicossociais.filter(d => 
+                {prgData?.dimensoesPsicossociais.filter(d =>
                   d.dimensao && ['Satisfação', 'Saúde', 'Crescimento', 'Compensação', 'Condições'].some(termo => d.dimensao.includes(termo))
                 ).length > 0 && (
-                  <div className="bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-xl p-6">
-                    <h3 className="text-white font-bold text-lg mb-4">Índice Geral de QVT</h3>
-                    <div className="flex items-end gap-2">
-                      <span className="text-white text-5xl font-bold">
-                        {Math.round(
-                          prgData.dimensoesPsicossociais
-                            .filter(d => d.dimensao && ['Satisfação', 'Saúde', 'Crescimento', 'Compensação', 'Condições'].some(termo => d.dimensao.includes(termo)))
-                            .reduce((acc, d) => acc + d.valor, 0) / 
-                          prgData.dimensoesPsicossociais.filter(d => d.dimensao && ['Satisfação', 'Saúde', 'Crescimento', 'Compensação', 'Condições'].some(termo => d.dimensao.includes(termo))).length
-                        )}%
-                      </span>
-                      <span className="text-white/60 mb-2">média geral</span>
+                    <div className="bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-xl p-6">
+                      <h3 className="text-white font-bold text-lg mb-4">Índice Geral de QVT</h3>
+                      <div className="flex items-end gap-2">
+                        <span className="text-white text-5xl font-bold">
+                          {Math.round(
+                            prgData.dimensoesPsicossociais
+                              .filter(d => d.dimensao && ['Satisfação', 'Saúde', 'Crescimento', 'Compensação', 'Condições'].some(termo => d.dimensao.includes(termo)))
+                              .reduce((acc, d) => acc + d.valor, 0) /
+                            prgData.dimensoesPsicossociais.filter(d => d.dimensao && ['Satisfação', 'Saúde', 'Crescimento', 'Compensação', 'Condições'].some(termo => d.dimensao.includes(termo))).length
+                          )}%
+                        </span>
+                        <span className="text-white/60 mb-2">média geral</span>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Se não houver dimensões específicas de QVT */}
-                {prgData?.dimensoesPsicossociais.filter(d => 
+                {prgData?.dimensoesPsicossociais.filter(d =>
                   d.dimensao && ['Satisfação', 'Saúde', 'Crescimento', 'Compensação', 'Condições'].some(termo => d.dimensao.includes(termo))
                 ).length === 0 && (
-                  <div className="text-center py-6 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                    <Logo size="sm" showText={false} className="h-12 w-12 text-blue-400 mx-auto mb-3" />
-                    <p className="text-white/70">Aguardando testes de Qualidade de Vida no Trabalho</p>
-                    <p className="text-white/50 text-sm mt-1">Realize avaliações de QVT para ver indicadores detalhados aqui</p>
-                  </div>
-                )}
+                    <div className="text-center py-6 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                      <Logo size="sm" showText={false} className="h-12 w-12 text-blue-400 mx-auto mb-3" />
+                      <p className="text-white/70">Aguardando testes de Qualidade de Vida no Trabalho</p>
+                      <p className="text-white/50 text-sm mt-1">Realize avaliações de QVT para ver indicadores detalhados aqui</p>
+                    </div>
+                  )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -2223,12 +2329,11 @@ export default function EmpresaPRG() {
                 <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-white font-bold text-lg">Segurança Psicológica</h3>
-                    <Badge className={`${
-                      (prgData?.kpis.segurancaPsicologica || 0) > 70 ? 'bg-green-500' : 
-                      (prgData?.kpis.segurancaPsicologica || 0) > 50 ? 'bg-yellow-500' : 'bg-red-500'
-                    } text-white`}>
-                      {(prgData?.kpis.segurancaPsicologica || 0) > 70 ? 'Saudável' : 
-                       (prgData?.kpis.segurancaPsicologica || 0) > 50 ? 'Atenção' : 'Crítico'}
+                    <Badge className={`${(prgData?.kpis.segurancaPsicologica || 0) > 70 ? 'bg-green-500' :
+                        (prgData?.kpis.segurancaPsicologica || 0) > 50 ? 'bg-yellow-500' : 'bg-red-500'
+                      } text-white`}>
+                      {(prgData?.kpis.segurancaPsicologica || 0) > 70 ? 'Saudável' :
+                        (prgData?.kpis.segurancaPsicologica || 0) > 50 ? 'Atenção' : 'Crítico'}
                     </Badge>
                   </div>
                   <div className="flex items-end gap-2 mb-4">
@@ -2249,14 +2354,12 @@ export default function EmpresaPRG() {
                         <div key={idx} className="bg-white/5 rounded-xl p-4 border border-white/10">
                           <p className="text-white/70 text-sm mb-2">{dimensao.dimensao}</p>
                           <div className="flex items-end gap-2">
-                            <span className={`text-2xl font-bold ${
-                              dimensao.valor > 70 ? 'text-green-400' :
-                              dimensao.valor > 50 ? 'text-yellow-400' : 'text-red-400'
-                            }`}>{Math.round(dimensao.valor)}%</span>
-                            <Badge className={`mb-1 text-xs ${
-                              nivel === 'Crítico' ? 'bg-red-500/80' :
-                              nivel === 'Atenção' ? 'bg-yellow-500/80' : 'bg-green-500/80'
-                            }`}>{nivel}</Badge>
+                            <span className={`text-2xl font-bold ${dimensao.valor > 70 ? 'text-green-400' :
+                                dimensao.valor > 50 ? 'text-yellow-400' : 'text-red-400'
+                              }`}>{Math.round(dimensao.valor)}%</span>
+                            <Badge className={`mb-1 text-xs ${nivel === 'Crítico' ? 'bg-red-500/80' :
+                                nivel === 'Atenção' ? 'bg-yellow-500/80' : 'bg-green-500/80'
+                              }`}>{nivel}</Badge>
                           </div>
                           <Progress value={dimensao.valor} className="h-2 mt-2" />
                         </div>
@@ -2272,7 +2375,7 @@ export default function EmpresaPRG() {
                     <div>
                       <p className="text-white font-semibold mb-1">Conformidade Legal</p>
                       <p className="text-white/70 text-sm">
-                        A empresa mantém canais de denúncia confidenciais e políticas claras de prevenção ao assédio, 
+                        A empresa mantém canais de denúncia confidenciais e políticas claras de prevenção ao assédio,
                         em conformidade com a Lei nº 14.457/2022 e NR-01.
                       </p>
                     </div>
@@ -2280,15 +2383,15 @@ export default function EmpresaPRG() {
                 </div>
 
                 {/* Se não houver dimensões específicas */}
-                {prgData?.dimensoesPsicossociais.filter(d => 
+                {prgData?.dimensoesPsicossociais.filter(d =>
                   d.dimensao && ['Assédio', 'Violência', 'Segurança Psicológica'].some(termo => d.dimensao.includes(termo))
                 ).length === 0 && (
-                  <div className="text-center py-6 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                    <Logo size="sm" showText={false} className="h-12 w-12 text-blue-400 mx-auto mb-3" />
-                    <p className="text-white/70">Aguardando testes específicos de assédio e segurança</p>
-                    <p className="text-white/50 text-sm mt-1">O indicador atual é baseado em segurança psicológica geral</p>
-                  </div>
-                )}
+                    <div className="text-center py-6 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                      <Logo size="sm" showText={false} className="h-12 w-12 text-blue-400 mx-auto mb-3" />
+                      <p className="text-white/70">Aguardando testes específicos de assédio e segurança</p>
+                      <p className="text-white/50 text-sm mt-1">O indicador atual é baseado em segurança psicológica geral</p>
+                    </div>
+                  )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -2313,15 +2416,15 @@ export default function EmpresaPRG() {
             {prgData?.recomendacoes.map((rec, index) => {
               const IconComponent = getIconForRecomendacao(rec.categoria);
               const expandida = recomendacoesExpandidas.has(index);
-              
+
               return (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="bg-white/10 rounded-xl border border-white/10 overflow-hidden transition-all hover:shadow-lg"
                   data-testid={`recomendacao-${index}`}
                 >
                   {/* Header da recomendação */}
-                  <div 
+                  <div
                     className="flex items-start gap-4 p-5 cursor-pointer hover:bg-white/15 transition-all"
                     onClick={() => toggleRecomendacao(index)}
                   >
@@ -2333,7 +2436,7 @@ export default function EmpresaPRG() {
                         <h4 className="text-white font-bold text-lg">{rec.titulo}</h4>
                         <Badge variant="outline" className={
                           rec.prioridade === "alta" || rec.prioridade === "Alta"
-                            ? "bg-red-600/90 text-white border-red-400 font-bold" 
+                            ? "bg-red-600/90 text-white border-red-400 font-bold"
                             : "bg-yellow-600/90 text-white border-yellow-400 font-bold"
                         }>
                           {rec.prioridade === "alta" || rec.prioridade === "Alta" ? "Alta" : "Média"}
@@ -2343,7 +2446,7 @@ export default function EmpresaPRG() {
                         </Badge>
                       </div>
                       <p className="text-white/95 text-sm leading-relaxed">{rec.descricao}</p>
-                      
+
                       {/* Indicadores rápidos */}
                       <div className="flex items-center gap-4 mt-3 text-xs text-white/70">
                         <div className="flex items-center gap-1">
@@ -2421,9 +2524,9 @@ export default function EmpresaPRG() {
             })}
 
             <div className="pt-4">
-              <Button 
+              <Button
                 onClick={handleExportarPlanoAcao}
-                className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 w-full text-white font-bold text-lg py-6 shadow-lg" 
+                className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 w-full text-white font-bold text-lg py-6 shadow-lg"
                 data-testid="button-exportar-plano"
               >
                 <Download className="h-5 w-5 mr-2" />
@@ -2446,9 +2549,9 @@ export default function EmpresaPRG() {
                 <h3 className="text-white font-bold mb-2">Relatório PDF Completo</h3>
                 <p className="text-white/60 text-sm">Com capa, gráficos e análise descritiva da IA</p>
               </div>
-              <Button 
+              <Button
                 onClick={handleExportarPDF}
-                variant="outline" 
+                variant="outline"
                 className="w-full bg-white/5 border-white/20 text-white hover:bg-white/10"
                 data-testid="button-baixar-pdf"
               >
@@ -2468,9 +2571,9 @@ export default function EmpresaPRG() {
                 <h3 className="text-white font-bold mb-2">QR Code Exclusivo</h3>
                 <p className="text-white/60 text-sm">Visualização online interativa</p>
               </div>
-              <Button 
+              <Button
                 onClick={handleGerarQRCode}
-                variant="outline" 
+                variant="outline"
                 className="w-full bg-white/5 border-white/20 text-white hover:bg-white/10"
                 data-testid="button-gerar-qrcode"
               >
@@ -2489,14 +2592,14 @@ export default function EmpresaPRG() {
                 <h3 className="text-xl font-bold text-white">HumaniQ AI</h3>
               </div>
               <p className="text-white text-sm max-w-4xl mx-auto leading-relaxed">
-                A <strong>HumaniQ AI</strong> é uma plataforma inteligente especializada na análise e gestão de riscos psicossociais e ocupacionais, 
-                desenvolvida com base na NR-01 e demais normativas vigentes de Saúde e Segurança do Trabalho (SST). 
-                Utilizando inteligência artificial e metodologia científica, a HumaniQ AI realiza diagnósticos automatizados, 
-                cruzamento de dados de testes psicossociais e comportamentais, e gera relatórios técnicos que subsidiam a construção do PGR 
+                A <strong>HumaniQ AI</strong> é uma plataforma inteligente especializada na análise e gestão de riscos psicossociais e ocupacionais,
+                desenvolvida com base na NR-01 e demais normativas vigentes de Saúde e Segurança do Trabalho (SST).
+                Utilizando inteligência artificial e metodologia científica, a HumaniQ AI realiza diagnósticos automatizados,
+                cruzamento de dados de testes psicossociais e comportamentais, e gera relatórios técnicos que subsidiam a construção do PGR
                 – Programa de Gerenciamento de Riscos, de forma precisa, ética e em conformidade com os princípios da prevenção e melhoria contínua.
               </p>
               <p className="text-white/90 text-xs">
-                Todos os relatórios da HumaniQ AI são produzidos de forma autônoma e imparcial, com base nos resultados dos colaboradores vinculados à empresa analisada, 
+                Todos os relatórios da HumaniQ AI são produzidos de forma autônoma e imparcial, com base nos resultados dos colaboradores vinculados à empresa analisada,
                 garantindo sigilo, integridade dos dados e rastreabilidade completa do processo avaliativo.
               </p>
               <div className="flex items-center justify-center gap-4 pt-4">

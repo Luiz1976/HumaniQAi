@@ -1,16 +1,9 @@
 import Cookies from 'js-cookie';
 
-// Debug das variáveis de ambiente
-console.log('🔍 [AuthService] Variáveis de ambiente carregadas:');
-console.log('🔍 [AuthService] VITE_API_URL:', import.meta.env.VITE_API_URL);
-console.log('🔍 [AuthService] VITE_API_FALLBACK_URL:', import.meta.env.VITE_API_FALLBACK_URL);
-console.log('🔍 [AuthService] MODE:', import.meta.env.MODE);
-console.log('🔍 [AuthService] PROD:', import.meta.env.PROD);
-console.log('🔍 [AuthService] DEV:', import.meta.env.DEV);
-
-// Base URL da API - com fallback hardcoded para produção
-const PRODUCTION_API_URL = 'https://humaniqai-server.up.railway.app/api';
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PRODUCTION_API_URL : '');
+// Base URL da API
+// Em produção, usa VITE_API_URL (ex.: https://api.humaniqai.com.br)
+// Em desenvolvimento, faz fallback para http://localhost:3000 (backend local)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 // Normalizar base para evitar duplicações de "/api" e barras finais
 const NORMALIZED_BASE = (API_BASE_URL || '').replace(/\/api\/?$/, '').replace(/\/+$/, '');
 // NOVO: Fallback opcional via variável de ambiente
@@ -128,41 +121,23 @@ class AuthServiceNew {
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`❌ [AuthService] Erro HTTP ${response.status}:`, errorText);
-        if (response.status === 404 && canFallback) {
-          const fb404 = `${FALLBACK_BASE}${endpoint}`;
-          try {
-            const fbResp = await fetch(fb404, {
-              ...options,
-              headers,
-              mode: 'cors',
-              credentials: 'include',
-            });
-            if (fbResp.ok) {
-              const fbData = await fbResp.json();
-              console.warn(`✅ [AuthService] Fallback 404 bem-sucedido em ${fb404}`);
-              return fbData;
-            }
-          } catch (_) {}
-        }
-        if (response.status >= 500) {
-          if (canFallback) {
-            const fallbackUrl = `${FALLBACK_BASE}${endpoint}`;
-            console.warn(`⚠️ [AuthService] HTTP ${response.status} em primário, tentando fallback: ${fallbackUrl}`);
-            const fbResponse = await fetch(fallbackUrl, {
-              ...options,
-              headers,
-              mode: 'cors',
-              credentials: 'include',
-            });
-            console.log(`📡 [AuthService] Fallback status: ${fbResponse.status}`);
-            if (fbResponse.ok) {
-              const fbData = await fbResponse.json();
-              console.warn(`✅ [AuthService] Fallback bem-sucedido em ${fallbackUrl}`);
-              return fbData;
-            } else {
-              const fbText = await fbResponse.text();
-              console.error(`❌ [AuthService] Fallback falhou: HTTP ${fbResponse.status}:`, fbText);
-            }
+        if (response.status >= 500 && canFallback) {
+          const fallbackUrl = `${FALLBACK_BASE}${endpoint}`;
+          console.warn(`⚠️ [AuthService] HTTP ${response.status} em primário, tentando fallback: ${fallbackUrl}`);
+          const fbResponse = await fetch(fallbackUrl, {
+            ...options,
+            headers,
+            mode: 'cors',
+            credentials: 'include',
+          });
+          console.log(`📡 [AuthService] Fallback status: ${fbResponse.status}`);
+          if (fbResponse.ok) {
+            const fbData = await fbResponse.json();
+            console.warn(`✅ [AuthService] Fallback bem-sucedido em ${fallbackUrl}`);
+            return fbData;
+          } else {
+            const fbText = await fbResponse.text();
+            console.error(`❌ [AuthService] Fallback falhou: HTTP ${fbResponse.status}:`, fbText);
           }
           const relativeUrl = endpoint;
           try {
@@ -195,29 +170,27 @@ class AuthServiceNew {
       
       // Tentar fallback automaticamente se houver falha de conectividade
       const isFetchFail = error instanceof TypeError && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'));
-      if (isFetchFail) {
-        if (canFallback) {
-          const fallbackUrl = `${FALLBACK_BASE}${endpoint}`;
-          console.warn(`⚠️ [AuthService] Tentando fallback: ${fallbackUrl}`);
-          try {
-            const fbResponse = await fetch(fallbackUrl, {
-              ...options,
-              headers,
-              mode: 'cors',
-              credentials: 'include',
-            });
-            console.log(`📡 [AuthService] Fallback status: ${fbResponse.status}`);
-            if (fbResponse.ok) {
-              const fbData = await fbResponse.json();
-              console.warn(`✅ [AuthService] Fallback bem-sucedido em ${fallbackUrl}`);
-              return fbData;
-            } else {
-              const fbText = await fbResponse.text();
-              console.error(`❌ [AuthService] Fallback falhou: HTTP ${fbResponse.status}:`, fbText);
-            }
-          } catch (fbError) {
-            console.error(`❌ [AuthService] Erro ao usar fallback ${fallbackUrl}:`, fbError);
+      if (isFetchFail && canFallback) {
+        const fallbackUrl = `${FALLBACK_BASE}${endpoint}`;
+        console.warn(`⚠️ [AuthService] Tentando fallback: ${fallbackUrl}`);
+        try {
+          const fbResponse = await fetch(fallbackUrl, {
+            ...options,
+            headers,
+            mode: 'cors',
+            credentials: 'include',
+          });
+          console.log(`📡 [AuthService] Fallback status: ${fbResponse.status}`);
+          if (fbResponse.ok) {
+            const fbData = await fbResponse.json();
+            console.warn(`✅ [AuthService] Fallback bem-sucedido em ${fallbackUrl}`);
+            return fbData;
+          } else {
+            const fbText = await fbResponse.text();
+            console.error(`❌ [AuthService] Fallback falhou: HTTP ${fbResponse.status}:`, fbText);
           }
+        } catch (fbError) {
+          console.error(`❌ [AuthService] Erro ao usar fallback ${fallbackUrl}:`, fbError);
         }
         try {
           const relativeUrl = endpoint;

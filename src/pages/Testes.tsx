@@ -72,20 +72,26 @@ export default function Testes() {
     const handleTesteConcluido = (event: Event) => {
       const customEvent = event as CustomEvent;
       console.log('🔄 [TESTES] Teste concluído detectado:', customEvent.detail);
-      queryClient.invalidateQueries({ 
-        queryKey: ['/api/teste-disponibilidade/colaborador/testes'] 
+      queryClient.invalidateQueries({
+        queryKey: ['/api/teste-disponibilidade/colaborador/testes']
       });
       console.log('✅ [TESTES] Cache invalidado - dados serão recarregados automaticamente');
     };
 
     window.addEventListener('teste-concluido', handleTesteConcluido);
-    
+
     return () => {
       window.removeEventListener('teste-concluido', handleTesteConcluido);
     };
   }, [queryClient]);
 
-  let testes = (data?.testes || []);
+  let testes = (data?.testes || []).filter(t => {
+    // Esconder testes concluídos que não foram re-liberados
+    if (t.motivo === 'teste_concluido' && !t.disponivel) {
+      return false;
+    }
+    return true;
+  });
 
 
   // Logging quando os dados mudam
@@ -108,7 +114,7 @@ export default function Testes() {
 
   const getTesteInfo = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
-    
+
     if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return infoHumaniQInsight;
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return infoTesteClimaOrganizacional;
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return infoTesteClimaOrganizacional;
@@ -124,7 +130,7 @@ export default function Testes() {
 
   const getTesteRoute = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
-    
+
     if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return '/teste/humaniq-insight';
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return '/teste/clima-organizacional';
@@ -140,7 +146,7 @@ export default function Testes() {
 
   const getTesteIcon = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
-    
+
     if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return <Lightbulb className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return <Building2 className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('clima organizacional')) return <Building2 className="h-8 w-8 text-white" />;
@@ -215,30 +221,29 @@ export default function Testes() {
     const info = getTesteInfo(teste.nome);
     const route = getTesteRoute(teste.nome);
     const disponivel = teste.disponivel;
-    
+
     const displayNome = info?.nome || teste.nome;
     const displayDescricao = info?.descricao || teste.descricao;
     const displayCategoria = info?.categoria || teste.categoria;
-    
+
     // Obter tempo estimado de forma robusta
-    const displayTempo = (info as any)?.duracao || 
-                         (info as any)?.tempoEstimado || 
-                         (teste.tempoEstimado ? `${teste.tempoEstimado} min` : '30 min');
-    
+    const displayTempo = (info as any)?.duracao ||
+      (info as any)?.tempoEstimado ||
+      (teste.tempoEstimado ? `${teste.tempoEstimado} min` : '30 min');
+
     // Obter número de questões de forma robusta
-    const displayQuestoes = (info as any)?.questoes || 
-                            (info as any)?.numeroPerguntas || 
-                            (info as any)?.totalPerguntas || 
-                            40;
+    const displayQuestoes = (info as any)?.questoes ||
+      (info as any)?.numeroPerguntas ||
+      (info as any)?.totalPerguntas ||
+      40;
 
     return (
-      <Card 
+      <Card
         key={teste.id}
-        className={`rounded-2xl shadow-sm transition-all duration-300 group flex flex-col p-6 ${
-          disponivel 
-            ? 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-md' 
-            : 'bg-gray-100 dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 opacity-75'
-        }`}
+        className={`rounded-2xl shadow-sm transition-all duration-300 group flex flex-col p-6 ${disponivel
+          ? 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-md'
+          : 'bg-gray-100 dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 opacity-75'
+          }`}
         data-testid={`card-teste-${teste.id}`}
       >
         <CardHeader className="space-y-6 p-0">
@@ -249,25 +254,25 @@ export default function Testes() {
           </div>
           <div className="text-center space-y-3">
             <div className="flex justify-center gap-2 flex-wrap">
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className={`text-xs ${disponivel ? getTesteBadgeColor(teste.nome) : 'text-gray-500 border-gray-300 bg-gray-100'}`}
               >
                 {displayCategoria}
               </Badge>
               {!disponivel && (
-                <Badge 
-                  variant="outline" 
-                  className="text-xs text-red-600 border-red-200 bg-red-50 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
+                <Badge
+                  variant="outline"
+                  className="text-xs text-red-600 border-red-200 bg-red-50 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 whitespace-normal text-center h-auto py-1.5"
                   data-testid={`badge-indisponivel-${teste.id}`}
                 >
-                  <Lock className="h-3 w-3 mr-1" />
-                  Indisponível
+                  <Lock className="h-3 w-3 mr-1 flex-shrink-0 inline" />
+                  <span>{getMotivoTexto(teste.motivo, teste.proximaDisponibilidade)}</span>
                 </Badge>
               )}
               {teste.dataConclusao && (
-                <Badge 
-                  variant="outline" 
+                <Badge
+                  variant="outline"
                   className="text-xs text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
                   data-testid={`badge-concluido-${teste.id}`}
                 >
@@ -307,24 +312,18 @@ export default function Testes() {
                   Pontuação: {teste.pontuacao.toFixed(1)}%
                 </div>
               )}
-              <div className="text-xs text-gray-500 dark:text-gray-500 italic">
-                {getMotivoTexto(teste.motivo, teste.proximaDisponibilidade)}
-              </div>
-              <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                Aguardando nova liberação pela empresa
-              </div>
             </div>
           )}
 
           {disponivel ? (
-            <Button 
+            <Button
               className={`w-full ${getTesteButtonColor(teste.nome)} text-white rounded-xl py-3 font-medium transition-colors duration-200`}
               onClick={() => {
                 if (route) {
                   try {
                     sessionStorage.setItem('current_teste_id', teste.id);
                     sessionStorage.setItem('current_teste_nome', displayNome);
-                  } catch (_) {}
+                  } catch (_) { }
                   navigate(route);
                 }
               }}
@@ -333,7 +332,7 @@ export default function Testes() {
               Iniciar Teste
             </Button>
           ) : (
-            <Button 
+            <Button
               className="w-full bg-gray-400 text-gray-700 rounded-xl py-3 font-medium cursor-not-allowed"
               disabled
               data-testid={`button-bloqueado-${teste.id}`}
@@ -387,7 +386,7 @@ export default function Testes() {
           testes.map(teste => renderTesteCard(teste))
         ) : (
           testesEstaticos.map((testeConfig, index) => (
-            <Card 
+            <Card
               key={index}
               className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col p-6"
               data-testid={`card-teste-estatico-${index}`}
@@ -399,9 +398,13 @@ export default function Testes() {
                   </div>
                 </div>
                 <div className="text-center space-y-3">
-                  <div className="flex justify-center">
+                  <div className="flex justify-center gap-2 flex-wrap">
                     <Badge variant="outline" className={`text-xs ${testeConfig.badgeColor}`}>
                       {testeConfig.info.categoria}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs text-gray-600 border-gray-200 bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 whitespace-normal text-center h-auto py-1.5">
+                      <Lock className="h-3 w-3 mr-1 flex-shrink-0 inline" />
+                      <span>Aguardando liberação da empresa</span>
                     </Badge>
                   </div>
                   <CardTitle className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
@@ -432,13 +435,13 @@ export default function Testes() {
                     ))}
                   </div>
                 )}
-                <Button 
+                <Button
                   className={`w-full bg-gray-400 text-gray-700 rounded-xl py-3 font-medium cursor-not-allowed`}
                   disabled
                   data-testid={`button-bloqueado-estatico-${index}`}
                 >
                   <Lock className="h-4 w-4 mr-2" />
-                  Aguardando liberação da empresa
+                  Indisponível
                 </Button>
               </CardContent>
             </Card>

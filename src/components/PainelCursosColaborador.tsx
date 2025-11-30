@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  GraduationCap, 
-  Award, 
-  Clock, 
-  CheckCircle, 
-  Lock, 
+import {
+  GraduationCap,
+  Award,
+  Clock,
+  CheckCircle,
+  Lock,
   TrendingUp,
   Calendar,
   Download,
@@ -21,18 +21,49 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { corrigirPTBR } from '@/utils/corrigirPTBR';
+import { getCursoBySlug } from '@/data/cursosData';
+import type { Curso } from '@/data/cursosData';
 
 interface PainelCursosColaboradorProps {
   colaboradorId: string;
 }
 
+type StatusCurso = 'todos' | 'concluido' | 'em_andamento' | 'disponivel' | 'bloqueado';
+
+interface CursoItem {
+  id: string | number;
+  slug: string;
+  status: Exclude<StatusCurso, 'todos'>;
+  titulo?: string;
+  categoria?: string;
+  subtitulo?: string;
+  duracao?: string;
+  modulos?: unknown[];
+  nivel?: string;
+  icone?: ReactNode;
+  certificado?: {
+    dataEmissao: string;
+    codigoAutenticacao: string;
+  } | null;
+  progresso?: {
+    progressoPorcentagem: number;
+    modulosCompletados?: unknown[];
+    avaliacaoFinalPontuacao?: number | null;
+    dataConclusao?: string;
+  } | null;
+}
+
+interface CursosDetalhesData {
+  cursosCompletos?: CursoItem[];
+  resumo?: { totalCursos: number; concluidos: number; emAndamento: number; disponiveis: number };
+}
+
 export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaboradorProps) {
-  const [filtro, setFiltro] = useState<'todos' | 'concluido' | 'em_andamento' | 'disponivel' | 'bloqueado'>('todos');
+  const [filtro, setFiltro] = useState<StatusCurso>('todos');
   const [busca, setBusca] = useState('');
 
   // Buscar dados dos cursos
-  const { data, isLoading } = useQuery<any>({
+  const { data, isLoading } = useQuery<CursosDetalhesData>({
     queryKey: [`/api/colaboradores/${colaboradorId}/cursos-detalhes`],
   });
 
@@ -46,14 +77,17 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
     );
   }
 
-  const cursosCompletos = data?.cursosCompletos || [];
+  const cursosCompletos = (data?.cursosCompletos || []) as CursoItem[];
   const resumo = data?.resumo || { totalCursos: 0, concluidos: 0, emAndamento: 0, disponiveis: 0 };
 
   // Filtrar cursos
-  const cursosFiltrados = cursosCompletos.filter((curso: any) => {
+  const cursosFiltrados = cursosCompletos.filter((curso: CursoItem) => {
     const matchFiltro = filtro === 'todos' || curso.status === filtro;
-    const matchBusca = curso.titulo.toLowerCase().includes(busca.toLowerCase()) ||
-                       curso.categoria.toLowerCase().includes(busca.toLowerCase());
+    const buscaNorm = String(busca || '').toLowerCase();
+    const info = getCursoBySlug(curso.slug) as Curso | undefined;
+    const tituloNorm = String(curso?.titulo || info?.['título'] || '').toLowerCase();
+    const categoriaNorm = String(curso?.categoria || info?.['categoria'] || '').toLowerCase();
+    const matchBusca = tituloNorm.includes(buscaNorm) || categoriaNorm.includes(buscaNorm);
     return matchFiltro && matchBusca;
   });
 
@@ -70,7 +104,7 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
   return (
     <div className="space-y-6">
       {/* Cards de Estatísticas com Glassmorphism */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="border-2 border-blue-100 bg-gradient-to-br from-blue-50/80 to-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
@@ -118,22 +152,6 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
             </div>
           </CardContent>
         </Card>
-
-        <Card className="border-2 border-orange-100 bg-gradient-to-br from-orange-50/80 to-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
-                <BookOpen className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <p className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-700 bg-clip-text text-transparent">
-                  {resumo.disponiveis}
-                </p>
-                <p className="text-sm text-gray-600 font-medium">Disponíveis</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Filtros e Busca */}
@@ -162,7 +180,7 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
                 <Button
                   key={value}
                   variant={filtro === value ? 'default' : 'outline'}
-                  onClick={() => setFiltro(value as any)}
+                  onClick={() => setFiltro(value as StatusCurso)}
                   className={filtro === value ? '' : color}
                   data-testid={`button-filtro-${value}`}
                 >
@@ -177,15 +195,23 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
 
       {/* Lista de Cursos */}
       <div className="grid grid-cols-1 gap-6">
-        {cursosFiltrados.map((curso: any) => {
+        {cursosFiltrados.map((curso: CursoItem) => {
           const statusInfo = getStatusBadge(curso.status);
           const StatusIcon = statusInfo.icon;
+          const info = getCursoBySlug(curso.slug) as Curso | undefined;
+          const displayTitulo = curso.titulo || info?.['título'] || '';
+          const displayCategoria = curso.categoria || info?.['categoria'] || '';
+          const displaySubtitulo = curso.subtitulo || info?.['subtítulo'] || '';
+          const displayDuracao = curso.duracao || info?.['duração'] || '';
+          const displayNivel = curso.nivel || info?.['nível'] || '';
+          const displayIcone = curso.icone ?? info?.['ícone'] ?? null;
+          const modulosCount = (curso.modulos?.length ?? (Array.isArray(info?.['módulos']) ? info['módulos'].length : 0)) as number;
 
           // Se curso concluído e tem certificado, mostrar apenas o certificado
           if (curso.certificado && curso.status === 'concluido') {
             return (
-              <Card 
-                key={curso.id} 
+              <Card
+                key={curso.id}
                 className="border-2 border-green-200 hover:border-green-300 hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-green-50/80 to-emerald-50/80 backdrop-blur overflow-hidden"
                 data-testid={`card-certificado-${curso.slug}`}
               >
@@ -198,7 +224,7 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-bold text-green-900 mb-1 truncate">
-                          {corrigirPTBR(curso.titulo)}
+                          {curso.titulo}
                         </h3>
                         <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
                           <Calendar className="h-4 w-4 flex-shrink-0" />
@@ -252,8 +278,8 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
 
           // Para cursos não concluídos ou sem certificado, mostrar informações completas
           return (
-            <Card 
-              key={curso.id} 
+            <Card
+              key={curso.id}
               className="border-2 border-gray-100 hover:border-blue-200 hover:shadow-2xl transition-all duration-300 bg-white/90 backdrop-blur overflow-hidden group"
               data-testid={`card-curso-${curso.slug}`}
             >
@@ -263,35 +289,35 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
                   <div className="flex-1">
                     <div className="flex items-start gap-4 mb-4">
                       <div className="text-5xl transform group-hover:scale-110 transition-transform duration-300">
-                        {curso.icone}
+                        {displayIcone}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-3 flex-wrap mb-2">
                           <h3 className="text-xl font-bold text-gray-900">
-                            {corrigirPTBR(curso.titulo)}
+                            {displayTitulo}
                           </h3>
                           <Badge className={`${statusInfo.color} border`}>
                             <StatusIcon className="h-3 w-3 mr-1" />
                             {statusInfo.label}
                           </Badge>
                           <Badge variant="outline" className="text-xs">
-                            {corrigirPTBR(curso.categoria)}
+                            {displayCategoria}
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-3">
-                          {corrigirPTBR(curso.subtitulo)}
+                          {displaySubtitulo}
                         </p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4" />
-                            {curso.duracao}
+                            {displayDuracao}
                           </div>
                           <div className="flex items-center gap-1">
                             <BookOpen className="h-4 w-4" />
-                            {curso.modulos?.length || 0} módulos
+                            {modulosCount || 0} módulos
                           </div>
                           <Badge variant="outline" className="text-xs">
-                            {corrigirPTBR(curso.nivel)}
+                            {displayNivel}
                           </Badge>
                         </div>
                       </div>
@@ -306,8 +332,8 @@ export function PainelCursosColaborador({ colaboradorId }: PainelCursosColaborad
                             {curso.progresso.progressoPorcentagem}%
                           </span>
                         </div>
-                        <Progress 
-                          value={curso.progresso.progressoPorcentagem} 
+                        <Progress
+                          value={curso.progresso.progressoPorcentagem}
                           className="h-2"
                         />
                         <div className="flex items-center gap-4 text-xs text-gray-500">

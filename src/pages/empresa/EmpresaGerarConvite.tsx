@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Mail, Calendar, Clock, CheckCircle, AlertTriangle, Copy, Send, Eye, Trash2, Plus, Upload, FileSpreadsheet, Link as LinkIcon, Download } from 'lucide-react';
+import { UserPlus, Mail, Calendar, Clock, CheckCircle, AlertTriangle, Copy, Send, Eye, Plus, Upload, FileSpreadsheet, Link as LinkIcon, Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,14 +28,14 @@ interface ConviteColaborador {
 
 // ERP interfaces removed - functionality deleted
 
-  interface ColaboradorPlanilha {
-    nome: string;
-    cargo: string;
-    setor: string;
-    idade: number;
-    sexo: string;
-    email: string;
-  }
+interface ColaboradorPlanilha {
+  nome: string;
+  cargo: string;
+  setor: string;
+  idade: number;
+  sexo: string;
+  email: string;
+}
 
 interface ConviteGerado {
   nome: string;
@@ -59,7 +59,7 @@ const EmpresaGerarConvite: React.FC = () => {
   });
   const [enviandoConvite, setEnviandoConvite] = useState(false);
   const { user } = useAuth();
-  
+
   // Estados para importação via Excel
   const [processandoPlanilha, setProcessandoPlanilha] = useState(false);
   const [convitesGerados, setConvitesGerados] = useState<ConviteGerado[]>([]);
@@ -219,13 +219,13 @@ const EmpresaGerarConvite: React.FC = () => {
       for (const colaborador of colaboradoresParaCriar) {
         try {
           console.log(`📤 [EXCEL] Gerando convite para: ${colaborador.nome}`);
-          
+
           const authToken = localStorage.getItem('authToken');
           console.log('🔐 [EXCEL] Token presente?', !!authToken, 'len:', authToken?.length || 0);
 
           const response = await fetch('/api/convites/colaborador', {
             method: 'POST',
-            headers: { 
+            headers: {
               'Content-Type': 'application/json',
               ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
             },
@@ -284,7 +284,7 @@ const EmpresaGerarConvite: React.FC = () => {
 
       // Limpar input
       event.target.value = '';
-      
+
       // Recarregar lista de convites
       if (convitesComLinks.length > 0) {
         carregarConvites();
@@ -315,14 +315,13 @@ const EmpresaGerarConvite: React.FC = () => {
     });
   };
 
-  // Tokens cancelados localmente (para ocultar no grid mesmo após reload)
-  const [tokensCancelados, setTokensCancelados] = useState<string[]>([]);
+
 
   const carregarConvites = async () => {
     try {
       setLoading(true);
       console.log('🔄 Carregando convites da empresa...');
-      
+
       if (!user?.empresaId) {
         console.error('❌ ID da empresa não encontrado');
         toast.error('Erro ao carregar convites', {
@@ -333,7 +332,7 @@ const EmpresaGerarConvite: React.FC = () => {
 
       const response = await hybridInvitationService.listarConvites('colaborador', user.empresaId);
       console.log('✅ Convites carregados:', response);
-      
+
       if (response.success && response.data) {
         setConvites(response.data as ConviteColaborador[]);
       } else {
@@ -370,7 +369,7 @@ const EmpresaGerarConvite: React.FC = () => {
 
       const response = await fetch('/api/convites/colaborador', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
         },
@@ -426,35 +425,7 @@ const EmpresaGerarConvite: React.FC = () => {
     });
   };
 
-  const handleDeletarConvite = async (token: string) => {
-    try {
-      console.log('[UI] [Delete] Clique na lixeira. Token:', token);
-      const antes = convites.length;
-      console.log('[UI] [Delete] Convites antes:', antes, 'preview primeiros:', convites.slice(0,3).map(c=>({id:c.id,token:c.token,status:c.status})));
 
-      const response = await hybridInvitationService.cancelarConvite(token, 'colaborador');
-      console.log('[UI] [Delete] Resposta cancelarConvite:', response);
-
-      if (response.success) {
-        toast.success('Convite cancelado e excluído com sucesso');
-        // Remoção otimista imediata pelo token
-        setConvites(prev => {
-          const filtrados = prev.filter(c => c.token !== token);
-          console.log('[UI] [Delete] Remoção otimista. Antes:', prev.length, 'Depois:', filtrados.length);
-          return filtrados;
-        });
-        // Marcar token como cancelado para ocultar mesmo após reload
-        setTokensCancelados(prev => [...prev, token]);
-        // Sincronizar com backend em background (não reexibir o item se voltar)
-        void carregarConvites();
-      } else {
-        toast.error(response.message || 'Erro ao cancelar convite');
-      }
-    } catch (error) {
-      console.error('[UI] [Delete] Erro ao cancelar convite:', error);
-      toast.error('Erro ao cancelar convite');
-    }
-  };
 
   const getStatusConvite = (convite: ConviteColaborador): StatusConvite => {
     // Tratar estados explícitos vindos do backend
@@ -483,17 +454,15 @@ const EmpresaGerarConvite: React.FC = () => {
   };
 
   const convitesFiltrados = convites.filter(convite => {
-    const matchFiltro = !filtro || 
+    const matchFiltro = !filtro ||
       convite.nome.toLowerCase().includes(filtro.toLowerCase()) ||
       convite.email.toLowerCase().includes(filtro.toLowerCase());
-    
+
     const status = getStatusConvite(convite);
     const matchStatus = statusFiltro === 'todos' || status === statusFiltro;
     // Ocultar sempre convites cancelados (não há filtro para eles neste componente)
     const naoCancelado = status !== StatusConvite.CANCELADO;
-    // Também ocultar tokens marcados localmente como cancelados
-    const naoTokenCanceladoLocal = !tokensCancelados.includes(convite.token);
-    return matchFiltro && matchStatus && naoCancelado && naoTokenCanceladoLocal;
+    return matchFiltro && matchStatus && naoCancelado;
   });
 
   if (loading) {
@@ -522,19 +491,17 @@ const EmpresaGerarConvite: React.FC = () => {
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             <span className="text-sm text-purple-300 font-medium">Sistema Ativo e Operacional</span>
           </div>
-          
+
           <h1 className="text-5xl font-bold text-white mb-4 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
             Central de Convites Inteligente
           </h1>
           <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
             Escolha o método ideal para sua empresa e gere convites profissionais em segundos.
             <span className="block text-purple-300 font-medium mt-2">
-              3 formas poderosas, resultados imediatos.
+              2 formas poderosas, resultados imediatos.
             </span>
           </p>
         </div>
-
-        {/* Seção numerada integrada diretamente acima de cada método */}
 
         <div className="space-y-6 mb-8">
           {/* Número 1 - acima do Card Individual */}
@@ -626,7 +593,7 @@ const EmpresaGerarConvite: React.FC = () => {
                 </div>
               )}
 
-              <Button 
+              <Button
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-purple-500/50 mb-6 font-semibold text-base py-6 transition-all duration-300"
                 data-testid="button-novo-convite"
                 onClick={() => setShowNovoConviteModal(true)}
@@ -700,7 +667,7 @@ const EmpresaGerarConvite: React.FC = () => {
                       <Button variant="outline" onClick={() => setShowNovoConviteModal(false)}>
                         Cancelar
                       </Button>
-                      <Button 
+                      <Button
                         onClick={handleCriarConvite}
                         disabled={enviandoConvite || !novoConvite.email || !novoConvite.nome}
                         data-testid="button-enviar-convite"
@@ -804,7 +771,7 @@ const EmpresaGerarConvite: React.FC = () => {
                   {/* Lista de links gerados */}
                   <div className="bg-white/5 border border-white/10 rounded-lg max-h-96 overflow-y-auto">
                     {convitesGerados.map((convite, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="p-3 border-b border-white/5 last:border-0 hover:bg-white/5"
                         data-testid={`convite-gerado-${index}`}
@@ -843,7 +810,7 @@ const EmpresaGerarConvite: React.FC = () => {
                       <span className="text-white/90 font-medium text-sm">Passo 1: Obtenha o Modelo</span>
                       <Badge className="bg-orange-500/20 text-orange-300 text-xs">Gratuito</Badge>
                     </div>
-                    <Button 
+                    <Button
                       onClick={baixarModeloPlanilha}
                       className="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white shadow-lg hover:shadow-orange-500/50 font-semibold text-base py-6 transition-all duration-300"
                       data-testid="button-baixar-modelo"
@@ -870,7 +837,7 @@ const EmpresaGerarConvite: React.FC = () => {
                       <span className="text-white/90 font-medium text-sm">Passo 2: Faça o Upload</span>
                       <Badge className="bg-orange-500/20 text-orange-300 text-xs">Automático</Badge>
                     </div>
-                    
+
                     {/* Upload Area */}
                     <div className="relative">
                       <input
@@ -882,7 +849,7 @@ const EmpresaGerarConvite: React.FC = () => {
                         className="hidden"
                         data-testid="input-upload-excel"
                       />
-                      <label 
+                      <label
                         htmlFor="upload-excel"
                         className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-orange-500/30 rounded-xl bg-orange-500/5 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all cursor-pointer group"
                       >
@@ -1011,24 +978,16 @@ const EmpresaGerarConvite: React.FC = () => {
                             </p>
                           </div>
                           <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleCopiarLink(convite.token)}
-                                className="bg-white/5 border-white/20 hover:bg-white/10 text-white"
-                                data-testid={`button-copiar-${convite.id}`}
-                              >
-                                <Copy className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDeletarConvite(convite.token)}
-                                className="bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-400"
-                                data-testid={`button-deletar-${convite.id}`}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleCopiarLink(convite.token)}
+                              className="bg-white/5 border-white/20 hover:bg-white/10 text-white"
+                              data-testid={`button-copiar-${convite.id}`}
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
+
                           </div>
                         </div>
                       </div>

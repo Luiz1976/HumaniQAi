@@ -99,15 +99,15 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
         const cursoInfo = {
           id: curso.id,
           slug: curso.slug,
-          titulo: curso.titulo,
-          subtitulo: curso.subtitulo,
-          descricao: curso.descricao,
-          duracao: curso.duracao,
-          nivel: curso.nivel,
-          categoria: curso.categoria,
-          icone: curso.icone,
-          cor: curso.cor,
-          modulos: curso.modulos || [],
+          titulo: (curso as any)['título'],
+          subtitulo: (curso as any)['subtítulo'],
+          descricao: (curso as any)['descrição'],
+          duracao: (curso as any)['duração'],
+          nivel: (curso as any)['nível'],
+          categoria: (curso as any)['categoria'],
+          icone: (curso as any)['ícone'],
+          cor: (curso as any)['cor'],
+          modulos: (curso as any)['módulos'] || [],
           disponivel,
           motivo,
           proximaDisponibilidade,
@@ -116,7 +116,7 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
           periodicidadeDias: disponibilidade?.periodicidadeDias || null,
         };
 
-        console.log(`📋 [CURSO-DISPONIBILIDADE] Curso "${curso.titulo}" - Colaborador: ${colaboradorId}:`, {
+        console.log(`📋 [CURSO-DISPONIBILIDADE] Curso "${(curso as any)['título']}" - Colaborador: ${colaboradorId}:`, {
           disponivel,
           motivo,
           temDisponibilidade: !!disponibilidade,
@@ -201,11 +201,11 @@ router.get('/empresa/colaborador/:colaboradorId/cursos', authenticateToken, requ
         return {
           id: curso.id,
           slug: curso.slug,
-          titulo: curso.titulo,
-          descricao: curso.descricao,
-          duracao: curso.duracao,
-          nivel: curso.nivel,
-          categoria: curso.categoria,
+          titulo: (curso as any)['título'],
+          descricao: (curso as any)['descrição'],
+          duracao: (curso as any)['duração'],
+          nivel: (curso as any)['nível'],
+          categoria: (curso as any)['categoria'],
           disponibilidade: disponibilidade || null,
           ultimaAvaliacao: avaliacao ? {
             id: avaliacao.id,

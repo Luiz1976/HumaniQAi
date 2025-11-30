@@ -40,7 +40,7 @@ interface ConviteColaborador {
 const CadastroColaborador: React.FC = () => {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
-  
+
   const [loading, setLoading] = useState(true);
   const [validandoToken, setValidandoToken] = useState(true);
   const [salvando, setSalvando] = useState(false);
@@ -49,7 +49,7 @@ const CadastroColaborador: React.FC = () => {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  
+
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -59,7 +59,7 @@ const CadastroColaborador: React.FC = () => {
     departamento: '',
     avatar: ''
   });
-  
+
   const [erros, setErros] = useState<Record<string, string>>({});
 
   // ========================================
@@ -96,17 +96,17 @@ const CadastroColaborador: React.FC = () => {
   const validarToken = async () => {
     try {
       setValidandoToken(true);
-      
+
       if (!token) {
         setTokenValido(false);
         return;
       }
 
       const conviteData = await apiService.buscarConvitePorToken(token, 'colaborador');
-      
+
       setTokenValido(true);
       setConvite(conviteData as any);
-      
+
       // Pré-preencher dados do convite
       setFormData(prev => ({
         ...prev,
@@ -164,7 +164,7 @@ const CadastroColaborador: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validarFormulario()) {
       toast.error('Por favor, corrija os erros no formulário');
       return;
@@ -181,7 +181,7 @@ const CadastroColaborador: React.FC = () => {
       await apiService.aceitarConviteColaborador(token, formData.senha);
 
       toast.success('Cadastro realizado com sucesso!');
-      const loginResponse = await authService.login(formData.email, formData.senha);
+      const loginResponse = await authService.login(formData.email.trim(), formData.senha);
       navigate(loginResponse.success ? '/colaborador' : '/login');
 
     } catch (error: any) {
@@ -196,7 +196,7 @@ const CadastroColaborador: React.FC = () => {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
+
     // Limpar erro do campo quando usuário começar a digitar
     if (erros[field]) {
       setErros(prev => ({ ...prev, [field]: '' }));
@@ -256,7 +256,7 @@ const CadastroColaborador: React.FC = () => {
           <p className="mt-2 text-gray-600">
             Complete seu cadastro para acessar a plataforma HumaniQ
           </p>
-          
+
           {convite && (
             <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
               <div className="flex items-center justify-center">
@@ -308,7 +308,7 @@ const CadastroColaborador: React.FC = () => {
                 <User className="h-5 w-5 mr-2" />
                 Informações Pessoais
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -318,9 +318,8 @@ const CadastroColaborador: React.FC = () => {
                     type="text"
                     value={formData.nome}
                     onChange={(e) => handleInputChange('nome', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                      erros.nome ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${erros.nome ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="Digite seu nome completo"
                     disabled={!!convite?.nome_colaborador}
                   />
@@ -337,9 +336,8 @@ const CadastroColaborador: React.FC = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                      erros.email ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${erros.email ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="seu@email.com"
                     disabled={!!convite?.email_colaborador}
                   />
@@ -360,7 +358,7 @@ const CadastroColaborador: React.FC = () => {
                 <Building2 className="h-5 w-5 mr-2" />
                 Informações Profissionais
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -396,7 +394,7 @@ const CadastroColaborador: React.FC = () => {
                 <Lock className="h-5 w-5 mr-2" />
                 Definir Senha de Acesso
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -407,9 +405,8 @@ const CadastroColaborador: React.FC = () => {
                       type={mostrarSenha ? 'text' : 'password'}
                       value={formData.senha}
                       onChange={(e) => handleInputChange('senha', e.target.value)}
-                      className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                        erros.senha ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${erros.senha ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="Mínimo 8 caracteres"
                     />
                     <button
@@ -438,9 +435,8 @@ const CadastroColaborador: React.FC = () => {
                       type={mostrarConfirmacao ? 'text' : 'password'}
                       value={formData.confirmar_senha}
                       onChange={(e) => handleInputChange('confirmar_senha', e.target.value)}
-                      className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                        erros.confirmar_senha ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${erros.confirmar_senha ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="Digite a senha novamente"
                     />
                     <button

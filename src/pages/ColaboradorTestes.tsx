@@ -109,17 +109,15 @@ export default function ColaboradorTestes() {
         {testes.map((teste) => (
           <Card
             key={teste.id}
-            className={`${
-              !teste.disponivel ? 'bg-gray-50 dark:bg-gray-800/50 opacity-75' : 'bg-white dark:bg-gray-800'
-            } border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300`}
+            className={`${!teste.disponivel ? 'bg-gray-50 dark:bg-gray-800/50 opacity-75' : 'bg-white dark:bg-gray-800'
+              } border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300`}
             data-testid={`card-teste-${teste.id}`}
           >
             <CardHeader className="space-y-4">
               <div className="flex justify-center">
                 <div
-                  className={`w-16 h-16 rounded-full ${
-                    teste.disponivel ? 'bg-blue-500' : 'bg-gray-400'
-                  } flex items-center justify-center shadow-sm`}
+                  className={`w-16 h-16 rounded-full ${teste.disponivel ? 'bg-blue-500' : 'bg-gray-400'
+                    } flex items-center justify-center shadow-sm`}
                 >
                   {teste.disponivel ? (
                     <Logo size="sm" showText={false} />
@@ -137,9 +135,9 @@ export default function ColaboradorTestes() {
                     </Badge>
                   )}
                   {!teste.disponivel && (
-                    <Badge variant="secondary" className="text-xs bg-gray-200 text-gray-700">
-                      <Lock className="h-3 w-3 mr-1" />
-                      Indisponível
+                    <Badge variant="secondary" className="text-xs bg-gray-200 text-gray-700 whitespace-normal text-center h-auto py-1.5">
+                      <Lock className="h-3 w-3 mr-1 flex-shrink-0 inline" />
+                      <span>{getMotivoTexto(teste.motivo, teste.proximaDisponibilidade)}</span>
                     </Badge>
                   )}
                   {teste.dataConclusao && (
@@ -170,15 +168,6 @@ export default function ColaboradorTestes() {
                 </div>
               )}
 
-              {!teste.disponivel && teste.motivo && (
-                <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                  <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-amber-800 dark:text-amber-200">
-                    {getMotivoTexto(teste.motivo, teste.proximaDisponibilidade)}
-                  </p>
-                </div>
-              )}
-
               {teste.dataConclusao && (
                 <div className="flex items-center gap-2 text-xs text-gray-600">
                   <Calendar className="h-3 w-3" />
@@ -192,11 +181,10 @@ export default function ColaboradorTestes() {
               )}
 
               <Button
-                className={`w-full rounded-xl py-3 font-medium transition-colors duration-200 ${
-                  teste.disponivel
+                className={`w-full rounded-xl py-3 font-medium transition-colors duration-200 ${teste.disponivel
                     ? 'bg-blue-600 hover:bg-blue-700 text-white'
                     : 'bg-gray-300 cursor-not-allowed text-gray-600'
-                }`}
+                  }`}
                 onClick={() => teste.disponivel && navigate(getTesteUrl(teste.nome))}
                 disabled={!teste.disponivel}
                 data-testid={`button-iniciar-${teste.id}`}

@@ -183,7 +183,7 @@ export function DebugResultado() {
                       <div><strong>Tipo:</strong> {debugInfo.resultado.tipo_teste}</div>
                       <div><strong>Criado em:</strong> {new Date(debugInfo.resultado.data_realizacao).toLocaleString()}</div>
                       <div><strong>Session ID:</strong> {debugInfo.resultado.session_id || 'NULL'}</div>
-                      <div><strong>Usuario ID:</strong> {debugInfo.resultado.usuario_id || 'NULL'}</div>
+                      <div><strong>Usuário ID:</strong> {debugInfo.resultado.usuario_id || 'NULL'}</div>
                     </div>
                   </CardContent>
                 </Card>

@@ -1,1272 +1,1271 @@
-// Trilha de Capacitacao - Lideranca e Saude Psicossocial - Conforme NR01
+// Trilha de Capacitação - Liderança e Saúde Psicossocial - Conforme NR01
 // IMPORTANTE: Este arquivo contem TODOS os 8 cursos completos da trilha
-import { corrigirPTBR } from "../utils/corrigirPTBR";
 
-export interface Modulo {
+export interface Módulo {
   id: number;
-  titulo: string;
-  duracao: string;
-  topicos: string[];
-  materialDidatico: string;
+  título: string;
+  duração: string;
+  tópicos: string[];
+  materialDidático: string;
 }
 
 export interface Curso {
   id: number;
   slug: string;
-  titulo: string;
-  subtitulo: string;
-  descricao: string;
-  duracao: string;
-  nivel: "Iniciante" | "Intermediario" | "Avancado";
+  título: string;
+  subtítulo: string;
+  descrição: string;
+  duração: string;
+  nível: "Iniciante" | "Intermediário" | "Avançado";
   categoria: string;
-  icone: string;
+  ícone: string;
   cor: string;
   corBadge: string;
   objetivo: string;
   resultadosEsperados: string[];
-  modulos: Modulo[];
-  atividadesPraticas?: string[];
+  módulos: Módulo[];
+  atividadesPráticas?: string[];
   integracaoPGR?: string[];
 }
 
-const cursosRaw: Curso[] = [
+export const cursos: Curso[] = [
   {
     id: 1,
     slug: "fundamentos-legais-riscos-psicossociais",
-    titulo: "Fundamentos Legais e Tecnicos dos Riscos Psicossociais",
-    subtitulo: "Base Legal e Tecnica para Gestao Preventiva",
-    descricao: "Compreenda o contexto legal, tecnico e organizacional da gestao dos riscos psicossociais no ambiente de trabalho, conforme NR01.",
-    duracao: "4h",
-    nivel: "Intermediario",
+    título: "Fundamentos Legais e Técnicos dos Riscos Psicossociais",
+    subtítulo: "Base Legal e Técnica para Gestão Preventiva",
+    descrição: "Compreenda o contexto legal, técnico e organizacional da gestão dos riscos psicossociais no ambiente de trabalho, conforme a NR 01.",
+    duração: "4h",
+    nível: "Intermediário",
     categoria: "Compliance e Legal",
-    icone: "⚖️",
+    ícone: "⚖️",
     cor: "from-blue-600 to-cyan-600",
     corBadge: "bg-blue-100 text-blue-700 border-blue-200",
-    objetivo: "Capacitar os lideres para compreender o contexto legal, tecnico e organizacional da gestao dos riscos psicossociais no ambiente de trabalho.",
+    objetivo: "Capacitar os líderes para compreender o contexto legal, técnico e organizacional da gestão dos riscos psicossociais no ambiente de trabalho.",
     resultadosEsperados: [
-      "Lideres conscientes da base legal e suas responsabilidades",
+      "Líderes conscientes da base legal e de suas responsabilidades",
       "Capacidade de identificar riscos psicossociais no dia a dia",
-      "Integracao pratica com o PGR (Programa de Gerenciamento de Riscos)",
-      "Compreensao dos impactos organizacionais e financeiros"
+      "Integração prática com o PGR (Programa de Gerenciamento de Riscos)",
+      "Compreensão dos impactos organizacionais e financeiros"
     ],
-    modulos: [
+    módulos: [
       {
         id: 1,
-        titulo: "Introducao a NR01 e ao PGR",
-        duracao: "60 min",
-        topicos: [
-          "O que sao riscos ocupacionais e psicossociais",
-          "Estrutura completa da NR01",
+        título: "Introdução à NR 01 e ao PGR",
+        duração: "60 min",
+        tópicos: [
+          "O que são riscos ocupacionais e psicossociais",
+          "Estrutura completa da NR 01",
           "Objetivo central do PGR",
-          "Por que a saude psicossocial tornou-se obrigatoria",
+          "Por que a saúde psicossocial tornou-se obrigatória",
           "Casos reais de empresas penalizadas"
         ],
-        materialDidatico: `
-INTRODUCAO A NR01 E AO PROGRAMA DE GERENCIAMENTO DE RISCOS
+        materialDidático: `
+INTRODUÇÃO À NR 01 E AO PROGRAMA DE GERENCIAMENTO DE RISCOS
 
-O QUE SAO RISCOS OCUPACIONAIS
+O QUE SÃO RISCOS OCUPACIONAIS
 
-Riscos ocupacionais sao agentes, fatores ou situacoes presentes no ambiente de trabalho que podem causar danos a saude fisica, mental ou social dos trabalhadores.
+Riscos ocupacionais são agentes, fatores ou situações presentes no ambiente de trabalho que podem causar danos à saúde física, mental ou social dos trabalhadores.
 
-Classificacao dos Riscos Ocupacionais:
-- Riscos Fisicos: ruido, vibracao, temperaturas extremas, radiacao
-- Riscos Quimicos: poeiras, fumos, nevoas, gases, vapores
-- Riscos Biologicos: virus, bacterias, fungos, parasitas
-- Riscos Ergonomicos: esforco fisico intenso, postura inadequada, ritmo excessivo
-- Riscos Psicossociais: carga mental excessiva, assedio, pressao por metas, falta de autonomia
+Classificação dos Riscos Ocupacionais:
+- Riscos Físicos: ruído, vibração, temperaturas extremas, radiações
+- Riscos Químicos: poeiras, fumos, névoas, gases, vapores
+- Riscos Biológicos: vírus, bactérias, fungos, parasitas
+- Riscos Ergonômicos: esforço físico intenso, postura inadequada, ritmo excessivo
+- Riscos Psicossociais: carga mental excessiva, assédio, pressão por metas, falta de autonomia
 
-O QUE SAO RISCOS PSICOSSOCIAIS
+O QUE SÃO RISCOS PSICOSSOCIAIS
 
-Riscos psicossociais sao aspectos da organizacao do trabalho, das relacoes interpessoais e do conteudo das tarefas que podem causar estresse cronico, sofrimento psiquico e adoecimento mental.
+Riscos psicossociais são aspectos da organização do trabalho, das relações interpessoais e do conteúdo das tarefas que podem causar estresse crônico, sofrimento psíquico e adoecimento mental.
 
 Principais Riscos Psicossociais:
 1. Sobrecarga de trabalho
-2. Pressao por metas inatingiveis
+2. Pressão por metas inalcançáveis
 3. Jornadas excessivas
-4. Assedio moral e sexual
+4. Assédio moral e sexual
 5. Falta de reconhecimento
-6. Inseguranca no emprego
+6. Insegurança no emprego
 7. Conflitos interpessoais
 8. Falta de autonomia
-9. Trabalho monotono ou sem sentido
-10. Desequilibrio entre vida pessoal e profissional
+9. Trabalho monótono ou sem sentido
+10. Desequilíbrio entre vida pessoal e profissional
 
-ESTRUTURA DA NR01 - GESTAO DE RISCOS OCUPACIONAIS
+ESTRUTURA DA NR 01 - GESTÃO DE RISCOS OCUPACIONAIS
 
-A Norma Regulamentadora 01 foi completamente reformulada em 2020 e estabelece as diretrizes gerais para a gestao de riscos ocupacionais.
+A Norma Regulamentadora 01 foi completamente reformulada em 2020 e estabelece as diretrizes gerais para a gestão de riscos ocupacionais.
 
-Historico e Atualizacoes:
-- 1978: NR01 original (disposicoes gerais)
-- 2020: Reformulacao completa com foco em gestao de riscos
-- 2021: Inclusao explicita dos riscos psicossociais
-- 2022: Detalhamento de criterios de avaliacao
+Histórico e Atualizações:
+- 1978: NR 01 original (disposições gerais)
+- 2020: Reformulação completa com foco em gestão de riscos
+- 2021: Inclusão explícita dos riscos psicossociais
+- 2022: Detalhamento de critérios de avaliação
 
-Objetivo da NR01:
-Estabelecer as diretrizes e os requisitos para o gerenciamento de riscos ocupacionais e as medidas de prevencao em Seguranca e Saude no Trabalho (SST).
+Objetivo da NR 01:
+Estabelecer as diretrizes e os requisitos para o gerenciamento de riscos ocupacionais e as medidas de prevenção em Segurança e Saúde no Trabalho (SST).
 
-Principais Exigencias da NR01:
-1. Implementacao do PGR (Programa de Gerenciamento de Riscos)
-2. Identificacao de perigos e avaliacao de riscos
-3. Implementacao de medidas de prevencao
+Principais Exigências da NR 01:
+1. Implementação do PGR (Programa de Gerenciamento de Riscos)
+2. Identificação de perigos e avaliação de riscos
+3. Implementação de medidas de prevenção
 4. Acompanhamento do controle dos riscos
-5. Analise de acidentes e doencas do trabalho
+5. Análise de acidentes e doenças do trabalho
 
 O PROGRAMA DE GERENCIAMENTO DE RISCOS (PGR)
 
-O PGR e um programa obrigatorio que deve conter:
+O PGR é um programa obrigatório que deve conter:
 
 1. Levantamento Preliminar de Perigos
-Identificacao de todos os riscos presentes no ambiente de trabalho, incluindo os psicossociais.
+Identificação de todos os riscos presentes no ambiente de trabalho, incluindo os psicossociais.
 
-2. Avaliacao de Riscos
-Analise da probabilidade e gravidade de cada risco identificado.
+2. Avaliação de Riscos
+Análise da probabilidade e da gravidade de cada risco identificado.
 
-3. Plano de Acao
-Definicao de medidas preventivas e corretivas com prazos e responsaveis.
+3. Plano de Ação
+Definição de medidas preventivas e corretivas com prazos e responsáveis.
 
 4. Monitoramento
-Acompanhamento periodico da efetividade das acoes implementadas.
+Acompanhamento periódico da efetividade das ações implementadas.
 
-Integracao com Outras Normas:
-- NR07 (PCMSO): Exames medicos e monitoramento de saude
-- NR09 (Avaliacao e controle): Criterios tecnicos
-- NR17 (Ergonomia): Organizacao do trabalho
-- NR35, NR33, etc: Riscos especificos
+Integração com Outras Normas:
+- NR 07 (PCMSO): Exames médicos e monitoramento de saúde
+- NR 09 (Avaliação e controle): Critérios técnicos
+- NR 17 (Ergonomia): Organização do trabalho
+- NR 35, NR 33, etc.: Riscos específicos
 
-INCLUSAO DOS RISCOS PSICOSSOCIAIS NA NR01
+INCLUSÃO DOS RISCOS PSICOSSOCIAIS NA NR 01
 
-Desde 2021, a NR01 reconhece explicitamente que os riscos psicossociais devem ser considerados no PGR.
+Desde 2021, a NR 01 reconhece explicitamente que os riscos psicossociais devem ser considerados no PGR.
 
-Por que essa mudanca aconteceu:
-1. Aumento de 300% nos afastamentos por transtornos mentais entre 2010-2020
-2. Pressao de organismos internacionais (OIT, OMS)
-3. Custos bilionarios com afastamentos e indenizacoes
-4. Reconhecimento cientifico do impacto na saude
+Por que essa mudança aconteceu:
+1. Aumento de 300% nos afastamentos por transtornos mentais entre 2010 e 2020
+2. Pressão de organismos internacionais (OIT, OMS)
+3. Custos bilionários com afastamentos e indenizações
+4. Reconhecimento científico do impacto na saúde
 
-Obrigacoes Legais das Empresas:
-- Identificar riscos psicossociais em todas as areas
-- Avaliar nivel de exposicao dos trabalhadores
+Obrigações Legais das Empresas:
+- Identificar riscos psicossociais em todas as áreas
+- Avaliar o nível de exposição dos trabalhadores
 - Implementar medidas preventivas
-- Monitorar indicadores de saude mental
+- Monitorar indicadores de saúde mental
 - Registrar e investigar casos de adoecimento
-- Treinar liderancas para prevencao
+- Treinar lideranças para prevenção
 
 CASOS REAIS DE EMPRESAS PENALIZADAS
 
 Caso 1: Empresa de Telemarketing (2019)
-Situacao: Metas abusivas, controle excessivo, assedio moral sistematico
+Situação: Metas abusivas, controle excessivo, assédio moral sistemático
 Resultado: 120 trabalhadores afastados por transtornos mentais
-Penalidade: Multa de R$ 800.000 + indenizacoes de R$ 15 milhoes
+Penalidade: Multa de R$ 800.000 + indenizações de R$ 15 milhões
 Aprendizado: Metas devem ser realistas e o clima monitorado
 
 Caso 2: Banco (2021)
-Situacao: Pressao excessiva por vendas, jornadas de 12h diarias
-Resultado: 45 casos de burnout diagnosticados
-Penalidade: Multa de R$ 2,5 milhoes + obrigacao de reestruturar processos
+Situação: Pressão excessiva por vendas, jornadas de 12h diárias
+Resultado: 45 casos de Burnout diagnosticados
+Penalidade: Multa de R$ 2,5 milhões + obrigação de reestruturar processos
 Aprendizado: Jornada e metas precisam respeitar limites humanos
 
 Caso 3: Hospital (2022)
-Situacao: Falta de treinamento, sobrecarga, ausencia de suporte psicologico
-Resultado: 30 profissionais afastados, 5 tentativas de suicidio
-Penalidade: Intervencao do MPT, paralisa cao de setores, multa de R$ 1,2 milhao
-Aprendizado: Ambientes de alta pressao exigem suporte estruturado
+Situação: Falta de treinamento, sobrecarga, ausência de suporte psicológico
+Resultado: 30 profissionais afastados, 5 tentativas de suicídio
+Penalidade: Intervenção do MPT, paralisação de setores, multa de R$ 1,2 milhão
+Aprendizado: Ambientes de alta pressão exigem suporte estruturado
 
-RESPONSABILIDADES LEGAIS E CONSEQUENCIAS
+RESPONSABILIDADES LEGAIS E CONSEQUÊNCIAS
 
 Responsabilidade da Empresa:
-- Cumprir integralmente a NR01
+- Cumprir integralmente a NR 01
 - Implementar e manter o PGR atualizado
-- Garantir ambiente de trabalho saudavel
-- Responder civil e criminalmente por omissao
+- Garantir ambiente de trabalho saudável
+- Responder civil e criminalmente por omissão
 
-Responsabilidade do Lider:
+Responsabilidade do Líder:
 - Identificar e reportar riscos
-- Implementar medidas preventivas na sua area
-- Monitorar saude da equipe
-- Nao praticar ou tolerar assedio
+- Implementar medidas preventivas na sua área
+- Monitorar a saúde da equipe
+- Não praticar ou tolerar assédio
 
 Multas e Penalidades:
-- Notificacao: R$ 1.000 a R$ 10.000
-- Auto de Infracao Grave: R$ 10.000 a R$ 50.000
-- Auto de Infracao Muito Grave: R$ 50.000 a R$ 300.000
-- Embargo ou Interdicao: Paralisa cao de atividades
-- Processos Trabalhistas: Indenizacoes milionarias
-- Processo Criminal: Prisao em casos extremos
+- Notificação: R$ 1.000 a R$ 10.000
+- Auto de Infração Grave: R$ 10.000 a R$ 50.000
+- Auto de Infração Muito Grave: R$ 50.000 a R$ 300.000
+- Embargo ou Interdição: Paralisação de atividades
+- Processos Trabalhistas: Indenizações milionárias
+- Processo Criminal: Prisão em casos extremos
 
-INTEGRACAO DO PGR COM A ESTRATEGIA ORGANIZACIONAL
+INTEGRAÇÃO DO PGR COM A ESTRATÉGIA ORGANIZACIONAL
 
-O PGR nao e apenas uma obrigacao legal - e uma ferramenta estrategica.
+O PGR não é apenas uma obrigação legal — é uma ferramenta estratégica.
 
-Beneficios Organizacionais:
-- Reducao de 40% em afastamentos
+Benefícios Organizacionais:
+- Redução de 40% em afastamentos
 - Aumento de 25% na produtividade
-- Diminuicao de 60% em processos trabalhistas
+- Diminuição de 60% em processos trabalhistas
 - Melhoria de 35% no clima organizacional
-- Retencao de talentos (reducao de 50% no turnover)
+- Retenção de talentos (redução de 50% no turnover)
 
 ROI (Retorno sobre Investimento):
-Cada R$ 1,00 investido em prevencao retorna R$ 4,00 a R$ 6,00 em:
-- Reducao de custos com afastamentos
+Cada R$ 1,00 investido em prevenção retorna de R$ 4,00 a R$ 6,00 em:
+- Redução de custos com afastamentos
 - Menor rotatividade
 - Maior produtividade
 - Menos processos judiciais
 - Melhor imagem corporativa
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Mapeamento Inicial
-Liste 5 riscos psicossociais presentes na sua area de atuacao.
+Exercício 1: Mapeamento Inicial
+Liste 5 riscos psicossociais presentes na sua área de atuação.
 
-Exercicio 2: Analise de Conformidade
-Sua empresa tem PGR implementado? Os riscos psicossociais estao incluidos?
+Exercício 2: Análise de Conformidade
+Sua empresa tem PGR implementado? Os riscos psicossociais estão incluídos?
 
-Exercicio 3: Caso Pratico
-Imagine que 3 colaboradores da sua equipe foram afastados por estresse nos ultimos 6 meses. Quais acoes voce deveria ter tomado preventivamente?
+Exercício 3: Caso Prático
+Imagine que 3 colaboradores da sua equipe foram afastados por estresse nos últimos 6 meses. Quais ações você deveria ter tomado preventivamente?
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-A NR01 e o PGR nao sao burocracias - sao ferramentas de protecao da vida e da saude. Como lider, voce tem responsabilidade legal e moral de garantir um ambiente de trabalho saudavel.
+A NR 01 e o PGR não são burocracias — são ferramentas de proteção da vida e da saúde. Como líder, você tem responsabilidade legal e moral de garantir um ambiente de trabalho saudável.
 
-Proximos Passos:
+Próximos Passos:
 1. Verifique se sua empresa tem PGR implementado
-2. Solicite ao RH/SESMT inclusao de riscos psicossociais
-3. Mapeie os riscos da sua area
-4. Proponha acoes preventivas concretas
+2. Solicite ao RH/SESMT inclusão de riscos psicossociais
+3. Mapeie os riscos da sua área
+4. Proponha ações preventivas concretas
 
-Lembre-se: Prevenir e mais barato, mais humano e mais estrategico que remediar.
+Lembre-se: Prevenir e mais barato, mais humano e mais estratégico que remediar.
         `
       },
       {
         id: 2,
-        titulo: "Responsabilidades da Lideranca",
-        duracao: "60 min",
-        topicos: [
-          "Obrigacoes legais do gestor",
-          "Papel preventivo do lider",
-          "Identificacao de comportamentos criticos",
-          "Documentacao e reporte adequado",
+        título: "Responsabilidades da Liderança",
+        duração: "60 min",
+        tópicos: [
+          "Obrigações legais do gestor",
+          "Papel preventivo do líder",
+          "Identificação de comportamentos críticos",
+          "Documentação e reporte adequados",
           "Responsabilidade civil e criminal"
         ],
-        materialDidatico: `
-RESPONSABILIDADES DA LIDERANCA NA GESTAO DE RISCOS PSICOSSOCIAIS
+        materialDidático: `
+RESPONSABILIDADES DA LIDERANÇA NA GESTÃO DE RISCOS PSICOSSOCIAIS
 
-OBRIGACOES LEGAIS DO GESTOR
+OBRIGAÇÕES LEGAIS DO GESTOR
 
-Como lider, voce nao e apenas responsavel por resultados - voce e legalmente responsavel pela saude e seguranca da sua equipe.
+Como líder, você não é apenas responsável por resultados — você é legalmente responsável pela saúde e segurança da sua equipe.
 
 Base Legal:
-- NR01: Obrigacao de identificar e controlar riscos
-- CLT Art. 157: Dever de cumprir normas de seguranca
-- Lei 14.457/22: Prevencao ao assedio
-- Codigo Civil: Responsabilidade por danos
-- Codigo Penal: Crimes de omissao
+- NR 01: Obrigação de identificar e controlar riscos
+- CLT, art. 157: Dever de cumprir normas de segurança
+- Lei 14.457/22: Prevenção ao assédio
+- Código Civil: Responsabilidade por danos
+- Código Penal: Crimes de omissão
 
-O que a Lei Exige de Voce:
-1. Conhecer os riscos psicossociais da sua area
-2. Identificar situacoes de risco precocemente
+O que a Lei Exige de Você:
+1. Conhecer os riscos psicossociais da sua área
+2. Identificar situações de risco precocemente
 3. Reportar imediatamente casos graves
 4. Implementar medidas preventivas
-5. Nao praticar ou tolerar assedio
-6. Documentar acoes tomadas
-7. Participar de treinamentos obrigatorios
+5. Não praticar ou tolerar assédio
+6. Documentar ações tomadas
+7. Participar de treinamentos obrigatórios
 
-PAPEL PREVENTIVO DO LIDER
+PAPEL PREVENTIVO DO LÍDER
 
-Voce e a primeira linha de defesa contra riscos psicossociais.
+Você é a primeira linha de defesa contra riscos psicossociais.
 
-Funcoes Preventivas do Lider:
-1. Observador Atento: Perceber mudancas de comportamento
-2. Facilitador: Criar ambiente de seguranca psicologica
-3. Comunicador: Manter dialogo aberto
+Funções Preventivas do Líder:
+1. Observador atento: perceber mudanças de comportamento
+2. Facilitador: Criar ambiente de segurança psicológica
+3. Comunicador: manter diálogo aberto
 4. Mediador: Resolver conflitos rapidamente
 5. Educador: Conscientizar a equipe
-6. Modelo: Dar o exemplo de comportamento saudavel
+6. Modelo: dar o exemplo de comportamento saudável
 
-Por que o Lider e Crucial:
-- Voce tem contato diario com a equipe
-- Pode identificar sinais antes de virarem doenca
+Por que o Líder é Crucial:
+- Você tem contato diário com a equipe
+- Pode identificar sinais antes de virarem doença
 - Tem poder para mudar processos de trabalho
-- Influencia diretamente o clima da area
-- E a ponte entre colaboradores e organizacao
+- Influencia diretamente o clima da área
+- É a ponte entre colaboradores e organização
 
-IDENTIFICACAO DE COMPORTAMENTOS CRITICOS
+IDENTIFICAÇÃO DE COMPORTAMENTOS CRÍTICOS
 
-Sinais de Alerta que Voce DEVE Observar:
+Sinais de Alerta que Você DEVE Observar:
 
-1. Mudancas de Comportamento
+1. Mudanças de Comportamento
 ANTES: Colaborador comunicativo e engajado
-AGORA: Isolado, silencioso, evita interacao
-ACAO: Conversa individual para entender o que mudou
+AGORA: Isolado, silencioso, evita interação
+AÇÃO: Conversa individual para entender o que mudou
 
 2. Queda de Performance
 ANTES: Entregas no prazo e com qualidade
 AGORA: Atrasos, erros, trabalho incompleto
-ACAO: Investigar causas (sobrecarga, problemas pessoais, desmotivacao)
+AÇÃO: Investigar causas (sobrecarga, problemas pessoais, desmotivação)
 
-3. Problemas de Saude Frequentes
+3. Problemas de Saúde Frequentes
 SINAIS: Faltas recorrentes, atestados frequentes, queixas de dor
-ACAO: Encaminhar ao SESMT/medicina do trabalho
+AÇÃO: Encaminhar ao SESMT/medicina do trabalho
 
-4. Sinais de Estresse Cronico
-FISICOS: Cansaco extremo, dores de cabeca, problemas digestivos
-EMOCIONAIS: Irritabilidade, choro facil, apatia
+4. Sinais de Estresse Crônico
+FÍSICOS: Cansaço extremo, dores de cabeça, problemas digestivos
+EMOCIONAIS: Irritabilidade, choro fácil, apatia
 COMPORTAMENTAIS: Agressividade, isolamento, erros
-ACAO: Conversa empática e avaliacao de carga de trabalho
+AÇÃO: Conversa empática e avaliação de carga de trabalho
 
-5. Indicios de Assedio
-SINAIS: Colaborador relata humilhacoes, isolamento proposital, comentarios inadequados
-ACAO IMEDIATA: Reportar ao RH/Compliance, nao minimizar a situacao
+5. Indícios de Assédio
+SINAIS: Colaborador relata humilhações, isolamento proposital, comentários inadequados
+AÇÃO IMEDIATA: Reportar ao RH/Compliance, não minimizar a situação
 
-6. Pensamentos ou Falas sobre Desistir
-FRASES: "Nao aguento mais", "Quero sumir", "Seria melhor se eu nao estivesse aqui"
-ACAO URGENTE: Acionar RH, SESMT, sugerir apoio psicologico
+6. Pensamentos ou falas sobre desistir
+FRASES: "Não aguento mais", "Quero sumir", "Seria melhor se eu não estivesse aqui"
+AÇÃO URGENTE: Acionar RH, SESMT, sugerir apoio psicológico
 
-Tecnica do Semaforo:
+Técnica do Semáforo:
 
 VERDE (Tudo OK):
 - Produtividade normal
 - Bom humor
 - Engajamento
-- Relacionamentos saudaveis
+- Relacionamentos saudáveis
 
-AMARELO (Atencao):
-- Pequenas mudancas de comportamento
-- Cansaco ocasional
+AMARELO (Atenção):
+- Pequenas mudanças de comportamento
+- Cansaço ocasional
 - Irritabilidade leve
-ACAO: Conversa preventiva
+AÇÃO: Conversa preventiva
 
-VERMELHO (Intervencao Necessaria):
-- Mudancas drasticas
-- Multiplos sinais de alerta
+VERMELHO (Intervenção Necessária):
+- Mudanças drásticas
+- Múltiplos sinais de alerta
 - Afastamentos frequentes
-ACAO: Intervencao imediata
+AÇÃO: Intervenção imediata
 
-DOCUMENTACAO E REPORTE ADEQUADO
+DOCUMENTAÇÃO E REPORTE ADEQUADO
 
-A documentacao correta protege o colaborador, a empresa e voce.
+A documentação correta protege o colaborador, a empresa e você.
 
 O que Documentar:
-1. Data e hora da observacao/conversa
-2. Descricao objetiva do comportamento observado
-3. Acoes tomadas
+1. Data e hora da observação/conversa
+2. Descrição objetiva do comportamento observado
+3. Ações tomadas
 4. Pessoas envolvidas/acionadas
-5. Resultado das acoes
+5. Resultado das ações
 
 Modelo de Registro:
 
-Data: 15/03/2024 - 14:30h
-Colaborador: Joao Silva (ID: 12345)
-Situacao Observada: Colaborador apresentou irritabilidade excessiva em reuniao, levantou a voz com colegas (comportamento atipico). Nos ultimos 15 dias, observei 4 atrasos e 2 faltas.
-Acao Tomada: Conversa individual realizada. Colaborador relatou sobrecarga e problemas pessoais. Redistribui 2 demandas para equilibrar carga.
+Data: 15/03/2024 - 14:30
+Colaborador: João Silva (ID: 12345)
+Situação Observada: Colaborador apresentou irritabilidade excessiva em reunião, levantou a voz com colegas (comportamento atípico). Nos últimos 15 dias, observei 4 atrasos e 2 faltas.
+Ação Tomada: Conversa individual realizada. Colaborador relatou sobrecarga e problemas pessoais. Redistribuí 2 demandas para equilibrar a carga.
 Encaminhamento: Sugeri apoio do PAE (Programa de Apoio ao Empregado). Agendarei acompanhamento em 7 dias.
-Registro: Comunicado ao RH via email (protocolo 2024-0315-001)
+Registro: Comunicado ao RH via e-mail (protocolo 2024-0315-001)
 
 Quando Reportar ao RH/SESMT:
-IMEDIATO (nas proximas 2 horas):
-- Relato de assedio moral ou sexual
-- Ideacao suicida ou auto-lesao
-- Crise de panico ou colapso emocional
-- Ameaca de violencia
+IMEDIATO (nas próximas 2 horas):
+- Relato de assédio moral ou sexual
+- Ideação suicida ou autolesão
+- Crise de pânico ou colapso emocional
+- Ameaça de violência
 
 URGENTE (em 24 horas):
-- Multiplos sinais de burnout
-- Afastamento iminente por saude mental
+- Múltiplos sinais de burnout
+- Afastamento iminente por saúde mental
 - Conflito grave entre colaboradores
-- Situacao de risco evidente
+- Situação de risco evidente
 
 BREVE (em 3-5 dias):
-- Mudancas comportamentais persistentes
+- Mudanças comportamentais persistentes
 - Queda consistente de performance
 - Relatos de sobrecarga
 - Clima ruim na equipe
 
 Como Reportar:
-1. Use canais oficiais (email, sistema interno, formulario)
+1. Use canais oficiais (e-mail, sistema interno, formulário)
 2. Seja objetivo e factual (sem julgamentos)
 3. Proteja a confidencialidade
-4. Solicite orientacao sobre proximos passos
+4. Solicite orientação sobre próximos passos
 5. Documente que reportou
 
 RESPONSABILIDADE CIVIL E CRIMINAL
 
-Voce pode ser responsabilizado pessoalmente por omissao ou ma conducao.
+Você pode ser responsabilizado pessoalmente por omissão ou má condução.
 
 Responsabilidade Civil:
 
-Casos de Condenacao de Lideres:
-- Lider que praticou assedio moral: Indenizacao de R$ 50.000
+Casos de Condenação de Líderes:
+- Líder que praticou assédio moral: Indenização de R$ 50.000
 - Gestor que ignorou sinais de burnout: R$ 80.000 por danos morais
-- Supervisor que tolerou assedio sexual: R$ 120.000 + perda do cargo
+- Supervisor que tolerou assédio sexual: R$ 120.000 + perda do cargo
 
 O que Gera Responsabilidade Civil:
-- Praticar assedio pessoalmente
-- Tolerar assedio de terceiros
+- Praticar assédio pessoalmente
+- Tolerar assédio de terceiros
 - Ignorar sinais evidentes de adoecimento
-- Nao tomar providencias quando informado
-- Criar ambiente toxico sistematicamente
+- Não tomar providências quando informado
+- Criar ambiente tóxico sistematicamente
 
 Responsabilidade Criminal:
 
-Crimes Possiveis:
-- Assedio Sexual (Art. 216-A CP): 1 a 2 anos
-- Constrangimento Ilegal (Art. 146 CP): 3 meses a 1 ano
-- Lesao Corporal (quando causa adoecimento): 3 meses a 3 anos
-- Omissao de Socorro (casos extremos): 1 a 6 meses
+Crimes Possíveis:
+- Assédio Sexual (art. 216-A do CP): 1 a 2 anos
+- Constrangimento Ilegal (art. 146 do CP): 3 meses a 1 ano
+- Lesão Corporal (quando causa adoecimento): 3 meses a 3 anos
+- Omissão de Socorro (casos extremos): 1 a 6 meses
 
 Caso Real - Gestor Condenado:
-Gerente de vendas cobrava metas publicamente humilhando equipe. Uma colaboradora desenvolveu depressao grave e tentou suicidio. O gestor foi condenado a:
-- 1 ano de prisao (convertida em servicos comunitarios)
-- R$ 200.000 de indenizacao
-- Perda definitiva do cargo de lideranca
+Gerente de vendas cobrava metas publicamente, humilhando a equipe. Uma colaboradora desenvolveu depressão grave e tentou suicídio. O gestor foi condenado a:
+- 1 ano de prisão (convertida em serviços comunitários)
+- R$ 200.000 de indenização
+- Perda definitiva do cargo de liderança
 - Ficha criminal
 
 PROTEGENDO-SE LEGALMENTE
 
-Boas Praticas para Protecao Legal:
-1. Documente TODAS as acoes e conversas importantes
-2. Nunca pratique ou tolere assedio
-3. Reporte situacoes de risco imediatamente
+Boas Práticas para Proteção Legal:
+1. Documente TODAS as ações e conversas importantes
+2. Nunca pratique ou tolere assédio
+3. Reporte situações de risco imediatamente
 4. Participe de treinamentos oferecidos
-5. Busque orientacao do RH quando em duvida
+5. Busque orientação do RH quando em dúvida
 6. Trate todos com respeito e profissionalismo
-7. Mantenha comunicacao transparente
+7. Mantenha comunicação transparente
 
 O que NUNCA Fazer:
-- Minimizar relatos de assedio ("e so brincadeira")
+- Minimizar relatos de assédio ("é só brincadeira")
 - Ignorar sinais evidentes de adoecimento
 - Pressionar colaborador doente a trabalhar
-- Tomar decisoes sozinho em casos graves
-- Omitir informacoes em investigacoes
+- Tomar decisões sozinho em casos graves
+- Omitir informações em investigações
 - Retaliar quem denunciou problemas
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Analise de Caso
-Maria, sua analista, antes pontual e alegre, nas ultimas 3 semanas tem chegado atrasada, apresenta olhos vermelhos e chora no banheiro. O que voce faz?
+Exercício 1: Análise de Caso
+Maria, sua analista, antes pontual e alegre, nas últimas 3 semanas tem chegado atrasada, apresenta olhos vermelhos e chora no banheiro. O que você faz?
 
-Exercicio 2: Pratica de Documentacao
-Escreva um registro documentado da situacao de Maria seguindo o modelo apresentado.
+Exercício 2: Prática de Documentação
+Escreva um registro documentado da situação de Maria seguindo o modelo apresentado.
 
-Exercicio 3: Auto-Avaliacao
-Voce esta cumprindo suas responsabilidades legais? Liste 3 acoes que precisa melhorar.
+Exercício 3: Autoavaliação
+Você está cumprindo suas responsabilidades legais? Liste 3 ações que precisa melhorar.
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-Ser lider e ter poder - e poder implica responsabilidade. Voce pode ser o fator que previne um adoecimento ou que o causa.
+Ser líder é ter poder — e poder implica responsabilidade. Você pode ser o fator que previne um adoecimento ou que o causa.
 
-Reflexao Final:
-Como voce quer ser lembrado pela sua equipe? Como o lider que cuidou ou como aquele que ignorou?
+Reflexão Final:
+Como você quer ser lembrado pela sua equipe? Como o líder que cuidou ou como aquele que ignorou?
 
-Proximos Passos:
+Próximos Passos:
 1. Revise sua forma de liderar
-2. Identifique situacoes de risco na sua equipe
-3. Documente acoes importantes
-4. Busque treinamento continuo
+2. Identifique situações de risco na sua equipe
+3. Documente ações importantes
+4. Busque treinamento contínuo
 
-Lembre-se: Cuidar da saude mental da equipe nao e bondade - e obrigacao legal e moral.
+Lembre-se: cuidar da saúde mental da equipe não é bondade — é obrigação legal e moral.
         `
       },
       {
         id: 3,
-        titulo: "Integracao com Outras Normas e Leis",
-        duracao: "60 min",
-        topicos: [
-          "NR07 - PCMSO e saude mental",
+        título: "Integração com Outras Normas e Leis",
+        duração: "60 min",
+        tópicos: [
+          "NR07 - PCMSO e saúde mental",
           "NR17 - Ergonomia organizacional",
-          "Lei 14.457/22 - Prevencao ao assedio",
+          "Lei 14.457/22 - Prevenção ao assédio",
           "CLT e direitos trabalhistas",
           "Como garantir conformidade integral"
         ],
-        materialDidatico: `
-INTEGRACAO DAS NORMAS E LEIS DE PROTECAO PSICOSSOCIAL
+        materialDidático: `
+INTEGRAÇÃO DAS NORMAS E LEIS DE PROTEÇÃO PSICOSSOCIAL
 
-VISAO INTEGRADA DA LEGISLACAO
+VISÃO INTEGRADA DA LEGISLAÇÃO
 
-A protecao da saude mental no trabalho nao depende de uma unica norma, mas de um conjunto integrado de legislacoes.
+A proteção da saúde mental no trabalho não depende de uma única norma, mas de um conjunto integrado de legislações.
 
 Ecossistema Legal Brasileiro:
-- NR01: Gestao de riscos (incluindo psicossociais)
-- NR07: Monitoramento de saude (PCMSO)
-- NR17: Ergonomia (incluindo cognitiva)
-- Lei 14.457/22: Prevencao ao assedio
+- NR 01: Gestão de riscos (incluindo psicossociais)
+- NR 07: Monitoramento de saúde (PCMSO)
+- NR 17: Ergonomia (incluindo cognitiva)
+- Lei 14.457/22: Prevenção ao assédio
 - CLT: Direitos trabalhistas fundamentais
 - Lei 13.467/17: Reforma trabalhista
-- Codigo Civil: Responsabilidade civil
-- Codigo Penal: Crimes relacionados
+- Código Civil: Responsabilidade civil
+- Código Penal: Crimes relacionados
 
-NR07 - PROGRAMA DE CONTROLE MEDICO DE SAUDE OCUPACIONAL
+NR 07 - PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL
 
-O que e o PCMSO:
-Programa obrigatorio que visa a preservacao da saude dos trabalhadores atraves de exames medicos periodicos e monitoramento de saude.
+O que é o PCMSO:
+Programa obrigatório que visa à preservação da saúde dos trabalhadores por meio de exames médicos periódicos e monitoramento de saúde.
 
-Integracao com Saude Mental:
+Integração com Saúde Mental:
 
-Exames Obrigatorios que Incluem Avaliacao Psicossocial:
-1. Admissional: Avaliacao do estado de saude mental inicial
-2. Periodico: Monitoramento anual ou semestral
-3. Retorno ao Trabalho: Apos afastamentos
-4. Mudanca de Funcao: Quando houver mudanca de riscos
-5. Demissional: Avaliacao final do estado de saude
+Exames Obrigatórios que Incluem Avaliação Psicossocial:
+1. Admissional: Avaliação do estado de saúde mental inicial
+2. Periódico: Monitoramento anual ou semestral
+3. Retorno ao Trabalho: Após afastamentos
+4. Mudança de Função: Quando houver mudança de riscos
+5. Demissional: Avaliação final do estado de saúde
 
-Novidades da NR07 (Atualizacao 2022):
-- Inclusao obrigatoria de riscos psicossociais no inventario
-- Avaliacao de fatores de estresse ocupacional
+Novidades da NR 07 (Atualização 2022):
+- Inclusão obrigatória de riscos psicossociais no inventário
+- Avaliação de fatores de estresse ocupacional
 - Rastreamento de transtornos mentais
 - Nexo causal entre trabalho e adoecimento mental
-- Indicadores de saude mental da empresa
+- Indicadores de saúde mental da empresa
 
-O que o Medico do Trabalho Avalia:
-- Sinais de estresse cronico
-- Indicadores de burnout
-- Sintomas de ansiedade e depressao
-- Uso de substancias (alcool, drogas)
+O que o Médico do Trabalho Avalia:
+- Sinais de estresse crônico
+- Indicadores de Burnout
+- Sintomas de ansiedade e depressão
+- Uso de substâncias (álcool, drogas)
 - Qualidade do sono
-- Relacao entre sintomas e trabalho
+- Relação entre sintomas e trabalho
 
-Papel do Lider no PCMSO:
-1. Liberar o colaborador para exames periodicos
-2. Fornecer informacoes sobre a funcao e riscos
-3. Implementar recomendacoes medicas
-4. Respeitar restricoes e limitacoes
-5. Nao pressionar retorno antes do apto medico
+Papel do Líder no PCMSO:
+1. Liberar o colaborador para exames periódicos
+2. Fornecer informações sobre a função e riscos
+3. Implementar recomendações médicas
+4. Respeitar restrições e limitações
+5. Não pressionar retorno antes do apto médico
 
 Caso Real - PCMSO Salvou Vidas:
-Empresa de TI implementou avaliacao psicossocial no periodico. Identificou 15 casos de burnout em estagio inicial. Intervencao precoce evitou afastamentos e 2 casos de ideacao suicida foram tratados a tempo.
+Empresa de TI implementou avaliação psicossocial no periódico. Identificou 15 casos de Burnout em estágio inicial. Intervenção precoce evitou afastamentos e 2 casos de ideação suicida foram tratados a tempo.
 
-NR17 - ERGONOMIA (ASPECTOS COGNITIVOS E ORGANIZACIONAIS)
+NR 17 - ERGONOMIA (ASPECTOS COGNITIVOS E ORGANIZACIONAIS)
 
-A ergonomia nao e apenas sobre cadeiras e mesas - inclui a organizacao do trabalho.
+A ergonomia não é apenas sobre cadeiras e mesas — inclui a organização do trabalho.
 
 Ergonomia Organizacional - O que Avalia:
 1. Carga de trabalho mental
 2. Ritmo de trabalho
 3. Pausas e descansos
 4. Turnos e jornadas
-5. Conteudo das tarefas
+5. Conteúdo das tarefas
 6. Autonomia e controle
-7. Comunicacao organizacional
-8. Pressao temporal
+7. Comunicação organizacional
+8. Pressão temporal
 
-Aspectos da NR17 Relacionados a Saude Mental:
+Aspectos da NR17 Relacionados a Saúde Mental:
 
-17.6.3 - Organizacao do Trabalho:
-Deve levar em consideracao:
-- Normas de producao REALISTICAS
-- Modo operatorio HUMANIZADO
-- Exigencia de tempo ADEQUADA
-- Conteudo das tarefas SIGNIFICATIVO
-- Ritmo de trabalho SUSTENTAVEL
+17.6.3 - Organização do Trabalho:
+Deve levar em consideração:
+- Normas de produção REALÍSTICAS
+- Modo operatório HUMANIZADO
+- Exigência de tempo ADEQUADA
+- Conteúdo das tarefas SIGNIFICATIVO
+- Ritmo de trabalho SUSTENTÁVEL
 
 Elementos Que Geram Risco Psicossocial:
-- Metas inalcancaveis
-- Pressao temporal excessiva
-- Trabalho monotono
+- Metas inalcançáveis
+- Pressão temporal excessiva
+- Trabalho monótono
 - Falta de pausas
 - Jornadas irregulares
 - Trabalho noturno mal gerenciado
-- Ausencia de autonomia
+- Ausência de autonomia
 
-Aplicacao Pratica para Lideres:
+Aplicação Prática para Líderes:
 
-Metas Realistas (NR17):
-ERRADO: "Voces precisam dobrar a producao sem aumentar a equipe"
-CERTO: "Vamos analisar a capacidade atual e definir metas alcancaveis"
+Metas Realistas (NR 17):
+ERRADO: "Vocês precisam dobrar a produção sem aumentar a equipe"
+CERTO: "Vamos analisar a capacidade atual e definir metas alcançáveis"
 
 Pausas Adequadas (NR17):
 ERRADO: Trabalho de 4 horas corridas em computador
 CERTO: Pausa de 10 min a cada 50 min de trabalho intenso
 
-Conteudo Significativo (NR17):
-ERRADO: Tarefas fragmentadas sem visao do todo
+Conteúdo Significativo (NR 17):
+ERRADO: Tarefas fragmentadas sem visão do todo
 CERTO: Colaborador entende o impacto do seu trabalho
 
 LEI 14.457/22 - PROGRAMA EMPREGA + MULHERES
 
-Lei Federal que torna obrigatoria a prevencao e combate ao assedio sexual e moral.
+Lei federal que torna obrigatória a prevenção e o combate ao assédio sexual e moral.
 
-Principais Exigencias:
+Principais Exigências:
 
-Para Empresas com Mais de 10 Empregados:
-1. Politica de Prevencao ao Assedio (escrita e divulgada)
-2. Canais de Denuncia (confidenciais e seguros)
-3. Treinamentos Periodicos (obrigatorios)
-4. Procedimentos de Investigacao (imparciais e rapidos)
-5. Punicoes Claras (proporciona is a gravidade)
+Para empresas com mais de 10 empregados:
+1. Política de Prevenção ao Assédio (escrita e divulgada)
+2. Canais de Denúncia (confidenciais e seguros)
+3. Treinamentos Periódicos (obrigatórios)
+4. Procedimentos de Investigação (imparciais e rápidos)
+5. Punições claras (proporcionais à gravidade)
 
-Definicoes Legais:
+Definições Legais:
 
-Assedio Moral:
-Conducao reiterada com objetivo de degradar condicoes de trabalho, ofender dignidade, causar dano psicologico.
-Exemplos: humilhacao publica, isolamento proposital, sobrecarga intencional, comentarios depreciativos
+Assédio Moral:
+Condução reiterada com objetivo de degradar condições de trabalho, ofender a dignidade e causar dano psicológico.
+Exemplos: humilhação pública, isolamento proposital, sobrecarga intencional, comentários depreciativos
 
-Assedio Sexual:
-Constranger alguem com intuito de obter vantagem ou favorecimento sexual.
-Exemplos: cantadas insistentes, toques nao consensuais, comentarios sobre corpo, chantagem sexual
+Assédio Sexual:
+Constranger alguém com intuito de obter vantagem ou favorecimento sexual.
+Exemplos: cantadas insistentes, toques não consensuais, comentários sobre o corpo, chantagem sexual
 
-Responsabilidades do Lider (Lei 14.457/22):
-1. Conhecer a politica de prevencao
-2. Nao praticar assedio (obvio, mas precisa ser dito)
-3. Nao tolerar assedio na equipe
-4. Acolher denuncias sem revitimizar
-5. Colaborar com investigacoes
-6. Aplicar punicoes quando comprovado
+Responsabilidades do Líder (Lei 14.457/22):
+1. Conhecer a política de prevenção
+2. Não praticar assédio (óbvio, mas precisa ser dito)
+3. Não tolerar assédio na equipe
+4. Acolher denúncias sem revitimizar
+5. Colaborar com investigações
+6. Aplicar punições quando comprovado
 
 Penalidades por Descumprimento:
 - Multas de R$ 10.000 a R$ 100.000
-- Processsos trabalhistas individuais
-- Dano a reputacao da empresa
-- Perda de contratos publicos
-- Responsabilizacao pessoal de lideres
+- Processos trabalhistas individuais
+- Dano à reputação da empresa
+- Perda de contratos públicos
+- Responsabilização pessoal de líderes
 
-Caso Real - Lei 14.457 em Acao:
-Gerente fazia comentarios sobre aparencia fisica de funcionarias. Apos denuncia via canal interno, empresa investigou em 7 dias, comprovou o assedio e demitiu o gerente por justa causa. Custo: R$ 0 para empresa (agiu corretamente). Se tivesse ignorado: processo de R$ 500.000.
+Caso Real - Lei 14.457 em Ação:
+Gerente fazia comentários sobre aparência física de funcionárias. Após denúncia via canal interno, a empresa investigou em 7 dias, comprovou o assédio e demitiu o gerente por justa causa. Custo: R$ 0 para a empresa (agiu corretamente). Se tivesse ignorado: processo de R$ 500.000.
 
-CLT E DIREITOS TRABALHISTAS RELACIONADOS A SAUDE MENTAL
+CLT E DIREITOS TRABALHISTAS RELACIONADOS À SAÚDE MENTAL
 
 Artigos da CLT Relevantes:
 
 Art. 157 - Dever do Empregador:
-"Cumprir e fazer cumprir as normas de seguranca e medicina do trabalho"
-Interpretacao: Inclui prevencao de riscos psicossociais
+"Cumprir e fazer cumprir as normas de segurança e medicina do trabalho"
+Interpretação: inclui prevenção de riscos psicossociais
 
 Art. 158 - Dever do Empregado:
-"Colaborar com a empresa na aplicacao das normas de SST"
-Interpretacao: Participar de treinamentos, reportar riscos
+"Colaborar com a empresa na aplicação das normas de SST"
+Interpretação: participar de treinamentos, reportar riscos
 
-Art. 483 - Rescisao Indireta:
-O empregado pode romper contrato se o empregador:
-- Exigir servicos superiores as suas forcas (sobrecarga)
-- Tratar com rigor excessivo (assedio moral)
-- Correr perigo manifesto de mal consideravel
+Art. 483 - Rescisão Indireta:
+O empregado pode romper o contrato se o empregador:
+- Exigir serviços superiores às suas forças (sobrecarga)
+- Tratar com rigor excessivo (assédio moral)
+- Correr perigo manifesto de mal considerável
 
-Resultado: Funcionario "demite" a empresa com todos os direitos
+Resultado: Funcionário "demite" a empresa com todos os direitos
 
 Art. 482 - Justa Causa:
 Empregador pode demitir por justa causa em caso de:
-- Ato de indisciplina ou insubordinacao
+- Ato de indisciplina ou insubordinação
 - Desídia no desempenho
-Cuidado: Nao confunda baixa performance por doenca com desídia
+Cuidado: não confunda baixa performance por doença com desídia
 
-Direito ao Auxilio-Doenca:
-Transtornos mentais relacionados ao trabalho dao direito a:
-- Afastamento com beneficio do INSS
-- Estabilidade de 12 meses apos retorno
-- Indenizacao se comprovado nexo causal
+Direito ao Auxílio-Doença:
+Transtornos mentais relacionados ao trabalho dão direito a:
+- Afastamento com benefício do INSS
+- Estabilidade de 12 meses após retorno
+- Indenização se comprovado nexo causal
 
 GARANTINDO CONFORMIDADE INTEGRAL
 
-Checklist de Conformidade para Lideres:
+Checklist de Conformidade para Líderes:
 
-NR01 - PGR:
-- Riscos psicossociais da minha area estao mapeados?
-- Participo do PGR com informacoes da minha area?
+NR 01 - PGR:
+- Riscos psicossociais da minha área estão mapeados?
+- Participo do PGR com informações da minha área?
 - Implemento as medidas preventivas definidas?
 
-NR07 - PCMSO:
-- Libero colaboradores para exames periodicos?
-- Respeito restricoes medicas?
+NR 07 - PCMSO:
+- Libero colaboradores para exames periódicos?
+- Respeito restrições médicas?
 - Reporto casos de adoecimento?
 
-NR17 - Ergonomia:
-- Metas sao realisticas?
-- Jornadas sao adequadas?
-- Ha pausas suficientes?
+NR 17 - Ergonomia:
+- Metas são realísticas?
+- Jornadas são adequadas?
+- Há pausas suficientes?
 - Trabalho tem significado?
 
 Lei 14.457/22:
-- Conheco a politica de prevencao ao assedio?
-- Sei como acionar canal de denuncia?
-- Fiz treinamento obrigatorio?
+- Conheço a política de prevenção ao assédio?
+- Sei como acionar o canal de denúncia?
+- Fiz treinamento obrigatório?
 - Trato todos com respeito?
 
 CLT:
 - Respeito jornadas legais?
 - Pago horas extras corretamente?
-- Nao exijo alem das forcas do colaborador?
+- Não exijo além das forças do colaborador?
 - Trato todos sem rigor excessivo?
 
-Plano de Acao para Conformidade Total:
+Plano de Ação para Conformidade Total:
 
-Mes 1:
+Mês 1:
 - Estudar todas as normas
-- Fazer auto-avaliacao
+- Fazer autoavaliação
 - Identificar gaps
 
-Mes 2:
+Mês 2:
 - Participar de treinamentos
-- Mapear riscos da area
+- Mapear riscos da área
 - Propor melhorias
 
-Mes 3:
-- Implementar acoes corretivas
+Mês 3:
+- Implementar ações corretivas
 - Documentar processos
 - Monitorar resultados
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Integracao de Normas
-Um colaborador relata sobrecarga e sintomas de ansiedade. Quais normas se aplicam e que acoes voce deve tomar em cada uma?
+Exercício 1: Integração de Normas
+Um colaborador relata sobrecarga e sintomas de ansiedade. Quais normas se aplicam e que ações você deve tomar em cada uma?
 
-Exercicio 2: Analise de Conformidade
-Avalie sua area usando o checklist apresentado. Em qual norma voce esta mais vulneravel?
+Exercício 2: Análise de Conformidade
+Avalie sua área usando o checklist apresentado. Em qual norma você está mais vulnerável?
 
-Exercicio 3: Caso Pratico
-Funcionaria denuncia assedio sexual de colega. Como voce age considerando Lei 14.457/22, CLT e responsabilidades de lider?
+Exercício 3: Caso Prático
+Funcionária denuncia assédio sexual de colega. Como você age considerando a Lei 14.457/22, a CLT e as responsabilidades de líder?
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-A protecao da saude mental no trabalho e garantida por multiplas camadas de legislacao. Ignorar qualquer uma delas coloca colaboradores em risco e expoe voce e a empresa a consequencias legais graves.
+A proteção da saúde mental no trabalho é garantida por múltiplas camadas de legislação. Ignorar qualquer uma delas coloca colaboradores em risco e expõe você e a empresa a consequências legais graves.
 
-Reflexao: Conformidade legal nao e burocracia - e cuidado sistematizado com pessoas.
+Reflexão: conformidade legal não é burocracia — é cuidado sistematizado com pessoas.
 
-Proximos Passos:
+Próximos Passos:
 1. Estude cada norma mencionada
-2. Verifique conformidade da sua area
+2. Verifique a conformidade da sua área
 3. Corrija imediatamente desvios identificados
-4. Documente todas as acoes
+4. Documente todas as ações
 
-Lembre-se: A lei protege quem se protege. Aja preventivamente, sempre.
+Lembre-se: a lei protege quem se protege. Aja preventivamente, sempre.
         `
       }
     ],
     integracaoPGR: [
-      "Atuacao preventiva conforme NR01 - Gestao de Riscos Ocupacionais",
-      "Identificacao e comunicacao de fatores de riscos psicossociais",
-      "Promocao de ambiente saudavel, etico e seguro",
-      "Fortalecimento da cultura de prevencao continua"
+      "Atuação preventiva conforme NR 01 - Gestão de Riscos Ocupacionais",
+      "Identificação e comunicação de fatores de riscos psicossociais",
+      "Promoção de ambiente saudável, ético e seguro",
+      "Fortalecimento da cultura de prevenção contínua"
     ]
   },
   {
     id: 2,
-    slug: "inteligencia-emocional-lideranca",
-    titulo: "Inteligencia Emocional Aplicada a Lideranca",
-    subtitulo: "Autoconsciencia, Empatia e Autorregulacao",
-    descricao: "Desenvolva autoconsciencia, empatia e autorregulacao emocional, essenciais para uma lideranca equilibrada e humana.",
-    duracao: "3h",
-    nivel: "Intermediario",
+    slug: "inteligência-emocional-liderança",
+    título: "Inteligência Emocional Aplicada à Liderança",
+    subtítulo: "Autoconsciência, Empatia e Autorregulação",
+    descrição: "Desenvolva autoconsciência, empatia e autorregulação emocional, essenciais para uma liderança equilibrada e humana.",
+    duração: "3h",
+    nível: "Intermediário",
     categoria: "Desenvolvimento Pessoal",
-    icone: "🧠",
+    ícone: "🧠",
     cor: "from-purple-600 to-pink-600",
     corBadge: "bg-purple-100 text-purple-700 border-purple-200",
-    objetivo: "Desenvolver autoconsciencia, empatia e autorregulacao emocional, essenciais para uma lideranca equilibrada e humana.",
+    objetivo: "Desenvolver autoconsciência, empatia e autorregulação emocional, essenciais para uma liderança equilibrada e humana.",
     resultadosEsperados: [
-      "Reducao de reacoes impulsivas e decisoes baseadas em emocoes negativas",
+      "Redução de reações impulsivas e decisões baseadas em emoções negativas",
       "Melhoria significativa do clima organizacional",
-      "Aumento do engajamento e confianca da equipe",
-      "Maior capacidade de lidar com pressao e conflitos"
+      "Aumento do engajamento e confiança da equipe",
+      "Maior capacidade de lidar com pressão e conflitos"
     ],
-    modulos: [
+    módulos: [
       {
         id: 1,
-        titulo: "Fundamentos da Inteligencia Emocional",
-        duracao: "45 min",
-        topicos: [
-          "O que e Inteligencia Emocional",
-          "Diferenca entre IE e QI",
-          "As 5 competencias da IE segundo Daniel Goleman",
-          "Importancia para lideres",
-          "Aplicacao pratica na lideranca"
+        título: "Fundamentos da Inteligência Emocional",
+        duração: "45 min",
+        tópicos: [
+          "O que é Inteligência Emocional",
+          "Diferença entre IE e QI",
+          "As 5 competências da IE segundo Daniel Goleman",
+          "Importância para líderes",
+          "Aplicação prática na liderança"
         ],
-        materialDidatico: `
-FUNDAMENTOS DA INTELIGENCIA EMOCIONAL
+        materialDidático: `
+FUNDAMENTOS DA INTELIGÊNCIA EMOCIONAL
 
-O QUE E INTELIGENCIA EMOCIONAL
+O QUE É INTELIGÊNCIA EMOCIONAL
 
-A Inteligencia Emocional e a capacidade de reconhecer, compreender e gerenciar nossas proprias emocoes, bem como reconhecer, compreender e influenciar as emocoes dos outros.
+A Inteligência Emocional é a capacidade de reconhecer, compreender e gerenciar nossas próprias emoções, bem como reconhecer, compreender e influenciar as emoções dos outros.
 
-Este conceito foi popularizado pelo psicologo Daniel Goleman em 1995 e revolucionou nossa compreensao sobre o que torna uma pessoa bem-sucedida profissionalmente e pessoalmente.
+Este conceito foi popularizado pelo psicólogo Daniel Goleman em 1995 e revolucionou nossa compreensão sobre o que torna uma pessoa bem-sucedida profissionalmente e pessoalmente.
 
-Definicao Tecnica (Salovey e Mayer, 1990):
-Inteligencia Emocional e um subconjunto da inteligencia social que envolve a capacidade de monitorar os sentimentos e emocoes proprios e dos outros, discriminar entre eles e usar essa informacao para guiar pensamentos e acoes.
+Definição Técnica (Salovey e Mayer, 1990):
+Inteligência Emocional é um subconjunto da inteligência social que envolve a capacidade de monitorar os sentimentos e emoções próprios e dos outros, discriminar entre eles e usar essa informação para guiar pensamentos e ações.
 
-Por que a IE e Importante para Lideres:
+Por que a IE é importante para líderes:
 
-Estudos mostram que lideres com alta inteligencia emocional:
-- Tem equipes 20% mais produtivas
-- Reduzem turnover em ate 50%
-- Criam ambientes de trabalho mais saudaveis
-- Tomam decisoes mais equilibradas
+Estudos mostram que líderes com alta inteligência emocional:
+- Têm equipes 20% mais produtivas
+- Reduzem turnover em até 50%
+- Criam ambientes de trabalho mais saudáveis
+- Tomam decisões mais equilibradas
 - Gerenciam conflitos de forma mais eficaz
-- Sao promovidos mais rapidamente
+- São promovidos mais rapidamente
 - Tem equipes mais engajadas
 
 Pesquisa da Harvard Business Review:
-90% dos lideres de alta performance tem alta IE, enquanto apenas 20% dos lideres de baixa performance apresentam essa caracteristica.
+90% dos líderes de alta performance tem alta IE, enquanto apenas 20% dos líderes de baixa performance apresentam essa característica.
 
-DIFERENCA ENTRE INTELIGENCIA EMOCIONAL E QI
+DIFERENÇA ENTRE INTELIGÊNCIA EMOCIONAL E QI
 
-Enquanto o QI (Quociente de Inteligencia) mede a capacidade cognitiva e logica, a IE mede a capacidade de lidar com emocoes.
+Enquanto o QI (Quociente de Inteligência) mede a capacidade cognitiva e lógica, a IE mede a capacidade de lidar com emoções.
 
 Pesquisas demonstram que:
 - QI contribui apenas 20% para o sucesso profissional
-- IE contribui ate 80% para o sucesso profissional
+- IE contribui até 80% para o sucesso profissional
 
-Comparacao Pratica:
+Comparação Prática:
 
-QI Alto + IE Baixa = Profissional Tecnico Excelente mas Lider Problematico
-Exemplo: Engenheiro brilhante que humilha equipe, cria clima toxico, gera altissimo turnover
+QI Alto + IE Baixa = Profissional Técnico excelente, mas Líder Problemático
+Exemplo: Engenheiro brilhante que humilha a equipe, cria clima tóxico, gera altíssimo turnover
 
-QI Medio + IE Alta = Lider Inspirador e Eficaz
-Exemplo: Gerente que nao e o mais inteligente tecnicamente, mas motiva equipe, resolve conflitos, gera resultados extraordinarios
+QI Médio + IE Alta = Líder Inspirador e Eficaz
+Exemplo: Gerente que não é o mais inteligente tecnicamente, mas motiva a equipe, resolve conflitos e gera resultados extraordinários
 
-QI Alto + IE Alta = Lider Excepcional
-Exemplo: Executivo que une competencia tecnica com capacidade de inspirar, desenvolver pessoas e criar cultura de alta performance
+QI Alto + IE Alta = Líder Excepcional
+Exemplo: Executivo que une competência técnica com capacidade de inspirar, desenvolver pessoas e criar cultura de alta performance
 
-Por que IE Importa Mais que QI na Lideranca:
+Por que a IE Importa Mais que o QI na Liderança:
 
-1. Lideranca e sobre pessoas, nao apenas sobre processos
-2. Decisoes complexas envolvem emocoes, nao apenas dados
-3. Conflitos sao emocionais, nao logicos
-4. Motivacao e emocional, nao racional
-5. Cultura organizacional e emocional, nao tecnica
+1. Liderança é sobre pessoas, não apenas sobre processos
+2. Decisões complexas envolvem emoções, não apenas dados
+3. Conflitos são emocionais, não lógicos
+4. Motivação é emocional, não racional
+5. Cultura organizacional é emocional, não técnica
 
-AS 5 COMPETENCIAS DA IE SEGUNDO DANIEL GOLEMAN
+AS 5 COMPETÊNCIAS DA IE SEGUNDO DANIEL GOLEMAN
 
-1. AUTOCONSCIENCIA EMOCIONAL
+1. AUTOCONSCIÊNCIA EMOCIONAL
 
-Definicao: A capacidade de reconhecer e entender suas proprias emocoes, pontos fortes, fraquezas, valores e impactos nos outros.
+Definição: A capacidade de reconhecer e entender suas próprias emoções, pontos fortes, fraquezas, valores e impactos nos outros.
 
-Por que e Fundamental:
-Se voce nao sabe o que sente, nao pode controlar como reage. Autoconsciencia e a base de todas as outras competencias emocionais.
+Por que é Fundamental:
+Se você não sabe o que sente, não pode controlar como reage. Autoconsciência é a base de todas as outras competências emocionais.
 
 Como Desenvolver:
-- Pratique a autorreflexao diaria (10 minutos por dia)
-- Mantenha um diario emocional
-- Peca feedback honesto de pessoas de confianca
+- Pratique a autorreflexão diária (10 minutos por dia)
+- Mantenha um diário emocional
+- Peça feedback honesto de pessoas de confiança
 - Observe seus gatilhos emocionais (o que te tira do eixo?)
-- Faca terapia ou coaching
+- Faça terapia ou coaching
 - Pratique mindfulness
 
 Exemplo no Trabalho:
-"Percebo que quando recebo criticas em publico, fico defensivo e agressivo. Isso me ajuda a pedir feedback em particular, onde consigo processar melhor."
+"Percebo que quando recebo críticas em público, fico defensivo e agressivo. Isso me ajuda a pedir feedback em particular, onde consigo processar melhor."
 
-Lideres com Alta Autoconsciencia:
-- Conhecem seus limites e pedem ajuda quando necessario
-- Reconhecem quando emocoes estao afetando julgamento
+Líderes com Alta Autoconsciência:
+- Conhecem seus limites e pedem ajuda quando necessário
+- Reconhecem quando emoções estão afetando o julgamento
 - Aceitam feedback sem defensividade
 - Admitem erros publicamente
 
-Lideres com Baixa Autoconsciencia:
+Líderes com Baixa Autoconsciência:
 - Culpam outros por tudo
-- Nao percebem impacto negativo em pessoas
+- Não percebem impacto negativo em pessoas
 - Repetem os mesmos erros
-- Tem pontos cegos gigantescos
+- Têm pontos cegos gigantescos
 
-2. AUTORREGULACAO EMOCIONAL
+2. AUTORREGULAÇÃO EMOCIONAL
 
-Definicao: A habilidade de controlar ou redirecionar impulsos e humores perturbadores. Pensar antes de agir.
+Definição: A habilidade de controlar ou redirecionar impulsos e humores perturbadores. Pensar antes de agir.
 
-Por que e Essencial:
-Um lider que explode, grita ou toma decisoes impulsivas cria um ambiente de medo e instabilidade.
+Por que é Essencial:
+Um líder que explode, grita ou toma decisões impulsivas cria um ambiente de medo e instabilidade.
 
-Tecnicas Praticas:
-- Respiracao diafragmatica 4-7-8 (inspire 4s, segure 7s, expire 8s)
-- Pausa de 90 segundos antes de reagir (tempo que uma emocao leva para se processar)
-- Reenquadramento cognitivo (mudar perspectiva)
-- Exercicio fisico regular (reduz cortisol)
+Técnicas Práticas:
+- Respiração diafragmática 4-7-8 (inspire 4s, segure 7s, expire 8s)
+- Pausa de 90 segundos antes de reagir (tempo que uma emoção leva para se processar)
+- Reenquadramento cognitivo (mudar a perspectiva)
+- Exercício físico regular (reduz o cortisol)
 - Sono adequado (7-9 horas)
-- Tecnicas de grounding
+- Técnicas de grounding
 
 Exemplo no Trabalho:
 "Quando um colaborador comete um erro grave, em vez de explodir, respiro fundo, saio da sala por 2 minutos e retorno com calma para conversar construtivamente."
 
-Beneficios da Autorregulacao:
-- Decisoes mais racionais
+Benefícios da Autorregulação:
+- Decisões mais racionais
 - Menos arrependimentos
 - Maior respeito da equipe
 - Ambiente mais seguro
 - Menos conflitos
 
-Sinais de Baixa Autorregulacao:
-- Explosoes de raiva
-- Decisoes impulsivas que precisa reverter
-- Fala coisas que depois se arrepende
+Sinais de Baixa Autorregulação:
+- Explosões de raiva
+- Decisões impulsivas que precisa reverter
+- Fala coisas de que depois se arrepende
 - Cria clima de medo
 - Alta rotatividade na equipe
 
-3. MOTIVACAO INTRINSECA
+3. MOTIVAÇÃO INTRÍNSECA
 
-Definicao: O impulso interno para realizar, independente de recompensas externas. Paixao pelo que faz.
+Definição: O impulso interno para realizar, independente de recompensas externas. Paixão pelo que faz.
 
-Caracteristicas de Lideres Motivados:
-- Paixao pelo trabalho alem de dinheiro ou status
-- Energia e persistencia mesmo diante de obstaculos
+Características de Líderes Motivados:
+- Paixão pelo trabalho além de dinheiro ou status
+- Energia e persistência mesmo diante de obstáculos
 - Otimismo mesmo diante de fracassos
 - Foco em objetivos de longo prazo
 - Buscam desafios que os fazem crescer
 
 Como Cultivar:
-- Conecte seu trabalho a um proposito maior (Por que isso importa?)
-- Celebre pequenas vitorias (nao espere apenas grandes conquistas)
-- Mantenha objetivos desafiadores mas alcancaveis
+- Conecte seu trabalho a um propósito maior (Por que isso importa?)
+- Celebre pequenas vitórias (não espere apenas grandes conquistas)
+- Mantenha objetivos desafiadores, mas alcançáveis
 - Inspire outros com seu exemplo
 - Encontre significado no que faz
 
-Exemplo Pratico:
-Lider de vendas que ama desenvolver pessoas, nao apenas bater metas. Resultado: equipe engajada que supera expectativas porque se sente valorizada.
+Exemplo Prático:
+Líder de vendas que ama desenvolver pessoas, não apenas bater metas. Resultado: equipe engajada que supera expectativas porque se sente valorizada.
 
 Impacto no Time:
-Motivacao e contagiosa. Um lider motivado cria uma equipe motivada.
+Motivação é contagiosa. Um líder motivado cria uma equipe motivada.
 
 4. EMPATIA
 
-Definicao: A capacidade de compreender e compartilhar os sentimentos dos outros. Colocar-se no lugar do outro.
+Definição: A capacidade de compreender e compartilhar os sentimentos dos outros. Colocar-se no lugar do outro.
 
-Tres Tipos de Empatia:
+Três Tipos de Empatia:
 
 Empatia Cognitiva: Entender intelectualmente a perspectiva do outro
-Quando usar: Negociacoes, resolucao de problemas, tomada de decisoes
+Quando usar: Negociações, resolução de problemas, tomada de decisões
 
-Empatia Emocional: Sentir fisicamente o que o outro esta sentindo
-Quando usar: Situacoes de sofrimento, construcao de vinculo profundo
-Cuidado: Pode levar a sobrecarga emocional se nao houver limites
+Empatia Emocional: Sentir fisicamente o que o outro está sentindo
+Quando usar: Situações de sofrimento, construção de vínculo profundo
+Cuidado: Pode levar à sobrecarga emocional se não houver limites
 
 Empatia Compassiva: Entender + Sentir + Agir para ajudar (a mais poderosa)
-Quando usar: Sempre que possivel - e o equilibrio perfeito
+Quando usar: Sempre que possível — é o equilíbrio perfeito
 
-Exercicio Pratico:
-Quando um colaborador apresentar um problema, antes de dar solucoes, pergunte:
-1. Como voce esta se sentindo com isso?
-2. O que seria mais util para voce agora?
-3. Como posso apoiar voce nessa situacao?
+Exercício Prático:
+Quando um colaborador apresentar um problema, antes de dar soluções, pergunte:
+1. Como você está se sentindo com isso?
+2. O que seria mais útil para você agora?
+3. Como posso apoiar você nessa situação?
 
-Lideres Empaticos:
-- Tem equipes mais leais
+Líderes Empáticos:
+- Têm equipes mais leais
 - Reduzem conflitos
 - Aumentam engajamento
-- Sao procurados para conversas dificeis
-- Criam ambientes de seguranca psicologica
+- São procurados para conversas difíceis
+- Criam ambientes de segurança psicológica
 
 5. HABILIDADES SOCIAIS
 
-Definicao: A capacidade de gerenciar relacionamentos e construir redes. Comunicacao eficaz e influencia positiva.
+Definição: A capacidade de gerenciar relacionamentos e construir redes. Comunicação eficaz e influência positiva.
 
-Competencias-Chave:
-- Comunicacao clara e assertiva
-- Gestao de conflitos
+Competências Chave:
+- Comunicação clara e assertiva
+- Gestão de conflitos
 - Trabalho em equipe
-- Influencia e persuasao
-- Lideranca de mudancas
-- Networking estrategico
-- Colaboracao entre areas
+- Influência e persuasão
+- Liderança de mudanças
+- Networking estratégico
+- Colaboração entre áreas
 
 Como Desenvolver:
-- Pratique escuta ativa (ouvir para compreender, nao para responder)
+- Pratique escuta ativa (ouvir para compreender, não para responder)
 - Aprenda a dar feedback construtivo
-- Desenvolva habilidades de negociacao
+- Desenvolva habilidades de negociação
 - Estude linguagem corporal
-- Pratique comunicacao nao-violenta
+- Pratique comunicação não violenta
 - Amplie sua rede profissional
 
-APLICACAO PRATICA NA LIDERANCA
+APLICAÇÃO PRÁTICA NA LIDERANÇA
 
-Situacao 1: Colaborador com Baixa Performance
+Situação 1: Colaborador com Baixa Performance
 
 SEM IE:
-"Voce esta pessimo! Se continuar assim, vai ser demitido."
-Resultado: Colaborador fica pior, clima prejudicado, possivel processo trabalhista
+"Você está péssimo! Se continuar assim, vai ser demitido."
+Resultado: Colaborador fica pior, clima prejudicado, possível processo trabalhista
 
 COM IE:
-"Notei que seu desempenho mudou nas ultimas semanas. Esta tudo bem? Ha algo acontecendo que eu possa ajudar?"
+"Notei que seu desempenho mudou nas últimas semanas. Está tudo bem? Há algo acontecendo que eu possa ajudar?"
 Resultado: Descobre problema pessoal ou sobrecarga, ajusta demandas, colaborador se recupera
 
-Situacao 2: Conflito entre Membros da Equipe
+Situação 2: Conflito entre Membros da Equipe
 
 SEM IE:
 "Parem de brigar e voltem ao trabalho!"
-Resultado: Conflito continua subterraneo, clima toxico, formacao de grupos
+Resultado: Conflito continua subterrâneo, clima tóxico, formação de grupos
 
 COM IE:
-"Vejo que ha tensao. Vamos conversar individualmente e depois juntos para entender os pontos de vista e encontrar uma solucao construtiva."
+"Vejo que há tensão. Vamos conversar individualmente e depois juntos para entender os pontos de vista e encontrar uma solução construtiva."
 Resultado: Conflito resolvido, aprendizado coletivo, equipe mais madura
 
-Situacao 3: Pressao por Resultados
+Situação 3: Pressão por Resultados
 
 SEM IE:
-Descontar frustracao na equipe, criar ambiente de medo, cobrar de forma agressiva
-Resultado: Equipe paralisada, erros aumentam, pessoas adoecem ou pedem demissao
+Descontar frustração na equipe, criar ambiente de medo, cobrar de forma agressiva
+Resultado: Equipe paralisada, erros aumentam, pessoas adoecem ou pedem demissão
 
 COM IE:
-Comunicar transparentemente os desafios, mobilizar a equipe com otimismo, reconhecer esforcos, buscar solucoes coletivas
+Comunicar transparentemente os desafios, mobilizar a equipe com otimismo, reconhecer esforços, buscar soluções coletivas
 Resultado: Equipe engajada, criatividade aumenta, resultados aparecem
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Mapeamento Emocional
-Liste 3 situacoes da ultima semana onde voce:
+Exercício 1: Mapeamento Emocional
+Liste 3 situações da última semana em que você:
 1. Reagiu emocionalmente
 2. Como se sentiu
 3. Como gostaria de ter reagido
 4. O que aprendeu sobre si mesmo
 
-Exercicio 2: Observacao de Emocoes
-Durante 1 dia completo, anote cada vez que sentir uma emocao forte:
-- Que emocao foi? (raiva, medo, alegria, tristeza, surpresa, nojo)
+Exercício 2: Observação de Emoções
+Durante 1 dia completo, anote cada vez que sentir uma emoção forte:
+- Que emoção foi? (raiva, medo, alegria, tristeza, surpresa, nojo)
 - O que a provocou?
-- Como voce reagiu?
+- Como você reagiu?
 - Qual foi o resultado?
 - Se pudesse voltar no tempo, reagiria diferente?
 
-Exercicio 3: Pratica de Empatia
+Exercício 3: Prática de Empatia
 Escolha 3 pessoas da sua equipe e responda com honestidade:
-- Quais sao seus principais desafios atualmente?
+- Quais são seus principais desafios atualmente?
 - O que os motiva profissionalmente?
 - Como posso apoiar o desenvolvimento deles?
-- O que posso fazer diferente como lider?
+- O que posso fazer diferente como líder?
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-A Inteligencia Emocional nao e um dom inato - e uma habilidade que pode ser desenvolvida com pratica deliberada e constante.
+A Inteligência Emocional não é um dom inato — é uma habilidade que pode ser desenvolvida com prática deliberada e constante.
 
-Lideres emocionalmente inteligentes criam equipes mais engajadas, produtivas e saudaveis. Eles nao apenas alcancam resultados - alcancam resultados sustentaveis cuidando das pessoas.
+Líderes emocionalmente inteligentes criam equipes mais engajadas, produtivas e saudáveis. Eles não apenas alcançam resultados — alcançam resultados sustentáveis cuidando das pessoas.
 
-Proximos Passos:
-1. Comece um diario emocional hoje mesmo
+Próximos Passos:
+1. Comece um diário emocional hoje mesmo
 2. Pratique a regra dos 90 segundos antes de reagir
-3. Faca pelo menos 1 conversa empatica por dia
-4. Peca feedback sobre como suas emocoes impactam outros
+3. Faça pelo menos 1 conversa empática por dia
+4. Peça feedback sobre como suas emoções impactam outros
 
-Lembre-se: O desenvolvimento da IE e uma jornada continua, nao um destino. Seja paciente consigo mesmo.
+Lembre-se: O desenvolvimento da IE e uma jornada continua, não um destino. Seja paciente consigo mesmo.
+        `
+      },
+      {
+        id: 2,
+        título: "Gestão de Emoções em Situações de Alta Pressão",
+        duração: "50 min",
+        tópicos: [
+          "Reconhecendo gatilhos emocionais",
+          "Técnicas de regulação em tempo real",
+          "Comunicação assertiva sob pressão",
+          "Prevenção de decisões impulsivas",
+          "Recuperação pós crise"
+        ],
+        materialDidático: `
+GESTÃO DE EMOÇÕES EM SITUAÇÕES DE ALTA PRESSÃO
+
+INTRODUÇÃO
+
+Líderes enfrentam constantemente situações de alta pressão: prazos apertados, metas desafiadoras, conflitos urgentes, crises inesperadas. Nessas situações, a capacidade de manter a inteligência emocional pode ser a diferença entre o sucesso e o fracasso.
+
+Pesquisas mostram que 70% das decisões ruins são tomadas sob pressão emocional não gerenciada.
+
+RECONHECENDO GATILHOS EMOCIONAIS
+
+Gatilhos emocionais são estímulos que provocam reações emocionais automáticas e intensas, geralmente baseadas em experiências passadas.
+
+Gatilhos Comuns de Líderes:
+1. Sensação de perda de controle
+2. Questionamento da autoridade
+3. Pressão por resultados imediatos
+4. Críticas públicas
+5. Fracasso ou erro da equipe
+6. Comparações desfavoráveis com outros
+7. Falta de reconhecimento superior
+8. Desafios à competência técnica
+9. Situações de injustiça
+10. Ameaças ao status ou posição
+
+Como Identificar Seus Gatilhos:
+Faça um diário de situações em que você reagiu de forma desproporcional nas últimas semanas:
+- O que aconteceu exatamente?
+- Qual foi sua reação?
+- Qual emoção sentiu primeiro?
+- Isso lembra alguma situação do passado?
+- Qual é o padrão comum entre essas situações?
+
+TÉCNICAS DE REGULAÇÃO EM TEMPO REAL
+
+1. TÉCNICA DOS 90 SEGUNDOS (Jill Bolte Taylor - Neurocientista)
+
+Quando uma emoção é disparada, ela dura apenas 90 segundos no corpo. Após isso, é você quem escolhe mantê-la ou não.
+
+Como aplicar:
+- Sinta a emoção surgir
+- Respire profundamente
+- Observe-a sem reagir
+- Conte até 90 segundos
+- Decida conscientemente como agir
+
+2. TÉCNICA STOP
+
+S - Stop (Pare)
+T - Take a breath (Respire fundo)
+O - Observe (O que está acontecendo? O que estou sentindo?)
+P - Proceed (Continue conscientemente)
+
+3. ANCORAGEM FÍSICA
+
+Quando sentir emoção forte:
+- Pressione os pés no chão
+- Sinta o peso do corpo na cadeira
+- Toque objetos ao redor
+- Beba um gole de água lentamente
+- Isso traz você de volta ao presente
+
+4. REESTRUTURAÇÃO COGNITIVA RÁPIDA
+
+Transforme pensamentos automáticos:
+
+Pensamento Automático: "Este colaborador é incompetente!"
+Reestruturação: "Ele está com dificuldade. O que posso fazer para apoiar?"
+
+Pensamento Automático: "Vou ser demitido por essa falha!"
+Reestruturação: "Erros acontecem. Qual é a solução? O que posso aprender?"
+
+5. TÉCNICA DA TERCEIRA PESSOA
+
+Quando estiver em situação tensa, pense em si mesmo na terceira pessoa:
+"João está sentindo raiva porque a meta não foi atingida. Qual seria a melhor decisão para João tomar agora?"
+
+Pesquisas mostram que essa simples mudança de perspectiva aumenta em 300% a capacidade de tomar decisões racionais.
+
+COMUNICAÇÃO ASSERTIVA SOB PRESSÃO
+
+Comunicação assertiva é a capacidade de expressar pensamentos, sentimentos e necessidades de forma clara, honesta e respeitosa, sem agressividade ou passividade.
+
+Modelo de Comunicação sob Pressão:
+
+1. RECONHEÇA A EMOÇÃO (sua e do outro)
+"Percebo que esta situação está causando tensão."
+
+2. DECLARE OS FATOS (sem julgamentos)
+"A meta foi de X, alcançamos Y."
+
+3. EXPRESSE O IMPACTO (sem acusações)
+"Isso gera preocupação porque..."
+
+4. BUSQUE SOLUÇÕES (colaborativamente)
+"Como podemos resolver isso juntos?"
+
+Exemplo Prático:
+
+Situação: Colaborador entrega projeto com atraso grave
+
+ERRADO (Agressivo):
+"Você é irresponsável! Isso é inaceitável! Estou pensando em tirá-lo do projeto!"
+
+ERRADO (Passivo):
+"Ah, tudo bem... não tem problema... a gente resolve..."
+
+CERTO (Assertivo):
+"Entendo que imprevistos acontecem. O projeto tinha prazo para ontem e foi entregue hoje, o que impactou a apresentação ao cliente. Preciso entender o que aconteceu e como podemos evitar isso no futuro. Podemos conversar?"
+
+PREVENÇÃO DE DECISÕES IMPULSIVAS
+
+Sob pressão, o cérebro primitivo (amígdala) assume o controle, reduzindo a capacidade de pensamento racional.
+
+Sinais de que você está prestes a tomar uma decisão impulsiva:
+- Sensação de urgência extrema
+- Pensamento preto e branco
+- Vocabulário absoluto ("sempre", "nunca", "tudo", "nada")
+- Sensação de raiva ou medo intensos
+- Necessidade de "dar uma lição"
+- Vontade de agir imediatamente
+
+Protocolo de Decisão sob Pressão:
+
+1. PAUSA OBRIGATÓRIA
+Se a decisão pode esperar 24h, espere. Se não pode, espere pelo menos 30 minutos.
+
+2. CONSULTA
+Fale com pelo menos uma pessoa de confiança antes de decidir.
+
+3. CENÁRIOS
+Liste: melhor cenário, pior cenário, cenário mais provável.
+
+4. PERGUNTA-CHAVE
+"Como eu veria essa decisão daqui a 1 ano?"
+
+5. VALORES
+"Essa decisão está alinhada com meus valores e princípios?"
+
+RECUPERAÇÃO PÓS-CRISE
+
+Mesmo líderes emocionalmente inteligentes têm momentos de perda de controle. O importante é como se recuperam.
+
+Passos para Recuperação:
+
+1. RECONHECIMENTO HONESTO
+Se você reagiu mal, reconheça. Com você mesmo e, se necessário, com os outros.
+
+2. ANÁLISE SEM AUTOFLAGELAÇÃO
+"O que me levou a reagir assim? O que posso aprender?"
+Não: "Sou um péssimo líder! Sou um fracasso!"
+
+3. REPARAÇÃO
+Se sua reação afetou outros, repare:
+"Ontem, na reunião, reagi de forma exaltada. Isso foi inadequado. Peço desculpas. Estou trabalhando para melhorar."
+
+4. PLANO DE PREVENÇÃO
+O que você fará diferente na próxima situação similar?
+
+5. AUTOCUIDADO
+Exercício, sono, alimentação saudável, lazer — tudo isso aumenta sua resiliência emocional.
+
+EXERCÍCIOS PRÁTICOS
+
+Exercício 1: Mapa de Gatilhos
+Durante uma semana, anote todas as vezes que sentir emoções fortes:
+- Situação
+- Emoção
+- Intensidade (1-10)
+- Possível gatilho
+Ao final, identifique padrões.
+
+Exercício 2: Treino da Pausa
+Em situações cotidianas de menor pressão, pratique a técnica STOP antes de responder e-mails, mensagens ou perguntas.
+
+Exercício 3: Simulação Mental
+Imagine 3 situações de alta pressão que podem acontecer com você.
+Para cada uma, visualize-se aplicando as técnicas de regulação emocional e respondendo de forma construtiva.
+
+CONCLUSÃO DO MÓDULO
+
+Gerir emoções sob pressão não significa suprimi-las ou fingir que não existem. Significa reconhecê-las, compreendê-las e escolher conscientemente como responder.
+
+Líderes que dominam essa habilidade:
+- Tomam decisões mais acertadas
+- Mantêm a confiança da equipe mesmo em crises
+- Reduzem arrependimentos posteriores
+- Criam cultura de resiliência
+- Inspiram pelo exemplo
+
+Próximos Passos:
+1. Identifique seus 3 principais gatilhos emocionais
+2. Pratique a técnica dos 90 segundos diariamente
+3. Crie um protocolo pessoal para decisões sob pressão
+4. Compartilhe com alguém de confiança que pode ajudá-lo a perceber quando você está sendo reativo
+
+Lembre-se: você não pode controlar tudo o que acontece, mas pode controlar como responde.
         `
       },
       {
         id: 3,
-        titulo: "Gestao de Emocoes em Situacoes de Alta Pressao",
-        duracao: "50 min",
-        topicos: [
-          "Reconhecendo gatilhos emocionais",
-          "Tecnicas de regulacao em tempo real",
-          "Comunicacao assertiva sob pressao",
-          "Prevencao de decisoes impulsivas",
-          "Recuperacao pos-crise"
-        ],
-        materialDidatico: `
-GESTAO DE EMOCOES EM SITUACOES DE ALTA PRESSAO
-
-INTRODUCAO
-
-Lideres enfrentam constantemente situacoes de alta pressao: prazos apertados, metas desafiadoras, conflitos urgentes, crises inesperadas. Nestas situacoes, a capacidade de manter a inteligencia emocional pode ser a diferenca entre o sucesso e o fracasso.
-
-Pesquisas mostram que 70% das decisoes ruins sao tomadas sob pressao emocional nao gerenciada.
-
-RECONHECENDO GATILHOS EMOCIONAIS
-
-Gatilhos emocionais sao estimulos que provocam reacoes emocionais automaticas e intensas, geralmente baseadas em experiencias passadas.
-
-Gatilhos Comuns de Lideres:
-1. Sensacao de perda de controle
-2. Questionamento da autoridade
-3. Pressao por resultados imediatos
-4. Criticas publicas
-5. Fracasso ou erro da equipe
-6. Comparacoes desfavoraveis com outros
-7. Falta de reconhecimento superior
-8. Desafios a competencia tecnica
-9. Situacoes de injustica
-10. Ameacas ao status ou posicao
-
-Como Identificar Seus Gatilhos:
-Faca um diario de situacoes onde voce reagiu de forma desproporcional nas ultimas semanas:
-- O que aconteceu exatamente?
-- Qual foi sua reacao?
-- Qual emocao sentiu primeiro?
-- Isso te lembra alguma situacao do passado?
-- Qual e o padrao comum entre essas situacoes?
-
-TECNICAS DE REGULACAO EM TEMPO REAL
-
-1. TECNICA DOS 90 SEGUNDOS (Jill Bolte Taylor - Neurocientista)
-
-Quando uma emocao e disparada, ela dura apenas 90 segundos no corpo. Apos isso, e voce quem escolhe mante-la ou nao.
-
-Como aplicar:
-- Sinta a emocao surgir
-- Respire profundamente
-- Observe-a sem reagir
-- Conte ate 90 segundos
-- Decida conscientemente como agir
-
-2. TECNICA STOP
-
-S - Stop (Pare)
-T - Take a breath (Respire fundo)
-O - Observe (O que esta acontecendo? O que estou sentindo?)
-P - Proceed (Continue conscientemente)
-
-3. ANCORAGEM FISICA
-
-Quando sentir emocao forte:
-- Pressione os pes no chao
-- Sinta o peso do corpo na cadeira
-- Toque objetos ao redor
-- Beba um gole de agua lentamente
-- Isso traz voce de volta ao presente
-
-4. REESTRUTURACAO COGNITIVA RAPIDA
-
-Transforme pensamentos automaticos:
-
-Pensamento Automatico: "Este colaborador e incompetente!"
-Reestruturacao: "Ele esta com dificuldade. O que posso fazer para apoiar?"
-
-Pensamento Automatico: "Vou ser demitido por essa falha!"
-Reestruturacao: "Erros acontecem. Qual e a solucao? O que posso aprender?"
-
-5. TECNICA DA TERCEIRA PESSOA
-
-Quando estiver em situacao tensa, pense em si mesmo na terceira pessoa:
-"Joao esta sentindo raiva porque a meta nao foi atingida. Qual seria a melhor decisao para Joao tomar agora?"
-
-Pesquisas mostram que essa simples mudanca de perspectiva aumenta em 300% a capacidade de tomar decisoes racionais.
-
-COMUNICACAO ASSERTIVA SOB PRESSAO
-
-Comunicacao assertiva e a capacidade de expressar pensamentos, sentimentos e necessidades de forma clara, honesta e respeitosa, sem agressividade ou passividade.
-
-Modelo de Comunicacao sob Pressao:
-
-1. RECONHECA A EMOCAO (sua e do outro)
-"Percebo que esta situacao esta causando tensao."
-
-2. DECLARE OS FATOS (sem julgamentos)
-"A meta foi de X, alcancamos Y."
-
-3. EXPRESSE IMPACTO (sem acusacoes)
-"Isso gera preocupacao porque..."
-
-4. BUSQUE SOLUCOES (colaborativamente)
-"Como podemos resolver isso juntos?"
-
-Exemplo Pratico:
-
-Situacao: Colaborador entrega projeto com atraso grave
-
-ERRADO (Agressivo):
-"Voce e irresponsavel! Isso e inaceitavel! Estou pensando em te tirar do projeto!"
-
-ERRADO (Passivo):
-"Ah, tudo bem... nao tem problema... a gente resolve..."
-
-CERTO (Assertivo):
-"Entendo que imprevistos acontecem. O projeto tinha prazo para ontem e foi entregue hoje, o que impactou a apresentacao ao cliente. Preciso entender o que aconteceu e como podemos evitar isso no futuro. Podemos conversar?"
-
-PREVENCAO DE DECISOES IMPULSIVAS
-
-Sob pressao, o cerebro primitivo (amigdala) assume o controle, reduzindo a capacidade de pensamento racional.
-
-Sinais de Que Voce Esta Prestes a Tomar Decisao Impulsiva:
-- Sensacao de urgencia extrema
-- Pensamento preto-e-branco
-- Vocabulario absoluto ("sempre", "nunca", "tudo", "nada")
-- Sensacao de raiva ou medo intenso
-- Necessidade de "dar uma licao"
-- Vontade de agir imediatamente
-
-Protocolo de Decisao Sob Pressao:
-
-1. PAUSA OBRIGATORIA
-Se a decisao pode esperar 24h, espere. Se nao pode, espere pelo menos 30 minutos.
-
-2. CONSULTA
-Fale com pelo menos uma pessoa de confianca antes de decidir.
-
-3. CENARIOS
-Liste: Melhor cenario, Pior cenario, Cenario mais provavel.
-
-4. PERGUNTA-CHAVE
-"Como eu veria essa decisao daqui 1 ano?"
-
-5. VALORES
-"Essa decisao esta alinhada com meus valores e principios?"
-
-RECUPERACAO POS-CRISE
-
-Mesmo lideres emocionalmente inteligentes tem momentos de perda de controle. O importante e como se recuperam.
-
-Passos para Recuperacao:
-
-1. RECONHECIMENTO HONESTO
-Se voce reagiu mal, reconheca. Com voce mesmo e, se necessario, com os outros.
-
-2. ANALISE SEM AUTO-FLAGELACAO
-"O que me levou a reagir assim? O que posso aprender?"
-Nao: "Sou um pessimo lider! Sou um fracasso!"
-
-3. REPARACAO
-Se sua reacao afetou outros, repare:
-"Ontem, na reuniao, reagi de forma exaltada. Isso foi inadequado. Peco desculpas. Estou trabalhando para melhorar."
-
-4. PLANO DE PREVENCAO
-O que voce fara diferente na proxima situacao similar?
-
-5. AUTO-CUIDADO
-Exercicio, sono, alimentacao saudavel, lazer - tudo isso aumenta sua resiliencia emocional.
-
-EXERCICIOS PRATICOS
-
-Exercicio 1: Mapa de Gatilhos
-Durante uma semana, anote todas as vezes que sentir emocoes fortes:
-- Situacao
-- Emocao
-- Intensidade (1-10)
-- Possivel gatilho
-Ao final, identifique padroes.
-
-Exercicio 2: Treino da Pausa
-Em situacoes cotidianas de menor pressao, pratique a tecnica STOP antes de responder emails, mensagens ou perguntas.
-
-Exercicio 3: Simulacao Mental
-Imagine 3 situacoes de alta pressao que podem acontecer com voce.
-Para cada uma, visualize-se aplicando as tecnicas de regulacao emocional e respondendo de forma construtiva.
-
-CONCLUSAO DO MODULO
-
-Gerir emocoes sob pressao nao significa suprimi-las ou finge-las nao existirem. Significa reconhece-las, compreende-las e escolher conscientemente como responder.
-
-Lideres que dominam essa habilidade:
-- Tomam decisoes mais acertadas
-- Mantem a confianca da equipe mesmo em crises
-- Reduzem arrependimentos posteriores
-- Criam cultura de resiliencia
-- Inspiram pelo exemplo
-
-Proximos Passos:
-1. Identifique seus 3 principais gatilhos emocionais
-2. Pratique a tecnica dos 90 segundos diariamente
-3. Crie um protocolo pessoal para decisoes sob pressao
-4. Compartilhe com alguem de confianca que pode te ajudar a perceber quando voce esta sendo reativo
-
-Lembre-se: Voce nao pode controlar tudo que acontece, mas pode controlar como responde.
-        `
-      },
-      {
-        id: 4,
-        titulo: "Feedback Emocionalmente Inteligente",
-        duracao: "45 min",
-        topicos: [
-          "Importancia do feedback para desenvolvimento",
+        título: "Feedback Emocionalmente Inteligente",
+        duração: "45 min",
+        tópicos: [
+          "Importância do feedback para desenvolvimento",
           "Modelo de feedback construtivo",
-          "Como receber feedback sem defensividade",
+          "Como receber feedback sem difusividade",
           "Feedforward: foco no futuro",
           "Criando cultura de feedback continuo"
         ],
-        materialDidatico: `
+        materialDidático: `
 FEEDBACK EMOCIONALMENTE INTELIGENTE
 
-INTRODUCAO
+INTRODUÇÃO
 
 Feedback e uma das ferramentas mais poderosas de desenvolvimento humano. Pesquisas mostram que equipes com cultura de feedback tem:
 - 39% mais engajamento
 - 29% mais produtividade
 - 52% menos turnover
-- 3x mais inovacao
+- 3x mais inovação
 
-Porem, feedback mal dado pode causar desmotivacao, ressentimento e ate processos trabalhistas.
+Porem, feedback mal dado pode causar desmotivação, ressentimento e ate processos trabalhistas.
 
 IMPORTANCIA DO FEEDBACK PARA DESENVOLVIMENTO
 
 O Que e Feedback:
-Feedback e uma informacao sobre desempenho, comportamento ou resultado que ajuda a pessoa a manter o que esta funcionando e ajustar o que nao esta.
+Feedback e uma informação sobre desempenho, comportamento ou resultado que ajuda a pessoa a manter o que está funcionando e ajustar o que não esta.
 
 Por Que Feedback e Essencial:
 
@@ -1283,92 +1282,92 @@ Feedback positivo e um dos maiores motivadores humanos.
 Feedback acelera a curva de aprendizado.
 
 5. FORTALECIMENTO DE RELACOES
-Feedback honesto e respeitoso cria confianca.
+Feedback honesto e respeitoso cria confiança.
 
-O Custo da Ausencia de Feedback:
+O Custo da Ausência de Feedback:
 - Colaboradores continuam cometendo os mesmos erros
-- Bons comportamentos nao sao reforçados
+- Bons comportamentos não são reforçados
 - Problemas pequenos viram crises
-- Pessoas talentosas saem por falta de direcao
+- Pessoas talentosas saem por falta de direção
 - Clima de trabalho deteriora
 
 Dados Alarmantes:
 - 69% dos colaboradores dizem que trabalhariam mais se recebessem reconhecimento
 - 65% dos colaboradores querem mais feedback do que recebem
-- 98% dos lideres falham em dar feedback regularmente
+- 98% dos líderes falham em dar feedback regularmente
 
 MODELO DE FEEDBACK CONSTRUTIVO
 
-O modelo SCI - Situacao, Comportamento, Impacto
+O modelo SCI - Situação, Comportamento, Impacto
 
-1. SITUACAO (Contexto especifico)
+1. SITUACAO (Contexto específico)
 Defina quando e onde ocorreu.
 
-2. COMPORTAMENTO (Fatos observaveis)
+2. COMPORTAMENTO (Fatos observáveis)
 Descreva o que a pessoa fez ou disse, sem julgamentos.
 
-3. IMPACTO (Consequencia objetiva)
+3. IMPACTO (Consequência objetiva)
 Explique qual foi o resultado do comportamento.
 
 Exemplo de Feedback Construtivo:
 
 RUIM:
-"Voce e desorganizado e isso esta atrapalhando a equipe."
+"Você e desorganizado e isso está atrapalhando a equipe."
 
 BOM:
-"Na reuniao de ontem (SITUACAO), voce chegou 15 minutos atrasado sem avisar e sem o relatorio que ficou de trazer (COMPORTAMENTO). Isso fez a reuniao atrasar, algumas decisoes nao puderam ser tomadas e percebi frustracao nos colegas (IMPACTO). Como podemos evitar isso?"
+"Na reunião de ontem (SITUACAO), você chegou 15 minutos atrasado sem avisar e sem o relatório que ficou de trazer (COMPORTAMENTO). Isso fez a reunião atrasar, algumas decisões não puderam ser tomadas e percebi frustração nos colegas (IMPACTO). Como podemos evitar isso?"
 
 MODELO COMPLETO COM INTELIGENCIA EMOCIONAL:
 
-PASSO 1: PREPARACAO
+PASSO 1: PREPARAÇÃO
 Antes de dar feedback, pergunte-se:
-- Qual e meu objetivo? (desenvolvimento, punicao, desabafo?)
+- Qual é meu objetivo? (desenvolvimento, punição, desabafo?)
 - Estou emocionalmente equilibrado?
-- Tenho fatos ou apenas impressoes?
-- O momento e adequado?
-- O local e apropriado?
+- Tenho fatos ou apenas impressões?
+- O momento é adequado?
+- O local é apropriado?
 
 PASSO 2: ABERTURA EMPATICA
-"Gostaria de conversar sobre [tema]. Este e um bom momento para voce?"
+"Gostaria de conversar sobre [tema]. Este e um bom momento para você?"
 
 PASSO 3: SCI + PERGUNTA
-Situacao + Comportamento + Impacto + "O que aconteceu? Como voce ve isso?"
+Situação + Comportamento + Impacto + "O que aconteceu? Como você vê isso?"
 
 PASSO 4: ESCUTA ATIVA
-Deixe a pessoa falar. Nao interrompa. Busque entender, nao rebater.
+Deixe a pessoa falar. Não interrompa. Busque entender, não rebater.
 
 PASSO 5: CONSTRUCAO CONJUNTA
-"Como podemos resolver isso? O que voce precisa de mim?"
+"Como podemos resolver isso? O que você precisa de mim?"
 
 PASSO 6: ACORDO E ACOMPANHAMENTO
-"Entao vamos fazer [acao]. Vamos revisar isso em [data]."
+"Então vamos fazer [ação]. Vamos revisar isso em [data]."
 
 FEEDBACK POSITIVO TAMBEM PRECISA SER ESPECIFICO
 
 RUIM:
-"Voce e otimo! Parabens!"
+"Você é ótimo! Parabéns!"
 
 BOM:
-"Na apresentacao de ontem (SITUACAO), voce apresentou os dados de forma clara, respondeu todas as perguntas com seguranca e conseguiu convencer o cliente sobre a proposta (COMPORTAMENTO). Isso resultou no fechamento do contrato e mostrou sua evolucao tecnica (IMPACTO). Parabens!"
+"Na apresentação de ontem (SITUACAO), você apresentou os dados de forma clara, respondeu todas as perguntas com segurança e conseguiu convencer o cliente sobre a proposta (COMPORTAMENTO). Isso resultou no fechamento do contrato e mostrou sua evolução técnica (IMPACTO). Parabéns!"
 
-O feedback positivo especifico:
+O feedback positivo específico:
 - Reforce o comportamento correto
-- Mostra que voce presta atencao
+- Mostra que você presta atenção
 - Motiva genuinamente
 - Ajuda a pessoa a entender seu valor
 
 COMO RECEBER FEEDBACK SEM DEFENSIVIDADE
 
 A Armadilha da Defensividade:
-Quando recebemos feedback negativo, o cerebro ativa mecanismos de defesa automaticos:
-- Negacao ("Isso nao e verdade!")
+Quando recebemos feedback negativo, o cérebro ativa mecanismos de defesa automáticos:
+- Negação ("Isso não e verdade!")
 - Justificativa ("Foi porque...")
-- Contra-ataque ("E voce tambem...")
-- Minimizacao ("Nao foi tao grave assim...")
+- Contra-ataque ("E você também...")
+- Minimização ("Não foi tão grave assim...")
 
 Isso bloqueia totalmente o aprendizado.
 
-Tecnica para Receber Feedback Construtivamente:
+Técnica para Receber Feedback Construtivamente:
 
 1. RESPIRE E PAUSE
 Antes de reagir, respire fundo 3 vezes.
@@ -1377,44 +1376,44 @@ Antes de reagir, respire fundo 3 vezes.
 "Obrigado por compartilhar isso comigo."
 
 3. BUSQUE ENTENDER
-Faca perguntas para esclarecer, nao para rebater:
-- "Pode me dar um exemplo especifico?"
-- "Como voce gostaria que eu fizesse diferente?"
-- "O que mais voce percebeu?"
+Faça perguntas para esclarecer, não para rebater:
+- "Pode me dar um exemplo específico?"
+- "Como você gostaria que eu fizesse diferente?"
+- "O que mais você percebeu?"
 
 4. REFLITA ANTES DE RESPONDER
-"Vou refletir sobre isso. Posso voltar a falar com voce amanha?"
+"Vou refletir sobre isso. Posso voltar a falar com você amanha?"
 
 5. EXTRAIA O APRENDIZADO
-Mesmo que o feedback seja mal dado ou parcialmente incorreto, ha algo util ali?
+Mesmo que o feedback seja mal dado ou parcialmente incorreto, há algo útil ali?
 
 6. ACAO
-Feedback sem acao e desperdicio. Decida o que voce VAI mudar.
+Feedback sem ação e desperdício. Decida o que você VAI mudar.
 
 Frase Poderosa:
-"Feedback e um presente. Mesmo quando dificil de receber, alguem se importou o suficiente para me dizer algo que pode me ajudar a melhorar."
+"Feedback e um presente. Mesmo quando difícil de receber, alguém se importou o suficiente para me dizer algo que pode me ajudar a melhorar."
 
 FEEDFORWARD: FOCO NO FUTURO
 
 Marshall Goldsmith, renomado coach executivo, criou o conceito de Feedforward para complementar o Feedback.
 
-Diferenca:
-- FEEDBACK: Olha para o passado ("O que voce fez...")
-- FEEDFORWARD: Olha para o futuro ("Da proxima vez, voce poderia...")
+Diferença:
+- FEEDBACK: Olha para o passado ("O que você fez...")
+- FEEDFORWARD: Olha para o futuro ("Da próxima vez, você poderia...")
 
 Vantagens do Feedforward:
-- Menos defensividade (nao ha acusacao sobre o passado)
-- Mais acao (foco em solucoes)
-- Mais produtivo (energiza ao inves de desanimar)
+- Menos difusividade (não há acusação sobre o passado)
+- Mais ação (foco em soluções)
+- Mais produtivo (energiza ao invés de desanimar)
 - Mais construtivo (cria possibilidades)
 
 Exemplo:
 
 FEEDBACK (Passado):
-"Na apresentacao de ontem, voce nao olhou para a plateia e leu os slides, o que deixou a apresentacao monótona."
+"Na apresentação de ontem, você não olhou para a plateia e leu os slides, o que deixou a apresentação monótona."
 
 FEEDFORWARD (Futuro):
-"Na proxima apresentacao, se voce olhar mais para a plateia e usar os slides apenas como apoio, contando a historia com suas palavras, vai ter muito mais impacto."
+"Na próxima apresentação, se você olhar mais para a plateia e usar os slides apenas como apoio, contando a historia com suas palavras, vai ter muito mais impacto."
 
 Quando Usar Cada Um:
 - FEEDBACK: Para reconhecer conquistas, corrigir desvios graves, providenciar aprendizado sobre erros
@@ -1422,134 +1421,134 @@ Quando Usar Cada Um:
 
 CRIANDO CULTURA DE FEEDBACK CONTINUO
 
-Feedback nao deve ser um evento anual ou esporadico. Deve ser parte natural do dia a dia.
+Feedback não deve ser um evento anual ou esporádico. Deve ser parte natural do dia a dia.
 
 Como Criar Cultura de Feedback:
 
 1. MODELE O COMPORTAMENTO
 Peça feedback regularmente:
-"Como voce avalia minha lideranca neste projeto?"
-"O que posso fazer melhor para apoiar voce?"
+"Como você avalia minha liderança neste projeto?"
+"O que posso fazer melhor para apoiar você?"
 
 2. NORMALIZE O FEEDBACK
 Crie momentos estruturados:
 - Check-ins semanais de 15 minutos
 - Retrospectivas mensais
-- Feedbacks de projetos concluidos
+- Feedbacks de projetos concluídos
 
 3. AGRADECA E AJA
-Quando receber feedback, agradeca publicamente e demonstre que voce agiu.
+Quando receber feedback, agradeça publicamente e demonstre que você agiu.
 
 4. CELEBRE EVOLUCOES
-Quando alguem melhorar com base em feedback, reconheca publicamente.
+Quando alguém melhorar com base em feedback, reconheça publicamente.
 
 5. PROTEJA O FEEDBACK HONESTO
-Se alguem der feedback corajoso, nunca punas ou ridicularizes.
+Se alguém der feedback corajoso, nunca punas ou ridicularizes.
 
 6. ENSINE AS TECNICAS
 Treine a equipe em como dar e receber feedback.
 
-Sinais de Cultura de Feedback Saudavel:
+Sinais de Cultura de Feedback Saudável:
 - Pessoas pedem feedback ativamente
-- Feedback positivo e dado com frequencia
+- Feedback positivo e dado com frequência
 - Feedback construtivo e recebido sem drama
-- Conflitos sao resolvidos com dialogo
-- Erros sao vistos como aprendizados
-- Ha confianca na equipe
+- Conflitos são resolvidos com dialogo
+- Erros são vistos como aprendizados
+- Há confiança na equipe
 
-Sinais de Cultura Toxica de Feedback:
-- Feedback so acontece formalmente (avaliacao anual)
-- Pessoas tem medo de dar feedback
-- Feedback e visto como ataque
-- Defensividade e norma
-- Problemas ficam subterraneos
+Sinais de Cultura Tóxica de Feedback:
+- Feedback só acontece formalmente (avaliação anual)
+- Pessoas têm medo de dar feedback
+- Feedback é visto como ataque
+- Difusividade é norma
+- Problemas ficam subterrâneos
 - Politicagem e fofoca substituem feedback direto
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Feedback Proprio
+Exercício 1: Feedback Próprio
 Escolha 3 pessoas (chefe, par, subordinado) e peca feedback estruturado:
-"Em uma escala de 1-10, como voce avalia [aspecto X] da minha lideranca? O que eu poderia fazer para chegar a 10?"
+"Em uma escala de 1-10, como você avalia [aspecto X] da minha liderança? O que eu poderia fazer para chegar a 10?"
 
-Exercicio 2: Pratica SCI
+Exercício 2: Prática SCI
 Escreva 3 feedbacks (2 positivos, 1 construtivo) usando o modelo SCI para pessoas da sua equipe. Depois, entregue-os.
 
-Exercicio 3: Feedforward Pessoal
-Para algo que voce quer melhorar em si mesmo, peça Feedforward (sugestoes futuras) a 5 pessoas diferentes.
+Exercício 3: Feedforward Pessoal
+Para algo que você quer melhorar em si mesmo, peça Feedforward (sugestões futuras) a 5 pessoas diferentes.
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-Feedback emocionalmente inteligente transforma relacoes, acelera desenvolvimento e cria culturas de alta performance.
+Feedback emocionalmente inteligente transforma relações, acelera desenvolvimento e cria culturas de alta performance.
 
-A diferenca entre equipes mediocres e extraordinarias muitas vezes esta na qualidade e frequencia do feedback.
+A diferença entre equipes medíocres e extraordinárias muitas vezes está na qualidade e frequência do feedback.
 
-Proximos Passos:
-1. De pelo menos 1 feedback positivo especifico por dia essa semana
+Próximos Passos:
+1. De pelo menos 1 feedback positivo específico por dia essa semana
 2. Pratique o modelo SCI em um feedback construtivo
 3. Peca feedback estruturado a 3 pessoas
-4. Quando receber feedback, pratique a tecnica de nao defensividade
+4. Quando receber feedback, pratique a técnica de não defensividade
 
-Lembre-se: Feedback nao e opcional para quem quer liderar com excelencia. E habilidade essencial.
+Lembre-se: Feedback não e opcional para quem quer liderar com excelência. E habilidade essencial.
         `
       },
       {
-        id: 5,
-        titulo: "Construcao de Resiliencia Emocional da Equipe",
-        duracao: "45 min",
-        topicos: [
-          "O que e resiliencia organizacional",
-          "Fatores que fortalecem resiliencia",
-          "Criando seguranca psicologica",
-          "Gestao de adversidades coletivas",
-          "Celebracao de conquistas e aprendizados"
+        id: 4,
+        título: "Construção de Resiliência Emocional da Equipe",
+        duração: "45 min",
+        tópicos: [
+          "O que e resiliência organizacional",
+          "Fatores que fortalecem resiliência",
+          "Criando segurança psicológica",
+          "Gestão de adversidades coletivas",
+          "Celebração de conquistas e aprendizados"
         ],
-        materialDidatico: `
+        materialDidático: `
 CONSTRUCAO DE RESILIENCIA EMOCIONAL DA EQUIPE
 
 INTRODUCAO
 
-Resiliencia nao e apenas uma caracteristica individual - e tambem uma capacidade organizacional que pode ser desenvolvida intencionalmente.
+Resiliência não e apenas uma característica individual - e também uma capacidade organizacional que pode ser desenvolvida intencionalmente.
 
 Equipes resilientes:
-- Recuperam-se mais rapido de crises
-- Mantem performance sob pressao
-- Adaptam-se melhor a mudancas
-- Tem menor absenteismo e turnover
+- Recuperam-se mais rápido de crises
+- Mantem performance sob pressão
+- Adaptam-se melhor a mudanças
+- Tem menor absenteísmo e turnover
 - Inovam mais
-- Tem melhor saude mental coletiva
+- Tem melhor saúde mental coletiva
 
 O QUE E RESILIENCIA ORGANIZACIONAL
 
-Definicao:
-Resiliencia organizacional e a capacidade de uma equipe ou organizacao de antecipar, preparar-se, responder e adaptar-se a mudancas incrementais e rupturas repentinas, a fim de sobreviver e prosperar.
+Definição:
+Resiliência organizacional e a capacidade de uma equipe ou organização de antecipar, preparar-se, responder e adaptar-se a mudanças incrementais e rupturas repentinas, a fim de sobreviver e prosperar.
 
-Componentes da Resiliencia Organizacional:
+Componentes da Resiliência Organizacional:
 
 1. ROBUSTEZ
-Capacidade de manter funcoes criticas sob condicoes adversas.
+Capacidade de manter funções críticas sob condições adversas.
 
 2. REDUNDANCIA
-Ter recursos extras (pessoas, processos, informacoes) para quando algo falhar.
+Ter recursos extras (pessoas, processos, informações) para quando algo falhar.
 
 3. FLEXIBILIDADE
 Capacidade de adaptar estruturas, processos e mentalidades.
 
 4. RAPIDEZ
-Velocidade de resposta a situacoes imprevistas.
+Velocidade de resposta a situações imprevistas.
 
 5. INTELIGENCIA
 Capacidade de aprender com experiencias e antecipar riscos.
 
 6. COLABORACAO
-Trabalho conjunto para resolucao de problemas.
+Trabalho conjunto para resolução de problemas.
 
 Equipes NAO Resilientes:
-- Paralisam diante de mudancas
+- Paralisam diante de mudanças
 - Culpam outros por problemas
 - Mantem processos obsoletos
-- Tem comunicacao fragmentada
+- Tem comunicação fragmentada
 - Escondem erros
-- Tem alto nivel de estresse cronico
+- Tem alto nível de estresse crônico
 - Perdem talentos constantemente
 
 Equipes Resilientes:
@@ -1559,23 +1558,23 @@ Equipes Resilientes:
 - Comunicam abertamente
 - Aprendem com erros
 - Tem estresse agudo mas recuperam
-- Reteem e atraem talentos
+- Retêm e atraem talentos
 
 FATORES QUE FORTALECEM RESILIENCIA
 
 1. CLAREZA DE PROPOSITO
-Equipes que sabem "por que" existem enfrentam melhor o "como" dificil.
+Equipes que sabem "por que" existem enfrentam melhor o "como" difícil.
 
-Acoes Praticas:
-- Revise regularmente missao e valores
-- Conecte tarefas diarias ao proposito maior
-- Celebre contribuicoes ao proposito
+Ações Práticas:
+- Revise regularmente missão e valores
+- Conecte tarefas diárias ao proposito maior
+- Celebre contribuições ao proposito
 - Conte historias de impacto real do trabalho da equipe
 
 2. CONFIANCA MUTUA
-Confianca e a base da resiliencia. Sem confianca, equipes fragmentam sob pressao.
+Confiança e a base da resiliência. Sem confiança, equipes fragmentam sob pressão.
 
-Acoes Praticas:
+Ações Práticas:
 - Cumpra compromissos consistentemente
 - Admita erros abertamente
 - De credito publicamente
@@ -1583,615 +1582,615 @@ Acoes Praticas:
 - Seja transparente sobre desafios
 - Evite favoritismos
 
-3. COMUNICACAO ABERTA
-Resiliencia exige informacao fluindo livremente.
+3. COMUNICAÇÃO ABERTA
+Resiliência exige informação fluindo livremente.
 
-Acoes Praticas:
-- Reunioes regulares de alinhamento
+Ações Práticas:
+- Reuniões regulares de alinhamento
 - Canais abertos para duvidas
-- Compartilhamento proativo de informacoes
-- Escuta ativa de preocupacoes
-- Explicacao clara de decisoes
+- Compartilhamento proativo de informações
+- Escuta ativa de preocupações
+- Explicação clara de decisões
 
 4. AUTONOMIA E COMPETENCIA
-Equipes que se sentem capazes e autonomas lidam melhor com desafios.
+Equipes que se sentem capazes e autônomas lidam melhor com desafios.
 
-Acoes Praticas:
-- Delegue decisoes sempre que possivel
-- Invista em capacitacao continua
-- Permita experimentacao (com seguranca)
-- Reconheca expertise individual
-- Evite microgerenciamento
+Ações Práticas:
+- Delegue decisões sempre que possível
+- Invista em capacitação continua
+- Permita experimentação (com segurança)
+- Reconheça expertise individual
+- Evite micro gerenciamento
 
 5. APOIO EMOCIONAL E SOCIAL
-Conexoes humanas sao amortecedores de estresse.
+Conexões humanas são amortecedores de estresse.
 
-Acoes Praticas:
-- Crie espacos para conversas informais
-- Demonstre empatia genuina
-- Apoie em momentos pessoais dificeis
+Ações Práticas:
+- Crie espaços para conversas informais
+- Demonstre empatia genuína
+- Apoie em momentos pessoais difíceis
 - Incentive relacionamentos positivos
-- Promova integracao da equipe
+- Promova integração da equipe
 
 6. OTIMISMO REALISTA
-Nao e ingenuidade - e a capacidade de ver possibilidades mesmo em crises.
+Não é ingenuidade - e a capacidade de ver possibilidades mesmo em crises.
 
-Acoes Praticas:
+Ações Práticas:
 - Enquadre problemas como desafios
-- Destaque progressos, nao apenas problemas
-- Reconheca dificuldades mas mostre caminhos
-- Compartilhe casos de superacao
-- Mantenha esperanca sem negar realidade
+- Destaque progressos, não apenas problemas
+- Reconheça dificuldades mas mostre caminhos
+- Compartilhe casos de superação
+- Mantenha esperança sem negar realidade
 
 CRIANDO SEGURANCA PSICOLOGICA
 
-Seguranca Psicologica e a crença compartilhada de que o ambiente e seguro para assumir riscos interpessoais - como fazer perguntas, admitir erros, propor ideias e desafiar o status quo.
+Segurança Psicológica e a crença compartilhada de que o ambiente e seguro para assumir riscos interpessoais - como fazer perguntas, admitir erros, propor ideias e desafiar o status quo.
 
 Pesquisa do Google (Projeto Aristoteles):
-Apos analisar centenas de equipes, descobriram que o fator numero 1 de equipes de alta performance e seguranca psicologica.
+Após analisar centenas de equipes, descobriram que o fator numero 1 de equipes de alta performance e segurança psicológica.
 
-Amy Edmondson (Harvard): Equipes com alta seguranca psicologica tem:
-- 27% menos erros medicos (hospitais)
-- 67% mais inovacao
+Amy Edmondson (Harvard): Equipes com alta segurança psicológica tem:
+- 27% menos erros médicos (hospitais)
+- 67% mais inovação
 - 76% mais engajamento
 - 50% mais produtividade
 
-Sinais de FALTA de Seguranca Psicologica:
-- Pessoas tem medo de fazer perguntas ("nao quero parecer burro")
-- Erros sao escondidos
-- Ninguem desafia ideias ruins
-- Silencio em reunioes
+ Sinais de FALTA de Segurança Psicológica:
+ - Pessoas têm medo de fazer perguntas ("não quero parecer burro")
+- Erros são escondidos
+- Ninguém desafia ideias ruins
+- Silêncio em reuniões
 - Fofocas nos corredores
 - Alta rotatividade
 - Conformidade excessiva
 
-Sinais de ALTA Seguranca Psicologica:
-- Perguntas sao valorizadas
-- Erros sao compartilhados para aprendizado
-- Debates saudaveis acontecem
-- Participacao ativa em reunioes
+Sinais de ALTA Segurança Psicológica:
+- Perguntas são valorizadas
+- Erros são compartilhados para aprendizado
+- Debates saudáveis acontecem
+- Participação ativa em reuniões
 - Conversas diretas e honestas
-- Retencao de talentos
-- Inovacao constante
+- Retenção de talentos
+- Inovação constante
 
-Como Criar Seguranca Psicologica:
+Como Criar Segurança Psicológica:
 
 1. MODELE VULNERABILIDADE
 "Eu errei nisso. O que posso aprender?"
-"Nao sei a resposta. Alguem tem ideias?"
+"Não sei a resposta. Alguém tem ideias?"
 
 2. AGRADECA QUEM FAZ PERGUNTAS
-"Otima pergunta! Agradeço voce ter levantado isso."
+"Ótima pergunta! Agradeço você ter levantado isso."
 
 3. NORMALIZE ERROS
-"Erros sao tuicao de aprendizado. O que aprendemos com isso?"
+"Erros são Intuição de aprendizado. O que aprendemos com isso?"
 
 4. NUNCA ENVERGONHE PUBLICAMENTE
-Feedback construtivo e privado. Reconhecimento e publico.
+Feedback construtivo e privado. Reconhecimento e público.
 
 5. CONVIDE DISCORDANCIA
-"Alguem ve isso de forma diferente? Eu quero ouvir."
+"Alguém vê isso de forma diferente? Eu quero ouvir."
 
 6. PROTEJA QUEM FALA A VERDADE
-Se alguem trouxe um problema real, mesmo incomodo, proteja essa pessoa.
+Se alguém trouxe um problema real, mesmo incomodo, proteja essa pessoa.
 
 7. CRIE RITUAIS DE COMPARTILHAMENTO
-"Falha da Semana": cada um compartilha um erro e aprendizado (incluindo voce).
+"Falha da Semana": cada um compartilha um erro e aprendizado (incluindo você).
 
 GESTAO DE ADVERSIDADES COLETIVAS
 
-Quando crises acontecem (perda de cliente importante, reestruturacao, pandemia, falhas graves), a forma como o lider gerencia define se a equipe sai fortalecida ou destruida.
+Quando crises acontecem (perda de cliente importante, reestruturação, pandemia, falhas graves), a forma como o líder gerencia define se a equipe sai fortalecida ou destruída.
 
-Protocolo de Gestao de Crise:
+Protocolo de Gestão de Crise:
 
 FASE 1: ESTABILIZACAO IMEDIATA (Primeiras 24-48h)
 
-1. Comunique rapido e honestamente
-"Aconteceu X. Ainda nao temos todas as respostas. Aqui esta o que sabemos. Aqui esta o que estamos fazendo. Vou atualizar voces em [prazo]."
+1. Comunique rápido e honestamente
+"Aconteceu X. Ainda não temos todas as respostas. Aqui está o que sabemos. Aqui está o que estamos fazendo. Vou atualizar vocês em [prazo]."
 
-2. Garanta seguranca basica
-Salarios, saude, recursos essenciais - garanta o que for possivel.
+2. Garanta segurança básica
+Salários, saúde, recursos essenciais - garanta o que for possível.
 
-3. Esteja presente e visivel
-Nao desapareca. Lidere da frente.
+3. Esteja presente e visível
+Não desapareça. Lidere da frente.
 
 FASE 2: RESPOSTA ORGANIZADA (Primeiros dias/semanas)
 
 1. Forme equipe de resposta
 Pessoas certas para resolver o problema.
 
-2. Crie plano de acao claro
-Passos especificos, responsaveis, prazos.
+2. Crie plano de ação claro
+Passos específicos, responsáveis, prazos.
 
-3. Mantenha comunicacao regular
+3. Mantenha comunicação regular
 Updates frequentes, mesmo que seja "ainda estamos trabalhando nisso".
 
-4. Cuide da saude emocional
-Sessoes de desabafo, apoio psicologico se necessario.
+4. Cuide da saúde emocional
+Sessões de desabafo, apoio psicológico sé necessário.
 
-FASE 3: RECUPERACAO E APRENDIZADO (Medio prazo)
+FASE 3: RECUPERACAO E APRENDIZADO (Médio prazo)
 
-1. Extraia licoes
-"O que funcionou? O que nao funcionou? O que faremos diferente?"
+1. Extraia lições
+"O que funcionou? O que não funcionou? O que faremos diferente?"
 
-2. Reconheca esforcos
-"Obrigado por [acao especifica]. Isso fez diferenca."
+2. Reconheça esforços
+"Obrigado por [ação específica]. Isso fez diferença."
 
 3. Ajuste processos
-Previna repeticao do problema.
+Previna repetição do problema.
 
-4. Restaure rotinas saudaveis
-Retome reunioes normais, celebracoes, etc.
+4. Restaure rotinas saudáveis
+Retome reuniões normais, celebrações, etc.
 
 FASE 4: CRESCIMENTO POS-CRISE (Longo prazo)
 
-1. Conte a historia de superacao
+1. Conte a historia de superação
 "Enfrentamos X, fizemos Y, aprendemos Z, agora estamos melhores."
 
 2. Fortifica a equipe
 "Se superamos aquilo, podemos superar qualquer coisa."
 
-3. Implemente mudancas duradouras
+3. Implemente mudanças duradouras
 Transforme aprendizados em novos processos.
 
 CELEBRACAO DE CONQUISTAS E APRENDIZADOS
 
-Equipes resilientes celebram. Nao apenas grandes vitorias, mas tambem pequenos progressos e aprendizados.
+Equipes resilientes celebram. Não apenas grandes vitorias, mas também pequenos progressos e aprendizados.
 
 Por Que Celebrar e Importante:
 
 1. NEUROLOGICO
-Celebracoes liberam dopamina, criando associacao positiva com o trabalho e motivando repeticao de comportamentos bem-sucedidos.
+Celebrações liberam dopamina, criando associação positiva com o trabalho e motivando repetição de comportamentos bem-sucedidos.
 
 2. SOCIAL
-Celebracoes fortalecem vinculos e criam memorias compartilhadas.
+Celebrações fortalecem vínculos e criam memorias compartilhadas.
 
 3. CULTURAL
-Celebracoes comunicam valores: "isso e importante para nos".
+Celebrações comunicam valores: "isso é importante para nós".
 
 4. MOTIVACIONAL
-Celebracoes energizam para proximos desafios.
+Celebrações energizam para próximos desafios.
 
 O Que Celebrar:
 
 - Metas atingidas
-- Projetos concluidos
+- Projetos concluídos
 - Aprendizados de erros
-- Aniversarios de equipe
+- Aniversários de equipe
 - Reconhecimentos externos
-- Evolucao individual de membros
-- Superacao de obstaculos
+- Evolução individual de membros
+- Superação de obstáculos
 - Comportamentos alinhados a valores
 
-Como Celebrar (Nao Precisa Ser Caro):
+Como Celebrar (Não Precisa Ser Caro):
 
-- Reconhecimento publico em reuniao
-- Email/mensagem destacando conquista
-- Almoco ou cafe especial de equipe
+- Reconhecimento público em reunião
+- E-mail/mensagem destacando conquista
+- Almoço ou café especial de equipe
 - Pausas para comemorar marcos
-- Quadro de celebracoes
+- Quadro de celebrações
 - Historias de sucesso compartilhadas
 - Agradecimentos personalizados
 
 Armadilha a Evitar:
-Celebrar apenas resultados financeiros. Celebre tambem esforco, colaboracao, aprendizado, resiliencia.
+Celebrar apenas resultados financeiros. Celebre também esforço, colaboração, aprendizado, resiliência.
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Auditoria de Resiliencia
-Avalie sua equipe de 1-10 em cada fator de resiliencia listado. Onde estao os pontos fracos? Crie plano de acao para os 2 mais baixos.
+Exercício 1: Auditoria de Resiliência
+Avalie sua equipe de 1-10 em cada fator de resiliência listado. Onde estão os pontos fracos? Crie plano de acao para os 2 mais baixos.
 
-Exercicio 2: Indice de Seguranca Psicologica
-Faca uma pesquisa anonima com sua equipe com estas perguntas:
+Exercício 2: Índice de Segurança Psicológica
+Faça uma pesquisa anônima com sua equipe com estas perguntas:
 - Me sinto seguro para fazer perguntas
 - Me sinto seguro para admitir erros
-- Me sinto seguro para discordar do lider
+- Me sinto seguro para discordar do líder
 - Me sinto seguro para propor ideias diferentes
 
 Escala: 1 (discordo totalmente) a 5 (concordo totalmente)
-Se media estiver abaixo de 4, ha trabalho a fazer.
+Se media estiver abaixo de 4, há trabalho a fazer.
 
-Exercicio 3: Ritual de Celebracao
-Implemente ao menos 1 ritual regular de celebracao esta semana.
+Exercício 3: Ritual de Celebração
+Implemente ao menos 1 ritual regular de celebração está semana.
 
 CONCLUSAO DO MODULO
 
-Resiliencia coletiva nao acontece por acaso. E construida deliberadamente atraves de acoes consistentes do lider.
+Resiliência coletiva não acontece por acaso. E construída deliberadamente através de ações consistentes do líder.
 
-Equipes resilientes sao vantagem competitiva sustentavel. Em mundo volatil e incerto, resiliencia vale mais que qualquer plano estrategico perfeito.
+Equipes resilientes são vantagem competitiva sustentável. Em mundo volátil e incerto, resiliência vale mais que qualquer plano estratégico perfeito.
 
-Proximos Passos:
-1. Avalie nivel de resiliencia da sua equipe
-2. Implemente ao menos 1 acao para criar seguranca psicologica
-3. Crie plano de comunicacao para proxima crise (preventivo)
-4. Implemente 1 ritual regular de celebracao
+Próximos Passos:
+1. Avalie nível de resiliência da sua equipe
+2. Implemente ao menos 1 ação para criar segurança psicológica
+3. Crie plano de comunicação para próxima crise (preventivo)
+4. Implemente 1 ritual regular de celebração
 
-Lembre-se: Voce constroi resiliencia da equipe nos dias calmos, nao durante a tempestade.
+Lembre-se: Você constrói resiliência da equipe nos dias calmos, não durante a tempestade.
         `
       },
       {
-        id: 6,
-        titulo: "Tomada de Decisao com Inteligencia Emocional",
-        duracao: "40 min",
-        topicos: [
-          "Papel das emocoes nas decisoes",
-          "Vies cognitivos que distorcem decisoes",
-          "Equilibrio entre razao e intuicao",
-          "Decisoes eticas sob pressao",
-          "Envolvimento da equipe em decisoes criticas"
+        id: 5,
+        título: "Tomada de Decisão com Inteligência Emocional",
+        duração: "40 min",
+        tópicos: [
+          "Papel das emoções nas decisões",
+          "Viés cognitivos que distorcem decisões",
+          "Equilíbrio entre razão e intuição",
+          "Decisões éticas sob pressão",
+          "Envolvimento da equipe em decisões críticas"
         ],
-        materialDidatico: `
+        materialDidático: `
 TOMADA DE DECISAO COM INTELIGENCIA EMOCIONAL
 
 INTRODUCAO
 
-Decisoes de lideres impactam vidas, carreiras, negoc ios e resultados organizacionais. Tomar decisoes equilibradas, considerando razao e emocao, e uma das habilidades mais criticas da lideranca.
+Decisões de líderes impactam vidas, carreiras, negócios e resultados organizacionais. Tomar decisões equilibradas, considerando razão e emoção, é uma das habilidades mais críticas da liderança.
 
 Dado Alarmante:
-Pesquisas mostram que 70% das decisoes estrategicas falham - e a principal causa e decisao baseada em emocoes nao gerenciadas ou ignorancia deliberada de fatores emocionais.
+Pesquisas mostram que 70% das decisões estratégicas falham - e a principal causa e decisão baseada em emoções não gerenciadas ou ignorância deliberada de fatores emocionais.
 
 PAPEL DAS EMOCOES NAS DECISOES
 
-Mito: "Decisoes boas sao 100% racionais, sem emocoes."
+Mito: "Decisões boas são 100% racionais, sem emoções."
 
-Realidade: Emocoes sao essenciais para decisoes eficazes.
+Realidade: Emoções são essenciais para decisões eficazes.
 
-Antonio Damasio (Neurocientista):
-Pacientes com lesoes na area cerebral responsavel por emocoes (cortex pre-frontal ventromedial) conseguem raciocinar perfeitamente, mas sao incapazes de tomar decisoes simples do dia a dia.
+Antônio Damásio (Neurocientista):
+Pacientes com lesões na área cerebral responsável por emoções (córtex pré-frontal ventromedial) conseguem raciocinar perfeitamente, mas são incapazes de tomar decisões simples do dia a dia.
 
-Emocoes sao sinais que nos ajudam a:
+Emoções são sinais que nos ajudam a:
 - Priorizar (o que e realmente importante?)
 - Avaliar riscos (isso e perigoso?)
-- Prever consequencias sociais (como outros reagirao?)
-- Acessar experiencias passadas (ja vivi algo similar?)
+- Prever consequências sociais (como outros reagirão?)
+- Acessar experiencias passadas (já vivi algo similar?)
 
-O Problema NAO sao as Emocoes:
-O problema e quando emocoes controlam decisoes sem consciencia ou reflexao.
+O Problema NAO são as Emoções:
+O problema e quando emoções controlam decisões sem consciência ou reflexão.
 
-Emocao Sem Razao = Impulsividade
-Razao Sem Emocao = Paralisia ou Decisoes Desumanas
+Emoção Sem Razão = Impulsividade
+Razão Sem Emoção = Paralisia ou Decisões Desumanas
 
-Ideal = Integracao Consciente de Razao e Emocao
+Ideal = Integração Consciente de Razão e Emoção
 
 VIES COGNITIVOS QUE DISTORCEM DECISOES
 
-Vies cognitivos sao atalhos mentais que nosso cerebro usa para economizar energia, mas que frequentemente nos levam a erros de julgamento.
+Viés cognitivos são atalhos mentais que nosso cérebro usa para economizar energia, mas que frequentemente nos levam a erros de julgamento.
 
-Principais Vieses que Afetam Lideres:
+Principais Vieses que Afetam Líderes:
 
 1. VIES DE CONFIRMACAO
-Tendencia a buscar, interpretar e lembrar informacoes que confirmam nossas crencas pre-existentes.
+Tendencia a buscar, interpretar e lembrar informações que confirmam nossas crenças pré-existentes.
 
 Exemplo:
-Lider acredita que colaborador X e preguicoso. Passa a notar apenas comportamentos que confirmam isso, ignorando evidencias contrarias.
+Líder acredita que colaborador X e preguiçoso. Passa a notar apenas comportamentos que confirmam isso, ignorando evidencias contrarias.
 
 Como Evitar:
 - Busque ativamente evidencias contrarias
-- Consulte pessoas com visoes diferentes
-- Questione suas proprias certezas
+- Consulte pessoas com visões diferentes
+- Questione suas próprias certezas
 
 2. VIES DE ANCORAGEM
-Confiar excessivamente na primeira informacao recebida.
+Confiar excessivamente na primeira informação recebida.
 
 Exemplo:
 Primeira oferta salarial de candidato foi R$8.000. Mesmo descobrindo que mercado paga R$12.000, a decisao fica "ancorada" nos R$8.000.
 
 Como Evitar:
-- Pesquise multiplas fontes antes de decidir
-- Ignore a primeira informacao e comece novamente
+- Pesquise múltiplas fontes antes de decidir
+- Ignore a primeira informação e comece novamente
 - Use dados objetivos como referencia
 
 3. VIES DE EXCESSO DE CONFIANCA
-Superestimar nossas capacidades e a precisao de nossos julgamentos.
+Superestimar nossas capacidades e a precisão de nossos julgamentos.
 
 Exemplo:
 "Tenho certeza que esse produto vai ser sucesso!" (sem pesquisa de mercado adequada)
 
 Como Evitar:
 - Busque feedback honesto de outros
-- Analise decisoes passadas (quantas vezes voce estava "certo absoluto" e errou?)
-- Use dados, nao apenas intuicao
+- Análise decisões passadas (quantas vezes você estava "certo absoluto" e errou?)
+- Use dados, não apenas intuição
 
 4. VIES DE GRUPO (GROUPTHINK)
-Pressao para conformidade em grupos coesos suprime discordancia e pensamento critico.
+Pressão para conformidade em grupos coesos suprime discordância e pensamento crítico.
 
 Exemplo:
-Equipe executiva concorda com decisao ruim porque ninguem quer contrariar CEO.
+Equipe executiva concorda com decisão ruim porque ninguém quer contrariar CEO.
 
 Como Evitar:
-- Convide ativamente discordancia
+- Convide ativamente discordância
 - De voz igual a todos
-- Atribua "advogado do diabo" em decisoes importantes
+- Atribua "advogado do diabo" em decisões importantes
 
 5. VIES DE DISPONIBILIDADE
-Superestimar probabilidade de eventos que vem facilmente a memoria (geralmente os mais recentes ou dramaticos).
+Superestimar probabilidade de eventos que vem facilmente a memoria (geralmente os mais recentes ou dramáticos).
 
 Exemplo:
-Apos acidente de trabalho, lider superestima risco e paralisa operacao desnecessariamente.
+Após acidente de trabalho, líder superestima risco e paralisa operação desnecessariamente.
 
 Como Evitar:
-- Use estatisticas reais, nao apenas memoria
-- Considere casos que NAO aconteceram tambem
+- Use estatísticas reais, não apenas memoria
+- Considere casos que NAO aconteceram também
 - Amplie perspectiva temporal
 
 6. VIES DO CUSTO AFUNDADO (SUNK COST)
-Continuar investindo em decisao ruim porque ja investiu muito.
+Continuar investindo em decisão ruim porque já investiu muito.
 
 Exemplo:
-"Ja gastamos R$500mil neste projeto que claramente nao vai funcionar. Vamos gastar mais R$200mil para 'nao perder o investimento'."
+"Ja gastamos R$500mil neste projeto que claramente não vai funcionar. Vamos gastar mais R$200mil para 'nao perder o investimento'."
 
 Como Evitar:
-- Considere apenas custos e beneficios FUTUROS
+- Considere apenas custos e benefícios FUTUROS
 - Pergunte: "Se estivesse decidindo do zero hoje, o que faria?"
-- Aceite que perdas passadas sao irrelevaveis
+- Aceite que perdas passadas são irreveláveis
 
 EQUILIBRIO ENTRE RAZAO E INTUICAO
 
-Intuicao nao e magia - e processamento rapido de padroes baseado em experiencia acumulada.
+Intuição não e magia - e processamento rápido de padrões baseado em experiencia acumulada.
 
-Gary Klein (Psicologo): Estudou bombeiros, enfermeiros de UTI e militares em combate. Descobriu que profissionais experientes tomam decisoes corretas em fraçoes de segundo usando intuicao - mas essa intuicao vem de anos de experiencia.
+Gary Klein (Psicólogo): Estudou bombeiros, enfermeiros de UTI e militares em combate. Descobriu que profissionais experientes tomam decisões corretas em frações de segundo usando intuição - mas essa intuição vem de anos de experiencia.
 
-Quando Confiar na Intuicao:
-1. Voce tem experiencia profunda na area
-2. Decisao precisa ser rapida
-3. Contexto e similar a situacoes que voce ja enfrentou
-4. Custo do erro e baixo/recuperavel
+Quando Confiar na Intuição:
+1. Você tem experiencia profunda na área
+2. Decisão precisa ser rápida
+3. Contexto e similar a situações que você já enfrentou
+4. Custo do erro e baixo/recuperável
 
-Quando NAO Confiar Apenas na Intuicao:
-1. Voce nao tem experiencia na area
-2. Ha tempo para analise
-3. Situacao e inedita ou muito complexa
-4. Custo do erro e alto/irreversivel
+Quando NAO Confiar Apenas na Intuição:
+1. Você não tem experiencia na área
+2. Há tempo para analise
+3. Situação e inédita ou muito complexa
+4. Custo do erro e alto/irreversível
 
-Modelo de Decisao Integrativa:
+Modelo de Decisão Integrativa:
 
 PASSO 1: INTUICAO INICIAL
-Qual e sua primeira sensacao sobre isso?
+Qual e sua primeira sensação sobre isso?
 
 PASSO 2: COLETA DE DADOS
-Quais sao os fatos? Numeros? Evidencias?
+Quais são os fatos? Números? Evidencias?
 
 PASSO 3: ANALISE RACIONAL
-Quais sao opcoes? Pros e contras de cada? Riscos?
+Quais são opções? Pros e contras de cada? Riscos?
 
 PASSO 4: CHECAGEM EMOCIONAL
-Como voce SE SENTE sobre cada opcao? E a equipe? E outras partes interessadas?
+Como você SE SENTE sobre cada opção? E a equipe? E outras partes interessadas?
 
 PASSO 5: INTEGRACAO
-O que razao e emocao estao dizendo? Estao alinhadas ou em conflito?
+O que razão e emoção estão dizendo? Estão alinhadas ou em conflito?
 
 PASSO 6: DECISAO CONSCIENTE
 Escolha com clareza sobre por que escolheu.
 
 DECISOES ETICAS SOB PRESSAO
 
-Decisoes eticas sao aquelas onde ha conflito entre interesses, valores ou certo/errado.
+Decisões éticas são aquelas onde há conflito entre interesses, valores ou certo/errado.
 
 Exemplos:
-- Demitir colaborador com desempenho ruim mas que esta passando por crise pessoal
-- Manter informacao confidencial quando revelar ajudaria alguem
+- Demitir colaborador com desempenho ruim mas que está passando por crise pessoal
+- Manter informação confidencial quando revelar ajudaria alguém
 - Priorizar lucro vs. impacto social
-- Proteger a empresa vs. apoiar colaborador em situacao de assedio
+- Proteger a empresa vs. apoiar colaborador em situação de assédio
 
-Modelo de Decisao Etica:
+Modelo de Decisão Ética:
 
 1. IDENTIFIQUE O DILEMA ETICO
 Qual e exatamente o conflito de valores?
 
 2. LISTE AS PARTES AFETADAS
-Quem sera impactado por essa decisao? Como?
+Quem será impactado por essa decisão? Como?
 
 3. CONSIDERE PRINCIPIOS ETICOS
 - Legalidade (e legal?)
-- Justica (e justo?)
+- Justiça (e justo?)
 - Utilidade (gera maior bem para maior numero?)
 - Direitos (respeita direitos fundamentais?)
 - Virtude (e o que pessoa integra faria?)
 
 4. TESTE DE PUBLICIDADE
-"E se essa decisao fosse manchete de jornal amanha, eu me sentiria confortavel?"
+"E se essa decisão fosse manchete de jornal amanha, eu me sentiria confortável?"
 
 5. CONSULTA
-Em decisoes eticas complexas, consulte compliance, RH, legal ou mentor de confianca.
+Em decisões éticas complexas, consulte compliance, RH, legal ou mentor de confiança.
 
 6. DECIDA E COMUNIQUE CLARAMENTE
-Explique a razao da decisao, especialmente para afetados.
+Explique a razão da decisão, especialmente para afetados.
 
-Principio Fundamental:
-Sob pressao, mantenha-se fiel a valores fundamentais. Atalhos eticos destroem reputacao, carreira e organizacoes.
+Princípio Fundamental:
+Sob pressão, mantenha-se fiel a valores fundamentais. Atalhos éticos destroem reputação, carreira e organizações.
 
 ENVOLVIMENTO DA EQUIPE EM DECISOES CRITICAS
 
-Nem toda decisao precisa ou deve ser compartilhada. Mas decisoes que afetam a equipe diretamente tem muito a ganhar com participacao.
+Nem toda decisão precisa ou deve ser compartilhada. Mas decisões que afetam a equipe diretamente tem muito a ganhar com participação.
 
-Modelo de Decisao de Vroom-Yetton:
+Modelo de Decisão de Vroom-Yetton:
 
-DECISAO AUTOCRATICA (Lider decide sozinho)
+DECISAO AUTOCRATICA (Líder decide sozinho)
 Quando usar:
-- Decisao urgente
-- Voce tem toda informacao necessaria
-- Aceitacao da equipe nao e critica
-- Equipe confia em voce
+- Decisão urgente
+- Você tem toda informação necessária
+- Aceitação da equipe não é crítica
+- Equipe confia em você
 
-DECISAO CONSULTIVA (Lider ouve equipe mas decide)
+DECISAO CONSULTIVA (Líder ouve equipe mas decide)
 Quando usar:
-- Equipe tem informacoes importantes
-- Aceitacao e importante mas nao critica
-- Ha algum tempo disponivel
+- Equipe tem informações importantes
+- Aceitação é importante mas não crítica
+- Há algum tempo disponível
 
-DECISAO COLABORATIVA (Equipe decide junto com lider)
+DECISAO COLABORATIVA (Equipe decide junto com líder)
 Quando usar:
-- Aceitacao da equipe e critica
-- Equipe tem competencia para decidir
+- Aceitação da equipe é crítica
+- Equipe tem competência para decidir
 - Ha tempo adequado
-- Decisao afeta equipe diretamente
+- Decisão afeta equipe diretamente
 
-DECISAO DELEGADA (Equipe decide, lider apoia)
+DECISAO DELEGADA (Equipe decide, líder apoia)
 Quando usar:
-- Equipe tem competencia superior ao lider no tema
+- Equipe tem competência superior ao líder no tema
 - Desenvolvimento da equipe e objetivo
-- Equipe esta madura e comprometida
-- Decisao nao tem impacto estrategico alto
+- Equipe está madura e comprometida
+- Decisão não tem impacto estratégico alto
 
-Beneficios de Envolver a Equipe:
-- Decisoes de melhor qualidade (mais informacao, perspectivas)
-- Maior aceitacao e comprometimento
-- Desenvolvimento de capacidade decisoria da equipe
+Benefícios de Envolver a Equipe:
+- Decisões de melhor qualidade (mais informação, perspectivas)
+- Maior aceitação e comprometimento
+- Desenvolvimento de capacidade decisória da equipe
 - Aumento de engajamento
-- Reducao de resistencia a implementacao
+- Redução de resistência a implementação
 
 Armadilhas a Evitar:
-- "Pseudo-participacao": Fingir que equipe decide mas decisao ja estava tomada
-- Delegar decisao mas criticar depois
-- Envolver equipe em decisao que nao tem competencia para tomar
+- "Pseudoparticipação": Fingir que equipe decide mas decisão ja estava tomada
+- Delegar decisão mas criticar depois
+- Envolver equipe em decisão que não tem competência para tomar
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Analise de Decisao Passada
-Escolha uma decisao importante que voce tomou recentemente. Analise:
-- Quais emocoes voce estava sentindo?
+Exercício 1: Análise de Decisão Passada
+Escolha uma decisão importante que você tomou recentemente. Analise:
+- Quais emoções você estava sentindo?
 - Quais vieses podem ter influenciado?
-- Voce equilibrou razao e intuicao?
+- Você equilibrou razão e intuição?
 - Se pudesse decidir novamente, faria diferente?
 
-Exercicio 2: Protocolo Pessoal de Decisao
-Crie seu proprio protocolo para decisoes importantes. Inclua:
-- Tempo minimo de reflexao
-- Pessoas que voce deve consultar
-- Perguntas obrigatorias a responder
+Exercício 2: Protocolo Pessoal de Decisão
+Crie seu próprio protocolo para decisões importantes. Inclua:
+- Tempo mínimo de reflexão
+- Pessoas que você deve consultar
+- Perguntas obrigatórias a responder
 - Checklist de vieses
-- Criterios de decisao
+- Critérios de decisão
 
-Exercicio 3: Decisao Participativa
-Escolha uma decisao proxima que afeta sua equipe. Pratique envolve-los usando modelo consultivo ou colaborativo.
+Exercício 3: Decisão Participativa
+Escolha uma decisão próxima que afeta sua equipe. Pratique envolve-los usando modelo consultivo ou colaborativo.
 
 CONCLUSAO DO MODULO
 
-Decisoes moldam destinos. Lideres emocionalmente inteligentes tomam decisoes equilibradas, conscientes, eticas e inclusivas.
+Decisões moldam destinos. Líderes emocionalmente inteligentes tomam decisões equilibradas, conscientes, éticas e inclusivas.
 
-Nao existe formula magica para decisoes perfeitas. Mas existe processo disciplinado que aumenta significativamente a qualidade e aceitacao das decisoes.
+Não existe formula magica para decisões perfeitas. Mas existe processo disciplinado que aumenta significativamente a qualidade e aceitação das decisões.
 
-Proximos Passos:
+Próximos Passos:
 1. Identifique seus principais vieses cognitivos
-2. Crie seu protocolo pessoal de decisao
-3. Pratique modelo de decisao integrativa em proxima decisao importante
-4. Envolva sua equipe em uma decisao relevante
+2. Crie seu protocolo pessoal de decisão
+3. Pratique modelo de decisão integrativa em próxima decisão importante
+4. Envolva sua equipe em uma decisão relevante
 
-Lembre-se: Voce sera julgado pelas decisoes que toma. Tome-as com consciencia, coragem e cuidado.
+Lembre-se: Você será julgado pelas decisões que toma. Tome-as com consciência, coragem e cuidado.
         `
       }
     ],
-    atividadesPraticas: [
-      "Diario Emocional de 7 dias",
-      "Role-play de conversas empaticas",
-      "Pratica de respiracao consciente",
-      "Simulacao de decisao sob pressao",
-      "Plano pessoal de prevencao de burnout"
+    atividadesPráticas: [
+      "Diário Emocional de 7 dias",
+      "Role-play de conversas empáticas",
+      "Prática de respiração consciente",
+      "Simulação de decisão sob pressão",
+      "Plano pessoal de prevenção de Burnout"
     ]
   },
   {
     id: 3,
-    slug: "comunicacao-nao-violenta",
-    titulo: "Comunicacao Nao Violenta (CNV)",
-    subtitulo: "Tecnicas de Comunicacao Empatica e Construtiva",
-    descricao: "Aprimore a escuta ativa e o dialogo construtivo atraves da Comunicacao Nao Violenta para reduzir conflitos e criar ambientes de seguranca psicologica.",
-    duracao: "3h",
-    nivel: "Intermediario",
-    categoria: "Comunicacao",
-    icone: "💬",
+    slug: "comunicação-não-violenta",
+    título: "Comunicação Não Violenta (CNV)",
+    subtítulo: "Técnicas de Comunicação Empática e Construtiva",
+    descrição: "Aprimore a escuta ativa e o diálogo construtivo através da Comunicação Não Violenta para reduzir conflitos e criar ambientes de segurança psicológica.",
+    duração: "3h",
+    nível: "Intermediário",
+    categoria: "Comunicação",
+    ícone: "💬",
     cor: "from-green-600 to-teal-600",
     corBadge: "bg-green-100 text-green-700 border-green-200",
-    objetivo: "Desenvolver habilidades de comunicacao empatica e assertiva para prevenir conflitos e criar dialogo construtivo.",
+    objetivo: "Desenvolver habilidades de comunicação empática e assertiva para prevenir conflitos e criar diálogo construtivo.",
     resultadosEsperados: [
-      "Reducao significativa de conflitos interpessoais",
-      "Melhoria na qualidade das conversas dificeis",
-      "Ambiente de seguranca psicologica fortalecido",
-      "Aumento da colaboracao e confianca na equipe"
+      "Redução significativa de conflitos interpessoais",
+      "Melhoria na qualidade das conversas difíceis",
+      "Ambiente de segurança psicológica fortalecido",
+      "Aumento da colaboração e confiança na equipe"
     ],
-    modulos: [
+    módulos: [
       {
         id: 1,
-        titulo: "Fundamentos da CNV",
-        duracao: "60 min",
-        topicos: [
-          "O que e Comunicacao Nao Violenta",
+        título: "Fundamentos da CNV",
+        duração: "60 min",
+        tópicos: [
+          "O que é Comunicação Não Violenta",
           "Os 4 componentes da CNV",
-          "Observacao sem julgamento",
-          "Expressao de sentimentos",
-          "Identificacao de necessidades",
-          "Formulacao de pedidos claros"
+          "Observação sem julgamento",
+          "Expressão de sentimentos",
+          "Identificação de necessidades",
+          "Formulação de pedidos claros"
         ],
-        materialDidatico: `
-FUNDAMENTOS DA COMUNICACAO NAO VIOLENTA
+        materialDidático: `
+FUNDAMENTOS DA COMUNICAÇÃO NÃO VIOLENTA
 
-O QUE E COMUNICACAO NAO VIOLENTA
+O QUE É COMUNICAÇÃO NÃO VIOLENTA
 
-A Comunicacao Nao Violenta (CNV) e uma abordagem de comunicacao desenvolvida por Marshall Rosenberg que nos ensina a expressar necessidades e sentimentos de forma honesta sem atacar, julgar ou culpar os outros.
+A Comunicação Não Violenta (CNV) é uma abordagem de comunicação desenvolvida por Marshall Rosenberg que nos ensina a expressar necessidades e sentimentos de forma honesta sem atacar, julgar ou culpar os outros.
 
-Por que se chama Nao Violenta?
-Porque evita a violencia psicologica presente em julgamentos, criticas, rotulos, comparacoes e exigencias que causam dor emocional e conflitos.
+Por que se chama Não Violenta?
+Porque evita a violência psicológica presente em julgamentos, críticas, rótulos, comparações e exigências que causam dor emocional e conflitos.
 
-Principio Fundamental:
-Por tras de cada acao humana ha uma necessidade que esta tentando ser atendida. Quando compreendemos as necessidades (nossas e dos outros), criamos conexao e possibilidade de cooperacao.
+Princípio Fundamental:
+Por trás de cada ação humana há uma necessidade que está tentando ser atendida. Quando compreendemos as necessidades (nossas e dos outros), criamos conexão e possibilidade de cooperação.
 
-Impacto da CNV nas Organizacoes:
-- Reducao de 60% em conflitos interpessoais
+Impacto da CNV nas Organizações:
+- Redução de 60% em conflitos interpessoais
 - Aumento de 45% na produtividade de equipes
 - Melhoria de 70% no clima organizacional
-- Reducao de 50% em processos trabalhistas relacionados a assedio
+- Redução de 50% em processos trabalhistas relacionados a assédio
 
 OS 4 COMPONENTES DA CNV
 
 A CNV segue uma estrutura simples mas poderosa de 4 passos:
 
-1. OBSERVACAO (Sem Julgamento)
-2. SENTIMENTO (Expressar Emocao)
-3. NECESSIDADE (O que esta por tras)
-4. PEDIDO (Especifico e Realizavel)
+1. OBSERVAÇÃO (Sem Julgamento)
+2. SENTIMENTO (Expressar Emoção)
+3. NECESSIDADE (O que está por trás)
+4. PEDIDO (Específico e Realizável)
 
 Vamos aprofundar cada componente:
 
-COMPONENTE 1: OBSERVACAO SEM JULGAMENTO
+COMPONENTE 1: OBSERVAÇÃO SEM JULGAMENTO
 
-O que e:
-Descrever os FATOS observaveis sem adicionar interpretacao, avaliacao ou julgamento.
+O que é:
+Descrever os FATOS observáveis sem adicionar interpretação, avaliação ou julgamento.
 
-Diferenca Critica:
+Diferença Crítica:
 
 JULGAMENTO (Violento):
-"Voce e irresponsavel e sempre se atrasa!"
-Problema: "Irresponsavel" e julgamento. "Sempre" e generalizacao.
+"Você é irresponsável e sempre se atrasa!"
+Problema: "Irresponsável" é julgamento. "Sempre" é generalização.
 
-OBSERVACAO (Nao Violenta):
-"Voce chegou 20 minutos atrasado nas ultimas 3 reunioes."
-Solucao: Fatos especificos, sem julgamento.
+OBSERVAÇÃO (Não Violenta):
+"Você chegou 20 minutos atrasado nas últimas 3 reuniões."
+Solução: Fatos específicos, sem julgamento.
 
 Por que isso importa?
 Quando julgamos, a pessoa se defende. Quando observamos, ela escuta.
 
-Exercicio Pratico - Transforme Julgamentos em Observacoes:
+Exercício Prático - Transforme Julgamentos em Observações:
 
-JULGAMENTO: "Voce e preguicoso"
-OBSERVACAO: "Notei que nos ultimos 5 dias voce entregou 2 tarefas dos 5 prazos combinados"
+JULGAMENTO: "Você é preguiçoso"
+OBSERVAÇÃO: "Notei que nos últimos 5 dias você entregou 2 tarefas dos 5 prazos combinados"
 
-JULGAMENTO: "Voce nao se importa com a equipe"
-OBSERVACAO: "Voce nao participou das ultimas 4 reunioes de equipe"
+JULGAMENTO: "Você não se importa com a equipe"
+OBSERVAÇÃO: "Você não participou das últimas 4 reuniões de equipe"
 
-JULGAMENTO: "Voce e grosso"
-OBSERVACAO: "Quando fiz a pergunta, voce respondeu sem olhar para mim e saiu da sala"
+JULGAMENTO: "Você é grosso"
+OBSERVAÇÃO: "Quando fiz a pergunta, você respondeu sem olhar para mim e saiu da sala"
 
 Palavras que Indicam Julgamento (Evite):
-- Sempre, nunca (generalizacoes)
-- Voce e... (rotulos)
-- Preguicoso, irresponsavel, egoista (caracterizacoes)
-- Deveria, tem que (exigencias)
+- Sempre, nunca (generalizações)
+- Você e... (rótulos)
+- Preguiçosos, irresponsável, egoísta (caracterizações)
+- Deveria, tem que (exigências)
 
-COMPONENTE 2: SENTIMENTO (Expressar Emocao)
+COMPONENTE 2: SENTIMENTO (Expressar Emoção)
 
-O que e:
-Expressar honestamente como VOCE se sente em relacao a situacao observada.
+O que é:
+Expressar honestamente como VOCÊ se sente em relação à situação observada.
 
-Diferenca entre Sentimento Real e Falso Sentimento:
+Diferença entre Sentimento Real e Falso Sentimento:
 
 SENTIMENTO REAL (Como EU me sinto):
 - "Eu me sinto frustrado..."
@@ -2199,20 +2198,20 @@ SENTIMENTO REAL (Como EU me sinto):
 - "Eu me sinto desapontado..."
 
 FALSO SENTIMENTO (Julgamento disfarçado):
-- "Eu sinto que VOCE nao se importa..." (julgamento)
-- "Eu sinto que VOCE e irresponsavel..." (rotulo)
-- "Eu me sinto ignorado..." (interpretacao)
+- "Eu sinto que VOCÊ não se importa..." (julgamento)
+- "Eu sinto que VOCÊ é irresponsável..." (rótulo)
+- "Eu me sinto ignorado..." (interpretação)
 
 Lista de Sentimentos Reais para Praticar:
 
-Sentimentos Agradaveis:
+Sentimentos Agradáveis:
 - Feliz, alegre, entusiasmado
 - Grato, comovido, tocado
-- Esperancoso, otimista, confiante
+- Esperançoso, otimista, confiante
 - Aliviado, tranquilo, em paz
 - Animado, energizado, inspirado
 
-Sentimentos Desagradaveis:
+Sentimentos Desagradáveis:
 - Frustrado, irritado, impaciente
 - Preocupado, ansioso, apreensivo
 - Triste, desapontado, desencorajado
@@ -2220,15 +2219,15 @@ Sentimentos Desagradaveis:
 - Cansado, esgotado, sobrecarregado
 
 Por que expressar sentimentos?
-Humaniza a comunicacao. Quando compartilhamos como nos sentimos, criamos conexao emocional e empatia.
+Humaniza a comunicação. Quando compartilhamos como nos sentimos, criamos conexão emocional e empatia.
 
-COMPONENTE 3: NECESSIDADE (O que esta por tras)
+COMPONENTE 3: NECESSIDADE (O que está por trás)
 
-O que e:
-Identificar a necessidade humana universal que nao esta sendo atendida e que gera o sentimento.
+O que é:
+Identificar a necessidade humana universal que não está sendo atendida e que gera o sentimento.
 
 Conceito Fundamental:
-Sentimentos sao indicadores de necessidades. Se me sinto frustrado, ha uma necessidade minha nao atendida.
+Sentimentos são indicadores de necessidades. Se me sinto frustrado, há uma necessidade minha não atendida.
 
 Necessidades Humanas Universais:
 
@@ -2236,1096 +2235,1096 @@ Autonomia:
 - Escolher sonhos, objetivos, valores
 - Escolher planos para realizar sonhos
 
-Celebracao:
+Celebração:
 - Comemorar conquistas e perdas
 - Celebrar a vida
 
 Integridade:
 - Autenticidade, criatividade
-- Significado, auto-estima
+- Significado, autoestima
 
-Interdependencia:
-- Aceitacao, apreciacao, proximidade
-- Comunidade, consideracao, confianca
+Interdependência:
+- Aceitação, apreciação, proximidade
+- Comunidade, consideração, confiança
 - Empatia, honestidade, respeito
 
-Necessidades Fisicas:
+Necessidades Físicas:
 - Ar, agua, alimento
-- Descanso, abrigo, seguranca
-- Movimento, protecao de virus/bacterias
+- Descanso, abrigo, segurança
+- Movimento, proteção de vírus/bactérias
 
 Paz Mental:
-- Beleza, harmonia, inspiracao
+- Beleza, harmonia, inspiração
 - Ordem, paz
 
-Exemplos Praticos:
+Exemplos Práticos:
 
 "Me sinto frustrado porque preciso de respeito no trabalho"
 Necessidade: Respeito
 
 "Me sinto ansioso porque preciso de clareza sobre expectativas"
-Necessidade: Clareza/Seguranca
+Necessidade: Clareza/Segurança
 
-"Me sinto sobrecarregado porque preciso de equilibrio entre trabalho e vida pessoal"
-Necessidade: Equilibrio/Bem-estar
+"Me sinto sobrecarregado porque preciso de equilíbrio entre trabalho e vida pessoal"
+Necessidade: Equilíbrio/Bem-estar
 
 Por que identificar necessidades?
-Porque necessidades sao neutras e universais. Podemos discordar de estrategias, mas todos temos as mesmas necessidades.
+Porque necessidades são neutras e universais. Podemos discordar de estratégias, mas todos temos as mesmas necessidades.
 
-COMPONENTE 4: PEDIDO (Especifico e Realizavel)
+COMPONENTE 4: PEDIDO (Específico e Realizável)
 
-O que e:
-Fazer um pedido claro, especifico, positivo e realizavel para atender a necessidade.
+O que é:
+Fazer um pedido claro, específico, positivo e realizável para atender a necessidade.
 
-Diferenca entre Pedido e Exigencia:
+Diferença entre Pedido e Exigência:
 
-PEDIDO: "Voce poderia chegar 5 minutos antes das reunioes?"
-Caracteristicas: Especifico, respeitoso, deixa espaco para dialogo
+PEDIDO: "Você poderia chegar 5 minutos antes das reuniões?"
+Características: Específico, respeitoso, deixa espaço para diálogo
 
-EXIGENCIA: "Voce TEM QUE parar de se atrasar!"
-Caracteristicas: Vago, ameacador, nao ha espaco para nego ciacao
+EXIGÊNCIA: "Você TEM QUE parar de se atrasar!"
+Características: Vago, ameaçador, não há espaço para negociação
 
-Caracteristicas de um Pedido Eficaz:
+Características de um Pedido Eficaz:
 
-1. POSITIVO (diga o que quer, nao o que NAO quer)
+1. POSITIVO (diga o que quer, não o que NÃO quer)
 RUIM: "Pare de me interromper"
-BOM: "Voce poderia me deixar terminar meu raciocinio antes de comentar?"
+BOM: "Você poderia me deixar terminar meu raciocínio antes de comentar?"
 
-2. ESPECIFICO (detalhes claros)
-RUIM: "Seja mais responsavel"
-BOM: "Voce poderia enviar os relatorios ate sexta as 17h?"
+2. ESPECÍFICO (detalhes claros)
+RUIM: "Seja mais responsável"
+BOM: "Você poderia enviar os relatórios até sexta às 17h?"
 
-3. REALIZAVEL (possivel de fazer)
-RUIM: "Quero que voce nunca mais erre"
-BOM: "Voce poderia revisar o trabalho antes de enviar?"
+3. REALIZÁVEL (possível de fazer)
+RUIM: "Quero que você nunca mais erre"
+BOM: "Você poderia revisar o trabalho antes de enviar?"
 
-4. COM PRAZO (quando aplicavel)
+4. COM PRAZO (quando aplicável)
 RUIM: "Me mande quando puder"
-BOM: "Voce conseguiria me enviar ate amanha as 14h?"
+BOM: "Você conseguiria me enviar até amanhã às 14h?"
 
 Tipos de Pedidos:
 
-Pedido de Acao:
-"Voce poderia organizar a planilha por data e me enviar ate quinta?"
+Pedido de Ação:
+"Você poderia organizar a planilha por data e me enviar até quinta?"
 
-Pedido de Conexao:
-"Voce poderia me dizer como se sente sobre o que acabei de falar?"
+Pedido de Conexão:
+"Você poderia me dizer como se sente sobre o que acabei de falar?"
 
-Pedido de Reflexao:
-"O que voce entendeu do que eu disse?"
+Pedido de Reflexão:
+"O que você entendeu do que eu disse?"
 
-FORMULA COMPLETA DA CNV
+FÓRMULA COMPLETA DA CNV
 
 Juntando os 4 componentes:
 
-"Quando (OBSERVACAO), eu me sinto (SENTIMENTO) porque preciso de (NECESSIDADE). Voce poderia (PEDIDO)?"
+"Quando (OBSERVAÇÃO), eu me sinto (SENTIMENTO) porque preciso de (NECESSIDADE). Você poderia (PEDIDO)?"
 
 EXEMPLOS COMPLETOS TRANSFORMADOS:
 
-Situacao: Colaborador entrega relatorios atrasados
+Situação: Colaborador entrega relatórios atrasados
 
 SEM CNV (Violenta):
-"Voce e um irresponsavel! Sempre atrasa tudo! Se continuar assim vai ser demitido! Tenho que ficar no seu pe?"
-Resultado: Defensividade, raiva, desmotivacao
+"Você é um irresponsável! Sempre atrasa tudo! Se continuar assim vai ser demitido! Tenho que ficar no seu pé?"
+Resultado: Difusividade, raiva, desmotivação
 
-COM CNV (Nao Violenta):
-"Quando os relatorios chegam apos o prazo (OBSERVACAO), eu fico preocupado (SENTIMENTO) porque preciso dos dados para tomar decisoes a tempo (NECESSIDADE). Voce poderia me avisar com 2 dias de antecedencia se houver algum impedimento para cumprir o prazo? (PEDIDO)"
-Resultado: Compreensao, dialogo, solucao colaborativa
+COM CNV (Não Violenta):
+"Quando os relatórios chegam após o prazo (OBSERVAÇÃO), eu fico preocupado (SENTIMENTO) porque preciso dos dados para tomar decisões a tempo (NECESSIDADE). Você poderia me avisar com 2 dias de antecedência se houver algum impedimento para cumprir o prazo? (PEDIDO)"
+Resultado: Compreensão, diálogo, solução colaborativa
 
-Situacao: Colega te interrompe constantemente
+Situação: Colega te interrompe constantemente
 
 SEM CNV:
-"Voce e mal-educado! Nunca me deixa falar! Nao aguento mais voce!"
+"Você é mal-educado! Nunca me deixa falar! Não aguento mais você!"
 
 COM CNV:
-"Quando sou interrompido antes de terminar meu raciocinio (OBSERVACAO), eu me sinto frustrado (SENTIMENTO) porque preciso de espaco para me expressar completamente (NECESSIDADE). Voce poderia me deixar terminar antes de comentar? (PEDIDO)"
+"Quando sou interrompido antes de terminar meu raciocínio (OBSERVAÇÃO), eu me sinto frustrado (SENTIMENTO) porque preciso de espaço para me expressar completamente (NECESSIDADE). Você poderia me deixar terminar antes de comentar? (PEDIDO)"
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Identifique os 4 Componentes
-Leia: "Quando voce nao me cumprimenta ao chegar, eu me sinto desrespeitado porque preciso de consideracao. Voce poderia me cumprimentar quando chegar?"
+Exercício 1: Identifique os 4 Componentes
+Leia: "Quando você não me cumprimenta ao chegar, eu me sinto desrespeitado porque preciso de consideração. Você poderia me cumprimentar quando chegar?"
 
-1. Observacao: _______________
+1. Observação: _______________
 2. Sentimento: _______________
 3. Necessidade: ______________
 4. Pedido: ___________________
 
-Exercicio 2: Transforme em CNV
-Situacao violenta: "Voce nunca ajuda ninguem! E muito egoista!"
+Exercício 2: Transforme em CNV
+Situação violenta: "Você nunca ajuda ninguém! É muito egoísta!"
 Transforme usando os 4 componentes da CNV.
 
 CONCLUSAO DO MODULO
 
-A CNV e uma ferramenta poderosa que transforma conflitos em oportunidades de conexao. Ao separar observacao de julgamento, expressar sentimentos honestamente, identificar necessidades e fazer pedidos claros, criamos comunicacao construtiva.
+A CNV é uma ferramenta poderosa que transforma conflitos em oportunidades de conexão. Ao separar observação de julgamento, expressar sentimentos honestamente, identificar necessidades e fazer pedidos claros, criamos comunicação construtiva.
 
-Proximos Passos:
+Próximos Passos:
 1. Pratique identificar julgamentos nas suas falas
 2. Expresse pelo menos 1 sentimento real por dia
-3. Identifique suas necessidades nao atendidas
-4. Transforme 1 exigencia em pedido
+3. Identifique suas necessidades não atendidas
+4. Transforme 1 exigência em pedido
 
-Lembre-se: CNV e uma pratica, nao uma perfeicao. Seja gentil consigo mesmo no processo de aprendizado.
+Lembre-se: CNV é uma prática, não uma perfeição. Seja gentil consigo mesmo no processo de aprendizado.
         `
       },
       {
         id: 2,
-        titulo: "Escuta Empatica e Ativa",
-        duracao: "45 min",
-        topicos: [
-          "Diferenca entre ouvir e escutar",
-          "Tecnicas de escuta ativa",
-          "Escuta empatica: estar presente",
+        título: "Escuta Empática e Ativa",
+        duração: "45 min",
+        tópicos: [
+          "Diferença entre ouvir e escutar",
+          "Técnicas de escuta ativa",
+          "Escuta empática: estar presente",
           "Barreiras comuns a escuta eficaz",
-          "Pratica de parafrasear e refletir"
+          "Prática de parafrasear e refletir"
         ],
-        materialDidatico: `
-ESCUTA EMPATICA E ATIVA
+        materialDidático: `
+ESCUTA EMPÁTICA E ATIVA
 
-INTRODUCAO
+INTRODUÇÃO
 
-A escuta e uma das habilidades mais subestimadas e menos praticadas da lideranca. Pesquisas mostram que lideres passam 70-80% do tempo se comunicando, mas apenas 45% desse tempo realmente escutando - e pior, com apenas 25% de efetividade.
+A escuta é uma das habilidades mais subestimadas e menos praticadas da liderança. Pesquisas mostram que líderes passam 70-80% do tempo se comunicando, mas apenas 45% desse tempo realmente escutando - e pior, com apenas 25% de efetividade.
 
-Stephen Covey: "A maioria das pessoas nao escuta com a intencao de compreender. Escutam com a intencao de responder."
+Stephen Covey: "A maioria das pessoas não escuta com a intenção de compreender. Escutam com a intenção de responder."
 
-DIFERENCA ENTRE OUVIR E ESCUTAR
+DIFERENÇA ENTRE OUVIR E ESCUTAR
 
 OUVIR (Passivo):
-- Processo fisico/biologico
+- Processo físico/biológico
 - Os sons chegam aos ouvidos
-- Automatico, involuntario
-- Nao exige esforco consciente
+- Automático, involuntário
+- Não exige esforço consciente
 
 ESCUTAR (Ativo):
-- Processo psicologico/intencional
-- Atencao, interpretacao e compreensao
-- Voluntario, exige esforco
+- Processo psicológico/intencional
+- Atenção, interpretação e compreensão
+- Voluntário, exige esforço
 - Escolha consciente de estar presente
 
-Exemplo Pratico:
-Voce esta em uma reuniao. O colaborador esta falando, mas voce esta pensando no proximo compromisso, olhando o celular e planejando sua resposta.
-- Voce esta OUVINDO (sons chegam ao ouvido)
-- Voce NAO esta ESCUTANDO (nao ha compreensao real)
+Exemplo Prático:
+Você está em uma reunião. O colaborador está falando, mas você está pensando no próximo compromisso, olhando o celular e planejando sua resposta.
+- Você está OUVINDO (sons chegam ao ouvido)
+- Você NÃO está ESCUTANDO (não há compreensão real)
 
-Consequencias de Nao Escutar:
-- Decisoes baseadas em informacoes incompletas
+Consequências de Não Escutar:
+- Decisões baseadas em informações incompletas
 - Colaboradores se sentem desrespeitados e desvalorizados
 - Problemas pequenos viram crises
-- Perda de confianca
-- Desmotivacao da equipe
+- Perda de confiança
+- Desmotivação da equipe
 - Aumento de erros e retrabalho
 
-TECNICAS DE ESCUTA ATIVA
+TÉCNICAS DE ESCUTA ATIVA
 
-A Escuta Ativa e um conjunto de tecnicas para demonstrar que voce esta genuinamente presente e compreendendo o que a outra pessoa esta comunicando.
+A Escuta Ativa é um conjunto de técnicas para demonstrar que você está genuinamente presente e compreendendo o que a outra pessoa está comunicando.
 
 1. CONTATO VISUAL E LINGUAGEM CORPORAL
 
-Demonstre presenca fisica:
+Demonstre presença física:
 - Mantenha contato visual (sem encarar intimidadoramente)
 - Incline-se levemente para frente
-- Acenem com a cabeca periodicamente
-- Mantenha expressao facial receptiva
-- Evite cruzar bracos (defensivo)
+- Acene com a cabeça periodicamente
+- Mantenha expressão facial receptiva
+- Evite cruzar braços (defensivo)
 - Guarde celular e feche laptop
 
-Pesquisa: 55% da comunicacao e nao-verbal. Sua linguagem corporal comunica mais que suas palavras.
+Pesquisa: 55% da comunicação é não verbal. Sua linguagem corporal comunica mais que suas palavras.
 
-2. MINIMOS ENCORAJADORES
+2. MÍNIMOS ENCORAJADORES
 
-Pequenos sinais verbais que mostram que voce esta acompanhando:
+Pequenos sinais verbais que mostram que você está acompanhando:
 - "Sim..."
 - "Entendo..."
 - "Continue..."
 - "Certo..."
 - "Hmmm..."
 
-Importante: Nao abuse. Muito pode parecer impaciente ou falso.
+Importante: Não abuse. Muito pode parecer impaciente ou falso.
 
 3. PARAFRASEAR
 
-Repetir com suas palavras o que a pessoa disse para confirmar compreensao:
+Repetir com suas palavras o que a pessoa disse para confirmar compreensão:
 
-Colaborador: "Estou sobrecarregado com 3 projetos simultaneos e nao consigo dar atencao adequada a nenhum deles."
+Colaborador: "Estou sobrecarregado com 3 projetos simultâneos e não consigo dar atenção adequada a nenhum deles."
 
-Parafrasear: "Se entendi bem, voce esta com 3 projetos ao mesmo tempo e isso esta impedindo que voce faca um bom trabalho em qualquer um deles. E isso?"
+Parafrasear: "Se entendi bem, você está com 3 projetos ao mesmo tempo e isso está impedindo que você faça um bom trabalho em qualquer um deles. É isso?"
 
-Beneficios:
-- Confirma que voce entendeu
-- Da oportunidade de correcao
+Benefícios:
+- Confirma que você entendeu
+- Dá oportunidade de correção
 - Faz a pessoa se sentir ouvida
 - Evita mal-entendidos
 
 4. PERGUNTAS CLARIFICADORAS
 
-Perguntas para compreender melhor, nao para questionar ou julgar:
+Perguntas para compreender melhor, não para questionar ou julgar:
 
 BOM:
 - "Pode me dar um exemplo?"
-- "O que voce quer dizer exatamente com...?"
+- "O que você quer dizer exatamente com...?"
 - "Como isso afeta seu trabalho?"
-- "O que seria ideal para voce?"
+- "O que seria ideal para você?"
 
-RUIM (Interrogatorio):
-- "Por que voce fez isso?"
-- "Como voce pode ter deixado isso acontecer?"
+RUIM (Interrogatório):
+- "Por que você fez isso?"
+- "Como você pode ter deixado isso acontecer?"
 - "Quem mais sabe disso?"
 
 5. RESUMIR
 
 Ao final da conversa, resuma os principais pontos:
 
-"Entao, resumindo: voce esta preocupado com [A], precisa de [B] e propoe [C]. Entendi corretamente?"
+"Então, resumindo: você está preocupado com [A], precisa de [B] e propõe [C]. Entendi corretamente?"
 
 Isso garante alinhamento completo e evita desentendimentos futuros.
 
-ESCUTA EMPATICA: ESTAR PRESENTE
+ESCUTA EMPÁTICA: ESTAR PRESENTE
 
-Carl Rogers (Psicologo Humanista) definiu escuta empatica como "entrar no quadro de referencia do outro e ver o mundo como ele ve".
+Carl Rogers (Psicólogo Humanista) definiu escuta empática como "entrar no quadro de referência do outro e ver o mundo como ele vê".
 
-Escuta Empatica vai alem da tecnica - e uma presenca genuina.
+Escuta Empática vai além da técnica - é uma presença genuína.
 
-Elementos da Escuta Empatica:
+Elementos da Escuta Empática:
 
-1. SUSPENSAO DE JULGAMENTO
+1. SUSPENSÃO DE JULGAMENTO
 Ouvir sem avaliar, criticar ou concordar/discordar. Apenas compreender.
 
-2. ATENCAO PLENA
-Estar 100% presente. Nao pensar em outras coisas.
+2. ATENÇÃO PLENA
+Estar 100% presente. Não pensar em outras coisas.
 
-3. CURIOSIDADE GENUINA
+3. CURIOSIDADE GENUÍNA
 Interesse real em entender o mundo do outro.
 
-4. VALIDACAO EMOCIONAL
-Reconhecer os sentimentos da pessoa, mesmo se voce nao concordar com a situacao.
+4. VALIDAÇÃO EMOCIONAL
+Reconhecer os sentimentos da pessoa, mesmo se você não concordar com a situação.
 
 Exemplo:
 
-Colaborador: "Estou frustrado porque minha ideia foi rejeitada sem discussao."
+Colaborador: "Estou frustrado porque minha ideia foi rejeitada sem discussão."
 
-Escuta Empatica (CERTO):
-"Vejo que voce esta frustrado. E dificil quando uma ideia que voce dedicou tempo nao e considerada. Conte-me mais sobre sua proposta."
+Escuta Empática (CERTO):
+"Vejo que você está frustrado. É difícil quando uma ideia que você dedicou tempo não é considerada. Conte-me mais sobre sua proposta."
 
-Escuta Nao-Empatica (ERRADO):
-"Ah, mas a ideia realmente nao era boa. Voce precisa pensar melhor antes de propor."
+Escuta Não Empática (ERRADO):
+"Ah, mas a ideia realmente não era boa. Você precisa pensar melhor antes de propor."
 
 5. EMPATIA vs SIMPATIA
 
-EMPATIA: "Eu compreendo como voce se sente."
-Voce entra no mundo emocional do outro sem perder sua propria perspectiva.
+EMPATIA: "Eu compreendo como você se sente."
+Você entra no mundo emocional do outro sem perder sua própria perspectiva.
 
-SIMPATIA: "Eu tambem me sinto mal por voce."
-Voce absorve a emocao do outro, o que pode prejudicar sua capacidade de ajudar.
+SIMPATIA: "Eu também me sinto mal por você."
+Você absorve a emoção do outro, o que pode prejudicar sua capacidade de ajudar.
 
-Lider empatico ajuda. Lider simpatico sofre junto mas nao resolve.
+Líder empático ajuda. Líder simpático sofre junto mas não resolve.
 
-BARREIRAS COMUNS A ESCUTA EFICAZ
+BARREIRAS COMUNS À ESCUTA EFICAZ
 
 1. ENSAIAR A RESPOSTA
-Enquanto o outro fala, voce ja esta planejando o que vai dizer. Resultado: voce perde metade da mensagem.
+Enquanto o outro fala, você já está planejando o que vai dizer. Resultado: você perde metade da mensagem.
 
 2. JULGAR PREMATURAMENTE
-"Ja sei onde isso vai dar..." e voce para de escutar.
+"Já sei onde isso vai dar..." e você para de escutar.
 
 3. FILTRAR
-Ouvir apenas o que confirma suas crencas pre-existentes e ignorar o resto.
+Ouvir apenas o que confirma suas crenças pré-existentes e ignorar o resto.
 
 4. SONHAR ACORDADO
-Comeca a escutar, mas uma palavra dispara um pensamento e voce se perde em suas proprias reflexoes.
+Começa a escutar, mas uma palavra dispara um pensamento e você se perde em suas próprias reflexões.
 
 5. ACONSELHAR APRESSADAMENTE
-"Ah, facil! Voce deveria fazer X!" - sem compreender completamente a situacao.
+"Ah, fácil! Você deveria fazer X!" - sem compreender completamente a situação.
 
 6. COMPARAR
-"Ah, isso nao e nada. Comigo aconteceu pior..." - minimizando a experiencia do outro.
+"Ah, isso não é nada. Comigo aconteceu pior..." - minimizando a experiência do outro.
 
 7. IDENTIFICAR EXCESSIVAMENTE
-"Eu tambem! Deixa eu te contar o que aconteceu comigo..." - transformando a conversa sobre a outra pessoa em conversa sobre voce.
+"Eu também! Deixa eu te contar o que aconteceu comigo..." - transformando a conversa sobre a outra pessoa em conversa sobre você.
 
 8. DISPUTAR/DEBATER
 Buscar brechas para contra-argumentar em vez de compreender.
 
-9. TER RAZAO
-Necessidade de estar certo distorce a escuta para defender sua posicao.
+9. TER RAZÃO
+Necessidade de estar certo distorce a escuta para defender sua posição.
 
 10. MUDAR DE ASSUNTO
-Desconforto com o topico leva a desviar a conversa.
+Desconforto com o tópico leva a desviar a conversa.
 
-Auto-Avaliacao:
-Qual dessas barreiras voce mais pratica? Conscientize-se dela esta semana.
+Autoavaliação:
+Qual dessas barreiras você mais pratica? Conscientize-se dela esta semana.
 
 PRATICA DE PARAFRASEAR E REFLETIR
 
-Parafrasear e Refletir sao as duas tecnicas mais poderosas de escuta ativa aplicadas a CNV.
+Parafrasear e Refletir são as duas técnicas mais poderosas de escuta ativa aplicadas a CNV.
 
-PARAFRASEAR (Conteudo):
-Repetir a essencia do que foi dito usando suas palavras.
+PARAFRASEAR (Conteúdo):
+Repetir a essência do que foi dito usando suas palavras.
 
-Pessoa: "Estou sobrecarregado. Trabalho ate tarde todos os dias e ainda tenho demandas novas chegando."
+Pessoa: "Estou sobrecarregado. Trabalho até tarde todos os dias e ainda tenho demandas novas chegando."
 
-Parafrasear: "Voce esta com carga de trabalho excessiva, ficando alem do horario e recebendo mais tarefas. Correto?"
+Parafrasear: "Você está com carga de trabalho excessiva, ficando além do horário e recebendo mais tarefas. Correto?"
 
-REFLETIR (Emocao/Necessidade):
+REFLETIR (Emoção/Necessidade):
 Identificar e nomear o sentimento e a necessidade subjacentes.
 
-Pessoa: "Estou sobrecarregado. Trabalho ate tarde todos os dias e ainda tenho demandas novas chegando."
+Pessoa: "Estou sobrecarregado. Trabalho até tarde todos os dias e ainda tenho demandas novas chegando."
 
-Refletir: "Parece que voce esta se sentindo exausto e talvez preocupado porque precisa de equilibrio e clareza sobre prioridades. E isso?"
+Refletir: "Parece que você está se sentindo exausto e talvez preocupado porque precisa de equilíbrio e clareza sobre prioridades. E isso?"
 
-Diferenca:
+Diferença:
 - Parafrasear = Repete o FATO
 - Refletir = Identifica SENTIMENTO + NECESSIDADE
 
-Ambas sao importantes. Use as duas.
+Ambas são importantes. Use as duas.
 
-Modelo Integrado de Escuta Empatica + CNV:
+Modelo Integrado de Escuta Empática + CNV:
 
 1. ESCUTE sem interromper
 2. OBSERVE linguagem corporal e tom emocional
-3. PARAFRASEIE o conteudo: "Se entendi bem, voce disse que..."
-4. REFLITA emocao e necessidade: "Voce parece [sentimento] porque precisa de [necessidade]..."
+3. PARAFRASEIE o conteúdo: "Se entendi bem, você disse que..."
+4. REFLITA emoção e necessidade: "Você parece [sentimento] porque precisa de [necessidade]..."
 5. PERGUNTE para confirmar: "Entendi corretamente?"
-6. ESPERE resposta e ajuste se necessario
-7. SO ENTAO responda ou proponha solucoes
+6. ESPERE resposta e ajuste se necessário
+7. SÓ ENTÃO responda ou proponha soluções
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Teste de Escuta
-Peca a alguem para falar ininterruptamente por 2 minutos sobre um desafio.
+Exercício 1: Teste de Escuta
+Peça a alguém para falar ininterruptamente por 2 minutos sobre um desafio.
 Durante esse tempo:
-- NAO fale nada (apenas "hum", "sim" ocasionalmente)
-- NAO prepare respostas
+- NÃO fale nada (apenas "hum", "sim" ocasionalmente)
+- NÃO prepare respostas
 - Apenas ESCUTE
 
 Ao final, parafraseie e reflita. Veja se captou corretamente.
 
-Exercicio 2: Identifique suas Barreiras
-Durante um dia, anote cada vez que perceber que nao estava realmente escutando. Qual barreira estava presente?
+Exercício 2: Identifique suas Barreiras
+Durante um dia, anote cada vez que perceber que não estava realmente escutando. Qual barreira estava presente?
 
-Exercicio 3: Pratica de Reflexao
-Nas proximas 3 conversas importantes, pratique refletir sentimentos e necessidades.
+Exercício 3: Prática de Reflexão
+Nas próximas 3 conversas importantes, pratique refletir sentimentos e necessidades.
 
-"Voce parece [sentimento] porque [necessidade]. E isso?"
+"Você parece [sentimento] porque [necessidade]. E isso?"
 
 Observe como a pessoa reage quando se sente verdadeiramente compreendida.
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-Escutar e um ato de generosidade, respeito e lideranca. Quando voce realmente escuta, voce diz ao outro: "Voce importa. Sua perspectiva e valiosa. Eu me importo."
+Escutar é um ato de generosidade, respeito e liderança. Quando você realmente escuta, você diz ao outro: "Você importa. Sua perspectiva é valiosa. Eu me importo."
 
-Lideres que escutam:
-- Tomam decisoes melhores
+Líderes que escutam:
+- Tomam decisões melhores
 - Tem equipes mais engajadas
 - Previnem conflitos
-- Descobrem solucoes inovadoras
+- Descobrem soluções inovadoras
 - Criam lealdade profunda
 
-Proximos Passos:
+Próximos Passos:
 1. Identifique sua principal barreira a escuta
-2. Pratique 100% de presenca em 1 conversa por dia
+2. Pratique 100% de presença em 1 conversa por dia
 3. Use parafrasear e refletir em todas as conversas importantes
-4. Peca feedback: "Me sinto ouvido quando falo com voce?"
+4. Peça feedback: "Me sinto ouvido quando falo com você?"
 
-Lembre-se: Voce tem dois ouvidos e uma boca. Use-os nessa proporcao.
+Lembre-se: Você tem dois ouvidos e uma boca. Use-os nessa proporção.
         `
       },
       {
         id: 3,
-        titulo: "Gestao de Conflitos com CNV",
-        duracao: "50 min",
-        topicos: [
+        título: "Gestão de Conflitos com CNV",
+        duração: "50 min",
+        tópicos: [
           "Tipos de conflitos organizacionais",
-          "Mediacao de conflitos usando CNV",
-          "Transformacao de criticas em pedidos",
-          "Dialogo em situacoes tensas",
-          "Acordo mutuamente satisfatorio"
+          "Mediação de conflitos usando CNV",
+          "Transformação dê críticas em pedidos",
+          "Diálogo em situações tensas",
+          "Acordo mutuamente satisfatório"
         ],
-        materialDidatico: `
-GESTAO DE CONFLITOS COM CNV
+        materialDidático: `
+GESTÃO DE CONFLITOS COM CNV
 
-INTRODUCAO
+INTRODUÇÃO
 
-Conflitos sao inevitaveis em qualquer organizacao. A questao nao e se havera conflitos, mas como serao gerenciados.
+Conflitos são inevitáveis em qualquer organização. A questão não é se haverá conflitos, mas como serão gerenciados.
 
 Dado Alarmante:
-Gestores passam ate 40% do tempo lidando com conflitos. Quando mal gerenciados, conflitos custam as empresas americanas $359 bilhoes por ano em produtividade perdida.
+Gestores passam até 40% do tempo lidando com conflitos. Quando mal gerenciados, conflitos custam às empresas americanas US$ 359 bilhões por ano em produtividade perdida.
 
-CNV oferece estrutura pratica para transformar conflitos destrutivos em dialogos construtivos.
+CNV oferece estrutura prática para transformar conflitos destrutivos em diálogos construtivos.
 
 TIPOS DE CONFLITOS ORGANIZACIONAIS
 
 1. CONFLITO DE TAREFAS
-Discordancia sobre metodos, processos ou conteudo do trabalho.
+Discordância sobre métodos, processos ou conteúdo do trabalho.
 
 Exemplo: Duas pessoas discordam sobre qual metodologia usar em um projeto.
 
-Nivel de Risco: BAIXO a MEDIO
-Quando gerenciado bem, pode gerar inovacao.
+Nível de Risco: BAIXO a MÉDIO
+Quando gerenciado bem, pode gerar inovação.
 
 2. CONFLITO DE RELACIONAMENTO
-Incompatibilidade pessoal, diferenca de valores, antipatia.
+Incompatibilidade pessoal, diferença de valores, antipatia.
 
-Exemplo: Duas pessoas simplesmente "nao se dao bem" e isso afeta o trabalho.
+Exemplo: Duas pessoas simplesmente "não se dão bem" e isso afeta o trabalho.
 
-Nivel de Risco: ALTO
+Nível de Risco: ALTO
 Raramente produtivo. Afeta clima e performance.
 
 3. CONFLITO DE PROCESSO
-Discordancia sobre quem deve fazer o que, divisao de responsabilidades.
+Discordância sobre quem deve fazer o que, divisão de responsabilidades.
 
-Exemplo: Duas areas acreditam que uma determinada tarefa e responsabilidade da outra.
+Exemplo: Duas áreas acreditam que uma determinada tarefa é responsabilidade da outra.
 
-Nivel de Risco: MEDIO
-Geralmente resolvel com clareza de roles.
+Nível de Risco: MÉDIO
+Geralmente resolve com clareza de roles.
 
 4. CONFLITO DE VALORES
-Diferenca fundamental de principios ou priori dades.
+Diferença fundamental de princípios ou prioridades.
 
-Exemplo: Conflito entre "resultados a qualquer custo" vs "etica acima de tudo".
+Exemplo: Conflito entre "resultados a qualquer custo" vs "ética acima de tudo".
 
-Nivel de Risco: MUITO ALTO
-Dificil de resolver. Pode exigir realocacao.
+Nível de Risco: MUITO ALTO
+Difícil de resolver. Pode exigir realocação.
 
 5. CONFLITO DE RECURSOS
-Disputas por recursos limitados (budget, pessoas, tempo, espaco).
+Disputas por recursos limitados (budget, pessoas, tempo, espaço).
 
 Exemplo: Dois projetos competem pelo mesmo recurso escasso.
 
-Nivel de Risco: MEDIO a ALTO
-Exige decisao de lideranca sobre prioridades.
+Nível de Risco: MÉDIO a ALTO
+Exige decisão de liderança sobre prioridades.
 
-A CNV e especialmente util em conflitos de relacionamento e tarefas.
+A CNV é especialmente útil em conflitos de relacionamento e tarefas.
 
-MEDIACAO DE CONFLITOS USANDO CNV
+MEDIAÇÃO DE CONFLITOS USANDO CNV
 
-Como lider, voce frequentemente mediara conflitos entre membros da equipe.
+Como líder, você frequentemente mediará conflitos entre membros da equipe.
 
-Protocolo de Mediacao com CNV:
+Protocolo de Mediação com CNV:
 
 FASE 1: PREPARACAO
 
-1. Separe um tempo adequado (minimo 30-60 min)
+1. Separe um tempo adequado (mínimo 30-60 min)
 2. Local privado e neutro
 3. Garanta que ambas as partes estejam dispostas
-4. Estabeleca regras basicas:
+4. Estabeleça regras básicas:
    - Uma pessoa fala por vez
    - Sem ataques pessoais
-   - Objetivo e resolver, nao vencer
+   - Objetivo é resolver, não vencer
    - Confidencialidade
 
-FASE 2: CONTEXTUALIZACAO
+FASE 2: CONTEXTUALIZAÇÃO
 
-"Estamos aqui porque ha um desentendimento entre voces sobre [tema]. Meu papel e ajudar voces a se entenderem e encontrarem solucao. Cada um tera tempo para falar. Vamos comecar?"
+"Estamos aqui porque há um desentendimento entre vocês sobre [tema]. Meu papel é ajudar vocês a se entenderem e encontrarem solução. Cada um terá tempo para falar. Vamos começar?"
 
 FASE 3: ESCUTA DAS PERSPECTIVAS
 
 Pessoa A fala. Pessoa B apenas escuta.
 
-Voce (mediador) parafraseie e reflita:
-"Entao, [A], voce observou [situacao], sentiu [sentimento] porque precisa de [necessidade]. Correto?"
+Você (mediador) parafraseie e reflita:
+"Então, [A], você observou [situação], sentiu [sentimento] porque precisa de [necessidade]. Correto?"
 
-Peca confirmacao de A.
+Peça confirmação de A.
 
-Depois, peca que Pessoa B parafraseie o que ouviu de A (garante que B ouviu):
-"[B], com suas palavras, o que voce ouviu [A] dizer?"
+Depois, peça que Pessoa B parafraseie o que ouviu de A (garante que B ouviu):
+"[B], com suas palavras, o que você ouviu [A] dizer?"
 
 Agora, Pessoa B fala. Pessoa A escuta.
 
 Repita o processo.
 
-FASE 4: IDENTIFICACAO DE NECESSIDADES COMUNS
+FASE 4: IDENTIFICAÇÃO DE NECESSIDADES COMUNS
 
-"Vejo que [A] precisa de [X] e [B] precisa de [Y]. Ha algo que voces dois precisam em comum?"
+"Vejo que [A] precisa de [X] e [B] precisa de [Y]. Há algo que vocês dois precisam em comum?"
 
-Geralmente, ha necessidades compartilhadas:
+Geralmente, há necessidades compartilhadas:
 - Respeito
 - Clareza
 - Apoio
 - Reconhecimento
-- Colaboracao eficaz
+- Colaboração eficaz
 
-FASE 5: BUSCA DE SOLUCOES
+FASE 5: BUSCA DE SOLUÇÕES
 
 "Agora que entendemos as necessidades de cada um, como podemos atender ambas?"
 
-Brainstorm de solucoes. Liste todas sem julgar.
+Brainstorm de soluções. Liste todas sem julgar.
 
-Depois, avaliem juntos qual solucao atende melhor ambas as necessidades.
+Depois, avaliem juntos qual solução atende melhor ambas as necessidades.
 
 FASE 6: ACORDO
 
-"Entao concordamos que [solucao]. [A] fara [X]. [B] fara [Y]. Certo?"
+"Então concordamos que [solução]. [A] fará [X]. [B] fará [Y]. Certo?"
 
-Documente o acordo. Estabeleca prazo de revisao.
+Documente o acordo. Estabeleça prazo de revisão.
 
 FASE 7: ACOMPANHAMENTO
 
-Agende reuniao de acompanhamento em 1-2 semanas para ver se acordo esta funcionando.
+Agende reunião de acompanhamento em 1-2 semanas para ver se acordo está funcionando.
 
-TRANSFORMACAO DE CRITICAS EM PEDIDOS
+TRANSFORMAÇÃO DE CRÍTICAS EM PEDIDOS
 
-Criticas sao julgamentos destrutivos. Pedidos sao acoes construtivas.
+Críticas são julgamentos destrutivos. Pedidos são ações construtivas.
 
-Exemplos de Transformacao:
+Exemplos de Transformação:
 
-CRITICA: "Voce e desorganizado!"
-PEDIDO: "Voce poderia organizar os arquivos do projeto em pastas por data para facilitar a localizacao?"
+CRÍTICA: "Você é desorganizado!"
+PEDIDO: "Você poderia organizar os arquivos do projeto em pastas por data para facilitar a localização?"
 
-CRITICA: "Voce nunca ajuda ninguem!"
-PEDIDO: "Quando vir alguem sobrecarregado, voce poderia oferecer ajuda ou avisar a equipe?"
+CRÍTICA: "Você nunca ajuda ninguém!"
+PEDIDO: "Quando vir alguém sobrecarregado, você poderia oferecer ajuda ou avisar a equipe?"
 
-CRITICA: "Seu trabalho e sempre ruim!"
-PEDIDO: "Antes de enviar relatorios, voce poderia revisar os dados e pedir feedback a um colega?"
+CRÍTICA: "Seu trabalho é sempre ruim!"
+PEDIDO: "Antes de enviar relatórios, você poderia revisar os dados e pedir feedback a um colega?"
 
-CRITICA: "Voce e egois ta!"
-PEDIDO: "Quando tomar decisoes que afetam a equipe, voce poderia consultar os envolvidos primeiro?"
+CRÍTICA: "Você é egoísta!"
+PEDIDO: "Quando tomar decisões que afetam a equipe, você poderia consultar os envolvidos primeiro?"
 
-Formula de Transformacao:
+Fórmula de Transformação:
 
-1. Identifique o COMPORTAMENTO especifico (nao o rotulo)
-2. Identifique a NECESSIDADE nao atendida
-3. Formule PEDIDO claro e realizavel
+1. Identifique o COMPORTAMENTO específico (não o rótulo)
+2. Identifique a NECESSIDADE não atendida
+3. Formule PEDIDO claro e realizável
 
 Exemplo Passo a Passo:
 
-Critica: "Voce e preguicoso!"
+Crítica: "Você é preguiçoso!"
 
-1. Comportamento: "Voce entregou o relatorio 3 dias apos o prazo."
+1. Comportamento: "Você entregou o relatório 3 dias após o prazo."
 2. Necessidade: Confiabilidade, cumprimento de compromissos, planejamento.
-3. Pedido: "Voce poderia me avisar com antecedencia se nao conseguira cumprir um prazo para podermos ajustar juntos?"
+3. Pedido: "Você poderia me avisar com antecedência se não conseguirá cumprir um prazo para podermos ajustar juntos?"
 
-DIALOGO EM SITUACOES TENSAS
+DIÁLOGO EM SITUAÇÕES TENSAS
 
-Quando emocoes estao elevadas, aplicar CNV fica mais dificil - mas e quando mais precisamos dela.
+Quando emoções estão elevadas, aplicar CNV fica mais difícil - mas é quando mais precisamos dela.
 
-Tecnicas para Situacoes Tensas:
+Técnicas para Situações Tensas:
 
-1. RECONHECA A TENSAO
-"Percebo que estamos ambos tensos com essa situacao."
+1. RECONHEÇA A TENSÃO
+"Percebo que estamos ambos tensos com essa situação."
 
-Nomear a tensao paradoxalmente a reduz.
+Nomear a tensão paradoxalmente a reduz.
 
-2. PAUSE SE NECESSARIO
+2. PAUSE SE NECESSÁRIO
 "Vamos fazer uma pausa de 10 minutos para nos acalmarmos e depois voltamos."
 
-Emocoes muito intensas impedem dialogo racional.
+Emoções muito intensas impedem diálogo racional.
 
-3. FOQUE EM UMA QUESTAO POR VEZ
-Nao tente resolver tudo de uma vez. Foque na questao mais importante agora.
+3. FOQUE EM UMA QUESTÃO POR VEZ
+Não tente resolver tudo de uma vez. Foque na questão mais importante agora.
 
-4. USE "EU" EM VEZ DE "VOCE"
+4. USE "EU" EM VEZ DE "VOCÊ"
 "Eu me sinto frustrado quando..." (responsabilidade)
 vs
-"Voce me frustra quando..." (acusacao)
+"Você me frustra quando..." (acusação)
 
 5. VALIDE ANTES DE CONTRA-ARGUMENTAR
-Mesmo se voce discorda, primeiro valide o sentimento:
+Mesmo se você discorda, primeiro valide o sentimento:
 
-"Entendo que voce esta irritado com isso. Vamos conversar sobre como resolver."
+"Entendo que você está irritado com isso. Vamos conversar sobre como resolver."
 
-Nao: "Voce nao tem razao para estar irritado!"
+Não: "Você não tem razão para estar irritado!"
 
 6. BUSQUE COMPREENDER, NAO VENCER
-Objetivo nao e provar que voce esta certo. E resolver o problema.
+Objetivo não e provar que você está certo. E resolver o problema.
 
 7. ENCONTRE TERRENO COMUM
-"Concordamos que queremos que o projeto seja bem-sucedido, certo? Entao, como chegamos la juntos?"
+"Concordamos que queremos que o projeto seja bem-sucedido, certo? Então, como chegamos la juntos?"
 
-ACORDO MUTUAMENTE SATISFATORIO
+ACORDO MUTUAMENTE SATISFATÓRIO
 
-Acordo nao e:
+Acordo não é:
 - Uma parte vence, outra perde
 - Compromisso onde ambos ficam insatisfeitos
-- Solucao imposta
+- Solução imposta
 
-Acordo Mutuamente Satisfatorio e:
-Solucao criativa que atende as necessidades essenciais de ambas as partes.
+Acordo Mutuamente Satisfatório é:
+Solução criativa que atende as necessidades essenciais de ambas as partes.
 
-Principios:
+Princípios:
 
-1. NECESSIDADES > ESTRATEGIAS
+1. NECESSIDADES > ESTRATÉGIAS
 
-As vezes as pessoas disputam ESTRATEGIAS (como fazer), mas tem NECESSIDADES compativeis.
+Às vezes as pessoas disputam ESTRATÉGIAS (como fazer), mas têm NECESSIDADES compatíveis.
 
 Exemplo:
-- A quer trabalhar em casa (estrategia) porque precisa de flexibilidade (necessidade)
-- Lider quer equipe no escritorio (estrategia) porque precisa de coordenacao (necessidade)
+- A quer trabalhar em casa (estratégia) porque precisa de flexibilidade (necessidade)
+- Líder quer equipe no escritório (estratégia) porque precisa de coordenação (necessidade)
 
-Acordo: Trabalho hibrido - presencial em dias de reuniao, remoto em dias de trabalho focado. Atende ambas necessidades.
+Acordo: Trabalho híbrido - presencial em dias de reunião, remoto em dias de trabalho focado. Atende ambas necessidades.
 
-2. EXPANDA OPCOES
+2. EXPANDA OPÇÕES
 
-Nao fique preso em duas opcoes ("ou isso ou aquilo").
+Não fique preso em duas opções ("ou isso ou aquilo").
 
-Brainstorm: Liste 10 opcoes possiveis sem julgar. Depois avalie.
+Brainstorm: Liste 10 opções possíveis sem julgar. Depois avalie.
 
-3. CRITERIOS OBJETIVOS
+3. CRITÉRIOS OBJETIVOS
 
-Use criterios imparciais para decisoes disputadas:
+Use critérios imparciais para decisões disputadas:
 - Dados de mercado
-- Politicas da empresa
-- Melhores praticas
+- Políticas da empresa
+- Melhores práticas
 - Precedentes
 
 4. SEJA CRIATIVO
 
-Solucoes inovadoras frequentemente atendem necessidades que solucoes obvias nao atendem.
+Soluções inovadoras frequentemente atendem necessidades que soluções óbvias não atendem.
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Transformacao de Criticas
-Liste 5 criticas que voce ja ouviu ou disse. Transforme cada uma em pedido usando CNV.
+Exercício 1: Transformação de Críticas
+Liste 5 críticas que você já ouviu ou disse. Transforme cada uma em pedido usando CNV.
 
-Exercicio 2: Mediacao Simulada
-Com dois colegas, simule mediacao de conflito usando o protocolo de 7 fases.
+Exercício 2: Mediação Simulada
+Com dois colegas, simule mediação de conflito usando o protocolo de 7 fases.
 
-Exercicio 3: Analise de Conflito Real
+Exercício 3: Análise de Conflito Real
 Pense em um conflito atual ou recente na sua equipe:
-- Que tipo de conflito e?
-- Quais sao as necessidades de cada parte?
-- Qual seria um acordo mutuamente satisfatorio?
+- Que tipo de conflito é?
+- Quais são as necessidades de cada parte?
+- Qual seria um acordo mutuamente satisfatório?
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-Conflitos gerenciados com CNV deixam de ser destrutivos e tornam-se oportunidades de fortalecimento de relacoes e inovacao.
+Conflitos gerenciados com CNV deixam de ser destrutivos e tornam-se oportunidades de fortalecimento de relações e inovação.
 
-Lideres que usam CNV para gerir conflitos:
+Líderes que usam CNV para gerir conflitos:
 - Resolvem disputas mais rapidamente
-- Criam solucoes mais criativas
-- Fortalecem relacoes entre envolvidos
-- Criam cultura de dialogo saudavel
-- Reduzem drasticamente reincidencia de conflitos
+- Criam soluções mais criativas
+- Fortalecem relações entre envolvidos
+- Criam cultura de diálogo saudável
+- Reduzem drasticamente reincidência de conflitos
 
-Proximos Passos:
+Próximos Passos:
 1. Identifique um conflito atual e aplique CNV
-2. Pratique transformar criticas em pedidos esta semana
+2. Pratique transformar críticas em pedidos esta semana
 3. Ofereça-se para mediar um conflito usando protocolo de 7 fases
 4. Ensine os 4 componentes da CNV para sua equipe
 
-Lembre-se: Conflitos nao resolvidos apodrecem. Conflitos bem resolvidos fortalecem.
+Lembre-se: Conflitos não resolvidos apodrecem. Conflitos bem resolvidos fortalecem.
         `
       },
       {
         id: 4,
-        titulo: "Expressao Autentica e Assertiva",
-        duracao: "40 min",
-        topicos: [
+        título: "Expressão Autentica e Assertiva",
+        duração: "40 min",
+        tópicos: [
           "Honestidade sem agressividade",
-          "Dizendo 'nao' com empatia",
-          "Expressao de limites saudaveis",
-          "Comunicacao de expectativas claras",
-          "Celebracao e reconhecimento genuino"
+          "Dizendo 'não' com empatia",
+          "Expressão de limites saudáveis",
+          "Comunicação de expectativas claras",
+          "Celebração e reconhecimento genuíno"
         ],
-        materialDidatico: `
+        materialDidático: `
 EXPRESSAO AUTENTICA E ASSERTIVA
 
 INTRODUCAO
 
-A CNV nao e apenas sobre escutar e ser gentil - e tambem sobre se expressar de forma honesta, direta e respeitosa.
+A CNV não e apenas sobre escutar e ser gentil - e também sobre se expressar de forma honesta, direta e respeitosa.
 
-Muitos lideres oscilam entre:
-- Agressivo (imposicao, desrespeito)
-- Passivo (evitacao, nao se posicionar)
+Muitos líderes oscilam entre:
+- Agressivo (imposição, desrespeito)
+- Passivo (evitarão, não se posicionar)
 
 O caminho e a ASSERTIVIDADE - expressar-se honestamente respeitando o outro.
 
 HONESTIDADE SEM AGRESSIVIDADE
 
 Honestidade Agressiva:
-"Seu trabalho esta pessimo! Voce e incompetente!"
-Resultado: Desmotivacao, ressentimento, defensividade.
+"Seu trabalho está péssimo! Você é incompetente!"
+Resultado: Desmotivação, ressentimento, difusividade.
 
 Desonestidade Passiva:
-"Esta tudo bem..." (quando nao esta)
-Resultado: Problemas nao resolvidos, frustracao acumulada, explosao eventual.
+"Está tudo bem..." (quando não está)
+Resultado: Problemas não resolvidos, frustração acumulada, explosão eventual.
 
 Honestidade Assertiva (CNV):
-"Observei que o relatorio tinha 5 erros de calculo (OBSERVACAO). Estou preocupado (SENTIMENTO) porque precisamos de precisao para apresentar ao cliente (NECESSIDADE). Voce pode revisar novamente e corrigir? (PEDIDO)"
-Resultado: Clareza, respeito, solucao.
+"Observei que o relatório tinha 5 erros de cálculo (OBSERVAÇÃO). Estou preocupado (SENTIMENTO) porque precisamos de precisão para apresentar ao cliente (NECESSIDADE). Você pode revisar novamente e corrigir? (PEDIDO)"
+Resultado: Clareza, respeito, solução.
 
-Principios da Honestidade Assertiva:
+Princípios da Honestidade Assertiva:
 
-1. FALE DE VOCE, NAO SOBRE O OUTRO
-"Eu preciso de..." vs "Voce deveria..."
+1. FALE DE VOCÊ, NÃO SOBRE O OUTRO
+"Eu preciso de..." vs "Você deveria..."
 
-2. SEJA ESPECIFICO
-"Preciso que relatorios sejam entregues ate sexta 17h" vs "Preciso que voce seja mais pontual"
+2. SEJA ESPECÍFICO
+"Preciso que relatórios sejam entregues até sexta 17h" vs "Preciso que você seja mais pontual"
 
-3. EXPRESSE IMPACTO, NAO JULGAMENTO
-"Quando prazos nao sao cumpridos, o cliente fica insatisfeito" vs "Voce e irresponsavel"
+3. EXPRESSE IMPACTO, NÃO JULGAMENTO
+"Quando prazos não são cumpridos, o cliente fica insatisfeito" vs "Você é irresponsável"
 
-4. CONVITE, NAO EXIGENCIA
-"Voce poderia...?" vs "Voce TEM que..."
+4. CONVITE, NÃO EXIGÊNCIA
+"Você poderia...?" vs "Você TEM que..."
 
-DIZENDO 'NAO' COM EMPATIA
+DIZENDO 'NÃO' COM EMPATIA
 
-Uma das maiores dificuldades de lideres e dizer "nao" sem culpa ou agressividade.
+Uma das maiores dificuldades de líderes é dizer "não" sem culpa ou agressividade.
 
-Por Que Dizemos "Sim" Quando Queremos Dizer "Nao":
+Por Que Dizemos "Sim" Quando Queremos Dizer "Não":
 - Medo de conflito
 - Desejo de agradar
-- Medo de ser visto como "dificil"
+- Medo de ser visto como "difícil"
 - Culpa
-- Pressao social
+- Pressão social
 
-Consequencias de Nao Saber Dizer "Nao":
+Consequências de Não Saber Dizer "Não":
 - Sobrecarga
 - Qualidade comprometida
 - Ressentimento
 - Burnout
-- Perda de foco estrategico
+- Perda de foco estratégico
 - Exemplo ruim para equipe
 
-Como Dizer "Nao" com CNV:
+Como Dizer "Não" com CNV:
 
-PASSO 1: RECONHECA A NECESSIDADE DO OUTRO
-"Entendo que voce precisa de [X] e isso e importante."
+PASSO 1: RECONHEÇA A NECESSIDADE DO OUTRO
+"Entendo que você precisa de [X] e isso é importante."
 
-PASSO 2: EXPRESSE SUA LIMITACAO HONESTAMENTE
-"Eu tenho [situacao] que me impede de atender agora."
+PASSO 2: EXPRESSE SUA LIMITAÇÃO HONESTAMENTE
+"Eu tenho [situação] que me impede de atender agora."
 
 PASSO 3: EXPLIQUE SUA NECESSIDADE
-"Preciso priorizar [Y] porque [razao]."
+"Preciso priorizar [Y] porque [razão]."
 
-PASSO 4: OFERE CA ALTERNATIVA (se possivel)
+PASSO 4: OFERE CA ALTERNATIVA (sé possível)
 "Posso fazer [alternativa]?" ou "Podemos ver isso semana que vem?"
 
 Exemplo Completo:
 
-Pedido: "Voce pode assumir este projeto adicional urgente?"
+Pedido: "Você pode assumir este projeto adicional urgente?"
 
-"Nao" com CNV:
-"Entendo que este projeto e urgente e importante (RECONHECIMENTO). Atualmente estou com 3 projetos criticos em andamento (OBSERVACAO). Se assumir este, nao conseguirei entregar nenhum deles com qualidade (IMPACTO), e eu preciso cumprir meus compromissos atuais (NECESSIDADE). Posso ajudar a encontrar alguem da equipe disponivel ou podemos renegociar prazos dos projetos atuais. Qual opcao funciona melhor? (ALTERNATIVA)"
+"Não" com CNV:
+"Entendo que este projeto e urgente é importante (RECONHECIMENTO). Atualmente estou com 3 projetos críticos em andamento (OBSERVACAO). Se assumir este, não conseguirei entregar nenhum deles com qualidade (IMPACTO), e eu preciso cumprir meus compromissos atuais (NECESSIDADE). Posso ajudar a encontrar alguém da equipe disponível ou podemos renegociar prazos dos projetos atuais. Qual opção funciona melhor? (ALTERNATIVA)"
 
-Resultado: Voce disse "nao" de forma respeitosa, clara e propositiva.
+Resultado: Você disse "não" de forma respeitosa, clara e propositiva.
 
-Dizendo "Nao" Sem Justificativa Excessiva:
+Dizendo "Não" Sem Justificativa Excessiva:
 
-Armadilha: Dar mil justificativas pode parecer defensivo ou abrir brecha para negociacao.
+Armadilha: Dar mil justificativas pode parecer defensivo ou abrir brecha para negociação.
 
-Balanco:
-- Explique brevemente a razao
-- Nao se justifique excessivamente
+Balanço:
+- Explique brevemente a razão
+- Não se justifique excessivamente
 - Seja firme mas respeitoso
 
-"Nao poderei assumir isso agora devido aos projetos em andamento. Posso ajudar a buscar alternativas?"
+"Não poderei assumir isso agora devido aos projetos em andamento. Posso ajudar a buscar alternativas?"
 
-EXPRESSAO DE LIMITES SAUDAVEIS
+EXPRESSÃO DE LIMITES SAUDÁVEIS
 
-Limites nao sao muros - sao cercas que protegem seu bem-estar e eficacia.
+Limites não são muros - são cercas que protegem seu bem-estar e eficácia.
 
 Tipos de Limites no Trabalho:
 
 1. LIMITES DE TEMPO
-"Nao respondo emails apos 19h."
-"Reunioes devem terminar no horario agendado."
+"Não respondo e-mails após 19h."
+"Reuniões devem terminar no horário agendado."
 
 2. LIMITES EMOCIONAIS
-"Nao aceito gritos ou desrespeito."
-"Nao assumo responsabilidade por emocoes de outros."
+"Não aceito gritos ou desrespeito."
+"Não assumo responsabilidade por emoções de outros."
 
 3. LIMITES DE RESPONSABILIDADE
-"Esta tarefa nao e minha atribuicao."
-"Posso apoiar, mas nao posso fazer por voce."
+"Esta tarefa não é minha atribuição."
+"Posso apoiar, mas não posso fazer por você."
 
-4. LIMITES FISICOS
-"Preciso de espaco pessoal."
-"Nao aceito contato fisico nao solicitado."
+4. LIMITES FÍSICOS
+"Preciso de espaço pessoal."
+"Não aceito contato físico não solicitado."
 
 Como Estabelecer Limites com CNV:
 
-PASSO 1: IDENTIFIQUE O LIMITE NECESSARIO
-O que voce precisa para manter bem-estar e eficacia?
+PASSO 1: IDENTIFIQUE O LIMITE NECESSÁRIO
+O que você precisa para manter bem-estar e eficácia?
 
 PASSO 2: COMUNIQUE CLARAMENTE
-"Para eu me manter produtivo e saudavel, preciso de [limite]."
+"Para eu me manter produtivo e saudável, preciso de [limite]."
 
-PASSO 3: EXPLIQUE O BENEFICIO
-"Isso me permite [beneficio para todos]."
+PASSO 3: EXPLIQUE O BENEFÍCIO
+"Isso me permite [benefício para todos]."
 
 PASSO 4: SEJA CONSISTENTE
-Limites inconsistentes nao sao respeitados.
+Limites inconsistentes não são respeitados.
 
 Exemplo:
 
-"Para eu conseguir dar atencao de qualidade ao meu trabalho e a equipe, nao responderei mensagens de trabalho nos fins de semana (LIMITE). Isso me permite descansar e voltar segunda-feira com energia renovada (BENEFICIO). Emergencias podem ser comunicadas por telefone (EXCECAO)."
+"Para eu conseguir dar atenção de qualidade ao meu trabalho e à equipe, não responderei mensagens de trabalho nos fins de semana (LIMITE). Isso me permite descansar e voltar segunda-feira com energia renovada (BENEFÍCIO). Emergências podem ser comunicadas por telefone (EXCEÇÃO)."
 
 Respeitando Limites dos Outros:
 
-Quando alguem estabelece um limite, respeite-o sem questionar ou fazer a pessoa se sentir culpada.
+Quando alguém estabelece um limite, respeite-o sem questionar ou fazer a pessoa se sentir culpada.
 
-COMUNICACAO DE EXPECTATIVAS CLARAS
+COMUNICAÇÃO DE EXPECTATIVAS CLARAS
 
-Fonte de 80% dos conflitos organizacionais: Expectativas nao comunicadas ou mal comunicadas.
+Fonte de 80% dos conflitos organizacionais: Expectativas não comunicadas ou mal comunicadas.
 
-Sindrome da Expectativa Nao Dita:
-Voce espera algo, nao comunica, a pessoa nao atende, voce fica frustrado, a pessoa fica confusa.
+Síndrome da Expectativa Não Dita:
+Você espera algo, não comunica, a pessoa não atende, você fica frustrado, a pessoa fica confusa.
 
 Como Comunicar Expectativas com CNV:
 
 1. SEJA ESPECIFICO
-RUIM: "Quero que voce seja proativo."
-BOM: "Quero que voce identifique problemas antes que se tornem criticos e me avise com antecedencia."
+RUIM: "Quero que você seja proativo."
+BOM: "Quero que você identifique problemas antes que se tornem críticos e me avise com antecedência."
 
-2. INCLUA CRITERIOS MENSURAVEIS
-"Relatorios devem ter: analise de dados, graficos, conclusoes e recomendacoes."
+2. INCLUA CRITÉRIOS MENSURÁVEIS
+"Relatórios devem ter: análise de dados, gráficos, conclusões e recomendações."
 
-3. ESTABELECA PRAZOS CLAROS
-"Preciso disso ate sexta, 17h."
+3. ESTABELEÇA PRAZOS CLAROS
+"Preciso disso até sexta, 17h."
 
 4. EXPLIQUE O "POR QUE"
-"Isso e importante porque vamos apresentar ao cliente segunda-feira."
+"Isso é importante porque vamos apresentar ao cliente segunda-feira."
 
-5. VERIFIQUE COMPREENSAO
-"Para garantir que estamos alinhados, pode me dizer com suas palavras o que voce vai fazer?"
+5. VERIFIQUE COMPREENSÃO
+"Para garantir que estamos alinhados, pode me dizer com suas palavras o que você vai fazer?"
 
-6. DE ESPACO PARA PERGUNTAS
-"Alguma duvida? Algo nao ficou claro?"
+6. DÊ ESPAÇO PARA PERGUNTAS
+"Alguma dúvida? Algo não ficou claro?"
 
-Modelo Completo de Comunicacao de Expectativa:
+Modelo Completo de Comunicação de Expectativa:
 
-"Preciso que voce [acao especifica] ate [prazo] porque [razao]. Isso deve incluir [criterios]. Alguma duvida? Consegue fazer isso?"
+"Preciso que você [ação específica] até [prazo] porque [razão]. Isso deve incluir [critérios]. Alguma dúvida? Consegue fazer isso?"
 
-CELEBRACAO E RECONHECIMENTO GENUINO
+CELEBRAÇÃO E RECONHECIMENTO GENUÍNO
 
-CNV nao e apenas para conflitos - tambem para celebrar e reconhecer de forma que genuinamente impacte as pessoas.
+CNV não e apenas para conflitos - também para celebrar e reconhecer de forma que genuinamente impacte as pessoas.
 
-Reconhecimento Generico (Pouco Impacto):
+Reconhecimento Genérico (Pouco Impacto):
 "Bom trabalho!"
-"Parabens!"
-"Voce e otimo!"
+"Parabéns!"
+"Você é ótimo!"
 
-Reconhecimento Especifico com CNV (Alto Impacto):
-"Quando voce [comportamento especifico observado], eu me senti [sentimento] porque isso atendeu minha necessidade de [necessidade]. O impacto foi [resultado]. Muito obrigado!"
+Reconhecimento Específico com CNV (Alto Impacto):
+"Quando você [comportamento específico observado], eu me senti [sentimento] porque isso atendeu minha necessidade de [necessidade]. O impacto foi [resultado]. Muito obrigado!"
 
 Exemplo:
 
-"Quando voce ficou ate mais tarde ontem para ajudar a equipe a finalizar o projeto (OBSERVACAO), eu me senti grato e aliviado (SENTIMENTO) porque valorizo colaboracao e comprometimento (NECESSIDADE). Gracas a isso, entregamos no prazo e o cliente ficou muito satisfeito (IMPACTO). Muito obrigado!"
+"Quando você ficou até mais tarde ontem para ajudar a equipe a finalizar o projeto (OBSERVAÇÃO), eu me senti grato e aliviado (SENTIMENTO) porque valorizo colaboração e comprometimento (NECESSIDADE). Graças a isso, entregamos no prazo e o cliente ficou muito satisfeito (IMPACTO). Muito obrigado!"
 
 Por Que Isso Funciona:
 - A pessoa sabe EXATAMENTE o que fez de bom
 - Ela entende o IMPACTO real do comportamento
 - Isso REFORÇA o comportamento (ela quer repetir)
-- Cria CONEXAO genuina
+- Cria CONEXÃO genuína
 
 Reconhecimento de Equipe:
 
-Use CNV tambem para reconhecer equipes:
+Use CNV também para reconhecer equipes:
 
-"Observando o ultimo trimestre, vi voces superarem [desafio]. Isso me enche de orgulho porque mostra nossa capacidade de resiliencia e inovacao. O resultado foi [impacto]. Parabens a todos!"
+"Observando o último trimestre, vi vocês superarem [desafio]. Isso me enche de orgulho porque mostra nossa capacidade de resiliência e inovação. O resultado foi [impacto]. Parabéns a todos!"
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Pratique "Nao"
-Nas proximas situacoes onde voce normalmente diria "sim" mas quer dizer "nao", pratique dizer "nao" com CNV.
+Exercício 1: Pratique "Não"
+Nas próximas situações onde você normalmente diria "sim" mas quer dizer "não", pratique dizer "não" com CNV.
 
-Exercicio 2: Estabeleca Um Limite
+Exercício 2: Estabeleça Um Limite
 Escolha um limite importante para seu bem-estar. Comunique-o claramente esta semana usando CNV.
 
-Exercicio 3: Reconhecimento Especifico
-De reconhecimento genuino a 3 pessoas usando estrutura CNV.
+Exercício 3: Reconhecimento Específico
+Dê reconhecimento genuíno a 3 pessoas usando estrutura CNV.
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-Expressao autentica e assertiva nao e egoismo - e responsabilidade. Voce nao pode liderar eficazmente se nao cuidar de si mesmo. Voce nao pode desenvolver outros se nao for honesto.
+Expressão autêntica e assertiva não é egoísmo - é responsabilidade. Você não pode liderar eficazmente se não cuidar de si mesmo. Você não pode desenvolver outros se não for honesto.
 
-CNV permite o equilibrio perfeito: honestidade total com respeito total.
+CNV permite o equilíbrio perfeito: honestidade total com respeito total.
 
-Lideres que se expressam autenticamente:
-- Sao respeitados pela equipe
-- Criam relacoes baseadas em confianca
+Líderes que se expressam autenticamente:
+- São respeitados pela equipe
+- Criam relações baseadas em confiança
 - Estabelecem expectativas claras
 - Reconhecem de forma que motiva
-- Mantem equilibrio e bem-estar
+- Mantem equilíbrio e bem-estar
 
-Proximos Passos:
-1. Diga "nao" honesto a algo esta semana
-2. Estabeleca 1 limite saudavel
+Próximos Passos:
+1. Diga "não" honesto a algo esta semana
+2. Estabeleça 1 limite saudável
 3. Comunique 1 expectativa claramente usando CNV
-4. De 1 reconhecimento especifico por dia
+4. Dê 1 reconhecimento específico por dia
 
-Lembre-se: Autenticidade nao e falta de educacao. E honestidade com respeito.
+Lembre-se: Autenticidade não é falta de educação. É honestidade com respeito.
         `
       }
     ],
-    atividadesPraticas: [
-      "Transformacao de conflitos reais em CNV",
-      "Role-play de conversas dificeis",
-      "Diario de comunicacao consciente",
-      "Pratica de escuta empatica",
-      "Workshop de feedback nao violento"
+    atividadesPráticas: [
+      "Transformação de conflitos reais em CNV",
+      "Role-play de conversas difíceis",
+      "Diário de comunicação consciente",
+      "Prática de escuta empática",
+      "Workshop de feedback não violento"
     ]
   },
   {
     id: 4,
-    slug: "gestao-riscos-psicossociais-saude-mental",
-    titulo: "Gestao de Riscos Psicossociais e Saude Mental",
-    subtitulo: "Identificacao, Prevencao e Intervencao em Saude Mental Ocupacional",
-    descricao: "Reconheca sinais de estresse, burnout e outros transtornos mentais, aprenda a intervir adequadamente e crie ambientes de trabalho psicologicamente saudaveis.",
-    duracao: "4h",
-    nivel: "Intermediario",
-    categoria: "Saude Ocupacional",
-    icone: "🛡️",
+    slug: "gestão-riscos-psicossociais-saúde-mental",
+    título: "Gestão de Riscos Psicossociais e Saúde Mental",
+    subtítulo: "Identificação, Prevenção e Intervenção em Saúde Mental Ocupacional",
+    descrição: "Reconheça sinais de estresse, Burnout e outros transtornos mentais, aprenda a intervir adequadamente e crie ambientes de trabalho psicologicamente saudáveis.",
+    duração: "4h",
+    nível: "Intermediário",
+    categoria: "Saúde Ocupacional",
+    ícone: "🛡️",
     cor: "from-red-600 to-pink-600",
     corBadge: "bg-red-100 text-red-700 border-red-200",
-    objetivo: "Capacitar lideres para reconhecer, prevenir e intervir em situacoes de risco a saude mental no trabalho.",
+    objetivo: "Capacitar líderes para reconhecer, prevenir e intervir em situações de risco a saúde mental no trabalho.",
     resultadosEsperados: [
-      "Identificacao precoce de sinais de adoecimento mental",
-      "Reducao de afastamentos por transtornos mentais",
-      "Criacao de ambiente de apoio e seguranca psicologica",
-      "Gestao eficaz de situacoes de crise emocional"
+      "Identificação precoce de sinais de adoecimento mental",
+      "Redução de afastamentos por transtornos mentais",
+      "Criação de ambiente de apoio e segurança psicológica",
+      "Gestão eficaz de situações de crise emocional"
     ],
-    modulos: [
+    módulos: [
       {
         id: 1,
-        titulo: "Principais Transtornos Mentais Relacionados ao Trabalho",
-        duracao: "60 min",
-        topicos: [
-          "Estresse ocupacional cronico",
-          "Sindrome de Burnout",
+        título: "Principais Transtornos Mentais Relacionados ao Trabalho",
+        duração: "60 min",
+        tópicos: [
+          "Estresse ocupacional crônico",
+          "Síndrome de Burnout",
           "Transtornos de ansiedade",
-          "Depressao ocupacional",
-          "Transtorno de Estresse Pos-Traumatico",
+          "Depressão ocupacional",
+          "Transtorno de Estresse Pós-traumático",
           "Sinais de alerta e sintomas"
         ],
-        materialDidatico: `
+        materialDidático: `
 PRINCIPAIS TRANSTORNOS MENTAIS RELACIONADOS AO TRABALHO
 
 PANORAMA DA SAUDE MENTAL OCUPACIONAL NO BRASIL
 
 Dados Alarmantes (INSS 2023):
 - 289.000 afastamentos por transtornos mentais em 2023
-- Aumento de 38% em relacao a 2022
+- Aumento de 38% em relação a 2022
 - 3a maior causa de afastamento do trabalho
-- Custo de R$ 180 bilhoes/ano para economia brasileira
+- Custo de R$ 180 bilhões/ano para economia brasileira
 
-Principais Diagnosticos:
-1. Depressao (41% dos casos)
+Principais Diagnósticos:
+1. Depressão (41% dos casos)
 2. Ansiedade (29% dos casos)
 3. Burnout (18% dos casos)
-4. TEPT - Transtorno de Estresse Pos-Traumatico (12% dos casos)
+4. TEPT - Transtorno de Estresse Pós-traumático (12% dos casos)
 
 ESTRESSE OCUPACIONAL CRONICO
 
-O que e:
+O que é:
 Resposta prolongada do organismo a demandas excessivas do trabalho que excedem a capacidade de enfrentamento da pessoa.
 
 Fases do Estresse (Modelo de Hans Selye):
 
 Fase 1 - Alerta (Estresse Agudo - Normal):
-Duracao: Minutos a horas
+Duração: Minutos a horas
 Sintomas: Aumento de energia, foco, adrenalina
 Efeito: Positivo - melhora performance
-Exemplo: Apresentacao importante, prazo apertado pontual
+Exemplo: Apresentação importante, prazo apertado pontual
 
-Fase 2 - Resistencia (Estresse Prolongado - Atencao):
-Duracao: Dias a semanas
-Sintomas: Cansaco, irritabilidade, dificuldade concentracao
+Fase 2 - Resistencia (Estresse Prolongado - Atenção):
+Duração: Dias a semanas
+Sintomas: Cansaço, irritabilidade, dificuldade concentração
 Efeito: Neutro - organismo tenta se adaptar
-Exemplo: Projeto longo com pressao constante
+Exemplo: Projeto longo com pressão constante
 
-Fase 3 - Esgotamento (Estresse Cronico - PERIGO):
-Duracao: Meses a anos
-Sintomas: Exaustao extrema, doencas frequentes, desespero
-Efeito: Negativo - adoecimento fisico e mental
-Exemplo: Anos de sobrecarga sem recuperacao
+Fase 3 - Esgotamento (Estresse Crônico - PERIGO):
+Duração: Meses a anos
+Sintomas: Exaustão extrema, doenças frequentes, desespero
+Efeito: Negativo - adoecimento físico e mental
+Exemplo: Anos de sobrecarga sem recuperação
 
-Sinais Fisicos de Estresse Cronico:
-- Dores de cabeca frequentes (tensionais)
-- Problemas gastricos (gastrite, ulcera, colite)
-- Tensao muscular constante (especialmente pescoco/ombros)
-- Problemas cardiovasculares (hipertensao, arritmia)
+Sinais Físicos de Estresse Crônico:
+- Dores de cabeça frequentes (tensionais)
+- Problemas gástricos (gastrite, ulcera, colite)
+- Tensão muscular constante (especialmente pescoço/ombros)
+- Problemas cardiovasculares (hipertensão, arritmia)
 - Queda de imunidade (gripes/resfriados constantes)
-- Disturbios do sono (insonia ou sonolencia excessiva)
-- Mudancas no apetite (comer demais ou perder apetite)
+- Distúrbios do sono (insônia ou sonolência excessiva)
+- Mudanças no apetite (comer demais ou perder apetite)
 
 Sinais Emocionais:
 - Irritabilidade constante
 - Ansiedade persistente
-- Dificuldade de concentracao
+- Dificuldade de concentração
 - Esquecimentos frequentes
-- Sensacao de estar sobrecarregado
+- Sensação de estar sobrecarregado
 - Perda de interesse em atividades prazerosas
-- Sentimento de estar preso ou sem saida
+- Sentimento de estar preso ou sem saída
 
 Sinais Comportamentais:
 - Isolamento social
-- Uso aumentado de alcool, tabaco ou outras substancias
-- Procrastinacao
-- Mudancas drasticas no comportamento
-- Choro facil ou explosoes de raiva
-- Negligencia com aparencia pessoal
+- Uso aumentado de álcool, tabaco ou outras substancias
+- Procrastinação
+- Mudanças drásticas no comportamento
+- Choro fácil ou explosões de raiva
+- Negligencia com aparência pessoal
 
 SINDROME DE BURNOUT (CID-11: QD85)
 
-Definicao da OMS:
-Sindrome resultante de estresse cronico no local de trabalho que nao foi gerenciado com sucesso.
+Definição da OMS:
+Síndrome resultante de estresse crônico no local de trabalho que não foi gerenciado com sucesso.
 
-As 3 Dimensoes do Burnout:
+As 3 Dimensões do Burnout:
 
-1. Exaustao Emocional:
+1. Exaustão Emocional:
 - Sentimento de estar emocionalmente esgotado
 - Sem energia para o trabalho
 - Drenado, vazio, sem nada mais para dar
-Frase tipica: "Nao aguento mais"
+Frase típica: "Não aguento mais"
 
-2. Despersonalizacao/Cinismo:
+2. Despersonalização/Cinismo:
 - Distanciamento mental do trabalho
-- Atitude cinica em relacao a tarefas e pessoas
+- Atitude cínica em relação a tarefas e pessoas
 - Perda de empatia
-Frase tipica: "Tanto faz, nao me importo mais"
+Frase típica: "Tanto faz, não me importo mais"
 
-3. Baixa Realizacao Profissional:
-- Sentimento de incompetencia
-- Falta de produtividade e realizacao
-- Questionamento sobre propria capacidade
-Frase tipica: "Nao sirvo para isso, sou um fracasso"
+3. Baixa Realização Profissional:
+- Sentimento de incompetência
+- Falta de produtividade e realização
+- Questionamento sobre própria capacidade
+Frase típica: "Não sirvo para isso, sou um fracasso"
 
 Sinais de Alerta de Burnout:
 
-Estagios do Burnout:
+Estágios do Burnout:
 
 Estagio 1 - Necessidade de Se Provar:
-- Ambicao excessiva
+- Ambição excessiva
 - Negligencia de necessidades pessoais
 - Trabalho compulsivo
 
-Estagio 2 - Intensificacao do Esforco:
+Estagio 2 - Intensificação do Esforço:
 - Incapacidade de desligar do trabalho
-- Negligencia de amigos e familia
-- Negacao de problemas
+- Negligencia de amigos e família
+- Negação de problemas
 
 Estagio 3 - Descuido com Necessidades:
-- Irregularidades no sono e alimentacao
-- Falta de interacao social
-- Uso de alcool/drogas para relaxar
+- Irregularidades no sono e alimentação
+- Falta de interação social
+- Uso de álcool/drogas para relaxar
 
 Estagio 4 - Deslocamento de Conflitos:
-- Consciencia de que algo esta errado
+- Consciência de que algo está errado
 - Incapacidade de ver a causa real
 - Crise de valores e sentido
 
-Estagio 5 - Revisao de Valores:
-- Negacao de necessidades basicas
+Estagio 5 - Revisão de Valores:
+- Negação de necessidades básicas
 - Foco obsessivo no trabalho
-- Intolerancia
+- Intolerância
 
-Estagio 6 - Negacao de Problemas:
+Estagio 6 - Negação de Problemas:
 - Cinismo crescente
 - Agressividade
-- Problemas fisicos evidentes
+- Problemas físicos evidentes
 
 Estagio 7 - Retraimento:
-- Desesperanca
+- Desesperança
 - Desligamento social total
-- Aversao ao trabalho
+- Aversão ao trabalho
 
-Estagio 8 - Mudancas Comportamentais Obvias:
-- Mudancas drasticas de personalidade
-- Amigos e familia notam diferenca marcante
+Estagio 8 - Mudanças Comportamentais Obvias:
+- Mudanças drásticas de personalidade
+- Amigos e família notam diferença marcante
 
-Estagio 9 - Despersonalizacao:
+Estagio 9 - Despersonalização:
 - Perda do senso de si mesmo
-- Vida em piloto automatico
+- Vida em piloto automático
 - Vazio interior profundo
 
 Estagio 10 - Vazio Interior:
@@ -3333,23 +3332,23 @@ Estagio 10 - Vazio Interior:
 - Pode incluir pensamentos suicidas
 - NECESSITA INTERVENCAO PROFISSIONAL URGENTE
 
-Diferencas entre Estresse e Burnout:
+Diferenças entre Estresse e Burnout:
 
 ESTRESSE:
-- Superengajamento
-- Emocoes hiperativas
+- Super engajamento
+- Emoções hiperativas
 - Perda de energia
 - Ansiedade predominante
-- Pode melhorar com ferias/descanso
-- Ainda ha esperanca
+- Pode melhorar com férias/descanso
+- Ainda há esperança
 
 BURNOUT:
 - Desengajamento total
-- Emocoes embotadas
-- Perda de motivacao e esperanca
-- Depressao predominante
-- Ferias nao resolvem
-- Desesperanca profunda
+- Emoções embotadas
+- Perda de motivação e esperança
+- Depressão predominante
+- Férias não resolvem
+- Desesperança profunda
 
 TRANSTORNOS DE ANSIEDADE
 
@@ -3357,54 +3356,54 @@ Tipos Comuns no Ambiente de Trabalho:
 
 1. Transtorno de Ansiedade Generalizada (TAG):
 Sintomas:
-- Preocupacao excessiva e incontrolavel
-- Tensao muscular constante
+- Preocupação excessiva e incontrolável
+- Tensão muscular constante
 - Fadiga persistente
-- Dificuldade de concentracao
+- Dificuldade de concentração
 - Irritabilidade
-- Disturbios do sono
+- Distúrbios do sono
 
 No Trabalho:
-Preocupacao constante com desempenho, medo de cometer erros, incapacidade de relaxar mesmo apos expediente
+Preocupação constante com desempenho, medo de cometer erros, incapacidade de relaxar mesmo após expediente
 
-2. Sindrome do Panico:
+2. Síndrome do Pânico:
 Sintomas:
-- Ataques de panico repentinos
-- Palpitacoes, suor, tremores
-- Sensacao de morte iminente
+- Ataques de pânico repentinos
+- Palpitações, suor, tremores
+- Sensação de morte iminente
 - Medo de ter novos ataques
-- Evitacao de situacoes
+- Evitarão de situações
 
 No Trabalho:
-Ataques durante reunioes importantes, apresentacoes, confrontos. Pode levar a faltas e evitacao de situacoes profissionais.
+Ataques durante reuniões importantes, apresentações, confrontos. Pode levar a faltas e evitarão de situações profissionais.
 
 3. Fobia Social:
 Sintomas:
 - Medo intenso de julgamento
-- Evitacao de interacao social
-- Sintomas fisicos em situacoes sociais
-- Antecipacao ansiosa de eventos
+- Evitação de interação social
+- Sintomas físicos em situações sociais
+- Antecipação ansiosa de eventos
 
 No Trabalho:
-Pavor de apresentacoes, reunioes, almocos de equipe. Pode limitar drasticamente carreira.
+Pavor de apresentações, reuniões, almoços de equipe. Pode limitar drasticamente carreira.
 
 DEPRESSAO OCUPACIONAL
 
-Diferenca entre Tristeza e Depressao:
+Diferença entre Tristeza e Depressão:
 
 TRISTEZA (Normal):
 - Resposta proporcional a evento
 - Melhora com tempo
-- Nao impede funcionamento
+- Não impede funcionamento
 - Momentos de alivio
 
 DEPRESSAO (Clinica):
 - Desproporcional ou sem motivo claro
 - Persistente (mais de 2 semanas)
-- Prejudica funcionamento diario
+- Prejudica funcionamento diário
 - Sem alivio ou prazer em nada
 
-Criterios Diagnosticos (CID-10):
+Critérios Diagnósticos (CID-10):
 
 Sintomas Essenciais (pelo menos 2):
 1. Humor deprimido na maior parte do dia
@@ -3412,38 +3411,38 @@ Sintomas Essenciais (pelo menos 2):
 3. Fadiga ou perda de energia
 
 Sintomas Adicionais:
-4. Perda de confianca ou autoestima
+4. Perda de confiança ou autoestima
 5. Sentimentos de culpa inadequada
-6. Pensamentos de morte ou suicidio
-7. Diminuicao da concentracao
-8. Agitacao ou retardo psicomotor
-9. Disturbios do sono
-10. Mudanca no apetite/peso
+6. Pensamentos de morte ou suicídio
+7. Diminuição da concentração
+8. Agitação ou retardo psicomotor
+9. Distúrbios do sono
+10. Mudança no apetite/peso
 
 Gravidade:
 - Leve: 2 essenciais + 2 adicionais
 - Moderada: 2 essenciais + 3-4 adicionais
 - Grave: 3 essenciais + 4+ adicionais
 
-Sinais de Depressao no Trabalho:
+Sinais de Depressão no Trabalho:
 - Queda abrupta de produtividade
 - Atrasos e faltas frequentes
-- Descuido com aparencia
-- Dificuldade de tomar decisoes
+- Descuido com aparência
+- Dificuldade de tomar decisões
 - Isolamento da equipe
-- Comentarios negativos sobre si mesmo
+- Comentários negativos sobre si mesmo
 - Choro no trabalho
-- Expressao facial de tristeza constante
+- Expressão facial de tristeza constante
 
 TRANSTORNO DE ESTRESSE POS-TRAUMATICO (TEPT)
 
-O que e:
-Transtorno que pode se desenvolver apos exposicao a evento traumatico grave.
+O que é:
+Transtorno que pode se desenvolver após exposição a evento traumático grave.
 
-Eventos Traumaticos no Trabalho:
-- Assedio sexual ou moral severo
-- Violencia fisica
-- Ameacas graves
+Eventos Traumáticos no Trabalho:
+- Assédio sexual ou moral severo
+- Violência física
+- Ameaças graves
 - Acidente grave
 - Morte de colega
 - Assalto ou sequestro
@@ -3451,129 +3450,129 @@ Eventos Traumaticos no Trabalho:
 
 Sintomas Principais:
 
-1. Revivencia (Flashbacks):
-- Lembrancas intrusivas do trauma
+1. Revivescia (Flashbacks):
+- Lembranças intrusivas do trauma
 - Pesadelos recorrentes
-- Reacoes fisicas intensas a gatilhos
+- Reações físicas intensas a gatilhos
 
-2. Evitacao:
+2. Evitarão:
 - Evitar pensar ou falar sobre evento
-- Evitar pessoas, lugares ou situacoes que lembrem
-- Ausencia emocional (embotamento)
+- Evitar pessoas, lugares ou situações que lembrem
+- Ausência emocional (embotamento)
 
-3. Hiperativacao:
+3. Hiperativação:
 - Estado de alerta constante
-- Reacoes exageradas de susto
-- Irritabilidade e explosoes de raiva
-- Dificuldade de concentracao
-- Insonia severa
+- Reações exageradas de susto
+- Irritabilidade e explosões de raiva
+- Dificuldade de concentração
+- Insônia severa
 
-Diferenca de Estresse Agudo:
-- ESTRESSE AGUDO: 3 dias a 1 mes apos evento
-- TEPT: Sintomas persistem por mais de 1 mes
+Diferença de Estresse Agudo:
+- ESTRESSE AGUDO: 3 dias a 1 mês após evento
+- TEPT: Sintomas persistem por mais de 1 mês
 
 COMO IDENTIFICAR SINAIS DE ALERTA NA EQUIPE
 
-Sistema de Semaforo de Saude Mental:
+Sistema de Semáforo de Saúde Mental:
 
-VERDE - Funcionamento Saudavel:
+VERDE - Funcionamento Saudável:
 - Produtividade consistente
 - Bom humor geral
 - Engajamento nas atividades
-- Relacionamentos saudaveis
-- Sono e alimentacao regulares
-ACAO: Manter ambiente saudavel, reconhecer e valorizar
+- Relacionamentos saudáveis
+- Sono e alimentação regulares
+ACAO: Manter ambiente saudável, reconhecer e valorizar
 
-AMARELO - Sinais de Atencao:
-- Pequenas mudancas de comportamento
-- Cansaco mais frequente
+AMARELO - Sinais de Atenção:
+- Pequenas mudanças de comportamento
+- Cansaço mais frequente
 - Irritabilidade ocasional
 - Queda leve de produtividade
-- Comentarios sobre estresse
+- Comentários sobre estresse
 ACAO: Conversa preventiva, oferecer apoio, ajustar demandas
 
 LARANJA - Sinais de Risco Moderado:
-- Mudancas comportamentais visiveis
-- Multiplas faltas ou atrasos
+- Mudanças comportamentais visíveis
+- Múltiplas faltas ou atrasos
 - Isolamento da equipe
 - Queda significativa de performance
-- Sinais fisicos de estresse
+- Sinais físicos de estresse
 ACAO: Conversa seria, encaminhamento ao RH/SESMT, ajuste de carga
 
-VERMELHO - Risco Alto - Intervencao Urgente:
-- Mudancas drasticas de personalidade
+VERMELHO - Risco Alto - Intervenção Urgente:
+- Mudanças drásticas de personalidade
 - Choro frequente no trabalho
-- Mencao a desesperanca ou morte
-- Negligencia total com trabalho/aparencia
+- Menção a desesperança ou morte
+- Negligencia total com trabalho/aparência
 - Afastamentos repetidos
-ACAO: Intervencao imediata, acionar suporte profissional, nao deixar sozinho
+ACAO: Intervenção imediata, acionar suporte profissional, não deixar sozinho
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Identificacao de Sintomas
-Colaborador antes pontual e alegre agora chega atrasado, esta com olheiras profundas, perdeu 5kg, chora facilmente e diz "nao sei se aguento mais isso". Qual transtorno voce suspeita e o que fazer?
+Exercício 1: Identificação de Sintomas
+Colaborador antes pontual e alegre agora chega atrasado, está com olheiras profundas, perdeu 5kg, chora facilmente e diz "não sei se aguento mais isso". Qual transtorno voce suspeita e o que fazer?
 
-Exercicio 2: Diferenciacao
-Um colaborador reclama de cansaco e estresse. Como voce diferencia entre estresse normal, estresse cronico ou burnout?
+Exercício 2: Diferenciação
+Um colaborador reclama de cansaço e estresse. Como você diferencia entre estresse normal, estresse crônico ou Burnout?
 
 CONCLUSAO DO MODULO
 
-Reconhecer transtornos mentais relacionados ao trabalho nao e diagnosticar - e identificar sinais de alerta para buscar ajuda profissional adequada.
+Reconhecer transtornos mentais relacionados ao trabalho não e diagnosticar - e identificar sinais de alerta para buscar ajuda profissional adequada.
 
-Como lider, voce nao e psicologo, mas pode salvar vidas ao perceber sinais precoces e agir com empatia e agilidade.
+Como líder, você não e psicólogo, mas pode salvar vidas ao perceber sinais precoces e agir com empatia e agilidade.
 
-Proximos Passos:
+Próximos Passos:
 1. Observe sua equipe com olhar atento
-2. Crie espaco seguro para conversas
-3. Conheca recursos de apoio disponiveis (PAE, SESMT)
+2. Crie espaço seguro para conversas
+3. Conheça recursos de apoio disponíveis (PAE, SESMT)
 4. Aja rapidamente em sinais de alerta
 
-Lembre-se: Saude mental e tao importante quanto saude fisica. Trate com seriedade.
+Lembre-se: Saúde mental e tão importante quanto saúde física. Trate com seriedade.
         `
       },
       {
         id: 2,
-        titulo: "Fatores de Risco Psicossocial no Ambiente de Trabalho",
-        duracao: "55 min",
-        topicos: [
+        título: "Fatores de Risco Psicossocial no Ambiente de Trabalho",
+        duração: "55 min",
+        tópicos: [
           "Conceito de riscos psicossociais",
           "Principais fatores de risco (NR-1 e ISO 45003)",
           "Sobrecarga e ritmo de trabalho",
           "Falta de autonomia e controle",
           "Conflitos interpessoais e clima toxico"
         ],
-        materialDidatico: `
+        materialDidático: `
 FATORES DE RISCO PSICOSSOCIAL NO AMBIENTE DE TRABALHO
 
 INTRODUCAO
 
-Riscos psicossociais sao condicoes do trabalho que podem causar danos a saude mental e fisica dos trabalhadores. Diferente de riscos fisicos ou quimicos, sao invisiveis mas extremamente impactantes.
+Riscos psicossociais são condições do trabalho que podem causar danos a saúde mental e física dos trabalhadores. Diferente de riscos físicos ou químicos, são invisíveis mas extremamente impactantes.
 
-A NR-1 (2021) tornou obrigatoria a gestao de riscos psicossociais nas organizacoes brasileiras. A ISO 45003 (2021) estabelece diretrizes internacionais.
+A NR-1 (2021) tornou obrigatória a gestão de riscos psicossociais nas organizações brasileiras. A ISO 45003 (2021) estabelece diretrizes internacionais.
 
 Impacto dos Riscos Psicossociais:
-- Custos globais de $1 trilhao em produtividade perdida (OMS)
+- Custos globais de $1 trilhão em produtividade perdida (OMS)
 - Principal causa de afastamento do trabalho no Brasil
 - 86% dos trabalhadores brasileiros relatam sofrer algum impacto (ISMA-BR)
 
 CONCEITO DE RISCOS PSICOSSOCIAIS
 
-Definicao (ISO 45003):
-Riscos psicossociais sao aspectos do design do trabalho, organizacao e gestao do trabalho, e seus contextos sociais e ambientais, que tem potencial de causar danos psicologicos ou fisicos.
+Definição (ISO 45003):
+Riscos psicossociais são aspectos do design do trabalho, organização e gestão do trabalho, e seus contextos sociais e ambientais, que tem potencial de causar danos psicológicos ou físicos.
 
-Exemplos Praticos:
-- Trabalhar sob pressao excessiva constantemente
-- Nao ter clareza sobre o que se espera de voce
-- Sofrer assedio ou discriminacao
-- Ter trabalho monotono e sem significado
+Exemplos Práticos:
+- Trabalhar sob pressão excessiva constantemente
+- Não ter clareza sobre o que se espera de você
+- Sofrer assédio ou discriminação
+- Ter trabalho monótono e sem significado
 - Ter conflito entre trabalho e vida pessoal
-- Falta de apoio da lideranca
-- Inseguranca sobre o futuro do emprego
+- Falta de apoio da liderança
+- Insegurança sobre o futuro do emprego
 
-Diferenca Entre Risco e Perigo:
+Diferença Entre Risco e Perigo:
 
 PERIGO PSICOSSOCIAL:
-Condicao com potencial de causar dano.
+Condição com potencial de causar dano.
 Exemplo: "Prazos apertados"
 
 RISCO PSICOSSOCIAL:
@@ -3590,90 +3589,90 @@ DIMENSAO 1: ORGANIZACAO DO TRABALHO
 1. CARGA DE TRABALHO (Quantidade/Ritmo)
 - Trabalho excessivo de forma constante
 - Prazos irrealistas
-- Pressao de tempo continua
-- Interrupcoes frequentes
+- Pressão de tempo continua
+- Interrupções frequentes
 
 Sinais de Alerta:
 - Horas extras rotineiras
 - Trabalho levado para casa
-- Reunioes consecutivas sem intervalo
-- Metas inalcancaveis
+- Reuniões consecutivas sem intervalo
+- Metas inalcançáveis
 
 2. HORARIOS E JORNADAS
 - Jornadas longas (>10h regularmente)
 - Trabalho em turnos/noturno
-- Imprevisibilidade de horarios
-- Dificuldade de conciliacao trabalho-vida
+- Imprevisibilidade de horários
+- Dificuldade de conciliação trabalho vida
 
-Pesquisa: Trabalhar >55h por semana aumenta em 35% risco de AVC e 17% risco de doenca cardiaca.
+Pesquisa: Trabalhar >55h por semana aumenta em 35% risco de AVC e 17% risco de doença cardíaca.
 
 3. MONOTONIA E SUBUTILIZACAO
 - Trabalho repetitivo sem desafio
-- Subqualificacao (pessoa com alta capacidade em trabalho simples)
+- Subqualificarão (pessoa com alta capacidade em trabalho simples)
 - Falta de variedade
 - Tedio
 
-Consequencia: Bore-out (burnout por tedio)
+Consequência: Bore-out (Burnout por tedio)
 
 4. AMBIGUIDADE E CONFLITO DE PAPEL
 - Falta de clareza sobre responsabilidades
 - Expectativas conflitantes
-- Multiplos chefes com demandas incompativeis
-- Mudancas constantes de prioridades
+- Múltiplos chefes com demandas incompatíveis
+- Mudanças constantes de prioridades
 
 DIMENSAO 2: FATORES SOCIAIS E RELACIONAIS
 
 5. FALTA DE APOIO
-- Lideranca ausente ou abusiva
+- Liderança ausente ou abusiva
 - Isolamento social
 - Falta de trabalho em equipe
-- Ausencia de mentoria
+- Ausência de mentoria
 
-Pesquisa: Colaboradores com chefes de suporte tem 40% menos risco de burnout.
+Pesquisa: Colaboradores com chefes de suporte tem 40% menos risco de Burnout.
 
 6. CONFLITOS INTERPESSOAIS
 - Brigas recorrentes
 - Fofocas e intrigas
 - Falta de civilidade
-- Competicao destrutiva
+- Competição destrutiva
 
-7. ASSEDIO E VIOLENCIA
-- Assedio moral (humilhacao, perseguicao)
-- Assedio sexual
-- Discriminacao
+7. ASSÉDIO E VIOLÊNCIA
+- Assédio moral (humilhação, perseguição)
+- Assédio sexual
+- Discriminação
 - Bullying
-- Agressao verbal ou fisica
+- Agressão verbal ou física
 
 8. CLIMA ORGANIZACIONAL TOXICO
 - Cultura do medo
-- Falta de confianca
-- Comunicacao inadequada
-- Ausencia de seguranca psicologica
+- Falta de confiança
+- Comunicação inadequada
+- Ausência de segurança psicológica
 
 DIMENSAO 3: CONDICOES DE EMPREGO
 
 9. INSEGURANCA NO EMPREGO
-- Ameaca de demissao
-- Contratos precarios
-- Reestruturacoes constantes
+- Ameaça de demissão
+- Contratos precários
+- Reestruturações constantes
 - Incerteza sobre futuro
 
 10. FALTA DE RECONHECIMENTO
-- Esforco nao valorizado
-- Ausencia de feedback positivo
-- Promocoes injustas
-- Salarios inadequados ao esforco
+- Esforço não valorizado
+- Ausência de feedback positivo
+- Promoções injustas
+- Salários inadequados ao esforço
 
-Desequilibrio Esforco-Recompensa (Modelo Siegrist):
-Quando esforco alto + reconhecimento baixo = Alto risco de adoecimento
+Desequilíbrio Esforço-Recompensa (Modelo Siegrist):
+Quando esforço alto + reconhecimento baixo = Alto risco de adoecimento
 
 11. FALTA DE CONTROLE E AUTONOMIA
-- Decisoes impostas sem consulta
+- Decisões impostas sem consulta
 - Impossibilidade de influenciar o trabalho
-- Microgerenciamento
+- Micro gerenciamento
 - Rigidez excessiva
 
-Modelo Demanda-Controle (Karasek):
+Modelo Demanda Controle (Karasek):
 Alta demanda + Baixo controle = Maior risco psicossocial
 
 SOBRECARGA E RITMO DE TRABALHO
@@ -3684,336 +3683,336 @@ Tipos de Sobrecarga:
 
 1. SOBRECARGA QUANTITATIVA
 Muito trabalho, pouco tempo.
-Exemplo: 80 emails/dia, 15 reunioes/semana, 5 projetos simultaneos.
+Exemplo: 80 e-mails/dia, 15 reuniões/semana, 5 projetos simultâneos.
 
 2. SOBRECARGA QUALITATIVA
-Trabalho muito complexo para nivel de competencia.
-Exemplo: Pessoa junior responsavel por decisoes estrategicas complexas.
+Trabalho muito complexo para nível de competência.
+Exemplo: Pessoa júnior responsável por decisões estratégicas complexas.
 
 3. SOBRECARGA EMOCIONAL
-Lidar com situacoes emocionalmente desgastantes.
-Exemplo: Atendimento de clientes agressivos, comunicar demissoes, mediar conflitos graves.
+Lidar com situações emocionalmente desgastantes.
+Exemplo: Atendimento de clientes agressivos, comunicar demissões, mediar conflitos graves.
 
-Consequencias da Sobrecarga Cronica:
-- Exaustao fisica e mental
+Consequências da Sobrecarga Crônica:
+- Exaustão física e mental
 - Erros e retrabalho
-- Desmotivacao
+- Desmotivação
 - Burnout
-- Problemas fisicos (hipertensao, insonia)
+- Problemas físicos (hipertensão, insônia)
 - Alta rotatividade
 
 Como Identificar Sobrecarga na Sua Equipe:
 
 Indicadores Quantitativos:
 - Horas extras frequentes
-- Prazos constantemente nao cumpridos
+- Prazos constantemente não cumpridos
 - Backlog crescente
 - Baixa qualidade do trabalho
 
 Indicadores Qualitativos (Conversas):
 "Estou afogado em demandas"
-"Nao da tempo de fazer nada bem feito"
+"Não da tempo de fazer nada bem feito"
 "Trabalho ate tarde todo dia"
-"Nao sei por onde comecar"
+"Não sei por onde começar"
 
-Accoes de Gestao de Sobrecarga:
+Ações de Gestão de Sobrecarga:
 
 1. MAPEIE CARGA REAL
-Peca que equipe liste todas as tarefas/projetos atuais. Muitas vezes lideres subestimam a carga.
+Peça que equipe liste todas as tarefas/projetos atuais. Muitas vezes líderes subestimam a carga.
 
 2. PRIORIZE BRUTALMENTE
 Use matriz Eisenhower: Urgente/Importante. Elimine ou delegue o resto.
 
 3. REDISTRIBUA
-Se uma pessoa esta sobrecarregada, redistribua tarefas (nao adicione mais pessoas sobrecarregadas).
+Se uma pessoa está sobrecarregada, redistribua tarefas (não adicione mais pessoas sobrecarregadas).
 
 4. RENEGOCIE PRAZOS
-Prazos irrealistas geram so estresse e baixa qualidade. Seja honesto com stakeholders.
+Prazos irrealistas geram só estresse e baixa qualidade. Seja honesto com stakeholders.
 
 5. AUTOMATIZE/SIMPLIFIQUE
-Elimine burocracias inuteis e automatize tarefas repetitivas.
+Elimine burocracias inúteis e automatize tarefas repetitivas.
 
 FALTA DE AUTONOMIA E CONTROLE
 
-Autonomia e a capacidade de influenciar decisoes sobre o proprio trabalho.
+Autonomia e a capacidade de influenciar decisões sobre o próprio trabalho.
 
 Por Que Autonomia e Importante:
 
 Pesquisa (Daniel Pink - Drive):
-Autonomia e uma das 3 necessidades fundamentais humanas (junto com Competencia e Proposito).
+Autonomia e uma das 3 necessidades fundamentais humanas (junto com Competência e Proposito).
 
 Efeitos da Falta de Autonomia:
-- Desmotivacao profunda
-- Sensacao de impotencia
-- Comportamento passivo (nao sugerem melhorias)
+- Desmotivação profunda
+- Sensação de impotência
+- Comportamento passivo (não sugerem melhorias)
 - Frustração e ressentimento
-- Saida de talentos
+- Saída de talentos
 
 Sinais de Falta de Autonomia:
 
-- "Nao posso decidir nada sem aprovação"
-- "Sou tratado como executor, nao pensante"
-- "Minhas ideias nunca sao consideradas"
-- "Sou microgerenciado"
+- "Não posso decidir nada sem aprovação"
+- "Sou tratado como executor, não pensante"
+- "Minhas ideias nunca são consideradas"
+- "Sou micro gerenciado"
 
 Como Aumentar Autonomia (Sem Perder Controle):
 
 1. DEFINA O "QUE" E "PORQUE", NAO O "COMO"
-De missao e resultado esperado. Deixe pessoa escolher metodologia.
+De missão e resultado esperado. Deixe pessoa escolher metodologia.
 
 2. DELEGUE DECISOES
-Sempre que possivel, deixe a pessoa mais proxima do problema decidir.
+Sempre que possível, deixe a pessoa mais próxima do problema decidir.
 
 3. CONVIDE PARTICIPACAO EM DECISOES
-"Como voce faria isso?" "O que voce acha dessa proposta?"
+"Como você faria isso?" "O que você acha dessa proposta?"
 
 4. PERMITA EXPERIMENTACAO
-"Teste essa abordagem. Se nao funcionar, ajustamos."
+"Teste essa abordagem. Se não funcionar, ajustamos."
 
 5. EVITE REVERTER DECISOES SEM NECESSIDADE
-Se delegou, confie. So intervenha em caso critico.
+Se delegou, confie. Só intervenha em caso crítico.
 
 CONFLITOS INTERPESSOAIS E CLIMA TOXICO
 
-Conflitos ocasionais sao normais. Conflitos cronicos e clima toxico sao riscos graves.
+Conflitos ocasionais são normais. Conflitos crônicos e clima toxico são riscos graves.
 
-Caracteristicas de Clima Toxico:
+Características de Clima Toxico:
 
 1. FOFOCAS E INTRIGAS
-Informacoes distorcidas circulam pelos corredores.
+Informações distorcidas circulam pelos corredores.
 
 2. PANELLINHAS E EXCLUSAO
 Grupos fechados que isolam outros.
 
 3. COMPETICAO DESTRUTIVA
-"Jogar colega debaixo do onibus" para se promover.
+"Jogar colega debaixo do ônibus" para se promover.
 
-4. COMUNICACAO AGRESSIVA
-Gritos, emails passivo-agressivos, sarcasmo.
+4. COMUNICAÇÃO AGRESSIVA
+Gritos, e-mails passivo agressivos, sarcasmo.
 
 5. AUSENCIA DE CONFIANCA
-Ninguem confia em ninguem. Tudo e politico.
+Ninguém confia em ninguém. Tudo e politico.
 
 6. MEDO DE REPRESALIAS
 Pessoas tem medo de falar a verdade ou discordar.
 
-Consequencias:
+Consequências:
 - Alta rotatividade
 - Baixa produtividade
 - Adoecimento mental
-- Saida dos melhores talentos (toxicos ficam)
+- Saída dos melhores talentos (tóxicos ficam)
 
 Como Transformar Clima Toxico:
 
-1. DIAGNOSTIQUE (Anonimo)
-Pesquisa de clima para entender causas especificas.
+1. DIAGNOSTIQUE (Anônimo)
+Pesquisa de clima para entender causas específicas.
 
 2. CONFRONTE COMPORTAMENTOS TOXICOS
-Nao tolere bullying, assedio ou desrespeito. Acao imediata.
+Não tolere bullying, assédio ou desrespeito. Ação imediata.
 
 3. MODELE COMPORTAMENTO SAUDAVEL
-Lideres dao o tom. Se voce fofoca, a equipe fofoca.
+3814:Líderes dão o tom. Se você fofoca, a equipe fofoca.
 
 4. CRIE REGRAS CLARAS DE CONVIVENCIA
-"Nesta equipe: respeitamos opinioes, resolvemos conflitos diretamente, nao toleramos assedio."
+"Nesta equipe: respeitamos opiniões, resolvemos conflitos diretamente, não toleramos assédio."
 
 5. PROMOVA COLABORACAO
-Incentive projetos colaborativos. Reconheca trabalho em equipe.
+Incentive projetos colaborativos. Reconheça trabalho em equipe.
 
 6. INTERVENHA EM CONFLITOS
-Nao deixe conflitos apodrecerem. Medeie rapidamente.
+Não deixe conflitos apodrecerem. Medeie rapidamente.
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Mapeamento de Riscos
+Exercício 1: Mapeamento de Riscos
 Liste 5 riscos psicossociais presentes na sua equipe agora. Classifique cada um por gravidade (baixa/media/alta).
 
-Exercicio 2: Priorizacao de Acoes
-Dos riscos identificados, qual voce pode influenciar diretamente? Qual acao concreta pode tomar esta semana?
+Exercício 2: Priorização de Ações
+Dos riscos identificados, qual você pode influenciar diretamente? Qual ação concreta pode tomar esta semana?
 
-Exercicio 3: Conversa de Check-in
+Exercício 3: Conversa de Check-in
 Agende 1:1 com cada membro da equipe e pergunte:
-"Como voce esta se sentindo em relacao a carga de trabalho?"
-"Ha algo que esta dificultando seu trabalho?"
-"O que eu posso fazer para apoiar voce?"
+"Como você está se sentindo em relação a carga de trabalho?"
+"Há algo que está dificultando seu trabalho?"
+"O que eu posso fazer para apoiar você?"
 
 CONCLUSAO DO MODULO
 
-Riscos psicossociais nao sao "frescura" - sao ameacas reais a saude e produtividade. A boa noticia: grande parte e prevenivel com gestao consciente.
+Riscos psicossociais não são "frescura" - são ameaças reais à saúde e produtividade. A boa noticia: grande parte e previsível com gestão consciente.
 
-Lideres tem papel fundamental em reduzir riscos psicossociais atraves de:
-- Distribuicao justa de carga
-- Concessao de autonomia
-- Criacao de clima saudavel
-- Comunicacao clara
+3843:Líderes têm papel fundamental em reduzir riscos psicossociais através de:
+- Distribuição justa de carga
+- Concessão de autonomia
+- Criação de clima saudável
+- Comunicação clara
 - Reconhecimento adequado
 
-Proximos Passos:
+Próximos Passos:
 1. Mapeie os riscos psicossociais da sua equipe
-2. Priorize os 3 riscos mais criticos
-3. Defina 1 acao concreta para cada risco
-4. Acompanhe evolucao mensalmente
+2. Priorize os 3 riscos mais críticos
+3. Defina 1 ação concreta para cada risco
+4. Acompanhe evolução mensalmente
 
 Lembre-se: Prevenir e mais barato e eficaz que remediar.
         `
       },
       {
         id: 3,
-        titulo: "Intervencao e Primeiros Socorros Psicologicos",
-        duracao: "50 min",
-        topicos: [
+        título: "Intervenção e Primeiros Socorros Psicológicos",
+        duração: "50 min",
+        tópicos: [
           "Quando e como intervir",
-          "Primeiros socorros psicologicos no trabalho",
-          "Abordagem empatica em crises",
+          "Primeiros socorros psicológicos no trabalho",
+          "Abordagem empática em crises",
           "Encaminhamento para apoio profissional",
-          "Limites da atuacao do lider"
+          "Limites da atuação do líder"
         ],
-        materialDidatico: `
+        materialDidático: `
 INTERVENCAO E PRIMEIROS SOCORROS PSICOLOGICOS
 
 INTRODUCAO
 
-Primeiros Socorros Psicologicos (PSP) sao intervencoes iniciais para ajudar uma pessoa em sofrimento emocional agudo. Nao e terapia - e acolhimento e estabilizacao ate que suporte profissional seja acessado.
+Primeiros Socorros Psicológicos (PSP) são intervenções iniciais para ajudar uma pessoa em sofrimento emocional agudo. Não é terapia — é acolhimento e estabilização até que suporte profissional seja acessado.
 
-Como lider, voce provavelmente encontrara situacoes de crise emocional: colaborador chorando apos feedback, pessoa em panico, comunicacao de diagnostico grave, perda de familiar, etc.
+Como líder, você provavelmente encontrara situações de crise emocional: colaborador chorando após feedback, pessoa em pânico, comunicação de diagnostico grave, perda de familiar, etc.
 
-Saber o basico de PSP pode fazer diferenca significativa.
+Saber o básico de PSP pode fazer diferença significativa.
 
 QUANDO E COMO INTERVIR
 
-Sinais de Que Intervencao Imediata e Necessaria:
+Sinais de Que Intervenção Imediata e Necessária:
 
 SINAIS VERBAIS:
-- "Nao aguento mais"
+- "Não aguento mais"
 - "Preferia estar morto"
-- "Nao vejo saida"
-- "Vou fazer algo que vao se arrepender"
+- "Não vejo saída"
+- "Vou fazer algo que vão se arrepender"
 - "Quero sumir"
 
 SINAIS COMPORTAMENTAIS:
-- Choro incontrolavel
-- Hiperventilacao/panico
+- Choro incontrolável
+- Hiperventilação/pânico
 - Agressividade repentina
 - Isolamento extremo
-- Despedidas incomuns ("Obrigado por tudo, voce foi importante")
-- Mudanca drastica de comportamento
+- Despedidas incomuns ("Obrigado por tudo, você foi importante")
+- Mudança drástica de comportamento
 
 SINAIS FISICOS:
 - Tremores
 - Palidez extrema
 - Sudorese
 - Falta de ar
-- Desorientacao
+- Desorientação
 
 Quando Intervir:
 
 INTERVENHA IMEDIATAMENTE:
-- Risco de auto-lesao ou suicidio
-- Crise de panico
-- Colapso emocional publico
+- Risco de autolesão ou suicídio
+- Crise de pânico
+- Colapso emocional público
 - Agressividade iminente
 
 AGENDE CONVERSA PRIVADA EM 24H:
-- Mudanca gradual de comportamento
+- Mudança gradual de comportamento
 - Sinais de esgotamento
 - Relato de dificuldades pessoais
 - Queda de desempenho
 
 NAO IGNORE NUNCA:
-Qualquer mencao a desistir da vida, suicidio ou auto-lesao deve ser levada a serio, mesmo que dita em tom de "brincadeira".
+Qualquer menção a desistir da vida, suicídio ou autolesão deve ser levada a serio, mesmo que dita em tom de "brincadeira".
 
 Como Abordar:
 
 CERTO:
 1. Local privado e seguro
 2. Tom calmo e acolhedor
-3. "Percebi que voce nao esta bem. Gostaria de conversar?"
+3. "Percebi que você não está bem. Gostaria de conversar?"
 4. Escute sem julgar
 5. Valide sentimentos
 6. Ofereça apoio concreto
 
 ERRADO:
-1. Conversa em publico/aberta
-2. Tom acusatorio: "O que esta acontecendo com voce?"
-3. Minimizar: "Nao e nada demais"
-4. Dar conselhos genericos: "E so pensar positivo"
+1. Conversa em público/aberta
+2. Tom acusatório: "O que está acontecendo com você?"
+3. Minimizar: "Não é nada demais"
+4. Dar conselhos genéricos: "E só pensar positivo"
 5. Forcar a pessoa a falar
 6. Prometer sigilo absoluto (em casos de risco de vida, precisa avisar ajuda)
 
 PRIMEIROS SOCORROS PSICOLOGICOS NO TRABALHO
 
-Protocolo de Primeiros Socorros Psicologicos (OMS - adaptado):
+Protocolo de Primeiros Socorros Psicológicos (OMS - adaptado):
 
 PASSO 1: OBSERVE E APROXIME-SE COM RESPEITO
 
-Observe a situacao antes de intervir.
-- A pessoa esta em perigo fisico?
+Observe a situação antes de intervir.
+- A pessoa está em perigo físico?
 - Ha outras pessoas ao redor (privacidade)?
-- A pessoa esta receptiva a ajuda?
+- A pessoa está receptiva a ajuda?
 
 Aproxime-se calmamente:
-"Oi, [nome]. Vi que voce nao esta bem. Posso ajudar em algo?"
+"Oi, [nome]. Vi que você não está bem. Posso ajudar em algo?"
 
 PASSO 2: ESCUTE ATIVAMENTE (NAO PRESSIONE)
 
-Ofereça escuta, nao force:
-"Estou aqui se voce quiser conversar."
+Ofereça escuta, não force:
+"Estou aqui se você quiser conversar."
 
 Se pessoa aceita:
 - Escute sem interromper
-- Nao julgue
-- Nao minimize
-- Nao de conselhos prematuros
+- Não julgue
+- Não minimize
+- Não de conselhos prematuros
 
-Use silencio confortavel. Deixe pessoa processar.
+Use silencio confortável. Deixe pessoa processar.
 
 PASSO 3: CONFORTE E ACALME
 
-Valide emocoes:
-"Entendo que isso e muito dificil para voce."
-"E normal se sentir assim diante dessa situacao."
+Valide emoções:
+"Entendo que isso e muito difícil para você."
+"E normal se sentir assim diante dessa situação."
 
 Ajude a pessoa a se acalmar:
-- Se hiperventilacao: "Vamos respirar juntos. Inspira... expira..."
+- Se hiperventilação: "Vamos respirar juntos. Inspira... expira..."
 - Ofereça agua
 - Guie para lugar calmo e privado
-- Evite toque fisico sem permissao (pode piorar em alguns casos)
+- Evite toque físico sem permissão (pode piorar em alguns casos)
 
 PASSO 4: AVALIE NECESSIDADES E PREOCUPACOES
 
 Pergunte:
-"O que voce precisa agora?"
-"Como posso ajudar voce?"
-"Ha algo urgente que precisa ser resolvido?"
+"O que você precisa agora?"
+"Como posso ajudar você?"
+"Há algo urgente que precisa ser resolvido?"
 
-Ajude a identificar necessidades basicas:
-- Seguranca (esta em perigo?)
-- Necessidades fisicas (comida, descanso?)
-- Apoio social (alguem para buscar? familiar?)
+Ajude a identificar necessidades básicas:
+- Segurança (esta em perigo?)
+- Necessidades físicas (comida, descanso?)
+- Apoio social (alguém para buscar? familiar?)
 
 PASSO 5: OFEREÇA AJUDA PRATICA
 
 NAO:
 "Se precisar de alguma coisa, me procure."
-(Generico demais, pessoa em crise nao vai buscar)
+(Genérico demais, pessoa em crise não vai buscar)
 
 SIM:
-"Vou cancelar suas reunioes de hoje para voce descansar."
-"Vou ligar para o RH agora para acessar apoio psicologico."
-"Posso ligar para alguem da sua familia?"
+"Vou cancelar suas reuniões de hoje para você descansar."
+"Vou ligar para o RH agora para acessar apoio psicológico."
+"Posso ligar para alguém da sua família?"
 
-Ofereça opcoes concretas, nao jogue responsabilidade de volta.
+Ofereça opções concretas, não jogue responsabilidade de volta.
 
 PASSO 6: CONECTE COM APOIO CONTINUADO
 
 Primeiros socorros e primeira resposta. Pessoa precisa de suporte profissional.
 
 Conecte com:
-- Psicologo da empresa (se houver)
+- Psicólogo da empresa (se houver)
 - Programa de Apoio ao Empregado (PAE)
-- SESMT (Servico Especializado em Seguranca e Medicina do Trabalho)
-- Psicologo/psiquiatra particular
-- CAPS (Centro de Atencao Psicossocial - SUS)
+- SESMT (Serviço Especializado em Segurança e Medicina do Trabalho)
+- Psicólogo/psiquiatra particular
+- CAPS (Centro de Atenção Psicossocial - SUS)
 - Em caso de risco de vida: 188 (CVV) ou 192 (SAMU)
 
 NAO assuma responsabilidade de "resolver" o problema sozinho.
@@ -4022,178 +4021,178 @@ ABORDAGEM EMPATICA EM CRISES
 
 Frases que Ajudam:
 
-"Eu me importo com voce e quero ajudar."
-"Voce nao esta sozinho nisso."
-"E corajoso voce ter compartilhado isso comigo."
-"Nao tenho todas as respostas, mas vamos buscar ajuda juntos."
-"Isso deve estar muito dificil para voce."
+"Eu me importo com você e quero ajudar."
+"Você não está sozinho nisso."
+"E corajoso você ter compartilhado isso comigo."
+"Não tenho todas as respostas, mas vamos buscar ajuda juntos."
+"Isso deve estar muito difícil para você."
 
 Frases que Prejudicam (EVITE):
 
-"Eu sei como voce se sente." (Nao, voce nao sabe)
+"Eu sei como você se sente." (Não, você não sabe)
 "Poderia ser pior." (Minimiza sofrimento)
-"Pensa positivo!" (Invalida emocao)
-"Supera isso." (Acusatorio)
-"Outras pessoas passam por coisa pior." (Comparacao prejudicial)
-"Voce e forte, vai conseguir." (Pressao adicional)
-"Isso e frescura/mimimi." (Invalidacao total)
+"Pensa positivo!" (Invalida emoção)
+"Supera isso." (Acusatório)
+"Outras pessoas passam por coisa pior." (Comparação prejudicial)
+"Você e forte, vai conseguir." (Pressão adicional)
+"Isso e frescura/mimimi." (Invalidação total)
 
-Validacao vs Solucao:
+Validação vs Solução:
 
 Em crises, pessoa precisa primeiro de VALIDACAO, depois de SOLUCAO.
 
 Exemplo:
 
-Colaborador: "Estou em burnout. Nao consigo mais trabalhar."
+Colaborador: "Estou em Burnout. Não consigo mais trabalhar."
 
-ERRADO (Solucao imediata):
-"Entao vamos redistribuir suas tarefas e voce tira uns dias de folga."
+ERRADO (Solução imediata):
+"Então vamos redistribuir suas tarefas e você tira uns dias de folga."
 
-CERTO (Validacao primeiro):
-"Isso deve estar sendo muito pesado para voce. Obrigado por confiar em mim. Vamos pensar juntos em como aliviar isso."
+CERTO (Validação primeiro):
+"Isso deve estar sendo muito pesado para você. Obrigado por confiar em mim. Vamos pensar juntos em como aliviar isso."
 
-Tecnica do Espelhamento Emocional:
+Técnica do Espelhamento Emocional:
 
-Reflita a emocao que voce percebe:
-"Voce parece muito cansado."
-"Vejo que voce esta assustado com essa situacao."
+Reflita a emoção que você percebe:
+"Você parece muito cansado."
+"Vejo que você está assustado com essa situação."
 "Percebo tristeza no seu tom."
 
-Isso mostra que voce esta atento e valida o que a pessoa sente.
+Isso mostra que você está atento e valida o que a pessoa sente.
 
 ENCAMINHAMENTO PARA APOIO PROFISSIONAL
 
-Como Sugerir Apoio Psicologico Sem Ofender:
+Como Sugerir Apoio Psicológico Sem Ofender:
 
 ERRADO:
-"Voce precisa de terapia." (Sooa como acusacao/diagnostico)
-"Voce esta louco, procura um psicologo." (Estigmatizante)
+"Você precisa de terapia." (Soa como acusação/diagnostico)
+"Você está louco, procura um psicólogo." (Estigmatizante)
 
 CERTO:
-"Ja pensou em conversar com um profissional de saude mental? Eles tem ferramentas que podem ajudar muito."
-"Temos um programa de apoio psicologico na empresa. Posso te passar o contato? Muita gente tem se beneficiado."
-"Essa situacao e pesada demais para resolver sozinho. Que tal buscarmos um profissional que possa te apoiar melhor?"
+"Já pensou em conversar com um profissional de saúde mental? Eles tem ferramentas que podem ajudar muito."
+"Temos um programa de apoio psicológico na empresa. Posso te passar o contato? Muita gente tem se beneficiado."
+"Essa situação e pesada demais para resolver sozinho. Que tal buscarmos um profissional que possa te apoiar melhor?"
 
-Normalizacao:
+Normalização:
 
-Reduza estigma mostrando que e normal e saudavel:
-"Assim como vamos ao medico quando estamos com dor fisica, psicologo nos ajuda com dor emocional."
-"Eu ja fiz terapia e me ajudou muito." (se for verdade)
-"Saude mental e tao importante quanto saude fisica."
+Reduza estigma mostrando que é normal e saudável:
+"Assim como vamos ao médico quando estamos com dor física, psicólogo nos ajuda com dor emocional."
+"Eu já fiz terapia e me ajudou muito." (se for verdade)
+"Saúde mental e tão importante quanto saúde física."
 
 Facilite o Acesso:
 
 Remova barreiras:
-- Forneca contatos diretos (nao jogue para pessoa buscar)
+- Forneça contatos diretos (não jogue para pessoa buscar)
 - Se empresa tem PAE, explique como funciona
-- Ofereça flexibilidade de horario para consultas
+- Ofereça flexibilidade de horário para consultas
 - Garanta confidencialidade
 
 Recursos Importantes:
 
-- CVV (Centro de Valorizacao da Vida): 188 (24h, gratis, apoio emocional e prevencao suicidio)
-- CAPS (Centro de Atencao Psicossocial): Atendimento SUS para casos graves
+- CVV (Centro de Valorização da Vida): 188 (24h, grátis, apoio emocional e prevenção suicídio)
+- CAPS (Centro de Atenção Psicossocial): Atendimento SUS para casos graves
 - PAE (Programa de Apoio ao Empregado): Se empresa oferece
-- Psicologo/Psiquiatra: Encaminhamento via plano de saude ou particular
-- SAMU: 192 (emergencias medicas incluindo psiquiatricas)
+- Psicólogo/Psiquiatra: Encaminhamento via plano de saúde ou particular
+- SAMU: 192 (emergências medicas incluindo psiquiátricas)
 
 LIMITES DA ATUACAO DO LIDER
 
-O Que Voce PODE Fazer:
+O Que Você PODE Fazer:
 
 - Acolher e escutar com empatia
-- Oferecer suporte pratico imediato
+- Oferecer suporte prático imediato
 - Conectar com recursos profissionais
 - Ajustar carga de trabalho temporariamente
-- Demonstrar cuidado genuino
+- Demonstrar cuidado genuíno
 - Manter confidencialidade (exceto risco de vida)
-- Acompanhar evolucao
+- Acompanhar evolução
 
-O Que Voce NAO PODE/DEVE Fazer:
+O Que Você NAO PODE/DEVE Fazer:
 
-- DIAGNOSTICAR ("Voce tem depressao")
-- PRESCREVER TRATAMENTO ("Toma esse remedio")
-- FAZER TERAPIA (Voce nao e psicologo)
-- ASSUMIR PAPEL DE SALVADOR (Co-dependencia)
+- DIAGNOSTICAR ("Você tem depressão")
+- PRESCREVER TRATAMENTO ("Toma esse remédio")
+- FAZER TERAPIA (Você não e psicólogo)
+- ASSUMIR PAPEL DE SALVADOR (Co dependência)
 - PROMETER SIGILO EM CASOS DE RISCO DE VIDA
 - IGNORAR SINAIS DE ALERTA GRAVES
 - PRESSIONAR PESSOA A "MELHORAR" RAPIDAMENTE
 
-Quando Envolver RH/Emergencia:
+Quando Envolver RH/Emergência:
 
 ENVOLVA RH:
-- Situacao grave que exige afastamento
-- Necessidade de ajustes de funcao
-- Assedio ou violencia
-- Solicitacao de apoio estruturado (PAE)
+- Situação grave que exige afastamento
+- Necessidade de ajustes de função
+- Assédio ou violência
+- Solicitação de apoio estruturado (PAE)
 
 LIGUE 188 (CVV) ou 192 (SAMU):
-- Mencao explicita de suicidio
-- Tentativa de auto-lesao
-- Crise psicotica (perda de contato com realidade)
-- Agressividade incontrolavel
+- Menção explicita de suicídio
+- Tentativa de autolesão
+- Crise psicótica (perda de contato com realidade)
+- Agressividade incontrolável
 
-Nao Carregue Sozinho:
+Não Carregue Sozinho:
 
-Cuidar de alguem em crise e emocionalmente desgastante. Busque suporte para voce tambem:
-- Converse com RH sobre caso (anonimizando se possivel)
-- Procure supervisao com profissional
-- Cuide da sua propria saude mental
+Cuidar de alguém em crise e emocionalmente desgastante. Busque suporte para você também:
+- Converse com RH sobre caso (anonimizando sé possível)
+- Procure supervisão com profissional
+- Cuide da sua própria saúde mental
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Role-Play de Intervencao
-Com um colega, simule situacao de colaborador em crise. Pratique protocolo de primeiros socorros psicologicos.
+Exercício 1: Role-Play de Intervenção
+Com um colega, simule situação de colaborador em crise. Pratique protocolo de primeiros socorros psicológicos.
 
-Exercicio 2: Mapeamento de Recursos
-Liste todos os recursos de apoio psicologico disponiveis na sua empresa e comunidade. Tenha essa lista acessivel.
+Exercício 2: Mapeamento de Recursos
+Liste todos os recursos de apoio psicológico disponíveis na sua empresa e comunidade. Tenha essa lista acessível.
 
-Exercicio 3: Reflexao Pessoal
-Como voce reage em situacoes emocionalmente intensas? Voce tende a evitar, minimizar, ou acolher? O que pode melhorar?
+Exercício 3: Reflexão Pessoal
+Como você reage em situações emocionalmente intensas? Você tende a evitar, minimizar, ou acolher? O que pode melhorar?
 
 CONCLUSAO DO MODULO
 
-Primeiros socorros psicologicos nao e resolver o problema - e estabilizar, acolher e conectar com quem pode resolver.
+Primeiros socorros psicológicos não e resolver o problema - e estabilizar, acolher e conectar com quem pode resolver.
 
-Como lider, voce nao precisa ter todas as respostas. Precisa ter empatia, coragem para intervir e conhecimento de recursos disponiveis.
+Como líder, você não precisa ter todas as respostas. Precisa ter empatia, coragem para intervir e conhecimento de recursos disponíveis.
 
-Muitas vezes, simplesmente estar presente e dizer "Eu me importo. Voce nao esta sozinho" ja faz diferenca enorme.
+Muitas vezes, simplesmente estar presente e dizer "Eu me importo. Você não está sozinho" já faz diferença enorme.
 
-Proximos Passos:
+Próximos Passos:
 1. Mapeie recursos de apoio da empresa
-2. Pratique escuta empatica em conversas cotidianas
+2. Pratique escuta empática em conversas cotidianas
 3. Observe sua equipe para sinais de alerta
-4. Cuide da sua propria saude mental
+4. Cuide da sua própria saúde mental
 
-Lembre-se: Voce pode salvar vidas ao identificar sinais e agir com empatia.
+Lembre-se: Você pode salvar vidas ao identificar sinais e agir com empatia.
         `
       },
       {
         id: 4,
-        titulo: "Criacao de Ambiente Psicologicamente Saudavel",
-        duracao: "45 min",
-        topicos: [
-          "Caracteristicas de ambientes saudaveis",
-          "Promocao de bem-estar e engajamento",
-          "Programas de prevencao de riscos",
-          "Papel da lideranca na saude mental",
-          "Metricas e monitoramento de saude organizacional"
+        título: "Criação de Ambiente Psicologicamente Saudável",
+        duração: "45 min",
+        tópicos: [
+          "Características de ambientes saudáveis",
+          "Promoção de bem-estar e engajamento",
+          "Programas de prevenção de riscos",
+          "Papel da liderança na saúde mental",
+          "Métricas e monitoramento de saúde organizacional"
         ],
-        materialDidatico: `
+        materialDidático: `
 CRIACAO DE AMBIENTE PSICOLOGICAMENTE SAUDAVEL
 
 INTRODUCAO
 
-Ambientes de trabalho psicologicamente saudaveis nao acontecem por acaso - sao intencionalmente construidos atraves de politicas, praticas e, especialmente, lideranca.
+Ambientes de trabalho psicologicamente saudáveis não acontecem por acaso - são intencionalmente construídos através de políticas, práticas e, especialmente, liderança.
 
-Beneficios de Ambientes Saudaveis:
+Benefícios de Ambientes Saudáveis:
 - 21% mais lucratividade (Gallup)
-- 41% menos absenteismo
+- 41% menos absenteísmo
 - 59% menos rotatividade
-- 3x mais inovacao
+- 3x mais inovação
 - 66% mais engajamento
 
-Investir em saude mental nao e altruismo - e estrategia de negocios.
+Investir em saúde mental não é altruísmo - é estratégia de negócios.
 
 CARACTERISTICAS DE AMBIENTES SAUDAVEIS
 
@@ -4201,184 +4200,184 @@ CARACTERISTICAS DE AMBIENTES SAUDAVEIS
 
 Pessoas se sentem seguras para:
 - Fazer perguntas sem medo de parecer "burras"
-- Admitir erros sem punicao
+- Admitir erros sem punição
 - Discordar respeitosamente
 - Assumir riscos calculados
 - Ser autenticas
 
-Praticas:
-- Lideres admitem erros publicamente
-- Erros sao tratados como aprendizado, nao falha moral
-- Perguntas sao celebradas, nao ridicularizadas
-- Diversidade de opiniao e valorizada
+Práticas:
+- Líderes admitem erros publicamente
+- Erros são tratados como aprendizado, não falha moral
+- Perguntas são celebradas, não ridicularizadas
+- Diversidade de opinião e valorizada
 
 2. CLAREZA DE EXPECTATIVAS E PAPEIS
 
 Pessoas sabem:
 - O que se espera delas
 - Como seu trabalho contribui para objetivos maiores
-- Quem sao seus stakeholders
-- Criterios de sucesso
+- Quem são seus stakeholders
+- Critérios de sucesso
 
-Praticas:
-- Descricoes de cargo claras
+Práticas:
+- Descrições de cargo claras
 - Metas SMART
 - Feedback regular
 - Alinhamento de expectativas em 1:1
 
 3. CARGA DE TRABALHO SUSTENTAVEL
 
-Trabalho desafiador mas nao esgotante.
+Trabalho desafiador mas não esgotante.
 
-Praticas:
+Práticas:
 - Monitoramento de horas extras
-- Redistribuicao quando necessario
-- Priorizacao clara
+- Redistribuição quando necessário
+- Priorização clara
 - Realismo em prazos
 - Pausas e descanso respeitados
 
 4. AUTONOMIA E PARTICIPACAO
 
-Pessoas tem voz e influencia sobre seu trabalho.
+Pessoas têm voz e influência sobre seu trabalho.
 
-Praticas:
-- Decisoes consultivas
-- Flexibilidade de metodos
-- Participacao em planejamento
-- Ideias sao ouvidas e consideradas
+Práticas:
+- Decisões consultivas
+- Flexibilidade de métodos
+- Participação em planejamento
+- Ideias são ouvidas e consideradas
 
 5. RECONHECIMENTO E CRESCIMENTO
 
-Esforco e resultado sao valorizados.
+Esforço e resultado são valorizados.
 
-Praticas:
+Práticas:
 - Reconhecimento regular (formal e informal)
 - Oportunidades de desenvolvimento
-- Promocoes justas
-- Salarios competitivos
+- Promoções justas
+- Salários competitivos
 - Feedback construtivo
 
 6. RELACOES POSITIVAS
 
-Conexoes humanas saudaveis.
+Conexões humanas saudáveis.
 
-Praticas:
-- Momentos de integracao
-- Resolucao rapida de conflitos
-- Tolerancia zero a assedio
+Práticas:
+- Momentos de integração
+- Resolução rápida de conflitos
+- Tolerância zero a assédio
 - Cultura de respeito
 
 7. EQUILIBRIO TRABALHO-VIDA
 
 Vida pessoal e respeitada.
 
-Praticas:
-- Flexibilidade de horario quando possivel
+Práticas:
+- Flexibilidade de horário quando possível
 - Trabalho remoto/hibrido
-- Respeito a limites (nao exigir respostas fora do horario)
-- Licencas e ferias respeitadas
+- Respeito a limites (não exigir respostas fora do horário)
+- Licenças e férias respeitadas
 
 PROMOCAO DE BEM-ESTAR E ENGAJAMENTO
 
-Bem-estar e Engajamento sao conceitos relacionados mas distintos:
+Bem-estar e Engajamento são conceitos relacionados mas distintos:
 
 BEM-ESTAR:
-Estado de saude fisica, mental e social.
+Estado de saúde física, mental e social.
 
 ENGAJAMENTO:
-Conexao emocional e comprometimento com o trabalho.
+Conexão emocional e comprometimento com o trabalho.
 
 Pesquisa (Gallup):
-Apenas 13% dos trabalhadores globalmente estao engajados. 24% estao ativamente desengajados (prejudicam ativamente a organizacao).
+Apenas 13% dos trabalhadores globalmente estão engajados. 24% estão ativamente desengajados (prejudicam ativamente a organização).
 
 Drivers de Engajamento:
 
 1. PROPOSITO E SIGNIFICADO
-Trabalho tem sentido, nao e so "pagar as contas".
+Trabalho tem sentido, não e só "pagar as contas".
 
 Como Fortalecer:
-- Conecte trabalho individual a missao maior
+- Conecte trabalho individual a missão maior
 - Mostre impacto real do trabalho
-- Celebre contribuicoes significativas
+- Celebre contribuições significativas
 
 2. DESENVOLVIMENTO E APRENDIZADO
 Oportunidade de crescer e aprender.
 
 Como Fortalecer:
-- Programas de capacitacao
+- Programas de capacitação
 - Desafios progressivos
 - Mentoria
 - Budget para cursos/eventos
 
 3. RELACOES DE QUALIDADE
-Conexoes positivas com colegas e lideres.
+Conexões positivas com colegas e líderes.
 
 Como Fortalecer:
-- 1:1 regulares e genuinos
-- Momentos informais (cafe, almoco)
-- Celebracoes de equipe
+- 1:1 regulares e genuínos
+- Momentos informais (café, almoço)
+- Celebrações de equipe
 - Apoio mutuo
 
 4. CONTRIBUICAO VALORIZADA
 Sentir que o que faz importa.
 
 Como Fortalecer:
-- Reconhecimento especifico e frequente
-- Envolvimento em decisoes
+- Reconhecimento específico e frequente
+- Envolvimento em decisões
 - Feedback positivo
 
 Programas de Bem-Estar Eficazes:
 
-Nivel 1 - BASICO (Todas empresas deveriam ter):
-- PAE (Programa de Apoio ao Empregado) com acesso a psicologos
-- Politica anti-assedio clara e aplicada
-- Flexibilidade basica de horarios
-- Canais de denuncia anonimos
+Nível 1 - BASICO (Todas empresas deveriam ter):
+- PAE (Programa de Apoio ao Empregado) com acesso a psicólogos
+- Política antiassédio clara e aplicada
+- Flexibilidade básica de horários
+- Canais de denúncia anônimos
 
-Nivel 2 - INTERMEDIARIO:
-- Treinamentos de lideranca em saude mental
-- Pesquisas periodicas de clima/engajamento
-- Programas de qualidade de vida (ginastica laboral, nutricao)
-- Dias de saude mental
+Nível 2 - INTERMEDIARIO:
+- Treinamentos de liderança em saúde mental
+- Pesquisas periódicas de clima/engajamento
+- Programas de qualidade de vida (ginastica laboral, nutrição)
+- Dias de saúde mental
 
-Nivel 3 - AVANCADO:
-- Gestao integrada de riscos psicossociais
-- Programas de mindfulness/meditacao
-- Espacos de descompressao
-- Politica de trabalho remoto/hibrido estruturada
-- Licencas sabbaticias
+Nível 3 - AVANCADO:
+- Gestão integrada de riscos psicossociais
+- Programas de mindfulness/meditação
+- Espaços de descompressão
+- Política de trabalho remoto/híbrido estruturada
+- Licenças sabáticas
 
-PROGRAMAS DE PREVENCAO DE RISCOS
+PROGRAMAS DE PREVENÇÃO DE RISCOS
 
-Prevencao e mais eficaz e barata que remediacao.
+Prevenção é mais eficaz e barata que remediação.
 
-Modelo de Prevencao em 3 Niveis (OMS):
+Modelo de Prevenção em 3 Níveis (OMS):
 
-PREVENCAO PRIMARIA (Evitar que problema surja)
+PREVENÇÃO PRIMÁRIA (Evitar que problema surja)
 Objetivo: Reduzir fatores de risco
-Acoes:
-- Design de trabalho saudavel
-- Treinamento de lideran ca
-- Promocao de equilibrio
-- Cultura de seguranca psicologica
+Ações:
+- Design de trabalho saudável
+- Treinamento de lideram
+- Promoção de equilíbrio
+- Cultura de segurança psicológica
 
 PREVENCAO SECUNDARIA (Detectar cedo)
 Objetivo: Identificar sinais precoces
-Acoes:
+Ações:
 - Check-ins regulares 1:1
 - Pesquisas de pulso
-- Monitoramento de indicadores (absenteismo, rotatividade)
-- Treinamento de identificacao de sinais
+- Monitoramento de indicadores (absenteísmo, rotatividade)
+- Treinamento de identificação de sinais
 
 PREVENCAO TERCIARIA (Tratar e reabilitar)
-Objetivo: Apoiar recuperacao
-Acoes:
-- PAE e suporte psicologico
-- Ajustes de funcao/carga
-- Retorno gradual pos-afastamento
-- Acompanhamento pos-crise
+Objetivo: Apoiar recuperação
+Ações:
+- PAE e suporte psicológico
+- Ajustes de função/carga
+- Retorno gradual pôs-afastamento
+- Acompanhamento pós crise
 
-Ciclo de Gestao de Riscos (NR-1):
+Ciclo de Gestão de Riscos (NR-1):
 
 1. IDENTIFICAR PERIGOS
 Quais fatores de risco existem?
@@ -4387,806 +4386,799 @@ Quais fatores de risco existem?
 Qual probabilidade e gravidade?
 
 3. CONTROLAR RISCOS
-Eliminacao > Reducao > Controles administrativos > EPIs
+Eliminação > Redução > Controles administrativos > EPIs
 
 4. MONITORAR E REVISAR
-Esta funcionando? O que mudou?
+Está funcionando? O que mudou?
 
-PAPEL DA LIDERANCA NA SAUDE MENTAL
+PAPEL DA LIDERANÇA NA SAÚDE MENTAL
 
-Lideres tem impacto direto e massivo na saude mental da equipe.
+Líderes têm impacto direto e massivo na saúde mental da equipe.
 
 Pesquisa (Mind Share Partners):
-- 70% dos colaboradores dizem que o gestor impacta mais sua saude mental que medico ou terapeuta
-- Lideres sao responsaveis por 70% da variacao em engajamento da equipe
+- 70% dos colaboradores dizem que o gestor impacta mais sua saúde mental que médico ou terapeuta
+- Líderes são responsáveis por 70% da variação em engajamento da equipe
 
-O Que Lideres Devem Fazer:
+O Que Líderes Devem Fazer:
 
 1. MODELAR COMPORTAMENTO SAUDAVEL
-- Tirar ferias
-- Respeitar horarios
-- Falar abertamente sobre saude mental
-- Buscar apoio quando necessario
+- Tirar férias
+- Respeitar horários
+- Falar abertamente sobre saúde mental
+- Buscar apoio quando necessário
 
-Se voce trabalha 12h/dia, envia email meia-noite e nunca tira ferias, voce esta dizendo que isso e esperado.
+Se você trabalha 12h/dia, envia e-mail meia-noite e nunca tira férias, você está dizendo que isso e esperado.
 
 2. CRIAR CONVERSAS REGULARES
 
-1:1 semanais ou quinzenais focados nao so em tarefas, mas em bem-estar:
-"Como voce esta se sentindo?"
+1:1 semanais ou quinzenais focados não so em tarefas, mas em bem-estar:
+"Como você está se sentindo?"
 "Algo te preocupando?"
 "Como posso apoiar melhor?"
 
 3. AGIR NOS FEEDBACKS
 
-Pesquisas de clima sao inuteis se nao ha acao. Se equipe reporta sobrecarga, aja concretamente.
+Pesquisas de clima são inúteis se não há ação. Se equipe reporta sobrecarga, aja concretamente.
 
 4. TREINAMENTO CONTINUO
 
-Lideres devem ser treinados em:
-- Identificacao de sinais de risco
-- Primeiros socorros psicologicos
-- Gestao de conflitos
-- Comunicacao empatica
+Líderes devem ser treinados em:
+- Identificação de sinais de risco
+- Primeiros socorros psicológicos
+- Gestão de conflitos
+- Comunicação empática
 
 5. DAR AUTONOMIA E CONFIANCA
 
-Microgerenciamento e toxico. Confie na equipe.
+Micro gerenciamento e toxico. Confie na equipe.
 
 METRICAS E MONITORAMENTO DE SAUDE ORGANIZACIONAL
 
-"O que nao e medido nao e gerenciado." - Peter Drucker
+"O que não e medido não e gerenciado." - Peter Drucker
 
-Indicadores de Saude Mental Organizacional:
+Indicadores de Saúde Mental Organizacional:
 
-INDICADORES REATIVOS (Problemas ja aconteceram):
-- Taxa de absenteismo (faltas por doenca)
+INDICADORES REATIVOS (Problemas já aconteceram):
+- Taxa de absenteísmo (faltas por doença)
 - Taxa de afastamentos por transtornos mentais (CID F)
 - Taxa de rotatividade voluntaria
-- Numero de queixas/denuncias
+- Número de queixas/denúncias
 - Processos trabalhistas
 
-INDICADORES PROATIVOS (Prevencao):
+INDICADORES PROATIVOS (Prevenção):
 - Resultado de pesquisas de clima/engajamento
-- Indice de seguranca psicologica (escala de Edmondson)
-- Participacao em programas de bem-estar
-- Cobertura de treinamentos de lideranca
-- Indice de sobrecarga (horas extras, backlog)
+- Índice de segurança psicológica (escala de Edmundo)
+- Participação em programas de bem-estar
+- Cobertura de treinamentos de liderança
+- Índice de sobrecarga (horas extras, backlog)
 
 INDICADORES DE RESULTADO (Impacto final):
 - Produtividade
 - Qualidade do trabalho
-- Inovacao (ideias implementadas)
-- NPS interno (recomendacao da empresa)
-- Indice de saude organizacional
+- Inovação (ideias implementadas)
+- NPS interno (recomendação da empresa)
+- Índice de saúde organizacional
 
-Exemplo de Dashboard de Saude Mental:
+Exemplo de Dashboard de Saúde Mental:
 
-Metricas Mensais:
-- Absenteismo: X% (meta <3%)
+Métricas Mensais:
+- Absenteísmo: X% (meta <3%)
 - Afastamentos CID-F: X casos
 - Rotatividade: X% (meta <10% ao ano)
 - Resultado pesquisa pulso: X/10
 - Cobertura PAE: X% da equipe
 
 Analise:
-- Tendencia dos ultimos 6 meses
-- Comparacao entre areas/times
-- Correlacao com eventos (reestruturacao, lancamento, etc)
+- Tendencia dos últimos 6 meses
+- Comparação entre áreas/times
+- Correlação com eventos (reestruturação, lançamento, etc.)
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Avaliacao do Ambiente
-Use checklist de caracteristicas de ambientes saudaveis e avalie sua equipe (1-10 em cada). Onde esta o maior gap?
+Exercício 1: Avaliação do Ambiente
+Use checklist de características de ambientes saudáveis e avalie sua equipe (1-10 em cada). Onde está o maior gap?
 
-Exercicio 2: Plano de Acao
-Escolha 3 acoes concretas para melhorar saude mental da equipe nos proximos 90 dias.
+Exercício 2: Plano de Ação
+Escolha 3 ações concretas para melhorar saúde mental da equipe nos próximos 90 dias.
 
-Exercicio 3: Conversa de Bem-Estar
-Na proxima semana, em cada 1:1, dedique 10 minutos para perguntar genuinamente como pessoa esta e o que precisa.
+Exercício 3: Conversa de Bem-Estar
+Na próxima semana, em cada 1:1, dedique 10 minutos para perguntar genuinamente como pessoa está e o que precisa.
 
 CONCLUSAO DO MODULO
 
-Criar ambientes psicologicamente saudaveis e uma jornada continua, nao um projeto com data de termino.
+Criar ambientes psicologicamente saudáveis e uma jornada continua, não um projeto com data de termino.
 
-Organizacoes que priorizam saude mental colhem beneficios em:
-- Menor rotatividade e absenteismo
-- Maior produtividade e inovacao
-- Atracao e retencao de talentos
-- Reputacao e marca empregadora
+Organizações que priorizam saúde mental colhem benefícios em:
+- Menor rotatividade e absenteísmo
+- Maior produtividade e inovação
+- Atração e retenção de talentos
+- Reputação e marca empregadora
 - Resultados financeiros
 
-E tudo comeca com lideranca consciente, empatica e comprometida.
+E tudo começa com liderança consciente, empática e comprometida.
 
-Proximos Passos:
+Próximos Passos:
 1. Avalie o ambiente atual da sua equipe
-2. Implemente 1 pratica de promocao de bem-estar esta semana
-3. Estabeleca metricas de monitoramento
-4. Treine-se continuamente em gestao de saude mental
+2. Implemente 1 prática de promoção de bem-estar está semana
+3. Estabeleça métricas de monitoramento
+4. Treine-se continuamente em gestão de saúde mental
 
-Lembre-se: Colaboradores saudaveis = Organizacao saudavel = Resultados sustentaveis.
+Lembre-se: Colaboradores saudáveis = Organização saudável = Resultados sustentáveis.
         `
       }
     ],
-    atividadesPraticas: [
-      "Analise de casos reais de adoecimento mental",
-      "Simulacao de intervencao em crise",
+    atividadesPráticas: [
+      "Análise de casos reais de adoecimento mental",
+      "Simulação de intervenção em crise",
       "Mapeamento de recursos de apoio",
-      "Workshop de primeiros socorros psicologicos"
+      "Workshop de primeiros socorros psicológicos"
     ]
   },
   {
     id: 5,
-    slug: "prevencao-assedio-moral-sexual",
-    titulo: "Prevencao e Combate ao Assedio Moral e Sexual",
-    subtitulo: "Compliance, Etica e Protecao Legal",
-    descricao: "Compreenda as definicoes legais, aprenda a prevenir, identificar e agir adequadamente em casos de assedio moral e sexual conforme Lei 14.457/22.",
-    duracao: "3h",
-    nivel: "Intermediario",
-    categoria: "Compliance e Etica",
-    icone: "⚠️",
+    slug: "prevenção-assedio-moral-sexual",
+    título: "Prevenção e Combate ao Assédio Moral e Sexual",
+    subtítulo: "Compliance, Ética e Proteção Legal",
+    descrição: "Compreenda as definições legais, aprenda a prevenir, identificar e agir adequadamente em casos de assédio moral e sexual conforme Lei 14.457/22.",
+    duração: "3h",
+    nível: "Intermediário",
+    categoria: "Compliance e Ética",
+    ícone: "⚠️",
     cor: "from-orange-600 to-red-600",
     corBadge: "bg-orange-100 text-orange-700 border-orange-200",
-    objetivo: "Capacitar lideres para prevenir, identificar e agir adequadamente em situacoes de assedio, garantindo ambiente de respeito e conformidade legal.",
+    objetivo: "Capacitar líderes para prevenir, identificar e agir adequadamente em situações de assédio, garantindo ambiente de respeito e conformidade legal.",
     resultadosEsperados: [
-      "Ambiente livre de assedio e discriminacao",
-      "Reducao de processos trabalhistas",
-      "Cultura de respeito e seguranca psicologica",
+      "Ambiente livre de assédio e discriminação",
+      "Redução de processos trabalhistas",
+      "Cultura de respeito e segurança psicológica",
       "Conformidade com Lei 14.457/22"
     ],
-    modulos: [
+    módulos: [
       {
         id: 1,
-        titulo: "Definicoes Legais e Tipos de Assedio",
-        duracao: "60 min",
-        topicos: [
-          "Assedio moral: definicao e caracterizacao",
-          "Assedio sexual: definicao legal",
-          "Diferenca entre conflito e assedio",
+        título: "Definições Legais e Tipos de Assédio",
+        duração: "60 min",
+        tópicos: [
+          "Assédio moral: definição e caracterização",
+          "Assédio sexual: definição legal",
+          "Diferença entre conflito e assédio",
           "Tipos de assediadores",
-          "Impactos nas vitimas e organizacao"
+          "Impactos nas vítimas e organização"
         ],
-        materialDidatico: `
-PREVENCAO E COMBATE AO ASSEDIO MORAL E SEXUAL
+        materialDidático: `
+PREVENÇÃO E COMBATE AO ASSÉDIO MORAL E SEXUAL
 
 BASE LEGAL BRASILEIRA
 
 Lei 14.457/2022 - Programa Emprega + Mulheres:
-Torna obrigatoria a adocao de medidas de prevencao e combate ao assedio sexual e outras formas de violencia no ambito do trabalho.
+Torna obrigatória a adoção de medidas de prevenção e combate ao assédio sexual e outras formas de violência no âmbito do trabalho.
 
-Codigo Penal Brasileiro:
-- Art. 216-A: Crime de Assedio Sexual (1 a 2 anos de reclusao)
-- Art. 147: Crime de Ameaca
-- Art. 140: Crime de Injuria
+Código Penal Brasileiro:
+ - Art. 216-A: Crime de Assédio Sexual (1 a 2 anos de detenção)
+- Art. 147: Crime de Ameaça
+- Art. 140: Crime de Injúria
 - Art. 146: Crime de Constrangimento Ilegal
 
-CLT - Consolidacao das Leis do Trabalho:
-- Art. 483: Rescisao indireta por rigor excessivo ou falta de higiene
+CLT - Consolidação das Leis do Trabalho:
+ - Art. 483: Rescisão indireta por rigor excessivo e outras hipóteses legais
 - Justa causa para assediador
 
-ASSEDIO MORAL - DEFINICAO E CARACTERIZACAO
+ASSÉDIO MORAL - DEFINIÇÃO E CARACTERIZAÇÃO
 
-O que e Assedio Moral:
+O que é Assédio Moral:
 
-Definicao Legal:
-Exposicao de pessoas a situacoes humilhantes e constrangedoras de forma repetitiva e prolongada, no exercicio de suas atividades laborais, com o objetivo de desestabilizar emocional e profissionalmente a vitima.
+Definição Legal:
+Exposição de pessoas a situações humilhantes e constrangedoras de forma repetitiva e prolongada, no exercício de suas atividades laborais, com o objetivo de desestabilizar emocional e profissionalmente a vítima.
 
 Elementos Essenciais:
 
 1. INTENCIONALIDADE:
-Objetivo de prejudicar, humilhar ou forcar saida da vitima
+Objetivo de prejudicar, humilhar ou forçar saída da vítima
 
-2. REPETICAO:
-Nao e ato isolado - sao condutas reiteradas
-Minimo: 2-3 episodios ao longo de semanas/meses
+2. REPETIÇÃO:
+Não é ato isolado - são condutas reiteradas
+Mínimo: 2-3 episódios ao longo de semanas/meses
 
 3. DIRECIONALIDADE:
-Foco em uma pessoa ou grupo especifico
+Foco em uma pessoa ou grupo específico
 
 4. DANO:
-Causa sofrimento psiquico, moral ou fisico
+Causa sofrimento psíquico, moral ou físico
 
 5. ABUSO DE PODER:
-Uso indevido de posicao hierarquica ou grupal
+Uso indevido de posição hierárquica ou grupal
 
-Formas de Assedio Moral:
+Formas de Assédio Moral:
 
-1. ASSEDIO VERTICAL DESCENDENTE (mais comum - 75%):
+1. ASSÉDIO VERTICAL DESCENDENTE (mais comum - 75%):
 Chefia contra subordinado
 
 Exemplos:
-- Humilhacao publica em reunioes
+- Humilhação pública em reuniões
 - Sobrecarga intencional de trabalho
-- Estabelecer metas impossiveis
+- Estabelecer metas impossíveis
 - Ignorar sistematicamente
-- Retirar funcoes sem justificativa
-- Ameacas veladas de demissao
+- Retirar funções sem justificativa
+- Ameaças veladas de demissão
 
 Caso Real:
-Gerente chamava funcionaria de "burra" e "incompetente" diariamente em frente a equipe. Resultado: Funcionaria desenvolveu depressao severa, afastou-se por 6 meses. Empresa condenada a pagar R$ 100.000 + estabilidade de 12 meses.
+Gerente chamava funcionária de "burra" e "incompetente" diariamente em frente à equipe. Resultado: Funcionária desenvolveu depressão severa, afastou-se por 6 meses. Empresa condenada a pagar R$ 100.000 + estabilidade de 12 meses.
 
-2. ASSEDIO VERTICAL ASCENDENTE (raro - 5%):
+2. ASSÉDIO VERTICAL ASCENDENTE (raro - 5%):
 Subordinados contra chefia
 
 Exemplos:
-- Boicote sistematico a decisoes
-- Desrespeito publico a autoridade
+- Boicote sistemático a decisões
+- Desrespeito público a autoridade
 - Sabotagem de trabalho
-- Difamacao organizada
+- Difamação organizada
 
-3. ASSEDIO HORIZONTAL (20%):
-Entre colegas de mesmo nivel
+3. ASSÉDIO HORIZONTAL (20%):
+Entre colegas de mesmo nível
 
 Exemplos:
-- Fofocas e difamacao
+- Fofocas e difamação
 - Isolamento proposital
 - Bullying corporativo
 - Sabotagem de trabalho de colega
 
 Caso Real:
-Grupo de 5 funcionarios isolou completamente uma colega nova: nao a cumprimentavam, excluiam de conversas, escondiam informacoes necessarias ao trabalho. Vitima desenvolveu ansiedade severa. Todos os 5 foram demitidos por justa causa.
+Grupo de 5 funcionários isolou completamente uma colega nova: não a cumprimentavam, excluíam de conversas, escondiam informações necessárias ao trabalho. Vítima desenvolveu ansiedade severa. Todos os 5 foram demitidos por justa causa.
 
-4. ASSEDIO ORGANIZACIONAL (sistematico):
-Praticas da propria empresa
+4. ASSÉDIO ORGANIZACIONAL (sistemático):
+Práticas da própria empresa
 
 Exemplos:
-- Metas sistematicamente inatingiveis
-- Pressao psicologica generalizada
-- Jornadas exaustivas obrigatorias
-- Politicas humilhantes (revista intima abusiva)
+- Metas sistematicamente inalcançáveis
+- Pressão psicológica generalizada
+- Jornadas exaustivas obrigatórias
+- Políticas humilhantes (revista íntima abusiva)
 - Controle excessivo (ir ao banheiro)
 
-Praticas que Configuram Assedio Moral:
+Práticas que Configuram Assédio Moral:
 
-COMUNICACAO ABUSIVA:
+COMUNICAÇÃO ABUSIVA:
 - Gritar, xingar, insultar
-- Ameacas veladas ou diretas
-- Criticas destrutivas publicas
+- Ameaças veladas ou diretas
+- Críticas destrutivas públicas
 - Ironias e sarcasmos constantes
-- Recusar comunicacao (lei do gelo)
+- Recusar comunicação (lei do gelo)
 
-CONDICOES DE TRABALHO DEGRADANTES:
+CONDIÇÕES DE TRABALHO DEGRADANTES:
 - Retirar instrumentos de trabalho
-- Atribuir tarefas incompativeis com funcao
+- Atribuir tarefas incompatíveis com função
 - Sobrecarregar intencionalmente
-- Tirar todas as tarefas (ociosidade forcada)
-- Local inadequado (sala sem ventilacao)
+- Tirar todas as tarefas (ociosidade forçada)
+- Local inadequado (sala sem ventilação)
 
-ISOLAMENTO E EXCLUSAO:
-- Proibir colegas de falarem com vitima
-- Excluir de reunioes importantes
-- Nao repassar informacoes essenciais
-- Transferencias punitivas constantes
+ISOLAMENTO E EXCLUSÃO:
+- Proibir colegas de falarem com vítima
+- Excluir de reuniões importantes
+- Não repassar informações essenciais
+- Transferências punitivas constantes
 
-ATAQUE A REPUTACAO:
+ATAQUE À REPUTAÇÃO:
 - Espalhar boatos
 - Ridicularizar publicamente
-- Atribuir erros nao cometidos
+- Atribuir erros não cometidos
 - Questionar sanidade mental
 
-O QUE NAO E ASSEDIO MORAL
+O QUE NÃO É ASSÉDIO MORAL
 
-E importante diferenciar assedio de gestao legitima:
+É importante diferenciar assédio de gestão legítima:
 
-NAO E ASSEDIO:
+NÃO É ASSÉDIO:
 - Feedback negativo dado respeitosamente
-- Cobranca de metas realisticas
-- Mudanca de funcao por necessidade organizacional
-- Advertencia ou suspensao justificada
+- Cobrança de metas realistas
+- Mudança de função por necessidade organizacional
+- Advertência ou suspensão justificada
 - Conflito pontual entre colegas
-- Decisao desfavoravel mas fundamentada
+- Decisão desfavorável mas fundamentada
 
-CONFLITO vs ASSEDIO:
+CONFLITO vs ASSÉDIO:
 
 CONFLITO:
 - Pontual
 - Bilateral (ambos confrontam)
-- Pode ser resolvido com dialogo
-- Sem intencao de destruir
+- Pode ser resolvido com diálogo
+- Sem intenção de destruir
 
-ASSEDIO:
+ASSÉDIO:
 - Repetitivo
-- Unilateral (vitima sofre)
-- Dialogo nao resolve
-- Intencao de prejudicar
+- Unilateral (vítima sofre)
+- Diálogo não resolve
+- Intenção de prejudicar
 
-ASSEDIO SEXUAL - DEFINICAO LEGAL
+ASSÉDIO SEXUAL - DEFINIÇÃO LEGAL
 
-Codigo Penal - Art. 216-A:
+Código Penal - Art. 216-A:
 
-"Constranger alguem com o intuito de obter vantagem ou favorecimento sexual, prevalecendo-se o agente de sua condicao de superior hierarquico ou ascendencia inerentes ao exercicio de emprego, cargo ou funcao."
+"Constranger alguém com o intuito de obter vantagem ou favorecimento sexual, prevalecendo-se o agente de sua condição de superior hierárquico ou ascendência inerentes ao exercício de emprego, cargo ou função."
 
-Pena: 1 a 2 anos de reclusao
+Pena: 1 a 2 anos de reclusão
 
 Elementos do Crime:
 
 1. CONSTRANGIMENTO:
-Acao que causa desconforto, vergonha, intimidacao
+Ação que causa desconforto, vergonha, intimidação
 
 2. INTUITO SEXUAL:
 Objetivo de obter favor ou vantagem sexual
 
-3. PREVALENCIA:
-Uso de posicao de poder (hierarquia ou influencia)
+3. PREVALÊNCIA:
+Uso de posição de poder (hierarquia ou influência)
 
 4. AMBIENTE DE TRABALHO:
-Relacao decorrente de emprego, cargo ou funcao
+Relação decorrente de emprego, cargo ou função
 
-Tipos de Assedio Sexual:
+Tipos de Assédio Sexual:
 
-1. ASSEDIO POR CHANTAGEM (Quid Pro Quo):
-Exigencia de favores sexuais em troca de beneficios ou para evitar prejuizos
+1. ASSÉDIO POR CHANTAGEM (Quid Pro Quo):
+Exigência de favores sexuais em troca de benefícios ou para evitar prejuízos
 
 Exemplos:
 - "Se sair comigo, te promovo"
-- "Se nao aceitar, vai ser demitida"
-- "Preciso desse favor para aprovar suas ferias"
+- "Se não aceitar, vai ser demitida"
+- "Preciso desse favor para aprovar suas férias"
 
-Gravidade: MAXIMA - Crime tipificado
+Gravidade: MÁXIMA - Crime tipificado
 
-2. ASSEDIO POR INTIMIDACAO (Ambiental):
-Criacao de ambiente hostil atraves de insinuacoes, piadas ou gestos de cunho sexual
+2. ASSÉDIO POR INTIMIDAÇÃO (Ambiental):
+Criação de ambiente hostil através de insinuações, piadas ou gestos de cunho sexual
 
 Exemplos:
-- Comentarios sobre corpo ou aparencia
+- Comentários sobre corpo ou aparência
 - Piadas sexuais constantes
-- Mostrar conteudo pornografico
+- Mostrar conteúdo pornográfico
 - Olhares insistentes e constrangedores
-- Convites insistentes apos recusa
+- Convites insistentes após recusa
 
-Gravidade: ALTA - Pode configurar assedio moral
+Gravidade: ALTA - Pode configurar assédio moral
 
-Exemplos Praticos de Assedio Sexual:
+Exemplos Práticos de Assédio Sexual:
 
-OBVIAMENTE ASSEDIO:
-- Toques nao consensuais
-- Beijos forcados
+OBVIAMENTE ASSÉDIO:
+- Toques não consensuais
+- Beijos forçados
 - Convite para hotel
-- Mostrar orgaos genitais
-- Mensagens sexualmente explicitas
-- Promessa de beneficio por sexo
+- Mostrar órgãos genitais
+- Mensagens sexualmente explícitas
+- Promessa de benefício por sexo
 
 ZONA CINZENTA (depende do contexto):
-- Elogio a aparencia ("Esta bonita hoje")
-  * OK se: Pontual, respeitoso, publico
-  * ASSEDIO se: Constante, sobre corpo, em privado, apos recusa
+- Elogio à aparência ("Está bonita hoje")
+  * OK se: Pontual, respeitoso, público
+  * ASSÉDIO se: Constante, sobre corpo, em privado, após recusa
 
 - Convite para jantar
   * OK se: Profissional, primeira vez, aceita recusa
-  * ASSEDIO se: Insistente apos recusa, conotacao sexual
+  * ASSÉDIO se: Insistente após recusa, conotação sexual
 
 - Piada com duplo sentido
-  * OK se: Rara, contexto descontraido, sem alvo especifico
-  * ASSEDIO se: Frequente, direcionada, ambiente de trabalho
+  * OK se: Rara, contexto descontraído, sem alvo específico
+  * ASSÉDIO se: Frequente, direcionada, ambiente de trabalho
 
-NUNCA E ASSEDIO:
-- Relacao consensual entre colegas de mesmo nivel
-- Elogio profissional ("Excelente apresentacao")
+NUNCA É ASSÉDIO:
+- Relação consensual entre colegas de mesmo nível
+- Elogio profissional ("Excelente apresentação")
 - Convite respeitoso aceito voluntariamente
 
-Diferencas de Percepcao:
+Diferenças de Percepção:
 
-O QUE QUEM ASSEDIA PENSA:
-"E so brincadeira"
+O QUE QUEM ASSÉDIA PENSA:
+"É só brincadeira"
 "Estou sendo galanteador"
-"Ela gosta, so esta se fazendo"
-"Nao tem maldade"
+"Ela gosta, só está se fazendo"
+"Não tem maldade"
 
-O QUE A VITIMA SENTE:
-Desconforto, medo, nojo, humilhacao, impotencia, raiva
+O QUE A VÍTIMA SENTE:
+Desconforto, medo, nojo, humilhação, impotência, raiva
 
 REGRA DE OURO:
-Se a outra pessoa demonstra desconforto (verbal ou nao verbal), PARE IMEDIATAMENTE.
+Se a outra pessoa demonstra desconforto (verbal ou não verbal), PARE IMEDIATAMENTE.
 
-PERFIL DOS ASSEDIADORES
+PERFIL DOS ASSÉDIADORES
 
 Tipos Comuns:
 
 1. O PREDADOR CONSCIENTE:
-- Sabe que esta assediando
+- Sabe que está assediando
 - Age deliberadamente
 - Abusa do poder
-- Escolhe vitimas vulneraveis
-- Repeate comportamento com multiplas pessoas
+- Escolhe vítimas vulneráveis
+- Repete comportamento com múltiplas pessoas
 
-2. O INSENSIVEL CULTURAL:
-- Acha normal pela criacao
+2. O INSENSÍVEL CULTURAL:
+- Acha normal pela criação
 - "Sempre foi assim"
-- Nao percebe o dano
+- Não percebe o dano
 - Pode mudar se conscientizado
 
 3. O NARCISISTA:
-- Se acha irresistivel
-- Nao aceita rejeicao
-- Ve recusa como desafio
+- Se acha irresistível
+- Não aceita rejeição
+- Vê recusa como desafio
 - Falta de empatia
 
 4. O VINGATIVO:
-- Usa assedio como retaliacao
-- Punicao por rejeicao
-- Punicao por denuncia previa
+- Usa assédio como retaliação
+- Punição por rejeição
+- Punição por denúncia prévia
 
-IMPACTOS DO ASSEDIO
+IMPACTOS DO ASSÉDIO
 
-Impactos na Vitima:
+Impactos na Vítima:
 
-SAUDE MENTAL:
-- Ansiedade generalizada (87% das vitimas)
-- Depressao (62%)
-- Sindrome do panico (34%)
+SAÚDE MENTAL:
+- Ansiedade generalizada (87% das vítimas)
+- Depressão (62%)
+- Síndrome do pânico (34%)
 - TEPT (28%)
 - Pensamentos suicidas (19%)
 
-SAUDE FISICA:
-- Disturbios do sono (92%)
-- Problemas gastricos (68%)
-- Hipertensao (45%)
-- Dores cronicas (53%)
+SAÚDE FÍSICA:
+- Distúrbios do sono (92%)
+- Problemas gástricos (68%)
+- Hipertensão (45%)
+- Dores crônicas (53%)
 
 VIDA PROFISSIONAL:
 - Queda de produtividade (100%)
 - Faltas frequentes (78%)
-- Pedido de demissao (45%)
-- Afastamento por doenca (34%)
+- Pedido de demissão (45%)
+- Afastamento por doença (34%)
 
 VIDA PESSOAL:
 - Problemas nos relacionamentos (71%)
 - Isolamento social (64%)
 - Perda de autoestima (95%)
 
-Impactos na Organizacao:
+Impactos na Organização:
 
 FINANCEIROS:
 - Processos trabalhistas (R$ 50.000 a R$ 500.000)
-- Afastamentos e substituicoes
+- Afastamentos e substituições
 - Turnover aumentado
 - Perda de produtividade (20-40%)
 
 REPUTACIONAIS:
-- Imagem publica manchada
+- Imagem pública manchada
 - Dificuldade de atrair talentos
 - Perda de contratos
-- Exposicao midiatica negativa
+- Exposição midiática negativa
 
 CULTURAIS:
-- Clima organizacional toxico
+ - Clima organizacional tóxico
 - Perda de engajamento
 - Cultura de medo
-- Queda na inovacao
+- Queda na inovação
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Identifique
-Caso: Gerente elogia aparencia fisica de funcionaria diariamente, faz comentarios sobre roupa, convida para jantar semanalmente mesmo apos 5 recusas. E assedio? Que tipo?
+Exercício 1: Identifique
+Caso: Gerente elogia aparência física de funcionária diariamente, faz comentários sobre roupa, convida para jantar semanalmente mesmo após 5 recusas. É assédio? Que tipo?
 
-Exercicio 2: Acao do Lider
-Voce descobre que um colaborador seu esta assediando moralmente outro. O que fazer? Liste 5 acoes imediatas.
+Exercício 2: Ação do Líder
+Você descobre que um colaborador seu está assediando moralmente outro. O que fazer? Liste 5 ações imediatas.
 
-CONCLUSAO DO MODULO
-
-Assedio moral e sexual sao crimes graves que destroem vidas e organizacoes. Como lider, voce tem responsabilidade legal e moral de prevenir e combater.
-
-Proximos Passos:
-1. Conheca a politica de prevencao da empresa
-2. Reflita sobre proprias condutas
 3. Observe comportamentos na equipe
 4. Esteja preparado para agir rapidamente
 
-Lembre-se: Tolerancia zero com assedio. Uma cultura de respeito comeca com voce.
+Lembre-se: Tolerância zero com assédio. Uma cultura de respeito começa com você.
         `
       },
       {
         id: 2,
-        titulo: "Identificacao e Intervencao em Casos de Assedio",
-        duracao: "50 min",
-        topicos: [
-          "Como investigar denuncias",
-          "Acolhimento da vitima",
-          "Protecao contra retaliacao",
+        título: "Identificação e Intervenção em Casos de Assédio",
+        duração: "50 min",
+        tópicos: [
+          "Como investigar denúncias",
+          "Acolhimento da vítima",
+          "Proteção contra retaliação",
           "Medidas disciplinares adequadas",
           "Responsabilidade civil e criminal"
         ],
-        materialDidatico: `
-IDENTIFICACAO E INTERVENCAO EM CASOS DE ASSEDIO
+        materialDidático: `
+IDENTIFICAÇÃO E INTERVENÇÃO EM CASOS DE ASSÉDIO
 
-INTRODUCAO
+INTRODUÇÃO
 
-Quando um caso de assedio e denunciado ou identificado, a forma como a organizacao responde define se a vitima sera protegida ou revitimizada, se o agressor sera responsabilizado ou continuara agindo, e se a cultura organizacional sera de tolerancia zero ou omissao.
+Quando um caso de assédio é denunciado ou identificado, a forma como a organização responde define se a vítima será protegida ou vitimizada, se o agressor será responsabilizado ou continuará agindo, e se a cultura organizacional será de tolerância zero ou omissão.
 
-Gestao inadequada de casos de assedio:
-- Aumenta risco juridico exponencialmente
-- Multiplica dano emocional a vitima
-- Cria precedente perigoso ("aqui nao da nada")
-- Destroi confianca na organizacao
+Gestão inadequada de casos de assédio:
+- Aumenta risco jurídico exponencialmente
+- Multiplica dano emocional à vítima
+- Cria precedente perigoso ("aqui não dá nada")
+- Destrói confiança na organização
 
-COMO INVESTIGAR DENUNCIAS
+COMO INVESTIGAR DENÚNCIAS
 
-Principio Fundamental:
-Toda denuncia deve ser levada a serio e investigada com agilidade, imparcialidade e confidencialidade.
+Princípio Fundamental:
+Toda denúncia deve ser levada a sério e investigada com agilidade, imparcialidade e confidencialidade.
 
-Protocolo de Investigacao:
+Protocolo de Investigação:
 
-PASSO 1: RECEBIMENTO DA DENUNCIA
+PASSO 1: RECEBIMENTO DA DENÚNCIA
 
-Canais possiveis:
-- Canal de denuncia anonimo (Compliance/Ouvidoria)
-- Relato direto ao lider/RH
-- Comite de Etica
+Canais possíveis:
+- Canal de denúncia anônimo (Compliance/Ouvidoria)
+- Relato direto ao líder/RH
+- Comitê de Ética
 - Sindicato
-- Email corporativo
+- E-mail corporativo
 
-Ao receber denuncia:
-- Agradeca a coragem de reportar
-- Garanta confidencialidade (dentro do possivel)
+Ao receber denúncia:
+- Agradeça a coragem de reportar
+- Garanta confidencialidade (dentro do possível)
 - Documente TUDO por escrito
-- Nao minimize, julgue ou questione veracidade prematuramente
-- Informe os proximos passos
+- Não minimize, julgue ou questione veracidade prematuramente
+- Informe os próximos passos
 
-Frase-chave:
-"Obrigado por confiar em mim/nesta empresa. Vamos tratar isso com a seriedade que merece. Vou documentar tudo que voce compartilhar e iniciar investigacao imediata. Posso fazer algumas perguntas para entender melhor?"
+Frase chave:
+"Obrigado por confiar em mim/nesta empresa. Vamos tratar isso com a seriedade que merece. Vou documentar tudo que você compartilhar e iniciar investigação imediata. Posso fazer algumas perguntas para entender melhor?"
 
-PASSO 2: DOCUMENTACAO INICIAL
+PASSO 2: DOCUMENTAÇÃO INICIAL
 
 Registre:
-- Data, hora, local da denuncia
-- Nome da vitima (ou anonimo, se aplicavel)
+- Data, hora, local da denúncia
+ - Nome da vítima (ou anônimo, se aplicável)
 - Nome do suposto agressor
-- Descricao detalhada dos fatos
+- Descrição detalhada dos fatos
 - Datas aproximadas dos incidentes
 - Testemunhas (se houver)
-- Evidencias (emails, mensagens, gravacoes - se houver)
+ - Evidências (e-mails, mensagens, gravações - se houver)
 
 Perguntas clarificadoras:
 - "Pode descrever exatamente o que aconteceu?"
 - "Quando isso ocorreu pela primeira vez?"
 - "Quantas vezes aconteceu?"
 - "Havia outras pessoas presentes?"
-- "Voce comunicou verbalmente ou por escrito que esse comportamento te incomodava?"
-- "Voce tem algum registro (mensagens, emails, anotacoes)?"
+- "Você comunicou verbalmente ou por escrito que esse comportamento te incomodava?"
+- "Você tem algum registro (mensagens, e-mails, anotações)?"
 
-IMPORTANTE: Nao conduza interrogatorio. Seja empatico e acolhedor.
+IMPORTANTE: Não conduza interrogatório. Seja empático e acolhedor.
 
-PASSO 3: MEDIDAS IMEDIATAS DE PROTECAO
+PASSO 3: MEDIDAS IMEDIATAS DE PROTEÇÃO
 
-Mesmo antes da conclusao da investigacao, proteja a vitima:
+Mesmo antes da conclusão da investigação, proteja a vítima:
 
-Opcoes:
-- Separacao fisica (mudar sala/turno do agressor, nao da vitima)
-- Afastamento temporario do suposto agressor (com remuneracao)
-- Proibicao de contato entre partes
-- Acompanhamento psicologico para vitima
-- Flexibilidade de horario para vitima
+Opções:
+- Separação física (mudar sala/turno do agressor, não da vítima)
+- Afastamento temporário do suposto agressor (com remuneração)
+- Proibição de contato entre partes
+- Acompanhamento psicológico para vítima
+- Flexibilidade de horário para vítima
 
 NUNCA:
-- Afastar ou transferir vitima (e punicao disfarçada)
-- Expor vitima a contato continuo com agressor
-- Minimizar ou pedir "paciencia"
-- Sugerir que vitima "exagerou"
+- Afastar ou transferir vítima (é punição disfarçada)
+- Expor vítima a contato contínuo com agressor
+- Minimizar ou pedir "paciência"
+- Sugerir que vítima "exagerou"
 
-PASSO 4: INVESTIGACAO FORMAL
+PASSO 4: INVESTIGAÇÃO FORMAL
 
 Quem conduz:
-- Comite de Etica interno
-- RH com treinamento especifico
-- Empresa externa de compliance (casos graves/complexos)
-- Nunca o lider direto de uma das partes
+- Comitê de Ética interno
+- RH com treinamento específico
+ - Empresa externa de compliance (casos graves/complexos)
+- Nunca o líder direto de uma das partes
 
 Oitivas (Entrevistas):
 
-1. VITIMA
+1. VÍTIMA
 - Local privado, seguro, com testemunha neutra (preferencialmente RH)
-- Perguntas abertas, nao indutivas
-- Permitir que conte a historia sem interrupcoes
+- Perguntas abertas, não indutivas
+ - Permitir que conte a história sem interrupções
 - Registrar fielmente, preferencialmente gravado com consentimento
 
 2. SUPOSTO AGRESSOR
-- Direito de defesa e fundamental
-- Apresentar acusacoes de forma objetiva
-- Ouvir versao sem julgamento previo
+- Direito de defesa é fundamental
+- Apresentar acusações de forma objetiva
+- Ouvir versão sem julgamento prévio
 - Registrar tudo
 
 3. TESTEMUNHAS
 - Pessoas que presenciaram ou tem conhecimento
-- Entrevistas separadas (nao coletivas)
-- Perguntas sobre fatos observados, nao opinioes
+- Entrevistas separadas (não coletivas)
+- Perguntas sobre fatos observados, não opiniões
 
-PASSO 5: ANALISE DE EVIDENCIAS
+PASSO 5: ANÁLISE DE EVIDÊNCIAS
 
 Tipos de evidencia:
-- Mensagens (WhatsApp, email, SMS)
-- Gravacoes (audio/video)
+- Mensagens (WhatsApp, e-mail, SMS)
+- Gravações (áudio/vídeo)
 - Documentos
-- Registros de presenca/local
-- Cameras de seguranca
-- Historico de denuncias anteriores contra o mesmo agressor
+- Registros de presença/local
+- Câmeras de segurança
+- Histórico de denúncias anteriores contra o mesmo agressor
 
 Avalie:
-- Consistencia entre relatos
-- Concordancia entre evidencias e depoimentos
-- Padrao de comportamento (caso recorrente)
+- Consistência entre relatos
+ - Concordância entre evidências e depoimentos
+- Padrão de comportamento (caso recorrente)
 
-PASSO 6: CONCLUSAO DA INVESTIGACAO
+PASSO 6: CONCLUSÃO DA INVESTIGAÇÃO
 
-Possiveis conclusoes:
-1. Procedente (Assedio comprovado)
+Possíveis conclusões:
+1. Procedente (Assédio comprovado)
 2. Parcialmente Procedente (Algumas condutas comprovadas)
-3. Improcedente (Nao ha evidencias suficientes)
-4. Infundada (Denuncia falsa, com ma-fe)
+3. Improcedente (Não há evidências suficientes)
+4. Infundada (Denúncia falsa, com má-fé)
 
 Prazo:
-Investigacao deve ser concluida em 30 dias corridos (prazo razoavel). Casos complexos podem estender, mas comunique as partes.
+Investigação deve ser concluída em 30 dias corridos (prazo razoável). Casos complexos podem estender, mas comunique as partes.
 
-PASSO 7: MEDIDAS POS-INVESTIGACAO
+PASSO 7: MEDIDAS PÓS-INVESTIGAÇÃO
 
-Se PROCEDENTE:
-- Aplicacao de medida disciplinar ao agressor (advertencia, suspensao, demissao por justa causa)
-- Documentacao formal completa
-- Comunicacao a vitima sobre medidas tomadas (sem detalhes disciplinares por privacidade)
-- Monitoramento para garantir nao-retaliacao
+ Se PROCEDENTE:
+- Aplicação de medida disciplinar ao agressor (advertência, suspensão, demissão por justa causa)
+- Documentação formal completa
+- Comunicação à vítima sobre medidas tomadas (sem detalhes disciplinares por privacidade)
+- Monitoramento para garantir não-retaliação
 
 Se IMPROCEDENTE:
 - Arquivamento do caso com justificativa
-- Comunicacao as partes
-- Orientacao educativa (se houver comportamento inadequado mas nao configurou assedio)
-- Protecao contra retaliacao da parte acusada falsamente
+ - Comunicação às partes
+- Orientação educativa (se houver comportamento inadequado mas não configurou assédio)
+- Proteção contra retaliação da parte acusada falsamente
 
-ACOLHIMENTO DA VITIMA
+ACOLHIMENTO DA VÍTIMA
 
-A forma como vitima e tratada define se ela se recuperara ou ficara ainda mais traumatizada.
+A forma como a vítima é tratada define se ela se recuperará ou ficará ainda mais traumatizada.
 
-Principios do Acolhimento:
+Princípios do Acolhimento:
 
-1. ACREDITE (Presuncao de Veracidade Inicial)
+1. ACREDITE (Presunção de Veracidade Inicial)
 
-Nao:
-- "Tem certeza que nao foi mal-entendido?"
-- "Voce nao esta exagerando?"
-- "Sera que voce nao provocou?"
+Não:
+- "Tem certeza que não foi mal-entendido?"
+- "Você não está exagerando?"
+- "Será que você não provocou?"
 
 Sim:
-- "Obrigado por compartilhar. Isso nao deveria ter acontecido."
+- "Obrigado por compartilhar. Isso não deveria ter acontecido."
 - "Vamos investigar e tomar medidas adequadas."
-- "Voce nao tem culpa disso."
+- "Você não tem culpa disso."
 
 2. CONFIDENCIALIDADE
 
-Garanta que apenas pessoas estritamente necessarias saberao (RH, Comite Etica, Juridico). Vazamento de informacao e violacao grave.
+ Garanta que apenas pessoas estritamente necessárias saberão (RH, Comitê de Ética, Jurídico). Vazamento de informação é violação grave.
 
-3. NAO-JULGAMENTO
+3. NÃO JULGAMENTO
 
 Evite perguntas que culpabilizam:
-- "Voce estava usando o que?"
-- "Voce deu motivo?"
-- "Por que nao disse nao mais claramente?"
+- "Você estava usando o que?"
+- "Você deu motivo?"
+- "Por que não disse não mais claramente?"
 
 4. OFEREÇA SUPORTE PRATICO
 
-- Encaminhe para psicologo
-- Ofereça dias de afastamento remunerado se necessario
-- Flexibilize horario
+- Encaminhe para psicólogo
+- Ofereça dias de afastamento remunerado sé necessário
+- Flexibilize horário
 - Oriente sobre direitos legais
-- Conecte com advogado (se aplicavel)
+- Conecte com advogado (se aplicável)
 
 5. ACOMPANHAMENTO CONTINUO
 
-Nao abandone a vitima pos-investigacao. Check-ins regulares:
-"Como voce esta?"
-"Ha algo mais que possamos fazer?"
-"Voce esta se sentindo segura?"
+Não abandone a vítima pós-investigação. Check-ins regulares:
+"Como você esta?"
+"Há algo mais que possamos fazer?"
+"Você está se sentindo segura?"
 
-PROTECAO CONTRA RETALIACAO
+PROTEÇÃO CONTRA RETALIAÇÃO
 
-Retaliacao e qualquer acao negativa contra quem denunciou ou testemunhou.
+Retaliação é qualquer ação negativa contra quem denunciou ou testemunhou.
 
-Exemplos de Retaliacao:
-- Demissao ou rebaixamento
-- Transferencia punitiva
+Exemplos de Retaliação:
+- Demissão ou rebaixamento
+- Transferência punitiva
 - Sobrecarga de trabalho
 - Isolamento social
-- Difamacao
-- Ameacas
+- Difamação
+- Ameaças
 
-Retaliacao e ILEGAL (Art. 146-A do Codigo Penal, incluido pela Lei 14.457/2022).
+Retaliação é ILEGAL (Art. 146-A do Código Penal, incluído pela Lei 14.457/2022).
 
-Como Prevenir Retaliacao:
+Como Prevenir Retaliação:
 
-1. COMUNICACAO CLARA
-Ao concluir investigacao, comunique formalmente:
-"Qualquer ato de retaliacao contra [vitima/testemunhas] sera tratado como falta grave e podera resultar em demissao por justa causa."
+1. COMUNICAÇÃO CLARA
+Ao concluir investigação, comunique formalmente:
+"Qualquer ato de retaliação contra [vítima/testemunhas] será tratado como falta grave e poderá resultar em demissão por justa causa."
 
 2. MONITORAMENTO ATIVO
 Nos 6 meses seguintes, monitore:
-- Mudancas na avaliacao de desempenho da vitima
-- Transferencias ou alteracoes de funcao
-- Comentarios ou comportamentos hostis de colegas/lideranca
+- Mudanças na avaliação de desempenho da vítima
+- Transferências ou alterações de função
+- Comentários ou comportamentos hostis de colegas/liderança
 
 3. CANAL ABERTO
-Informe vitima/testemunhas:
-"Se voce sofrer qualquer tipo de retaliacao, me comunique imediatamente."
+Informe vítima/testemunhas:
+"Se você sofrer qualquer tipo de retaliação, me comunique imediatamente."
 
 4. SANCAO RIGOROSA
-Se retaliacao for identificada, sancao deve ser equivalente ou superior ao assedio original.
+Se retaliação for identificada, sanção deve ser equivalente ou superior ao assédio original.
 
 MEDIDAS DISCIPLINARES ADEQUADAS
 
-A sancao deve ser proporcional a gravidade, reincidencia e impacto.
+A sanção deve ser proporcional a gravidade, reincidência e impacto.
 
 Escalada Disciplinar:
 
 1. ADVERTENCIA VERBAL
-- Casos leves, primeira ocorrencia, sem ma-fe
-- Exemplo: Piada inapropriada isolada, sem intencao de ofender, apos feedback imediato parou
+- Casos leves, primeira ocorrência, sem má-fé
+- Exemplo: Piada inapropriada isolada, sem intenção de ofender, após feedback imediato parou
 
 2. ADVERTENCIA ESCRITA
-- Casos moderados ou reincidencia apos advertencia verbal
-- Exemplo: Comentarios inapropriados recorrentes mesmo apos orientacao
+- Casos moderados ou reincidência após advertência verbal
+- Exemplo: Comentários inapropriados recorrentes mesmo após orientação
 
-3. SUSPENSAO
-- Casos graves ou reincidencia apos advertencia escrita
-- Exemplo: Assedio moral com humilhacao publica, mas sem dano psicologico severo
+3. SUSPENSÃO
+- Casos graves ou reincidência após advertência escrita
+- Exemplo: Assédio moral com humilhação pública, mas sem dano psicológico severo
 
-4. DEMISSAO POR JUSTA CAUSA
-- Casos muito graves, assedio sexual, reincidencia grave, dano severo
-- Exemplo: Assedio sexual com contato fisico, assedio moral sistematico que gerou afastamento da vitima, retaliacao pos-denuncia
+4. DEMISSÃO POR JUSTA CAUSA
+- Casos muito graves, assédio sexual, reincidência grave, dano severo
+- Exemplo: Assédio sexual com contato físico, assédio moral sistemático que gerou afastamento da vítima, retaliação pós denúncia
 
-Jurisprudencia:
+Jurisprudência:
 Tribunais tem confirmado justa causa em casos de:
-- Assedio sexual (qualquer intensidade)
-- Assedio moral recorrente
-- Retaliacao pos-denuncia
+- Assédio sexual (qualquer intensidade)
+- Assédio moral recorrente
+- Retaliação pós denúncia
 
 Base Legal:
-- CLT Art. 482 (alínea "b" - incontinencia de conduta; "j" - ato lesivo da honra)
+- CLT Art. 482 (alínea "b" - incontinência de conduta; "j" - ato lesivo da honra)
 - Lei 14.457/2022 (Programa Emprega + Mulheres)
 
 RESPONSABILIDADE CIVIL E CRIMINAL
 
-Assedio nao e apenas questao trabalhista/disciplinar - e tambem CIVIL e CRIMINAL.
+Assédio não é apenas questão trabalhista/disciplinar - é também CIVIL e CRIMINAL.
 
 RESPONSABILIDADE CRIMINAL (Agressor):
 
-ASSEDIO SEXUAL:
-- Crime: Art. 216-A do Codigo Penal
-- Pena: 1 a 2 anos de detencao
-- Acao penal: Publica condicionada a representacao
+ASSÉDIO SEXUAL:
+- Crime: Art. 216-A do Código Penal
+- Pena: 1 a 2 anos de detenção
+- Ação penal: Pública condicionada a representação
 
 CONSTRANGIMENTO ILEGAL:
-- Crime: Art. 146 do Codigo Penal (violencia ou grave ameaca para obrigar a fazer/nao fazer algo)
+- Crime: Art. 146 do Código Penal (violência ou grave ameaça para obrigar a fazer/não fazer algo)
 - Pena: 3 meses a 1 ano
 
-INJURIA/DIFAMACAO/CALUNA:
+INJÚRIA/DIFAMAÇÃO/CALÚNIA:
 - Crimes contra honra (Art. 138, 139, 140 do CP)
 
-STALKING (Perseguicao):
+STALKING (Perseguição):
 - Crime: Art. 147-A do CP
 - Pena: 6 meses a 2 anos
 
 RESPONSABILIDADE CIVIL (Agressor + Empresa):
 
 Agressor:
-- Indenizacao por danos morais a vitima
+- Indenização por danos morais à vítima
 
 Empresa (Responsabilidade Objetiva):
-- Se sabia e nao agiu
-- Se deveria saber (sinais evidentes) e nao agiu
-- Se nao tem politica de prevencao
-- Se nao investigou denuncia adequadamente
+- Se sabia e não agiu
+- Se deveria saber (sinais evidentes) e não agiu
+- Se não tem política de prevenção
+- Se não investigou denúncia adequadamente
 - Se retaliou denunciante
 
-Valores de Indenizacao (Jurisprudencia):
-- Assedio moral: R$ 5 mil a R$ 50 mil+
-- Assedio sexual: R$ 10 mil a R$ 100 mil+
-- Casos graves com dano psicologico severo: R$ 100 mil a R$ 500 mil+
+Valores de Indenização (Jurisprudência):
+- Assédio moral: R$ 5 mil a R$ 50 mil+
+- Assédio sexual: R$ 10 mil a R$ 100 mil+
+- Casos graves com dano psicológico severo: R$ 100 mil a R$ 500 mil+
 
 Precedente Importante:
-TST-RR-0010551-50.2016.5.03.0027 (2020): Empresa condenada a pagar R$ 80 mil por assedio moral a gerente que adoeceu, mesmo tendo investigado, porque medidas foram insuficientes.
+TST-RR-0010551-50.2016.5.03.0027 (2020): Empresa condenada a pagar R$ 80 mil por assédio moral a gerente que adoeceu, mesmo tendo investigado, porque medidas foram insuficientes.
 
-RESPONSABILIDADE DO LIDER:
+RESPONSABILIDADE DO LÍDER:
 
-Lider que:
-- Presenciou e nao agiu
+Líder que:
+- Presenciou e não agiu
 - Sabia e omitiu
-- Praticou assedio
+- Praticou assédio
 
 Pode ser:
 - Demitido por justa causa
@@ -5195,237 +5187,237 @@ Pode ser:
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Protocolo de Investigacao
-Um colaborador denuncia assedio moral do gestor. Descreva passo a passo como voce conduziria investigacao.
+Exercício 1: Protocolo de Investigação
+Um colaborador denuncia assédio moral do gestor. Descreva passo a passo como você conduziria investigação.
 
-Exercicio 2: Acolhimento
-Como voce acolheria uma vitima de assedio sexual que esta chorando, tremendo e com vergonha de relatar?
+Exercício 2: Acolhimento
+Como você acolheria uma vítima de assédio sexual que está chorando, tremendo e com vergonha de relatar?
 
-Exercicio 3: Medida Disciplinar
-Caso: Funcionario de 10 anos na empresa, bom desempenho, fez comentario sexual explicito para coléga. E primeira ocorrencia, mas comentario foi grave e ofensivo. Qual medida disciplinar?
+Exercício 3: Medida Disciplinar
+Caso: Funcionário de 10 anos na empresa, bom desempenho, fez comentário sexual explícito para colega. É primeira ocorrência, mas comentário foi grave e ofensivo. Qual medida disciplinar?
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-Intervencao adequada em casos de assedio:
-- Protege a vitima
+Intervenção adequada em casos de assédio:
+- Protege a vítima
 - Responsabiliza o agressor
-- Protege a organizacao de passivos legais
-- Envia mensagem clara: assedio nao sera tolerado
+- Protege a organização de passivos legais
+- Envia mensagem clara: assédio não será tolerado
 
-Lideres devem estar preparados para agir com agilidade, imparcialidade, empatia e firmeza.
+Líderes devem estar preparados para agir com agilidade, imparcialidade, empatia e firmeza.
 
-Proximos Passos:
-1. Conheca o protocolo de denuncia da empresa
-2. Pratique acolhimento empatico
+Próximos Passos:
+1. Conheça o protocolo de denúncia da empresa
+2. Pratique acolhimento empático
 3. Documente tudo sempre
-4. Aja rapido em qualquer sinal de assedio
+4. Aja rápido em qualquer sinal de assédio
 
-Lembre-se: Omissao e cumplicidade. Intervencao adequada salva vidas e protege todos.
+Lembre-se: Omissão é cumplicidade. Intervenção adequada salva vidas e protege todos.
         `
       },
       {
         id: 3,
-        titulo: "Criacao de Cultura de Respeito e Prevencao",
-        duracao: "45 min",
-        topicos: [
-          "Politicas e codigos de conduta eficazes",
-          "Treinamentos e campanhas de conscientizacao",
-          "Canais de denuncia seguros e anonimos",
-          "Papel da lideranca na modelagem de comportamento",
-          "Metricas e monitoramento"
+        título: "Criação de Cultura de Respeito e Prevenção",
+        duração: "45 min",
+        tópicos: [
+          "Políticas e códigos de conduta eficazes",
+          "Treinamentos e campanhas de conscientização",
+          "Canais de denúncia seguros e anônimos",
+          "Papel da liderança na modelagem de comportamento",
+          "Métricas e monitoramento"
         ],
-        materialDidatico: `
-CRIACAO DE CULTURA DE RESPEITO E PREVENCAO
+        materialDidático: `
+CRIAÇÃO DE CULTURA DE RESPEITO E PREVENÇÃO
 
-INTRODUCAO
+INTRODUÇÃO
 
-A melhor forma de combater assedio e preveni-lo. Organizacoes com cultura de respeito enraizada tem 80% menos casos de assedio (pesquisa EEOC - Equal Employment Opportunity Commission).
+A melhor forma de combater assédio é preveni-lo. Organizações com cultura de respeito enraizada têm 80% menos casos de assédio (pesquisa EEOC - Equal Employment Opportunity Commission).
 
 Criar cultura de respeito exige:
-1. Politicas claras
-2. Treinamento continuo
-3. Lideranca exemplar
-4. Canais de denuncia eficazes
-5. Consequencias reais para violacoes
+1. Políticas claras
+2. Treinamento contínuo
+3. Liderança exemplar
+4. Canais de denúncia eficazes
+5. Consequências reais para violações
 
-POLITICAS E CODIGOS DE CONDUTA EFICAZES
+POLÍTICAS E CÓDIGOS DE CONDUTA EFICAZES
 
-Politica de Prevencao de Assedio deve incluir:
+Política de Prevenção de Assédio deve incluir:
 
-1. DEFINICOES CLARAS
+1. DEFINIÇÕES CLARAS
 
-"Nesta empresa, consideramos assedio moral:
-[Definicao clara com exemplos]
+"Nesta empresa, consideramos assédio moral:
+[Definição clara com exemplos]
 
-Consideramos assedio sexual:
-[Definicao clara com exemplos]"
+Consideramos assédio sexual:
+[Definição clara com exemplos]"
 
-Evite linguagem juridica complexa. Use exemplos concretos.
+Evite linguagem jurídica complexa. Use exemplos concretos.
 
-2. DECLARACAO DE TOLERANCIA ZERO
+2. DECLARAÇÃO DE TOLERÂNCIA ZERO
 
-"[Nome da Empresa] tem tolerancia zero com qualquer forma de assedio, discriminacao ou retaliacao. Violacoes serao investigadas e punidas rigorosamente, podendo resultar em demissao por justa causa."
+"[Nome da Empresa] tem tolerância zero com qualquer forma de assédio, discriminação ou retaliação. Violações serão investigadas e punidas rigorosamente, podendo resultar em demissão por justa causa."
 
 3. RESPONSABILIDADES
 
 De TODOS:
 - Tratar colegas com respeito
-- Reportar assedio testemunhado
-- Cooperar com investigacoes
+- Reportar assédio testemunhado
+- Cooperar com investigações
 
-De LIDERES:
+De LÍDERES:
 - Modelar comportamento respeitoso
 - Intervir imediatamente em condutas inadequadas
-- Acolher denuncias
-- Nao retaliar
+- Acolher denúncias
+- Não retaliar
 
 De RH/COMPLIANCE:
-- Investigar denuncias
+- Investigar denúncias
 - Aplicar medidas disciplinares
-- Monitorar eficacia da politica
+- Monitorar eficácia da política
 
-4. PROCEDIMENTOS DE DENUNCIA
+4. PROCEDIMENTOS DE DENÚNCIA
 
-"Se voce sofrer ou testemunhar assedio, pode denunciar atraves de:
-- Canal de denuncia anonimo: [link/telefone]
-- RH: [email/telefone]
-- Comite de Etica: [contato]
+"Se você sofrer ou testemunhar assédio, pode denunciar através de:
+- Canal de denúncia anônimo: [link/telefone]
+- RH: [e-mail/telefone]
+- Comitê de Ética: [contato]
 - Ouvidoria externa: [contato]
 
-Todas as denuncias serao investigadas com confidencialidade."
+"Todas as denúncias serão investigadas com confidencialidade."
 
-5. PROTECAO CONTRA RETALIACAO
+5. PROTEÇÃO CONTRA RETALIAÇÃO
 
-"Qualquer retaliacao contra denunciante ou testemunha sera tratada como falta gravissima."
+"Qualquer retaliação contra denunciante ou testemunha será tratada como falta gravíssima."
 
-6. REVISAO E ATUALIZACAO
+6. REVISÃO E ATUALIZAÇÃO
 
-"Esta politica sera revisada anualmente e atualizada conforme necessario."
+"Esta política será revisada anualmente e atualizada conforme necessário."
 
-Onde Comunicar a Politica:
+Onde Comunicar a Política:
 
 - Onboarding (primeiro dia de trabalho)
 - Intranet/portal da empresa
-- Cartazes em areas comuns
-- Email anual de reforco
-- Reunioes de equipe
+- Cartazes em áreas comuns
+- E-mail anual de reforço
+- Reuniões de equipe
 - Contratos de trabalho (anexo)
 
-TREINAMENTOS E CAMPANHAS DE CONSCIENTIZACAO
+TREINAMENTOS E CAMPANHAS DE CONSCIENTIZAÇÃO
 
-Treinamento eficaz nao e palestra de 1h uma vez ao ano. E processo continuo.
+Treinamento eficaz não é palestra de 1h uma vez ao ano. É processo contínuo.
 
 Modelo de Treinamento:
 
-OBRIGATORIO PARA TODOS (Anual):
-- O que e assedio (definicoes, exemplos)
-- Impactos (vitima, organizacao)
+OBRIGATÓRIO PARA TODOS (Anual):
+- O que é assédio (definições, exemplos)
+ - Impactos (vítima, organização)
 - Como denunciar
-- Protecao contra retaliacao
+- Proteção contra retaliação
 - Cultura de respeito
-- Duracao: 2-3 horas
-- Formato: Presencial ou online com certificacao
+- Duração: 2-3 horas
+- Formato: Presencial ou online com certificação
 
-OBRIGATORIO PARA LIDERANCA (Semestral):
+OBRIGATÓRIO PARA LIDERANÇA (Semestral):
 - Tudo do treinamento geral +
-- Como identificar sinais de assedio
-- Como acolher denuncias
-- Protocolo de investigacao
+- Como identificar sinais de assédio
+- Como acolher denúncias
+- Protocolo de investigação
 - Responsabilidades legais
 - Exemplos de casos reais
-- Duracao: 4-6 horas
+- Duração: 4-6 horas
 - Formato: Presencial com role-play
 
 TREINAMENTO DE NOVOS CONTRATADOS (Onboarding):
-- Politica de prevencao
-- Canais de denuncia
+- Política de prevenção
+- Canais de denúncia
 - Expectativas de comportamento
-- Duracao: 1 hora
-- Formato: Online + assinatura de ciencia
+- Duração: 1 hora
+- Formato: Online + assinatura de ciência
 
-Campanhas de Conscientizacao:
+Campanhas de Conscientização:
 
-CAMPANHA DO LACINHO BRANCO (Novembro - Combate a Violencia contra Mulher):
+CAMPANHA DO LACINHO BRANCO (Novembro - Combate à Violência contra a Mulher):
 - Palestras
 - Cartazes
-- Emails
-- Compromisso publico de lideres
+- E-mails
+- Compromisso público de líderes
 
 CAMPANHA INTERNA (Trimestral):
-- Tema: "Respeito e nosso valor"
-- Cartazes com frases: "Piada sexista nao tem graca", "Assedio e crime", "Respeito comeca com voce"
-- Videos curtos (1-2 min) com testemunhos (anonimos)
-- Quiz interativo sobre assedio
+- Tema: "Respeito é nosso valor"
+- Cartazes com frases: "Piada sexista não tem graça", "Assédio é crime", "Respeito começa com você"
+- Vídeos curtos (1-2 min) com testemunhos (anônimos)
+- Quiz interativo sobre assédio
 
-SEMANA DE PREVENCAO (Anual):
+SEMANA DE PREVENÇÃO (Anual):
 - Palestras com especialistas
-- Oficinas praticas
-- Espaco para duvidas anonimas
-- Relancamento da politica
+- Oficinas práticas
+- Espaço para dúvidas anônimas
+- Relançamento da política
 
-CANAIS DE DENUNCIA SEGUROS E ANONIMOS
+CANAIS DE DENÚNCIA SEGUROS E ANÔNIMOS
 
-Um dos maiores obstaculos a denuncia e o medo. Canais de denuncia devem ser:
+Um dos maiores obstáculos à denúncia é o medo. Canais de denúncia devem ser:
 
-1. MULTIPLOS
+1. MÚLTIPLOS
 
-Ofereça varias opcoes:
-- Canal online anonimo (plataforma externa)
-- Email/telefone de RH
+Ofereça várias opções:
+- Canal online anônimo (plataforma externa)
+- E-mail/telefone de RH
 - Ouvidoria externa
-- Comite de Etica
-- Lider direto (se confiar)
-- Caixa de sugestoes anonimas
+- Comitê de Ética
+- Líder direto (se confiar)
+- Caixa de sugestões anônimas
 
-2. ANONIMOS (OPCAO)
+2. ANÔNIMOS (OPÇÃO)
 
-Plataformas externas (ex: SafeSpace, IntegrityLine, Contato Seguro) garantem anonimato total se pessoa desejar.
+Plataformas externas (ex: SafeSpace, IntegrityLine, Contato Seguro) garantem anonimato total se a pessoa desejar.
 
-Importante: Anonimato dificulta investigacao, mas e melhor receber denuncia anonima que nenhuma denuncia.
+Importante: Anonimato dificulta investigação, mas é melhor receber denúncia anônima que nenhuma denúncia.
 
-3. ACESSIVEIS 24/7
+3. ACESSÍVEIS 24/7
 
-Assedio nao acontece apenas em horario comercial. Canal deve estar disponivel sempre.
+Assédio não acontece apenas em horário comercial. Canal deve estar disponível sempre.
 
 4. CONFIDENCIAIS
 
-Apenas pessoas autorizadas (RH, Compliance, Juridico) tem acesso. Vazamento de informacao e falta grave.
+Apenas pessoas autorizadas (RH, Compliance, Jurídico) têm acesso. Vazamento de informação é falta grave.
 
 5. COM RETORNO
 
 Denunciante deve receber:
-- Confirmacao de recebimento (imediato)
-- Atualizacao sobre andamento (7-15 dias)
-- Conclusao (30 dias)
+- Confirmação de recebimento (imediato)
+- Atualização sobre andamento (7-15 dias)
+- Conclusão (30 dias)
 
-Se denuncia anonima, usar protocolo para acompanhamento.
+Se denúncia anônima, usar protocolo para acompanhamento.
 
 6. DIVULGADOS AMPLAMENTE
 
-De nada adianta ter canal se ninguem sabe. Divulgue em:
+De nada adianta ter canal se ninguém sabe. Divulgue em:
 - Onboarding
-- Email trimestral
+- E-mail trimestral
 - Intranet
 - Cartazes
-- Reunioes de equipe
+- Reuniões de equipe
 
 PAPEL DA LIDERANCA NA MODELAGEM DE COMPORTAMENTO
 
-Cultura nao e o que esta escrito - e o que e tolerado.
+Cultura não e o que está escrito - e o que e tolerado.
 
-Se lider faz piadas sexistas mas politica proibe, a cultura real e: "aqui vale tudo".
+Se líder faz piadas sexistas mas politica proíbe, a cultura real e: "aqui vale tudo".
 
-Comportamentos que Lideres DEVEM Modelar:
+Comportamentos que Líderes DEVEM Modelar:
 
 1. RESPEITO UNIVERSAL
 
-Trate todos com dignidade, independente de cargo, genero, raca, orientacao sexual.
+Trate todos com dignidade, independente de cargo, gênero, raça, orientação sexual.
 
 2. LINGUAGEM PROFISSIONAL
 
 Evite:
 - Piadinhas de duplo sentido
-- Comentarios sobre aparencia fisica
+- Comentários sobre aparência física
 - Apelidos constrangedores
 - Linguagem sexualizada
 
@@ -5437,30 +5429,30 @@ Evite:
 
 Se presenciar comportamento inadequado, intervenha na hora:
 
-"[Nome], esse comentario nao e apropriado. Por favor, evite."
+"[Nome], esse comentário não e apropriado. Por favor, evite."
 
-5. ACOLHIMENTO DE DENUNCIAS
+5. ACOLHIMENTO DE DENÚNCIAS
 
-Se alguem relata assedio, sua primeira reacao define se outros tambem reportarao.
+Se alguém relata assédio, sua primeira reação define se outros também reportarão.
 
 CERTO:
 "Obrigado por me contar. Vamos tratar disso com seriedade."
 
 ERRADO:
-"Ah, ele e assim mesmo, nao leva a mal."
+"Ah, ele e assim mesmo, não leva a mal."
 
 6. CONSEQUENCIAS CONSISTENTES
 
-Se politica diz "tolerancia zero", deve haver consequencia real. Nao pode ter excecao para "alto desempenho" ou "amigo da diretoria".
+Se politica diz "tolerância zero", deve haver consequência real. Não pode ter exceção para "alto desempenho" ou "amigo da diretoria".
 
-Exemplos de Lideres que Fazem Diferenca:
+Exemplos de Líderes que Fazem Diferença:
 
-Lider A (Empresa X): Toda segunda-feira, em reuniao de equipe, dedica 2 minutos para reforcar valores:
-"Lembrem-se: tratamos todos com respeito. Se virem algo inadequado, reportem. Voces tem meu apoio total."
-Resultado: 0 casos de assedio em 3 anos.
+Líder A (Empresa X): Toda segunda-feira, em reunião de equipe, dedica 2 minutos para reforçar valores:
+"Lembrem-se: tratamos todos com respeito. Se virem algo inadequado, reportem. Vocês tem meu apoio total."
+Resultado: 0 casos de assédio em 3 anos.
 
-Lider B (Empresa Y): Ao ouvir piada machista de colaborador, interrompeu publicamente:
-"Esse tipo de piada nao e aceito aqui. Respeito e inegociavel."
+Líder B (Empresa Y): Ao ouvir piada machista de colaborador, interrompeu publicamente:
+"Esse tipo de piada não e aceito aqui. Respeito e inegociável."
 Resultado: Nunca mais houve piadinhas na equipe dele.
 
 METRICAS E MONITORAMENTO
@@ -5471,23 +5463,23 @@ INDICADORES DE PREVENCAO:
 
 1. COBERTURA DE TREINAMENTO
 Meta: 100% dos colaboradores treinados anualmente
-Meta: 100% dos lideres treinados semestralmente
+Meta: 100% dos líderes treinados semestralmente
 
-2. CONHECIMENTO DA POLITICA
-Pesquisa anual: "Voce conhece a politica de prevencao de assedio da empresa?"
+2. CONHECIMENTO DA POLÍTICA
+Pesquisa anual: "Você conhece a política de prevenção de assédio da empresa?"
 Meta: >90% "Sim"
 
 3. CONHECIMENTO DOS CANAIS
-Pesquisa: "Voce sabe como denunciar assedio?"
+Pesquisa: "Você sabe como denunciar assédio?"
 Meta: >90% "Sim"
 
 INDICADORES DE CULTURA:
 
-4. PESQUISA DE CLIMA (Anonima)
+4. PESQUISA DE CLIMA (Anônima)
 "Sinto-me seguro(a) e respeitado(a) neste ambiente de trabalho."
 Meta: >85% "Concordo/Concordo totalmente"
 
-"Confio que denuncias de assedio serao tratadas adequadamente."
+"Confio que denúncias de assédio serão tratadas adequadamente."
 Meta: >80% "Concordo/Concordo totalmente"
 
 5. INDICE DE SEGURANCA PSICOLOGICA
@@ -5495,208 +5487,208 @@ Escala de Edmondson adaptada.
 
 INDICADORES DE INCIDENCIA:
 
-6. NUMERO DE DENUNCIAS
-Atencao: AUMENTO de denuncias pode ser POSITIVO (indica que pessoas confiam no processo).
+6. NÚMERO DE DENÚNCIAS
+Atenção: AUMENTO de denúncias pode ser POSITIVO (indica que pessoas confiam no processo).
 Analise a tendencia ao longo de 2-3 anos.
 
-7. TEMPO MEDIO DE INVESTIGACAO
+7. TEMPO MÉDIO DE INVESTIGAÇÃO
 Meta: <30 dias
 
 8. TAXA DE PROCEDENCIA
-% de denuncias procedentes vs improcedentes
+% de denúncias procedentes vs improcedentes
 
 9. REINCIDENCIA
 % de agressores reincidentes (deve ser 0% se medidas foram adequadas)
 
 INDICADORES DE IMPACTO:
 
-10. AFASTAMENTOS POR ASSEDIO
-Meta: Reducao ano a ano
+10. AFASTAMENTOS POR ASSÉDIO
+Meta: Redução ano a ano
 
-11. PROCESSOS TRABALHISTAS POR ASSEDIO
+11. PROCESSOS TRABALHISTAS POR ASSÉDIO
 Meta: 0
 
 12. ROTATIVIDADE VOLUNTARIA
-Pessoas saem por assedio nao resolvido? Analise em entrevistas de desligamento.
+Pessoas saem por assédio não resolvido? Analise em entrevistas de desligamento.
 
 Dashboard de Monitoramento (Exemplo):
 
-Mes Atual:
+Mês Atual:
 - Cobertura de treinamento: 95%
-- Denuncias recebidas: 2
-- Denuncias em investigacao: 1
-- Denuncias concluidas: 1 (procedente)
-- Tempo medio de investigacao: 22 dias
-- Seguranca psicologica (pesquisa): 82%
+- Denúncias recebidas: 2
+- Denúncias em investigação: 1
+- Denúncias concluídas: 1 (procedente)
+- Tempo médio de investigação: 22 dias
+- Segurança psicológica (pesquisa): 82%
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Criacao de Politica
-Elabore em 1 pagina a politica de prevencao de assedio da sua empresa (ou melhore a existente).
+Exercício 1: Criação de Política
+Elabore em 1 página a política de prevenção de assédio da sua empresa (ou melhore a existente).
 
-Exercicio 2: Campanha de Conscientizacao
-Planeje uma campanha de 1 semana sobre prevencao de assedio para sua organizacao. Inclua 3 acoes concretas.
+Exercício 2: Campanha de Conscientização
+Planeje uma campanha de 1 semana sobre prevenção de assédio para sua organização. Inclua 3 ações concretas.
 
-Exercicio 3: Modelagem de Comportamento
-Liste 3 comportamentos que voce, como lider, pode modelar esta semana para fortalecer cultura de respeito.
+Exercício 3: Modelagem de Comportamento
+Liste 3 comportamentos que você, como líder, pode modelar está semana para fortalecer cultura de respeito.
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-Prevenir assedio e mais eficaz (e barato) que remediar. Organizacoes com cultura de respeito enraizada protegem pessoas, reputacao e resultados.
+Prevenir assédio é mais eficaz (e barato) que remediar. Organizações com cultura de respeito enraizada protegem pessoas, reputação e resultados.
 
-Lideres sao os principais agentes de mudanca cultural. Sua postura, palavras e acoes moldam a cultura mais que qualquer politica escrita.
+Líderes são os principais agentes de mudança cultural. Sua postura, palavras e ações moldam a cultura mais que qualquer política escrita.
 
-Proximos Passos:
-1. Revise a politica de prevencao da sua empresa
+Próximos Passos:
+1. Revise a política de prevenção da sua empresa
 2. Garanta que 100% da equipe seja treinada
 3. Modele comportamento respeitoso consistentemente
 4. Monitore indicadores de cultura
 
-Lembre-se: Cultura de respeito se constroi dia a dia, comportamento a comportamento.
+Lembre-se: Cultura de respeito se constrói dia a dia, comportamento a comportamento.
         `
       },
       {
         id: 4,
-        titulo: "Aspectos Legais e Jurisprudencia Atualizada",
-        duracao: "40 min",
-        topicos: [
-          "Legislacao brasileira sobre assedio (CLT, Codigo Penal, Lei 14.457/2022)",
-          "Jurisprudencia recente do TST",
-          "Responsabilidades da empresa e do lider",
-          "Provas e documentacao em processos",
-          "Prevencao de passivos trabalhistas"
+        título: "Aspectos Legais e Jurisprudência Atualizada",
+        duração: "40 min",
+        tópicos: [
+          "Legislação brasileira sobre assédio (CLT, Código Penal, Lei 14.457/2022)",
+          "Jurisprudência recente do TST",
+          "Responsabilidades da empresa e do líder",
+          "Provas e documentação em processos",
+          "Prevenção de passivos trabalhistas"
         ],
-        materialDidatico: `
+        materialDidático: `
 ASPECTOS LEGAIS E JURISPRUDENCIA ATUALIZADA
 
 INTRODUCAO
 
-Assedio nao e apenas questao etica - e questao LEGAL com consequencias civeis, trabalhistas e criminais severas.
+Assédio não é apenas questão ética - é questão LEGAL com consequências cíveis, trabalhistas e criminais severas.
 
-Lideres que desconhecem a legislacao colocam:
-- A si mesmos em risco (responsabilizacao pessoal)
-- A empresa em risco (indenizacoes milionarias)
+5568:Líderes que desconhecem a legislação colocam:
+- A si mesmos em risco (responsabilização pessoal)
+- A empresa em risco (indenizações milionárias)
 - Vitimas em risco (dano continuado)
 
-LEGISLACAO BRASILEIRA SOBRE ASSEDIO
+LEGISLAÇÃO BRASILEIRA SOBRE ASSÉDIO
 
 1. CONSTITUICAO FEDERAL (1988)
 
-Art. 5º: Dignidade humana, igualdade, proibicao de discriminacao
+Art. 5º: Dignidade humana, igualdade, proibição de discriminação
 
-Fundamento constitucional: Assedio viola dignidade humana.
+Fundamento constitucional: Assédio viola dignidade humana.
 
 2. CODIGO PENAL
 
-ASSEDIO SEXUAL (Art. 216-A):
-"Constranger alguem com o intuito de obter vantagem ou favorecimento sexual, prevalecendo-se o agente da sua condicao de superior hierarquico ou ascendencia inerentes ao exercicio de emprego, cargo ou funcao."
+ASSÉDIO SEXUAL (Art. 216-A):
+"Constranger alguém com o intuito de obter vantagem ou favorecimento sexual, prevalecendo-se o agente da sua condição de superior hierárquico ou ascendência inerentes ao exercício de emprego, cargo ou função."
 
-Pena: 1 a 2 anos de detencao
-Aumento de pena: 1/3 se vitima e menor de 18 anos
+Pena: 1 a 2 anos de detenção
+Aumento de pena: 1/3 se a vítima é menor de 18 anos
 
-Acao Penal: Publica condicionada a representacao da vitima
+Ação Penal: Pública condicionada à representação da vítima
 
 CONSTRANGIMENTO ILEGAL (Art. 146):
-Violencia ou grave ameaca para obrigar a fazer/nao fazer algo
+Violência ou grave ameaça para obrigar a fazer/não fazer algo
 
-PERSEGUICAO - STALKING (Art. 147-A - Lei 14.132/2021):
-"Perseguir alguem, reiteradamente e por qualquer meio, ameacando-lhe a integridade fisica ou psicologica, restringindo-lhe a capacidade de locomocao ou, de qualquer forma, invadindo ou perturbando sua esfera de liberdade ou privacidade."
+PERSEGUIÇÃO - STALKING (Art. 147-A - Lei 14.132/2021):
+"Perseguir alguém, reiteradamente e por qualquer meio, ameaçando-lhe a integridade física ou psicológica, restringindo-lhe a capacidade de locomoção ou, de qualquer forma, invadindo ou perturbando sua esfera de liberdade ou privacidade."
 
 Pena: 6 meses a 2 anos + multa
 
 CRIMES CONTRA HONRA:
-- Caluna (Art. 138): Imputar falsamente crime
-- Difamacao (Art. 139): Imputar fato ofensivo a reputacao
+- Calunia (Art. 138): Imputar falsamente crime
+- Difamação (Art. 139): Imputar fato ofensivo a reputação
 - Injuria (Art. 140): Ofender dignidade/decoro
 
 3. CONSOLIDACAO DAS LEIS DO TRABALHO (CLT)
 
 DEMISSAO POR JUSTA CAUSA (Art. 482):
 
-Alinea "b" - Incontinencia de conduta: Comportamento sexual inadequado
-Alinea "j" - Ato lesivo da honra: Assedio moral
+Alínea "b" - Incontinência de conduta: Comportamento sexual inadequado
+Alínea "j" - Ato lesivo da honra: Assédio moral
 
 Empregador pode demitir assediador por justa causa.
 
 RESCISAO INDIRETA (Art. 483):
 
-Empregado pode considerar rescindido o contrato (demissao indireta com direito a verbas rescisoria completas) se:
+Empregado pode considerar rescindido o contrato (demissão indireta com direito a verbas rescisória completas) se:
 - Sofrer rigor excessivo (alínea b)
 - Ser tratado com rigor excessivo ou de forma desumana (alínea a)
 - Sofrer perigo manifesto de mal considerável (alínea c)
 
 4. LEI 14.457/2022 - PROGRAMA EMPREGA + MULHERES
 
-Marco legislativo mais recente e importante sobre assedio.
+Marco legislativo mais recente é importante sobre assédio.
 
 Principais Pontos:
 
-Art. 3º: Altera CLT para incluir prevencao de assedio sexual e outras formas de violencia no ambito do trabalho.
+Art. 3º: Altera CLT para incluir prevenção de assédio sexual e outras formas de violência no âmbito do trabalho.
 
 MEDIDAS OBRIGATORIAS (Art. 3º):
 Empresas com CIPA devem:
-- Incluir prevencao de assedio em treinamentos
-- Adotar procedimentos para receber e acompanhar denuncias
-- Criar canais especificos para denuncias (preservando anonimato)
+- Incluir prevenção de assédio em treinamentos
+- Adotar procedimentos para receber e acompanhar denúncias
+- Criar canais específicos para denúncias (preservando anonimato)
 
-CANAL DE DENUNCIA (Art. 3º-A, CLT):
-Empresas privadas com mais de 10 empregados e obrigatorio ter canal para denunciar assedio sexual e outras formas de violencia.
+CANAL DE DENÚNCIA (Art. 3º-A, CLT):
+Empresas privadas com mais de 10 empregados é obrigatório ter canal para denunciar assédio sexual e outras formas de violência.
 
-PROTECAO CONTRA RETALIACAO (Art. 3º-B, CLT):
-Vedada dispensa discriminatoria ou retaliacao a denunciante ou testemunha.
+PROTEÇÃO CONTRA RETALIAÇÃO (Art. 3º-B, CLT):
+Vedada dispensa discriminatória ou retaliação a denunciante ou testemunha.
 
 Prazo: Empresas tem 180 dias a partir de marco/2023 para implementar.
 
 5. NORMA REGULAMENTADORA NR-1 (2021)
 
-Obriga empresas a identificar perigos e gerenciar riscos psicossociais, incluindo assedio moral e sexual.
+Obriga empresas a identificar perigos e gerenciar riscos psicossociais, incluindo assédio moral e sexual.
 
 6. JURISPRUDENCIA DO TST E TRT
 
-Jurisprudencia e como tribunais interpretam e aplicam leis. Tem forca de orientacao e precedente.
+Jurisprudência é como tribunais interpretam e aplicam leis. Tem força de orientação e precedente.
 
 CASOS PARADIGMATICOS:
 
-CASO 1: ASSEDIO MORAL - GERENTE DE BANCO (TST-RR-0010551-50.2016.5.03.0027)
+CASO 1: ASSÉDIO MORAL - GERENTE DE BANCO (TST-RR-0010551-50.2016.5.03.0027)
 
-Fatos: Gerente sofreu assedio moral de superior, desenvolveu transtorno mental, foi afastada.
-Decisao: Banco condenado a pagar R$ 80 mil de indenizacao + pensao vitalicia.
-Fundamento: Empresa sabia e nao tomou medidas eficazes.
+Fatos: Gerente sofreu assédio moral de superior, desenvolveu transtorno mental, foi afastada.
+Decisão: Banco condenado a pagar R$ 80 mil de indenização + pensão vitalícia.
+Fundamento: Empresa sabia e não tomou medidas eficazes.
 
-Licao: Mesmo que empresa tenha investigado, se medidas foram insuficientes, empresa responde.
+Lição: Mesmo que empresa tenha investigado, se medidas foram insuficientes, empresa responde.
 
-CASO 2: ASSEDIO SEXUAL - INDENIZACAO RECORDE (TRT-2 0001090-12.2018.5.02.0464)
+CASO 2: ASSÉDIO SEXUAL - INDENIZAÇÃO RECORDE (TRT-2 0001090-12.2018.5.02.0464)
 
-Fatos: Funcionaria assediada sexualmente por gerente durante anos. Empresa ignorou denuncias.
-Decisao: Empresa condenada a pagar R$ 300 mil (R$ 100 mil danos morais + R$ 200 mil danos esteticos por transtorno desenvolvido).
+Fatos: Funcionária assediada sexualmente por gerente durante anos. Empresa ignorou denúncias.
+Decisão: Empresa condenada a pagar R$ 300 mil (R$ 100 mil danos morais + R$ 200 mil danos estéticos por transtorno desenvolvido).
 
-Licao: Ignorar denuncias gera responsabilidade objetiva + danos agravados.
+Lição: Ignorar denúncias gera responsabilidade objetiva + danos agravados.
 
-CASO 3: ASSEDIO MORAL COLETIVO (TRT-15 0010720-63.2017.5.15.0037)
+CASO 3: ASSÉDIO MORAL COLETIVO (TRT-15 0010720-63.2017.5.15.0037)
 
-Fatos: Empresa impunha metas abusivas, humilhava publicamente quem nao atingia.
-Decisao: Empresa condenada a pagar danos morais coletivos + individuais a todos afetados.
+Fatos: Empresa impunha metas abusivas, humilhava publicamente quem não atingia.
+Decisão: Empresa condenada a pagar danos morais coletivos + individuais a todos afetados.
 
-Licao: Assedio coletivo (cultura toxica) gera responsabilidade massiva.
+Lição: Assédio coletivo (cultura tóxica) gera responsabilidade massiva.
 
 CASO 4: PIADA SEXISTA = JUSTA CAUSA (TRT-4 0020219-26.2018.5.04.0512)
 
-Fatos: Funcionario fez piada sexista repetidamente mesmo apos advertencia.
-Decisao: Justa causa mantida.
-Fundamento: Piadas sexistas configuram assedio sexual.
+Fatos: Funcionário fez piada sexista repetidamente mesmo após advertência.
+Decisão: Justa causa mantida.
+Fundamento: Piadas sexistas configuram assédio sexual.
 
-Licao: "Era so uma piada" NAO e defesa valida.
+Lição: "Era só uma piada" NÃO é defesa válida.
 
 CASO 5: INDENIZACAO POR OMISSAO (TST-AIRR-1289-48.2013.5.03.0027)
 
-Fatos: Empresa sabia de assedio de cliente contra funcionaria e nao a protegeu.
-Decisao: Empresa condenada a indenizar.
+Fatos: Empresa sabia de assédio de cliente contra funcionária e não a protegeu.
+Decisão: Empresa condenada a indenizar.
 Fundamento: Empresa tem dever de proteger empregados, inclusive de terceiros.
 
-Licao: Omissao = Cumplicidade.
+Lição: Omissão = Cumplicidade.
 
-SUMULA TST Nº 428 (Aplicacao Subsidiaria do CDC):
-Assedio pode ser enquadrado tambem como relacao de consumo em certas situacoes.
+SUMULA TST Nº 428 (Aplicação Subsidiaria do CDC):
+Assédio pode ser enquadrado também como relação de consumo em certas situações.
 
 RESPONSABILIDADES DA EMPRESA E DO LIDER
 
@@ -5704,346 +5696,346 @@ RESPONSABILIDADE DA EMPRESA:
 
 1. RESPONSABILIDADE OBJETIVA (Teoria do Risco)
 Empresa responde pelos atos de seus empregados, INDEPENDENTE de culpa, se:
-- Assedio ocorreu no ambiente de trabalho OU
-- Assedio esta relacionado ao trabalho (mesmo fora do horario/local)
+- Assédio ocorreu no ambiente de trabalho OU
+- Assédio está relacionado ao trabalho (mesmo fora do horário/local)
 
 2. RESPONSABILIDADE POR OMISSAO
 Empresa responde se:
-- Sabia ou deveria saber do assedio e nao agiu
-- Nao tem politica de prevencao
-- Nao investigou denuncia adequadamente
-- Nao puniu assediador
+- Sabia ou deveria saber do assédio e não agiu
+- Não tem politica de prevenção
+- Não investigou denúncia adequadamente
+- Não puniu assediador
 - Retaliou denunciante
 
-3. RESPONSABILIDADE MESMO COM POLITICA
-Ter politica escrita nao exime. Politica deve ser APLICADA.
+3. RESPONSABILIDADE MESMO COM POLÍTICA
+Ter política escrita não exime. Política deve ser APLICADA.
 
-Precedente: Empresa tinha politica, mas nao a aplicou = condenada.
+Precedente: Empresa tinha politica, mas não a aplicou = condenada.
 
 RESPONSABILIDADE DO LIDER:
 
-Lider pode ser responsabilizado:
+Líder pode ser responsabilizado:
 
 TRABALHISTA:
 - Empresa pode demiti-lo por justa causa (se ele assediou ou omitiu)
 
 CIVIL:
-- Vitima pode processar lider PESSOALMENTE (solidariamente com empresa)
-- Empresa pode processar lider em acao regressiva (cobrando de volta indenizacao paga a vitima)
+- Vitima pode processar líder PESSOALMENTE (solidariamente com empresa)
+ - Empresa pode processar líder em ação regressiva (cobrando de volta indenização paga à vítima)
 
 CRIMINAL:
-- Lider pode ser denunciado criminalmente se praticou assedio sexual, stalking, crimes contra honra
+- Líder pode ser denunciado criminalmente se praticou assédio sexual, stalking, crimes contra honra
 
 Exemplo Real:
-Gerente condenado pessoalmente a pagar R$ 20 mil de indenizacao a funcionaria que assediou moralmente, ALEM da empresa ter pago R$ 50 mil.
+ Gerente condenado pessoalmente a pagar R$ 20 mil de indenização à funcionária que assediou moralmente, ALÉM da empresa ter pago R$ 50 mil.
 
-PROVAS E DOCUMENTACAO EM PROCESSOS
+PROVAS E DOCUMENTAÇÃO EM PROCESSOS
 
-Em processos trabalhistas, quem alega precisa provar. Mas ha peculiaridades.
+Em processos trabalhistas, quem alega precisa provar. Mas há peculiaridades.
 
 ÔNUS DA PROVA:
 
-Regra Geral: Quem alega prova.
-Vitima alega assedio → vitima prova
+Regra geral: Quem alega, prova.
+Vítima alega assédio → vítima prova
 
-Excecao: INVERSAO DO ONUS DA PROVA (quando vitima tem prova minima/indicio):
-Vitima apresenta indicios → empresa precisa provar que NAO houve assedio
+Exceção: INVERSÃO DO ÔNUS DA PROVA (quando vítima tem prova mínima/indício):
+Vítima apresenta indícios → empresa precisa provar que NÃO houve assédio
 
-Quando ha inversao:
-- Desigualdade de poder (vitima vs superior hierarquico)
-- Dificuldade de prova (assedio geralmente sem testemunhas)
-- Indicios relevantes (mensagens, mudanca de comportamento)
+Quando há inversão:
+- Desigualdade de poder (vítima vs superior hierárquico)
+- Dificuldade de prova (assédio geralmente sem testemunhas)
+- Indícios relevantes (mensagens, mudança de comportamento)
 
 TIPOS DE PROVA:
 
 1. PROVA DOCUMENTAL
-- Emails, mensagens (WhatsApp, SMS)
+- E-mails, mensagens (WhatsApp, SMS)
 - Prints de conversas
-- Gravacoes (audio/video)
-- Atestados medicos
-- Laudos psicologicos
-- Registro de denuncias
-- Atas de reunioes
+- Gravações (áudio/vídeo)
+- Atestados médicos
+- Laudos psicológicos
+- Registro de denúncias
+- Atas de reuniões
 
 2. PROVA TESTEMUNHAL
 - Colegas que presenciaram
-- Psicologos que atenderam vitima
-- Familiares sobre mudanca de comportamento
+- Psicólogos que atenderam vítima
+- Familiares sobre mudança de comportamento
 
 3. PROVA PERICIAL
-- Pericia psicologica/psiquiatrica para comprovar dano
+- Perícia psicológica/psiquiátrica para comprovar dano
 
-GRAVACOES SEM CONSENTIMENTO SAO VALIDAS?
+GRAVAÇÕES SEM CONSENTIMENTO SÃO VÁLIDAS?
 
 SIM, se:
-- Feita pela propria vitima (nao por terceiro)
-- Para defender direito proprio
-- Nao houver violacao de privacidade extrema
+- Feita pela própria vítima (não por terceiro)
+- Para defender direito próprio
+- Não houver violação de privacidade extrema
 
-Precedente STF (RE 583.937): Licita gravacao ambiental feita por um dos interlocutores.
+Precedente STF (RE 583.937): Lícita gravação ambiental feita por um dos interlocutores.
 
-Importante: Orientar vitima a DOCUMENTAR TUDO:
+Importante: Orientar vítima a DOCUMENTAR TUDO:
 - Prints de mensagens
-- Emails
-- Anotacoes de incidentes (data, hora, local, o que foi dito/feito)
+- E-mails
+- Anotações de incidentes (data, hora, local, o que foi dito/feito)
 - Nomes de testemunhas
 
 PREVENCAO DE PASSIVOS TRABALHISTAS
 
-Como Reduzir Risco de Condenacoes:
+Como Reduzir Risco de Condenações:
 
-1. POLITICA ESCRITA E DIVULGADA
-Ter politica clara de prevencao e primeiro passo.
+1. POLÍTICA ESCRITA E DIVULGADA
+Ter política clara de prevenção é primeiro passo.
 
-2. TREINAMENTO OBRIGATORIO
-100% de cobertura, anualmente, com certificacao.
+2. TREINAMENTO OBRIGATÓRIO
+100% de cobertura, anualmente, com certificação.
 
-3. CANAL DE DENUNCIA EFETIVO
-Anonimo, acessivel, divulgado.
+3. CANAL DE DENÚNCIA EFETIVO
+Anônimo, acessível, divulgado.
 
-4. INVESTIGACAO RAPIDA E IMPARCIAL
-Prazo maximo 30 dias.
-Documentacao completa.
+4. INVESTIGAÇÃO RÁPIDA E IMPARCIAL
+Prazo máximo 30 dias.
+Documentação completa.
 
 5. MEDIDAS DISCIPLINARES CONSISTENTES
-Sem excecoes para "estrelas" ou "amigos".
+Sem exceções para "estrelas" ou "amigos".
 
-6. PROTECAO CONTRA RETALIACAO
+6. PROTEÇÃO CONTRA RETALIAÇÃO
 Monitoramento ativo.
 
-7. DOCUMENTACAO DETALHADA
+7. DOCUMENTAÇÃO DETALHADA
 Registre TUDO:
-- Denuncias recebidas
-- Investigacoes realizadas
+- Denúncias recebidas
+- Investigações realizadas
 - Depoimentos
-- Evidencias
-- Decisoes tomadas
-- Comunicacao as partes
+ - Evidências
+- Decisões tomadas
+ - Comunicação às partes
 
-Documentacao e sua defesa em processo.
+Documentação e sua defesa em processo.
 
 8. COMPLIANCE E AUDITORIA
 Revisar anualmente:
-- Eficacia da politica
-- Numero de casos
-- Tempo de investigacao
-- Satisfacao com processo
+ - Eficácia da política
+ - Número de casos
+- Tempo de investigação
+- Satisfação com processo
 
 9. SEGURO DE RESPONSABILIDADE CIVIL (D&O)
-Pode cobrir indenizacoes (mas NAO exime de responsabilidade).
+Pode cobrir indenizações (mas NAO exime de responsabilidade).
 
-EXERCICIOS PRATICOS
+EXERCÍCIOS PRÁTICOS
 
-Exercicio 1: Analise de Caso Juridico
-Leia acord ao TST-RR-0010551-50.2016.5.03.0027 (resumo disponivel online). Identifique:
+Exercício 1: Análise de Caso Jurídico
+Leia acórdão TST-RR-0010551-50.2016.5.03.0027 (resumo disponível online). Identifique:
 - Fatos
-- Decisao
+- Decisão
 - Fundamento
-- Licoes para gestao
+- Lições para gestão
 
-Exercicio 2: Mapeamento de Riscos Legais
+Exercício 2: Mapeamento de Riscos Legais
 Sua empresa tem:
-- Politica de prevencao? (Sim/Nao)
-- Canal de denuncia? (Sim/Nao)
-- Treinamento anual? (Sim/Nao)
+- Política de prevenção? (Sim/Não)
+- Canal de denúncia? (Sim/Não)
+- Treinamento anual? (Sim/Não)
 
-Se alguma resposta e "Nao", ha risco legal.
+Se alguma resposta é "Não", há risco legal.
 
-Exercicio 3: Documentacao de Caso Hipotetico
-Imagine que recebeu denuncia de assedio moral. Descreva TODOS os documentos que voce produziria ao longo da investigacao.
+Exercício 3: Documentação de Caso Hipotético
+Imagine que recebeu denúncia de assédio moral. Descreva TODOS os documentos que você produziria ao longo da investigação.
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-Aspectos legais de assedio sao complexos mas essenciais. Desconhece-los nao e desculpa - e negligencia.
+Aspectos legais de assédio são complexos mas essenciais. Desconhecê-los não é desculpa - é negligência.
 
-Lideres e empresas que:
-- Conhecem legislacao
-- Implementam politicas eficazes
-- Agem rapidamente em denuncias
+Líderes e empresas que:
+- Conhecem legislação
+- Implementam políticas eficazes
+- Agem rapidamente em denúncias
 - Documentam tudo
 
-...estao protegidos legal e eticamente.
+...estão protegidos legal e eticamente.
 
-Proximos Passos:
+Próximos Passos:
 1. Estude Lei 14.457/2022 completa
-2. Conhea jurisprudencia recente do TST
+2. Conheça jurisprudência recente do TST
 3. Garanta conformidade legal da empresa
 4. Documente rigorosamente qualquer caso
 
-Lembre-se: Lei nao tolera omissao. Conhecimento e acao salvam organizacoes e pessoas.
+Lembre-se: Lei não tolera omissão. Conhecimento e ação salvam organizações e pessoas.
         `
       }
     ],
-    atividadesPraticas: [
-      "Analise de casos juridicos reais",
-      "Simulacao de investigacao de assedio",
-      "Workshop de comunicacao respeitosa",
-      "Criacao de politica de prevencao"
+    atividadesPráticas: [
+      "Análise de casos jurídicos reais",
+      "Simulação de investigação de assédio",
+      "Workshop de comunicação respeitosa",
+      "Criação de politica de prevenção"
     ]
   },
   {
     id: 6,
-    slug: "gestao-estresse-qualidade-vida",
-    titulo: "Gestao do Estresse e Qualidade de Vida no Trabalho",
-    subtitulo: "Autocuidado, Resiliencia e Bem-Estar Sustentavel",
-    descricao: "Promova autocuidado, desenvolva resiliencia e crie estrategias para prevenir o esgotamento profissional e melhorar qualidade de vida.",
-    duracao: "3h",
-    nivel: "Iniciante",
+    slug: "gestão-estresse-qualidade-vida",
+    título: "Gestão do Estresse e Qualidade de Vida no Trabalho",
+    subtítulo: "Autocuidado, Resiliência e Bem-Estar Sustentável",
+    descrição: "Promova autocuidado, desenvolva resiliência e crie estratégias para prevenir o esgotamento profissional e melhorar qualidade de vida.",
+    duração: "3h",
+    nível: "Iniciante",
     categoria: "Bem-Estar",
-    icone: "🌱",
+    ícone: "🌱",
     cor: "from-emerald-600 to-green-600",
     corBadge: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    objetivo: "Desenvolver praticas de autocuidado e gestao de estresse para manter equilibrio entre vida pessoal e profissional.",
+    objetivo: "Desenvolver práticas de autocuidado e gestão de estresse para manter equilíbrio entre vida pessoal e profissional.",
     resultadosEsperados: [
-      "Reducao de niveis de estresse pessoal e da equipe",
+      "Redução de níveis de estresse pessoal e da equipe",
       "Melhoria na qualidade de vida e bem-estar",
-      "Aumento de resiliencia e capacidade de recuperacao",
-      "Prevencao de burnout e adoecimento"
+      "Aumento de resiliência e capacidade de recuperação",
+      "Prevenção de Burnout e adoecimento"
     ],
-    modulos: [
+    módulos: [
       {
         id: 1,
-        titulo: "Fundamentos da Qualidade de Vida no Trabalho",
-        duracao: "60 min",
-        topicos: [
+        título: "Fundamentos da Qualidade de Vida no Trabalho",
+        duração: "60 min",
+        tópicos: [
           "O que e QVT - Qualidade de Vida no Trabalho",
-          "Dimensoes do bem-estar",
-          "Equilibrio vida-trabalho",
-          "Tecnicas de autocuidado",
-          "Construindo resiliencia"
+          "Dimensões do bem-estar",
+          "Equilíbrio vida trabalho",
+          "Técnicas de autocuidado",
+          "Construindo resiliência"
         ],
-        materialDidatico: `
+        materialDidático: `
 GESTAO DO ESTRESSE E QUALIDADE DE VIDA NO TRABALHO
 
 O QUE E QUALIDADE DE VIDA NO TRABALHO (QVT)
 
-Definicao:
-Conjunto de acoes de uma empresa que visa melhorar as condicoes de trabalho, buscando o bem-estar fisico, psicologico e social dos colaboradores.
+Definição:
+Conjunto de ações de uma empresa que visa melhorar as condições de trabalho, buscando o bem-estar físico, psicológico e social dos colaboradores.
 
 Conceito Moderno de QVT:
-Nao e apenas beneficios materiais (vale-refeicao, plano de saude). E criar um ambiente onde as pessoas possam prosperar em todas as dimensoes da vida.
+Não é apenas benefícios materiais (vale-refeição, plano de saúde). É criar um ambiente onde as pessoas possam prosperar em todas as dimensões da vida.
 
 Origem do Conceito:
 Anos 1950 - Eric Trist e colaboradores
-Objetivo inicial: Melhorar produtividade atraves do bem-estar
-Descoberta: Pessoas felizes sao naturalmente mais produtivas
+Objetivo inicial: Melhorar produtividade através do bem-estar
+Descoberta: Pessoas felizes são naturalmente mais produtivas
 
 AS 8 DIMENSOES DO BEM-ESTAR (Modelo de Walton)
 
-1. COMPENSACAO JUSTA E ADEQUADA:
-- Salario compativel com mercado
-- Equidade interna (pessoas com mesma funcao ganham similar)
-- Beneficios adequados
-- Participacao nos lucros/resultados
+1. COMPENSAÇÃO JUSTA E ADEQUADA:
+- Salário compatível com mercado
+- Equidade interna (pessoas com mesma função ganham similar)
+- Benefícios adequados
+- Participação nos lucros/resultados
 
 Impacto quando ausente:
-Sensacao de injustica, desmotivacao, alta rotatividade
+Sensação de injustiça, desmotivação, alta rotatividade
 
 2. CONDICOES DE TRABALHO:
-- Ambiente fisico adequado (iluminacao, temperatura, ergonomia)
-- Jornada razoavel (sem horas extras excessivas)
+- Ambiente físico adequado (iluminação, temperatura, ergonomia)
+- Jornada razoável (sem horas extras excessivas)
 - Pausas regulares
 - Equipamentos adequados
-- Seguranca fisica e psicologica
+- Segurança física e psicológica
 
 Impacto quando ausente:
-Fadiga, doencas ocupacionais, acidentes, estresse
+Fadiga, doenças ocupacionais, acidentes, estresse
 
 3. USO E DESENVOLVIMENTO DE CAPACIDADES:
 - Trabalho que usa habilidades do colaborador
-- Autonomia para tomar decisoes
-- Variedade de tarefas (nao monotonia)
+- Autonomia para tomar decisões
+- Variedade de tarefas (não monotonia)
 - Feedback sobre desempenho
 - Visibilidade do resultado do trabalho
 
 Impacto quando ausente:
-Tedio, subaproveitamento, frustracao, perda de sentido
+Tedio, subaproveitamento, frustração, perda de sentido
 
 4. OPORTUNIDADE DE CRESCIMENTO:
 - Plano de carreira claro
 - Treinamentos e desenvolvimento
-- Oportunidades de promocao
+- Oportunidades de promoção
 - Aprendizado continuo
 
 Impacto quando ausente:
-Estagnacao, desmotivacao, busca de outras empresas
+Estagnação, desmotivação, busca de outras empresas
 
 5. INTEGRACAO SOCIAL:
-- Ausencia de preconceitos (raca, genero, idade, etc)
+- Ausência de preconceitos (raça, gênero, idade, etc.)
 - Bom relacionamento com colegas
 - Senso de comunidade
 - Apoio mutuo
-- Ausencia de hierarquia rigida
+- Ausência de hierarquia rígida
 
 Impacto quando ausente:
-Isolamento, conflitos, discriminacao, clima toxico
+Isolamento, conflitos, discriminação, clima toxico
 
 6. CONSTITUCIONALISMO (DIREITOS):
 - Respeito a direitos trabalhistas
 - Privacidade pessoal
-- Liberdade de expressao
+- Liberdade de expressão
 - Tratamento justo
 - Normas claras
 
 Impacto quando ausente:
-Sensacao de abuso, inseguranca juridica, medo
+Sensação de abuso, insegurança jurídica, medo
 
 7. TRABALHO E ESPACO TOTAL DE VIDA:
-- Equilibrio entre vida pessoal e profissional
-- Flexibilidade de horarios quando possivel
+- Equilíbrio entre vida pessoal e profissional
+- Flexibilidade de horários quando possível
 - Respeito ao tempo pessoal
-- Tempo para familia e lazer
+- Tempo para família e lazer
 
 Impacto quando ausente:
 Esgotamento, conflitos familiares, perda de qualidade de vida
 
 8. RELEVANCIA SOCIAL:
 - Orgulho da empresa e do trabalho
-- Responsabilidade social da organizacao
+- Responsabilidade social da organização
 - Imagem externa positiva
-- Produto/servico util para sociedade
+- Produto/serviço útil para sociedade
 
 Impacto quando ausente:
 Vergonha do trabalho, falta de proposito, cinismo
 
 EQUILIBRIO VIDA-TRABALHO (WORK-LIFE BALANCE)
 
-O Mito do Equilibrio Perfeito:
+O Mito do Equilíbrio Perfeito:
 
-Nao existe divisao 50-50 todos os dias. Equilibrio e dinamico:
+Não existe divisão 50-50 todos os dias. Equilíbrio e dinâmico:
 - Alguns dias o trabalho demanda mais
-- Outros dias a vida pessoal precisa de atencao
+- Outros dias a vida pessoal precisa de atenção
 - O importante e a media ao longo de semanas/meses
 
-Sinais de Desequilibrio Vida-Trabalho:
+Sinais de Desequilíbrio Vida Trabalho:
 
 TRABALHO DOMINA VIDA:
 - Trabalha mais de 50h/semana regularmente
 - Leva trabalho para casa todo dia
 - Pensa no trabalho 24h
-- Nao tem hobbies ou vida social
+- Não tem hobbies ou vida social
 - Relacionamentos familiares sofrem
-- Saude fisica deteriora
-- Ferias geram ansiedade
+- Saúde física deteriora
+- Férias geram ansiedade
 
 CONSEQUENCIAS:
-Burnout, divorcio, alienacao dos filhos, doencas, morte precoce
+Burnout, divorcio, alienação dos filhos, doenças, morte precoce
 
 Caso Real:
-Executivo trabalhava 80h/semana por 10 anos. Aos 42, infarto. Sobreviveu mas ficou com sequelas. Perdeu casamento. Filhos adultos nao falavam com ele. Reflexao: "Construi imperio mas destrui minha vida."
+Executivo trabalhava 80h/semana por 10 anos. Aos 42, infarto. Sobreviveu mas ficou com sequelas. Perdeu casamento. Filhos adultos não falavam com ele. Reflexão: "Construí império mas destruí minha vida."
 
-Estrategias para Equilibrio:
+Estratégias para Equilíbrio:
 
 1. ESTABELECER LIMITES CLAROS:
-- Definir horario de desligar (ex: 18h)
-- Desligar notificacoes de trabalho apos expediente
-- Nao ler emails no fim de semana
+- Definir horário de desligar (ex: 18h)
+- Desligar notificações de trabalho após expediente
+- Não ler e-mails no fim de semana
 - Comunicar limites a equipe e chefia
 
 2. PRIORIZAR O QUE IMPORTA:
-- Familia e saude vem antes de tudo
-- Pergunte: "No meu leito de morte, vou me arrepender de nao ter trabalhado mais?"
-- Ninguem no funeral diz: "Gostaria que ele tivesse passado mais tempo no escritorio"
+- Família e saúde vem antes de tudo
+- Pergunte: "No meu leito de morte, vou me arrepender de não ter trabalhado mais?"
+- Ninguém no funeral diz: "Gostaria que ele tivesse passado mais tempo no escritório"
 
 3. USAR TECNOLOGIA A SEU FAVOR:
 - Automatizar tarefas repetitivas
@@ -6052,15 +6044,15 @@ Estrategias para Equilibrio:
 - MAS: Desligar tecnologia em momentos pessoais
 
 4. NEGOCIAR FLEXIBILIDADE:
-- Home office quando possivel
-- Horarios flex
+- Home office quando possível
+- Horários flex.
 
-iveis
+invés
 - Jornada comprimida (4 dias de 10h)
 
 5. MICRO-MOMENTOS DE QUALIDADE:
-Se nao pode ter 4 horas, tenha 30 minutos de qualidade total:
-- Jantar SEM celular com familia
+Se não pode ter 4 horas, tenha 30 minutos de qualidade total:
+- Jantar SEM celular com família
 - 20 min brincando com filhos (presente 100%)
 - 15 min caminhada ao ar livre
 
@@ -6069,180 +6061,180 @@ TECNICAS DE AUTOCUIDADO
 Pilares do Autocuidado:
 
 1. FISICO:
-- Sono: 7-9h por noite, horarios regulares
-- Alimentacao: 3 refeicoes saudaveis, evitar excesso de cafe/acucar
-- Exercicio: 30min, 3-5x/semana minimo
-- Hidratacao: 2-3 litros agua/dia
+- Sono: 7-9h por noite, horários regulares
+- Alimentação: 3 refeições saudáveis, evitar excesso de café/açúcar
+- Exercício: 30min, 3-5x/semana mínimo
+- Hidratação: 2-3 litros agua/dia
 - Exames preventivos anuais
 
 2. MENTAL:
 - Pausas regulares no trabalho (5-10min cada 1h)
 - Leitura por prazer
 - Aprender algo novo (hobby)
-- Limitar exposicao a noticias negativas
+- Limitar exposição a notícias negativas
 - Terapia preventiva
 
 3. EMOCIONAL:
-- Expressar emocoes saudavelmente
+- Expressar emoções saudavelmente
 - Pedir ajuda quando precisar
 - Cultivar relacionamentos positivos
 - Perdoar (a si e aos outros)
-- Gratidao diaria (listar 3 coisas boas)
+- Gratidão diária (listar 3 coisas boas)
 
 4. SOCIAL:
-- Tempo de qualidade com amigos/familia
+- Tempo de qualidade com amigos/família
 - Participar de comunidades
 - Voluntariado
-- Dizer nao quando necessario
-- Limites saudaveis
+- Dizer não quando necessário
+- Limites saudáveis
 
 5. ESPIRITUAL/PROPOSITO:
-- Reflexao sobre valores
-- Conexao com proposito maior
-- Meditacao ou oracao (se religioso)
+- Reflexão sobre valores
+- Conexão com proposito maior
+- Meditação ou oração (se religioso)
 - Contato com natureza
-- Arte, musica, beleza
+- Arte, música, beleza
 
-Praticas Diarias de Autocuidado (15-30min):
+Práticas Diárias de Autocuidado (15-30min):
 
 MANHA (10min):
 - Acordar 15min antes
 - Alongamento leve
-- Respiracao profunda (5min)
-- Definir intencao do dia
+- Respiração profunda (5min)
+- Definir intenção do dia
 
 TARDE (5min):
-- Pausa para lanche saudavel
+- Pausa para lanche saudável
 - Caminhada breve
 - Desconectar de telas
 
 NOITE (15min):
 - Jantar sem telas
-- Ritual de descompressao
-- Gratidao (3 coisas boas do dia)
+- Ritual de descompressão
+- Gratidão (3 coisas boas do dia)
 - Leitura relaxante
 
 CONSTRUINDO RESILIENCIA
 
-O que e Resiliencia:
-Capacidade de se adaptar bem diante de adversidades, traumas, tragedias, ameacas ou fontes significativas de estresse.
+O que e Resiliência:
+Capacidade de se adaptar bem diante de adversidades, traumas, tragedias, ameaças ou fontes significativas de estresse.
 
-Resiliencia NAO e:
+Resiliência NAO e:
 - Nunca sentir dor ou estresse
 - Ser forte o tempo todo
 - Fazer tudo sozinho
-- Nao pedir ajuda
+- Não pedir ajuda
 
-Resiliencia E:
+Resiliência E:
 - Dobrar sem quebrar
 - Recuperar-se de quedas
 - Aprender com dificuldades
 - Pedir e aceitar apoio
 
-Os 7 Pilares da Resiliencia:
+Os 7 Pilares da Resiliência:
 
 1. AUTOCONHECIMENTO:
-Conhecer proprios limites, gatilhos, valores
+Conhecer próprios limites, gatilhos, valores
 
 2. AUTORREGULACAO:
-Gerenciar emocoes e impulsos
+Gerenciar emoções e impulsos
 
 3. OTIMISMO REALISTA:
-Esperanca fundamentada, nao negacao
+Esperança fundamentada, não negação
 
 4. EMPATIA:
 Conectar-se com outros
 
 5. EFICACIA PESSOAL:
-Crenca na propria capacidade
+Crença na própria capacidade
 
 6. FLEXIBILIDADE MENTAL:
-Adaptar-se a mudancas
+Adaptar-se a mudanças
 
 7. REDE DE APOIO:
 Ter pessoas em quem confiar
 
-Como Desenvolver Resiliencia:
+Como Desenvolver Resiliência:
 
 1. REFORMULE ADVERSIDADES:
 Pergunta Disempoderada: "Por que isso aconteceu comigo?"
 Pergunta Empoderada: "O que posso aprender com isso?"
 
 2. FOCO NO CONTROLAVEL:
-- Nao pode controlar: Economia, decisoes de outros, passado
-- Pode controlar: Suas acoes, reacoes, atitude
+- Não pode controlar: Economia, decisões de outros, passado
+- Pode controlar: Suas ações, reações, atitude
 
 3. CUIDE DA SAUDE BASE:
-Cerebro estressado, mal alimentado, sem sono = Sem resiliencia
+Cérebro estressado, mal alimentado, sem sono = Sem resiliência
 
 4. CONSTRUA REDE DE APOIO:
-Nao e fraqueza pedir ajuda. E inteligencia ter suporte.
+Não é fraqueza pedir ajuda. E inteligência ter suporte.
 
 5. PRATIQUE AUTOCOMPAIXAO:
 Trate-se como trataria melhor amigo em dificuldade
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Avaliacao de Equilibrio
-De 0-10, avalie sua satisfacao em:
+Exercício 1: Avaliação de Equilíbrio
+De 0-10, avalie sua satisfação em:
 - Trabalho: ___
-- Familia: ___
-- Saude: ___
+- Família: ___
+- Saúde: ___
 - Amizades: ___
 - Lazer: ___
 - Proposito: ___
 
-Areas com nota abaixo de 7 precisam de atencao.
+Áreas com nota abaixo de 7 precisam de atenção.
 
-Exercicio 2: Plano de Autocuidado
-Liste 3 acoes concretas que voce fara esta semana em cada pilar:
-- Fisico: ___
+Exercício 2: Plano de Autocuidado
+Liste 3 ações concretas que você fara está semana em cada pilar:
+- Físico: ___
 - Mental: ___
 - Emocional: ___
 
-Exercicio 3: Rede de Apoio
-Liste 5 pessoas que voce pode pedir ajuda em momentos dificeis.
-Se nao conseguiu listar 5, e hora de construir essa rede.
+Exercício 3: Rede de Apoio
+Liste 5 pessoas que você pode pedir ajuda em momentos difíceis.
+Se não conseguiu listar 5, e hora de construir essa rede.
 
 CONCLUSAO DO MODULO
 
-Qualidade de vida no trabalho nao e luxo - e necessidade para sustentabilidade da vida e carreira.
+Qualidade de vida no trabalho não e luxo - e necessidade para sustentabilidade da vida e carreira.
 
-Voce nao pode servir agua de um copo vazio. Cuide de voce PRIMEIRO para poder cuidar dos outros.
+Você não pode servir agua de um copo vazio. Cuide de você PRIMEIRO para poder cuidar dos outros.
 
-Proximos Passos:
-1. Avalie seu equilibrio vida-trabalho
-2. Implemente 1 pratica de autocuidado diaria
-3. Estabeleca 1 limite saudavel esta semana
+Próximos Passos:
+1. Avalie seu equilíbrio vida trabalho
+2. Implemente 1 prática de autocuidado diária
+3. Estabeleça 1 limite saudável está semana
 4. Fortaleça sua rede de apoio
 
-Lembre-se: Sucesso sem saude e bem-estar nao e sucesso - e um caminho para o colapso.
+Lembre-se: Sucesso sem saúde e bem-estar não e sucesso - e um caminho para o colapso.
         `
       },
       {
         id: 2,
-        titulo: "Reconhecimento e Gestao do Estresse",
-        duracao: "50 min",
-        topicos: [
+        título: "Reconhecimento e Gestão do Estresse",
+        duração: "50 min",
+        tópicos: [
           "Fisiologia do estresse",
-          "Sinais e sintomas de estresse cronico",
+          "Sinais e sintomas de estresse crônico",
           "Estressores ocupacionais",
-          "Tecnicas de manejo do estresse",
-          "Estresse positivo vs. negativo (Eustresse vs. Distresse)"
+          "Técnicas de manejo do estresse",
+          "Estresse positivo vs. negativo (Estresse vs. Distorcesse)"
         ],
-        materialDidatico: `
+        materialDidático: `
 RECONHECIMENTO E GESTAO DO ESTRESSE
 
 INTRODUCAO
 
-Estresse nao e o inimigo - e a resposta do corpo a desafios. O problema e o estresse CRONICO desregulado que mata lentamente.
+Estresse não e o inimigo - e a resposta do corpo a desafios. O problema e o estresse CRONICO desregulado que mata lentamente.
 
 Dados Alarmantes:
 - 90% dos brasileiros sofrem ansiedade e estresse (ISMA-BR)
-- Estresse cronico aumenta risco de infarto em 40%, AVC em 50%
-- Custo anual do estresse no trabalho: $300 bilhoes (EUA)
+- Estresse crônico aumenta risco de infarto em 40%, AVC em 50%
+- Custo anual do estresse no trabalho: $300 bilhões (EUA)
 
-A boa noticia: estresse e gerenciavel quando reconhecido e tratado adequadamente.
+A boa noticia: estresse e gerenciável quando reconhecido e tratado adequadamente.
 
 FISIOLOGIA DO ESTRESSE
 
@@ -6250,90 +6242,90 @@ O que acontece no corpo quando enfrentamos estresse:
 
 FASE 1: ALARME (Resposta de Luta ou Fuga)
 
-Estimulo estressor (prazo apertado, conflito, ameaca) ativa o sistema nervoso simpatico:
+Estimulo estressor (prazo apertado, conflito, ameaça) ativa o sistema nervoso simpático:
 
-1. HIPOTALAMO (cerebro) libera CRH
+1. HIPOTALAMO (cérebro) libera CRH
 2. HIPOFISE libera ACTH
 3. GLANDULAS ADRENAIS liberam:
-   - CORTISOL (hormonio do estresse)
+   - CORTISOL (hormônio do estresse)
    - ADRENALINA e NORADRENALINA
 
 Efeitos imediatos (em segundos):
-- Frequencia cardiaca dispara (mais sangue para musculos)
-- Pressao arterial sobe
-- Respiracao acelera (mais oxigenio)
-- Pupilas dilatam (visao aguçada)
-- Glicose liberada no sangue (energia rapida)
-- Digestao desacelera (nao e prioridade agora)
-- Sistema imunologico suprimido temporariamente
+- Frequência cardíaca dispara (mais sangue para músculos)
+- Pressão arterial sobe
+- Respiração acelera (mais oxigênio)
+- Pupilas dilatam (visão aguçada)
+- Glicose liberada no sangue (energia rápida)
+- Digestão desacelera (não é prioridade agora)
+- Sistema imunológico suprimido temporariamente
 
 FUNCAO EVOLUTIVA:
 Isso salvou nossos ancestrais de predadores. Corpo se prepara para LUTAR ou FUGIR.
 
-Problema: Nosso cerebro NAO diferencia ameaca fisica (leao) de ameaca psicologica (email agressivo do chefe). Resposta e a mesma.
+Problema: Nosso cérebro NAO diferencia ameaça física (leão) de ameaça psicológica (e-mail agressivo do chefe). Resposta e a mesma.
 
-FASE 2: RESISTENCIA (Adaptacao)
+FASE 2: RESISTENCIA (Adaptação)
 
 Se estressor continua (semanas/meses), corpo tenta se adaptar:
 - Cortisol permanece elevado
 - Corpo usa reservas de energia
-- Adaptacao aparente (voce "se acostuma")
+- Adaptação aparente (você "se acostuma")
 
 FASE 3: EXAUSTAO (Esgotamento)
 
 Reservas acabam. Corpo colapsa:
-- Sistema imunologico falha
-- Doencas aparecem (gastrite, hipertensao, depressao)
+- Sistema imunológico falha
+- Doenças aparecem (gastrite, hipertensão, depressão)
 - Burnout
-- Adoecimento fisico e mental grave
+- Adoecimento físico e mental grave
 
 SINAIS E SINTOMAS DE ESTRESSE CRONICO
 
 FISICOS:
-- Tensao muscular (especialmente pescoco, ombros, mandibula)
-- Dores de cabeca frequentes
-- Problemas gastricos (gastrite, refluxo, intestino irritavel)
-- Insonia ou sono nao-reparador
-- Cansaco cronico
+- Tensão muscular (especialmente pescoço, ombros, mandíbula)
+- Dores de cabeça frequentes
+- Problemas gástricos (gastrite, refluxo, intestino irritável)
+- Insônia ou sono não-reparador
+- Cansaço crônico
 - Queda de cabelo
 - Problemas de pele (acne, dermatite)
-- Alteracoes de peso (ganho ou perda)
-- Sistema imunologico enfraquecido (gripar frequentemente)
-- Hipertensao
-- Palpitacoes
+- Alterações de peso (ganho ou perda)
+- Sistema imunológico enfraquecido (gripar frequentemente)
+- Hipertensão
+- Palpitações
 
 EMOCIONAIS:
 - Irritabilidade constante
 - Ansiedade generalizada
 - Tristeza ou apatia
-- Sensacao de sobrecarga
+- Sensação de sobrecarga
 - Dificuldade de relaxar
-- Preocupacao excessiva
-- Mudancas de humor repentinas
-- Choro facil
+- Preocupação excessiva
+- Mudanças de humor repentinas
+- Choro fácil
 
 COGNITIVOS:
-- Dificuldade de concentracao
+- Dificuldade de concentração
 - Esquecimentos frequentes
 - Pensamentos negativos recorrentes
-- Dificuldade de tomar decisoes
-- Pensamento acelerado (mente nao desliga)
+- Dificuldade de tomar decisões
+- Pensamento acelerado (mente não desliga)
 - Pessimismo
 
 COMPORTAMENTAIS:
 - Isolamento social
-- Procrastinacao
-- Uso excessivo de alcool/cafe/tabaco
-- Mudanca de apetite (comer demais ou muito pouco)
+- Procrastinação
+- Uso excessivo de álcool/café/tabaco
+- Mudança de apetite (comer demais ou muito pouco)
 - Roer unhas, estalar dedos
-- Evitacao de responsabilidades
+- Evitação de responsabilidades
 - Conflitos interpessoais aumentados
 
-Auto-Avaliacao:
-Quantos desses sintomas voce tem regularmente (>3x por semana)?
+Autoavaliação:
+Quantos desses sintomas você tem regularmente (>3x por semana)?
 - 0-3: Estresse baixo
-- 4-7: Estresse moderado - atencao
-- 8-12: Estresse alto - intervencao necessaria
+- 4-7: Estresse moderado - atenção
+- 8-12: Estresse alto - intervenção necessária
 - 13+: Estresse severo - busque ajuda profissional
 
 ESTRESSORES OCUPACIONAIS
@@ -6341,165 +6333,165 @@ ESTRESSORES OCUPACIONAIS
 Os principais causadores de estresse no trabalho:
 
 1. SOBRECARGA DE TRABALHO
-Volume excessivo + prazos apertados + pressao continua
+Volume excessivo + prazos apertados + pressão continua
 
 2. FALTA DE CONTROLE/AUTONOMIA
-Nao poder influenciar decisoes sobre proprio trabalho
+Não poder influenciar decisões sobre próprio trabalho
 
 3. AMBIGUIDADE DE PAPEL
-Nao saber exatamente o que se espera
+Não saber exatamente o que se espera
 
 4. CONFLITO DE PAPEL
-Demandas contraditorias
+Demandas contraditórias
 
 5. INSEGURANCA NO EMPREGO
-Medo de demissao, instabilidade
+Medo de demissão, instabilidade
 
 6. RELACIONAMENTOS RUINS
 Conflitos, falta de apoio, assedio
 
 7. FALTA DE RECONHECIMENTO
-Esforco nao valorizado
+Esforço não valorizado
 
 8. DESEQUILIBRIO ESFORCO-RECOMPENSA
-Muito esforco, pouca recompensa (salario, promocao, reconhecimento)
+Muito esforço, pouca recompensa (salario, promoção, reconhecimento)
 
 9. MUDANCAS ORGANIZACIONAIS
-Reestruturacoes, fusoes, mudancas de lideranca
+Reestruturações, fusões, mudanças de liderança
 
 10. AMBIENTE FISICO INADEQUADO
 Barulho, frio/calor, ergonomia ruim
 
 Pesquisa (Karasek):
-Combinacao ALTA DEMANDA + BAIXO CONTROLE = Maior risco de estresse
+Combinação ALTA DEMANDA + BAIXO CONTROLE = Maior risco de estresse
 
 Modelo Siegrist:
-ALTO ESFORCO + BAIXA RECOMPENSA = Risco dobrado de doenca cardiovascular
+ALTO ESFORCO + BAIXA RECOMPENSA = Risco dobrado de doença cardiovascular
 
 TECNICAS DE MANEJO DO ESTRESSE
 
-Manejo de estresse requer abordagem em 3 niveis:
+Manejo de estresse requer abordagem em 3 níveis:
 
-NIVEL 1: ELIMINACAO DO ESTRESSOR (Melhor solucao)
+NIVEL 1: ELIMINACAO DO ESTRESSOR (Melhor solução)
 
-Se possivel, elimine a fonte:
+Sé possível, elimine a fonte:
 - Sobrecarga? Redistribua tarefas
 - Conflito? Resolva
 - Ambiente ruim? Melhore
 
-Nem sempre e possivel eliminar, mas sempre questione: "Posso mudar a situacao?"
+Nem sempre é possível eliminar, mas sempre questione: "Posso mudar a situação?"
 
-NIVEL 2: MUDANCA DE PERCEPCAO (Reinterpretacao)
+NIVEL 2: MUDANCA DE PERCEPCAO (Reinterpretação)
 
-Se nao pode mudar situacao, mude como voce a interpreta.
+Se não pode mudar situação, mude como você a interpreta.
 
-Tecnica de Reframe Cognitivo:
+Técnica de Reframe Cognitivo:
 
-ESTRESSOR: "Tenho apresentacao importante amanha"
+ESTRESSOR: "Tenho apresentação importante amanhã"
 
-Interpretacao Estressante: "Vou fracassar. Todos vao me julgar. Minha carreira depende disso."
-Resposta: Panico, insonia, performance ruim
+Interpretação Estressante: "Vou fracassar. Todos vão me julgar. Minha carreira depende disso."
+Resposta: Pânico, insônia, performance ruim
 
 Reframe: "E uma oportunidade de mostrar meu trabalho. Estou preparado. Se errar, aprendo."
 Resposta: Ansiedade controlada, energia canalizada
 
 Pergunte-se:
-- Isso realmente e tao catastrofico quanto parece?
-- Qual o pior cenario REALISTA? Eu consigo lidar com isso?
+- Isso realmente e tão catastrófico quanto parece?
+- Qual o pior cenário REALISTA? Eu consigo lidar com isso?
 - Como vou ver isso daqui a 5 anos?
-- O que aconselharia um amigo nessa situacao?
+- O que aconselharia um amigo nessa situação?
 
 NIVEL 3: GESTAO DA RESPOSTA FISIOLOGICA
 
-Quando nao pode eliminar estressor nem mudar percepcao, regule resposta do corpo.
+Quando não pode eliminar estressor nem mudar percepção, regule resposta do corpo.
 
 TECNICA 1: RESPIRACAO DIAFRAGMATICA (Mais Eficaz)
 
 Como:
 1. Sente-se confortavelmente
-2. Mao no abdomen
-3. Inspire pelo nariz (4 segundos), inflando abdomen
+2. Mao no abdômen
+3. Inspire pelo nariz (4 segundos), inflando abdômen
 4. Segure (2 segundos)
-5. Expire pela boca (6 segundos), esvaziando abdomen
+5. Expire pela boca (6 segundos), esvaziando abdômen
 6. Repita 5-10 ciclos
 
 POR QUE FUNCIONA:
-Respiracao profunda ativa sistema nervoso parassimpatico (relaxamento), anulando sistema simpatico (estresse).
+Respiração profunda ativa sistema nervoso parassimpático (relaxamento), anulando sistema simpático (estresse).
 
-USE: Antes de reuniao importante, apos conflito, ao sentir ansiedade subindo.
+USE: Antes de reunião importante, após conflito, ao sentir ansiedade subindo.
 
 TECNICA 2: RELAXAMENTO MUSCULAR PROGRESSIVO (Jacobson)
 
 Como:
 1. Tensione grupo muscular (ex: punhos) por 5 segundos
 2. Libere abruptamente
-3. Observe diferenca entre tensao e relaxamento
-4. Repita com outros grupos (bracos, ombros, rosto, pernas)
+3. Observe diferença entre tensão e relaxamento
+4. Repita com outros grupos (braços, ombros, rosto, pernas)
 
-Duracao: 10-15 minutos
+Duração: 10-15 minutos
 
-USE: Antes de dormir, apos dia estressante.
+USE: Antes de dormir, após dia estressante.
 
-TECNICA 3: MINDFULNESS (Atencao Plena)
+TECNICA 3: MINDFULNESS (Atenção Plena)
 
 Foco total no momento presente, sem julgamento.
 
-Exercicio de 5 Minutos:
+Exercício de 5 Minutos:
 1. Sente-se confortavelmente
-2. Foque na respiracao
-3. Quando mente divagar (vai divagar), gentilmente traga de volta para respiracao
+2. Foque na respiração
+3. Quando mente divagar (vai divagar), gentilmente traga de volta para respiração
 4. Repita
 
 Pesquisa: 8 semanas de mindfulness reduzem cortisol em 25% e sintomas de ansiedade em 40%.
 
 TECNICA 4: ATIVIDADE FISICA REGULAR
 
-Exercicio e o melhor remedio natural para estresse.
+Exercício e o melhor remédio natural para estresse.
 
 COMO FUNCIONA:
-- Libera endorfinas (analgesico natural)
+- Libera endorfinas (analgésico natural)
 - Reduz cortisol
 - Melhora sono
 - Aumenta autoestima
 - Proporciona pausa mental
 
 RECOMENDACAO OMS:
-- 150 min/semana de exercicio moderado (caminhada rapida, danca, ciclismo)
+- 150 min/semana de exercício moderado (caminhada rápida, dança, ciclismo)
 OU
-- 75 min/semana de exercicio intenso (corrida, natacao, HIIT)
+- 75 min/semana de exercício intenso (corrida, natação, HIIT)
 
-NAO PRECISA SER ACADEMIA: Caminhada no almoco, subir escadas, danca em casa.
+NAO PRECISA SER ACADEMIA: Caminhada no almoço, subir escadas, dança em casa.
 
 TECNICA 5: GESTAO DO TEMPO
 
-Procrastinacao e desorganizacao GERAM estresse.
+Procrastinação e desorganização GERAM estresse.
 
-Metodo Pomodoro:
+Método Pomodoro:
 - 25 min foco total em 1 tarefa
 - 5 min pausa
-- Apos 4 pomodoros, pausa de 15-30 min
+- Após 4 pomodoros, pausa de 15-30 min
 
 Matriz Eisenhower:
-- Urgente + Importante: Faca agora
-- Importante + Nao-Urgente: Agende (mais importante!)
-- Urgente + Nao-Importante: Delegue
-- Nao-Urgente + Nao-Importante: Elimine
+- Urgente + Importante: Faça agora
+- Importante + Não-Urgente: Agende (mais importante!)
+- Urgente + Não-Importante: Delegue
+- Não-Urgente + Não-Importante: Elimine
 
 TECNICA 6: CONEXOES SOCIAIS
 
-Conversar com amigos/familia reduz cortisol.
+Conversar com amigos/família reduz cortisol.
 
-Acao: Almoce com colega, ligue para amigo, participe de grupo.
+Ação: Almoce com colega, ligue para amigo, participe de grupo.
 
 TECNICA 7: SONO ADEQUADO
 
-Sono < 6h = Cortisol elevado, desregulacao emocional, capacidade reduzida de lidar com estresse.
+Sono < 6h = Cortisol elevado, desregulação emocional, capacidade reduzida de lidar com estresse.
 
 Higiene do Sono:
-- Mesmos horarios
+- Mesmos horários
 - Quarto escuro, fresco
 - Sem telas 1h antes
-- Evite cafeina apos 14h
+- Evite cafeína após 14h
 
 ESTRESSE POSITIVO vs. NEGATIVO (EUSTRESSE vs. DISTRESSE)
 
@@ -6508,184 +6500,184 @@ Nem todo estresse e ruim.
 EUSTRESSE (Estresse Positivo):
 Desafio estimulante que promove crescimento.
 
-Caracteristicas:
+Características:
 - Intensidade moderada
-- Temporario
-- Voce se sente energizado
+- Temporário
+- Você se sente energizado
 - Aumenta performance
-- Ha controle e recursos para lidar
+- Há controle e recursos para lidar
 
 Exemplos:
 - Casamento
-- Mudanca para emprego melhor
-- Lancamento de projeto importante
+- Mudança para emprego melhor
+- Lançamento de projeto importante
 - Praticar esporte desafiador
 - Aprender habilidade nova
 
 DISTRESSE (Estresse Negativo):
-Ameaca percebida que supera recursos.
+Ameaça percebida que supera recursos.
 
-Caracteristicas:
-- Intensidade alta ou cronica
+Características:
+- Intensidade alta ou crônica
 - Prolongado
-- Voce se sente exausto
+- Você se sente exausto
 - Reduz performance
 - Falta de controle ou recursos
 
 Exemplos:
 - Sobrecarga constante
-- Assedio
-- Inseguranca no emprego
-- Conflitos nao-resolvidos
-- Doenca grave
+- Assédio
+- Insegurança no emprego
+- Conflitos não-resolvidos
+- Doença grave
 
-Zona de Desempenho Otimo (Curva Yerkes-Dodson):
+Zona de Desempenho Ótimo (Curva Yerkes-Dodson):
 
 Estresse Baixo = Performance Baixa (tedio, desengajamento)
-Estresse Moderado = Performance Alta (foco, motivacao, energia)
+Estresse Moderado = Performance Alta (foco, motivação, energia)
 Estresse Excessivo = Performance Baixa (ansiedade, paralisia, erros)
 
-Objetivo: Manter-se na zona de estresse moderado (eustresse).
+Objetivo: Manter-se na zona de estresse moderado (estresse).
 
 Como:
-- Se muito estresse: Use tecnicas de reducao
+- Se muito estresse: Use técnicas de redução
 - Se pouco estresse: Busque desafios
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Rastreamento de Estresse
+Exercício 1: Rastreamento de Estresse
 Durante 1 semana, anote diariamente (escala 1-10):
-- Nivel de estresse
+- Nível de estresse
 - Principais estressores
-- Sintomas fisicos/emocionais
+- Sintomas físicos/emocionais
 - O que ajudou a reduzir
 
-Identifique padroes.
+Identifique padrões.
 
-Exercicio 2: Pratica de Respiracao
-Todos os dias, 2x (manha e tarde), pratique 5 minutos de respiracao diafragmatica.
+Exercício 2: Prática de Respiração
+Todos os dias, 2x (manha e tarde), pratique 5 minutos de respiração diafragmática.
 
-Exercicio 3: Reframe Cognitivo
+Exercício 3: Reframe Cognitivo
 Identifique 1 pensamento estressante recorrente.
 Reescreva usando reframe racional.
 
 CONCLUSAO DO MODULO
 
-Estresse e inevitavel. Estresse cronico nao-gerenciado e opcional.
+Estresse e inevitável. Estresse crônico não-gerenciado e opcional.
 
-Reconhecer sinais precocemente e usar tecnicas de manejo e a diferenca entre saude sustentavel e colapso inevitavel.
+Reconhecer sinais precocemente e usar técnicas de manejo e a diferença entre saúde sustentável e colapso inevitável.
 
-Lideres que gerenciam proprio estresse:
+Líderes que gerenciam próprio estresse:
 - Tem performance superior
-- Tomam decisoes melhores
+- Tomam decisões melhores
 - Inspiram equipe
-- Evitam burnout
+- Evitam Burnout
 
-Proximos Passos:
-1. Avalie seu nivel atual de estresse
+Próximos Passos:
+1. Avalie seu nível atual de estresse
 2. Identifique seus 3 principais estressores
-3. Escolha 2 tecnicas de manejo para praticar esta semana
-4. Monitore mudancas
+3. Escolha 2 técnicas de manejo para praticar está semana
+4. Monitore mudanças
 
-Lembre-se: Estresse gerenciado e combustivel. Estresse descontrolado e veneno.
+Lembre-se: Estresse gerenciado e combustível. Estresse descontrolado e veneno.
         `
       },
       {
         id: 3,
-        titulo: "Prevencao e Recuperacao do Burnout",
-        duracao: "45 min",
-        topicos: [
-          "O que e Sindrome de Burnout",
-          "Diferencas entre estresse, burnout e depressao",
-          "Sinais de alerta do burnout",
-          "Fatores de risco e protecao",
-          "Estrategias de recuperacao"
+        título: "Prevenção e Recuperação do Burnout",
+        duração: "45 min",
+        tópicos: [
+          "O que e Síndrome de Burnout",
+          "Diferenças entre estresse, Burnout e depressão",
+          "Sinais de alerta do Burnout",
+          "Fatores de risco e proteção",
+          "Estratégias de recuperação"
         ],
-        materialDidatico: `
+        materialDidático: `
 PREVENCAO E RECUPERACAO DO BURNOUT
 
 INTRODUCAO
 
-Burnout nao e "so cansaco". E uma sindrome ocupacional reconhecida pela OMS (CID-11, 2022) como "estresse ocupacional cronico nao-gerenciado".
+Burnout não é "só cansaço". É uma síndrome ocupacional reconhecida pela OMS (CID-11, 2022) como "estresse ocupacional crônico não gerenciado".
 
 Dados Preocupantes:
-- 30% dos trabalhadores brasileiros tem burnout (ISMA-BR)
-- Afastamentos por burnout aumentaram 200% em 5 anos
-- Recuperacao completa pode levar 6 meses a 2 anos
+- 30% dos trabalhadores brasileiros tem Burnout (ISMA-BR)
+- Afastamentos por Burnout aumentaram 200% em 5 anos
+- Recuperação completa pode levar 6 meses a 2 anos
 
-Burnout destrói carreiras, relacionamentos e saude. Mas e prevenivel e reversivel.
+Burnout destrói carreiras, relacionamentos e saúde. Mas e previsível e reversível.
 
 O QUE E SINDROME DE BURNOUT
 
-Definicao OMS (CID-11):
-Sindrome resultante de estresse cronico no local de trabalho que nao foi gerenciado com sucesso.
+Definição OMS (CID-11):
+Síndrome resultante de estresse crônico no local de trabalho que não foi gerenciado com sucesso.
 
-Caracterizado por 3 Dimensoes (Maslach):
+Caracterizado por 3 Dimensões (Maslach):
 
 1. EXAUSTAO EMOCIONAL
 Sentimento de estar emocionalmente esgotado e sem recursos.
 
-"Nao aguento mais."
+"Não aguento mais."
 "Estou vazio."
 "Acordo cansado mesmo dormindo."
 
 2. DESPERSONALIZACAO (Cinismo)
-Atitude negativa, cinica, distante em relacao ao trabalho e pessoas.
+Atitude negativa, cínica, distante em relação ao trabalho e pessoas.
 
 "Tanto faz."
-"Nao me importo mais."
+"Não me importo mais."
 "Odeio meus clientes/pacientes/alunos."
 
 3. REDUCAO DA REALIZACAO PROFISSIONAL
-Sentimento de incompetencia e falta de produtividade.
+Sentimento de incompetência e falta de produtividade.
 
-"Nao sirvo para isso."
-"Nada do que faco da certo."
+"Não sirvo para isso."
+"Nada do que faço da certo."
 "Perdi minha habilidade."
 
-IMPORTANTE: Burnout e ESPECIFICO DO TRABALHO, nao generalizado para toda vida (diferente de depressao).
+IMPORTANTE: Burnout e ESPECIFICO DO TRABALHO, não generalizado para toda vida (diferente de depressão).
 
 DIFERENCAS ENTRE ESTRESSE, BURNOUT E DEPRESSAO
 
-Muitas vezes confundidos. Sao diferentes.
+Muitas vezes confundidos. São diferentes.
 
 ESTRESSE:
-- Reacao de curto prazo a pressao
-- Voce SE SENTE SOBRECARREGADO
+- Reação de curto prazo a pressão
+- Você SE SENTE SOBRECARREGADO
 - Melhora quando estressor e removido
 - "Muita coisa acontecendo"
 
 BURNOUT:
-- Resultado de estresse cronico nao-gerenciado (meses/anos)
-- Voce SE SENTE VAZIO, SEM ENERGIA
-- Nao melhora so tirando ferias
+- Resultado de estresse crônico não-gerenciado (meses/anos)
+- Você SE SENTE VAZIO, SEM ENERGIA
+- Não melhora só tirando férias
 - Relacionado especificamente ao TRABALHO
 - "Nada importa mais"
 
 DEPRESSAO:
-- Transtorno mental clinico (pode ou nao estar relacionado ao trabalho)
-- Afeta TODAS as areas da vida (trabalho, familia, hobbies)
+- Transtorno mental clinico (pode ou não estar relacionado ao trabalho)
+- Afeta TODAS as áreas da vida (trabalho, família, hobbies)
 - Inclui sintomas como: tristeza profunda, perda de prazer em tudo, pensamentos suicidas
 - Requer tratamento profissional (psiquiatria)
-- "Nao tenho mais vontade de viver"
+- "Não tenho mais vontade de viver"
 
-Relacao:
-Estresse cronico → Burnout → Pode evoluir para Depressao
+Relação:
+Estresse crônico → Burnout → Pode evoluir para Depressão
 
 Tabela Comparativa:
 
-| Aspecto | Estresse | Burnout | Depressao |
+| Aspecto | Estresse | Burnout | Depressão |
 |---------|----------|---------|-----------|
-| Duracao | Curto prazo | Medio/longo prazo | Persistente |
-| Emocao dominante | Ansiedade | Apatia | Tristeza profunda |
-| Energia | Hiperatividade | Exaustao | Letargia |
-| Esperanca | "Vai melhorar" | "Nao vai mudar" | "Nao ha esperanca" |
+| Duração | Curto prazo | Médio/longo prazo | Persistente |
+| Emoção dominante | Ansiedade | Apatia | Tristeza profunda |
+| Energia | Hiperatividade | Exaustão | Letargia |
+| Esperança | "Vai melhorar" | "Não vai mudar" | "Não há esperança" |
 | Escopo | Situacional | Trabalho | Toda vida |
-| Recuperacao | Descanso | Mudancas estruturais | Tratamento profissional |
+| Recuperação | Descanso | Mudanças estruturais | Tratamento profissional |
 
 SINAIS DE ALERTA DO BURNOUT
 
-Burnout nao acontece de repente - e um processo. Reconhecer sinais precoces e crucial.
+Burnout não acontece de repente - e um processo. Reconhecer sinais precoces e crucial.
 
 ESTAGIO 1: COMPULSAO PARA PROVAR-SE (Primeiros Meses)
 
@@ -6694,130 +6686,130 @@ ESTAGIO 1: COMPULSAO PARA PROVAR-SE (Primeiros Meses)
 - Querer provar valor constantemente
 - Negar limites
 
-"Eu consigo! So mais esse projeto..."
+"Eu consigo! Só mais esse projeto..."
 
 ESTAGIO 2: NEGLIGENCIA DE NECESSIDADES (Meses)
 
 - Parar de fazer pausas
 - Sono irregular
-- Alimentacao ruim
+- Alimentação ruim
 - Abandonar hobbies
-- "Nao tenho tempo para..."
+- "Não tenho tempo para..."
 
 ESTAGIO 3: DESLOCAMENTO DE CONFLITOS (6+ meses)
 
 - Irritabilidade aumentada
 - Culpar outros
-- Ver problemas como ameacas
+- Ver problemas como ameaças
 - Cinismo crescente
 
-"A empresa nao valoriza ninguem."
+"A empresa não valoriza ninguém."
 
 ESTAGIO 4: REVISAO DE VALORES
 
 - Trabalho vira UNICO foco
-- Relacoes pessoais negligenciadas
+- Relações pessoais negligenciadas
 - Isolamento social
 - Perda de hobbies
 
 ESTAGIO 5: NEGACAO DE PROBLEMAS
 
-- Intolerancia crescente
+- Intolerância crescente
 - Agressividade
-- Problemas vistos como falta de tempo, nao de esgotamento
+- Problemas vistos como falta de tempo, não de esgotamento
 
 ESTAGIO 6: RETRAIMENTO
 
-- Evitacao de interacoes sociais
+- Evitarão de interações sociais
 - Cinismo extremo
-- Sentimento de desesperanca
+- Sentimento de desesperança
 
 ESTAGIO 7: MUDANCAS COMPORTAMENTAIS OBVIAS
 
-- Alteracoes drasticas de personalidade
-- Uso de substancias (alcool, remedios)
+- Alterações drásticas de personalidade
+- Uso de substancias (álcool, remédios)
 - Comportamento de risco
 
 ESTAGIO 8: DESPERSONALIZACAO
 
-- Perda de contato com proprias necessidades
-- Funcionamento automatico
+- Perda de contato com próprias necessidades
+- Funcionamento automático
 - Vazio interior
 
 ESTAGIO 9: VAZIO INTERIOR
 
-- Sentimento de insignificancia
+- Sentimento de insignificância
 - Apatia profunda
-- Exaustao total
+- Exaustão total
 
 ESTAGIO 10: DEPRESSAO
 
-- Desesperanca completa
-- Exaustao fisica e mental
+- Desesperança completa
+- Exaustão física e mental
 - Pensamentos suicidas (casos extremos)
 
-PONTO CRITICO: Estagios 1-4 ainda sao reversiveis com mudancas de comportamento.
-Estagios 5+ exigem intervencao profissional.
+PONTO CRITICO: Estágios 1-4 ainda são reversíveis com mudanças de comportamento.
+Estágios 5+ exigem intervenção profissional.
 
 FATORES DE RISCO E PROTECAO
 
-FATORES DE RISCO (Aumentam chance de burnout):
+FATORES DE RISCO (Aumentam chance de Burnout):
 
 ORGANIZACIONAIS:
-- Sobrecarga cronica
+- Sobrecarga crônica
 - Falta de controle/autonomia
 - Recompensa inadequada
 - Colapso de comunidade (conflitos, isolamento)
-- Falta de justica (favoritismo, discriminacao)
+- Falta de justiça (favoritismo, discriminação)
 - Conflito de valores
 
 INDIVIDUAIS:
 - Perfeccionismo excessivo
-- Dificuldade de dizer "nao"
-- Necessidade extrema de aprovacao
-- Falta de limites trabalho-vida
-- Autocobranca excessiva
+- Dificuldade de dizer "não"
+- Necessidade extrema de aprovação
+- Falta de limites trabalho vida
+- Autocobrança excessiva
 
 CONTEXTUAIS:
-- Trabalho emocional intenso (saude, educacao, servico social)
-- Exposicao a trauma (policiais, bombeiros)
+- Trabalho emocional intenso (saúde, educação, serviço social)
+- Exposição a trauma (policiais, bombeiros)
 - Falta de suporte social
-- Instabilidade economica/emprego
+- Instabilidade econômica/emprego
 
 FATORES DE PROTECAO (Reduzem risco):
 
 - AUTONOMIA: Controle sobre como, quando, onde trabalhar
-- SUPORTE SOCIAL: Amigos, familia, colegas de confianca
-- RECONHECIMENTO: Esforco valorizado
+- SUPORTE SOCIAL: Amigos, família, colegas de confiança
+- RECONHECIMENTO: Esforço valorizado
 - PROPOSITO: Trabalho tem significado
 - EQUILIBRIO: Fronteiras claras entre trabalho e vida pessoal
-- AUTOCUIDADO: Sono, alimentacao, exercicio, lazer
+- AUTOCUIDADO: Sono, alimentação, exercício, lazer
 - RESILIENCIA: Capacidade de se recuperar de adversidades
-- VALORES ALINHADOS: Trabalho condizente com principios pessoais
+- VALORES ALINHADOS: Trabalho condizente com princípios pessoais
 
 ESTRATEGIAS DE PREVENCAO DO BURNOUT
 
-PREVENCAO PRIMARIA (Evitar que aconteca):
+PREVENCAO PRIMARIA (Evitar que aconteça):
 
 1. ESTABELECA LIMITES CLAROS
-- Horarios definidos (ex: nao trabalhar apos 19h)
+- Horários definidos (ex: não trabalhar após 19h)
 - Fins de semana protegidos
-- Ferias anuais OBRIGATORIAS
+- Férias anuais OBRIGATORIAS
 
 2. PRATIQUE O "NAO" ESTRATEGICO
-Nao aceite todo projeto. Priorize.
+Não aceite todo projeto. Priorize.
 
 3. GESTAO DE ENERGIA, NAO SO TEMPO
-Identifique quando voce tem mais energia (manha/tarde/noite) e agende tarefas importantes nesse periodo.
+Identifique quando você tem mais energia (manha/tarde/noite) e agende tarefas importantes nesse período.
 
 4. PAUSAS REGULARES
-- Tecnica Pomodoro (25 min trabalho + 5 min pausa)
-- Almoco FORA da mesa
-- Micro-pausas a cada hora (levantar, alongar)
+- Técnica Pomodoro (25 min trabalho + 5 min pausa)
+- Almoço FORA da mesa
+- Micro pausas a cada hora (levantar, alongar)
 
 5. CULTIVE VIDA FORA DO TRABALHO
 - Hobbies
-- Relacoes sociais
+- Relações sociais
 - Atividades prazerosas sem "utilidade"
 
 PREVENCAO SECUNDARIA (Detectar cedo):
@@ -6825,54 +6817,54 @@ PREVENCAO SECUNDARIA (Detectar cedo):
 6. AUTO-MONITORAMENTO
 Semanalmente, pergunte-se:
 - Estou cansado mesmo dormindo bem?
-- Estou cinico/irritado constantemente?
+- Estou cínico/irritado constantemente?
 - Perdi prazer no trabalho?
 
-Se sim a 2+, atencao.
+Se sim a 2+, atenção.
 
 7. FEEDBACK DE TERCEIROS
-Pessoas proximas percebem mudancas antes de voce.
+Pessoas próximas percebem mudanças antes de você.
 "Tenho parecido diferente ultimamente?"
 
 ESTRATEGIAS DE RECUPERACAO DO BURNOUT
 
-Se voce JA esta em burnout:
+Se você JA está em Burnout:
 
 PASSO 1: RECONHECA E ACEITE
-Negar so piora. Burnout nao e fraqueza - e consequencia de sistema insustentavel.
+Negar só piora. Burnout não e fraqueza - e consequência de sistema insustentável.
 
 PASSO 2: BUSQUE AJUDA PROFISSIONAL
-- Psicologo/Psiquiatra
-- Medico (burnout causa problemas fisicos)
+- Psicólogo/Psiquiatra
+- Medico (Burnout causa problemas físicos)
 
-PASSO 3: AFASTE-SE (Se Necessario)
-Em casos moderados a graves, afastamento temporario (15-90 dias) pode ser essencial.
+PASSO 3: AFASTE-SE (Se Necessário)
+Em casos moderados a graves, afastamento temporário (15-90 dias) pode ser essencial.
 
-Lei: Burnout e CID-11 (Z73.0) - elegivel para afastamento pelo INSS.
+Lei: Burnout e CID-11 (Z73.0) - elegível para afastamento pelo INSS.
 
 PASSO 4: DESCANSE RADICALMENTE
-Nao e "descanso ativo" (viajar, fazer curso). E descanso PROFUNDO:
+Não é "descanso ativo" (viajar, fazer curso). E descanso PROFUNDO:
 - Dormir sem alarme
-- Nao fazer nada "produtivo"
-- Permitir-se ser "inutil"
+- Não fazer nada "produtivo"
+- Permitir-se ser "inútil"
 
 PASSO 5: RECONECTE COM PRAZER
-Faca coisas APENAS porque gosta, sem objetivo.
+Faça coisas APENAS porque gosta, sem objetivo.
 
 PASSO 6: REAVALIAÇAO PROFUNDA
-- Este trabalho esta alinhado com meus valores?
-- As condicoes sao sustentaveis?
-- Preciso mudar de funcao/empresa/carreira?
+- Este trabalho está alinhado com meus valores?
+- As condições são sustentáveis?
+- Preciso mudar de função/empresa/carreira?
 
-Recuperacao pode exigir mudancas dificeis (mudar de area, reduzir carga, mudar de empresa).
+Recuperação pode exigir mudanças difíceis (mudar de área, reduzir carga, mudar de empresa).
 
 PASSO 7: RETORNO GRADUAL
 Nao volte 100% de imediato. Aumente carga progressivamente.
 
 PASSO 8: IMPLEMENTE MUDANCAS ESTRUTURAIS
-Se voltar para mesmas condicoes, burnout volta.
+Se voltar para mesmas condições, Burnout volta.
 
-Mudancas necessarias:
+Mudanças necessárias:
 - Renegociar carga
 - Estabelecer limites
 - Buscar suporte
@@ -6880,109 +6872,109 @@ Mudancas necessarias:
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Auto-Avaliacao de Burnout (Escala de Maslach)
-Avalie cada afirmacao (0=nunca, 5=sempre):
-- Sinto-me emocionalmente esgotado pelo trabalho (Exaustao)
-- Sinto-me vazio ao fim do dia (Exaustao)
-- Trato colegas/clientes de forma impessoal (Despersonalizacao)
-- Sinto que nao realizo nada de valor (Reducao de Realizacao)
+Exercício 1: Autoavaliação de Burnout (Escala de Maslach)
+Avalie cada afirmação (0=nunca, 5=sempre):
+- Sinto-me emocionalmente esgotado pelo trabalho (Exaustão)
+- Sinto-me vazio ao fim do dia (Exaustão)
+- Trato colegas/clientes de forma impessoal (Despersonalização)
+- Sinto que não realizo nada de valor (Redução de Realização)
 
-Score >15: Alto risco de burnout
+Score >15: Alto risco de Burnout
 
-Exercicio 2: Mapeamento de Fatores de Risco
+Exercício 2: Mapeamento de Fatores de Risco
 Liste seus fatores de risco (organizacionais, individuais, contextuais).
-Liste seus fatores de protecao.
-Razao Risco/Protecao alta = Vulnerabilidade.
+Liste seus fatores de proteção.
+Razão Risco/Proteção alta = Vulnerabilidade.
 
-Exercicio 3: Plano de Prevencao
-Escolha 3 acoes concretas de prevencao para implementar nas proximas 2 semanas.
+Exercício 3: Plano de Prevenção
+Escolha 3 ações concretas de prevenção para implementar nas próximas 2 semanas.
 
 CONCLUSAO DO MODULO
 
-Burnout nao e inevitavel. E resultado de sistema de trabalho insustentavel mantido por muito tempo.
+Burnout não e inevitável. E resultado de sistema de trabalho insustentável mantido por muito tempo.
 
-Prevenir burnout exige:
+Prevenir Burnout exige:
 - Limites claros
-- Autocuidado nao-negociavel
+- Autocuidado não negociável
 - Reconhecimento de sinais precoces
-- Coragem para mudar o que nao funciona
+- Coragem para mudar o que não funciona
 
-Se voce ja esta em burnout, recuperacao e possivel, mas exige tempo, ajuda e mudancas estruturais.
+Se você já está em Burnout, recuperação é possível, mas exige tempo, ajuda e mudanças estruturais.
 
-Proximos Passos:
-1. Avalie seu risco de burnout
-2. Implemente 1 limite claro esta semana
-3. Se em burnout, busque ajuda profissional
+Próximos Passos:
+1. Avalie seu risco de Burnout
+2. Implemente 1 limite claro está semana
+3. Se em Burnout, busque ajuda profissional
 4. Reconecte com uma atividade prazerosa
 
-Lembre-se: Voce nao e maquina. Sustentabilidade > Produtividade a qualquer custo.
+Lembre-se: Você não e maquina. Sustentabilidade > Produtividade a qualquer custo.
         `
       },
       {
         id: 4,
-        titulo: "Promocao de Bem-Estar e Equilibrio na Equipe",
-        duracao: "40 min",
-        topicos: [
+        título: "Promoção de Bem-Estar e Equilíbrio na Equipe",
+        duração: "40 min",
+        tópicos: [
           "Como promover qualidade de vida na equipe",
           "Programas de bem-estar eficazes",
-          "Flexibilidade e equilibrio trabalho-vida",
+          "Flexibilidade e equilíbrio trabalho vida",
           "Cultura de autocuidado",
-          "Metricas de bem-estar organizacional"
+          "Métricas de bem-estar organizacional"
         ],
-        materialDidatico: `
+        materialDidático: `
 PROMOCAO DE BEM-ESTAR E EQUILIBRIO NA EQUIPE
 
 INTRODUCAO
 
-Lider que nao cuida do bem-estar da equipe colhe:
+Líder que não cuida do bem-estar da equipe colhe:
 - Alta rotatividade
-- Afastamentos medicos
+- Afastamentos médicos
 - Baixa produtividade
 - Clima toxico
-- Resultados insustentaveis
+- Resultados insustentáveis
 
-Lider que promove bem-estar colhe:
-- Lealdade e retencao
-- Saude e energia
-- Alta performance sustentavel
+Líder que promove bem-estar colhe:
+- Lealdade e retenção
+- Saúde e energia
+- Alta performance sustentável
 - Clima positivo
 - Resultados consistentes
 
-Investir em bem-estar nao e altruismo - e estrategia.
+Investir em bem-estar não e altruísmo - e estratégia.
 
 COMO PROMOVER QUALIDADE DE VIDA NA EQUIPE
 
 Qualidade de Vida no Trabalho (QVT) e multidimensional.
 
-Modelo de Walton (8 Dimensoes de QVT):
+Modelo de Walton (8 Dimensões de QVT):
 
-1. COMPENSACAO JUSTA E ADEQUADA
-- Salario compativel com mercado
-- Beneficios justos
+1. COMPENSAÇÃO JUSTA E ADEQUADA
+- Salário compatível com mercado
+- Benefícios justos
 - Equidade interna
 
-Acao do Lider:
-- Defenda salarios justos para equipe
-- Reconheca contribuicoes (nao so com dinheiro)
+Ação do Líder:
+- Defenda salários justos para equipe
+- Reconheça contribuições (não só com dinheiro)
 
 2. CONDICOES DE TRABALHO
-- Seguranca fisica
-- Ambiente adequado (temperatura, ruido, iluminacao)
+- Segurança física
+- Ambiente adequado (temperatura, ruido, iluminação)
 - Ergonomia
-- Recursos necessarios (equipamentos, ferramentas)
+- Recursos necessários (equipamentos, ferramentas)
 
-Acao do Lider:
-- Identifique e resolva problemas ergonomicos
+Ação do Líder:
+- Identifique e resolva problemas ergonômicos
 - Garanta recursos adequados
-- Monitore ambiente fisico
+- Monitore ambiente físico
 
 3. USO E DESENVOLVIMENTO DE CAPACIDADES
-- Trabalho desafiador mas nao esmagador
+- Trabalho desafiador mas não esmagador
 - Variedade de tarefas
 - Autonomia
 - Feedback sobre desempenho
 
-Acao do Lider:
+Ação do Líder:
 - Delegue tarefas desafiadoras
 - Ofereça oportunidades de aprendizado
 - De autonomia
@@ -6990,131 +6982,131 @@ Acao do Lider:
 
 4. OPORTUNIDADE DE CRESCIMENTO
 - Desenvolvimento de carreira
-- Promocoes justas
-- Capacitacao continua
+- Promoções justas
+- Capacitação continua
 
-Acao do Lider:
+Ação do Líder:
 - Plano de desenvolvimento individual (PDI) para cada pessoa
 - Acesso a treinamentos
-- Transparencia em criterios de promocao
+- Transparência em critérios de promoção
 
 5. INTEGRACAO SOCIAL
-- Ausencia de preconceito/discriminacao
+- Ausência de preconceito/discriminação
 - Relacionamentos positivos
 - Senso de comunidade
 
-Acao do Lider:
-- Tolerancia zero para discriminacao
-- Promova integracao da equipe
+Ação do Líder:
+- Tolerância zero para discriminação
+- Promova integração da equipe
 - Facilite relacionamentos
 
 6. CONSTITUCIONALISMO (Direitos)
 - Respeito a direitos trabalhistas
 - Privacidade
-- Liberdade de expressao
+- Liberdade de expressão
 - Tratamento justo
 
-Acao do Lider:
+Ação do Líder:
 - Respeite direitos
-- Permita feedback e discordancia respeitosa
-- Trate todos com justica
+- Permita feedback e discordância respeitosa
+- Trate todos com justiça
 
 7. TRABALHO E ESPACO TOTAL DE VIDA
-- Equilibrio trabalho-vida pessoal
-- Horarios razoaveis
+- Equilíbrio trabalho vida pessoal
+- Horários razoáveis
 - Respeito ao tempo pessoal
 
-Acao do Lider:
-- Nao exija horas extras constantes
-- Respeite fins de semana e ferias
-- Flexibilidade quando possivel
+Ação do Líder:
+- Não exija horas extras constantes
+- Respeite fins de semana e férias
+- Flexibilidade quando possível
 
 8. RELEVANCIA SOCIAL
 - Trabalho tem proposito
 - Empresa tem responsabilidade social
-- Orgulho de trabalhar na organizacao
+- Orgulho de trabalhar na organização
 
-Acao do Lider:
-- Conecte trabalho individual a missao maior
+Ação do Líder:
+- Conecte trabalho individual a missão maior
 - Mostre impacto real
-- Celebre contribuicoes
+- Celebre contribuições
 
 PROGRAMAS DE BEM-ESTAR EFICAZES
 
-Programas de bem-estar corporativo podem ter ROI de 300% (para cada R$1 investido, retorno de R$3 em reducao de custos medicos e aumento de produtividade).
+Programas de bem-estar corporativo podem ter ROI de 300% (para cada R$1 investido, retorno de R$3 em redução de custos médicos e aumento de produtividade).
 
 Mas so funcionam se bem desenhados e implementados.
 
-NIVEL 1: BASICO (Minimo Esperado)
+NIVEL 1: BASICO (Mínimo Esperado)
 
 1. PROGRAMA DE APOIO AO EMPREGADO (PAE)
-- Acesso gratuito e confidencial a psicologos
-- Orientacao juridica, financeira
+- Acesso gratuito e confidencial a psicólogos
+- Orientação jurídica, financeira
 - Apoio em crises pessoais
 
 2. GINASTICA LABORAL
-- 10-15 min de alongamento/exercicio leve
+- 10-15 min de alongamento/exercício leve
 - 2-3x por semana
-- No proprio local de trabalho
+- No próprio local de trabalho
 
 3. CAMPANHAS DE SAUDE
-- Vacinacao (gripe, covid)
-- Exames periodicos
-- Palestras sobre saude
+- Vacinação (gripe, covid)
+- Exames periódicos
+- Palestras sobre saúde
 
 NIVEL 2: INTERMEDIARIO (Diferencial Competitivo)
 
 4. FLEXIBILIDADE DE HORARIO
-- Horarios flexiveis
+- Horários flexíveis
 - Trabalho remoto/hibrido
 - Banco de horas
 
 5. PROGRAMAS DE ATIVIDADE FISICA
 - Convenio com academia subsidiado
-- Aulas de yoga/pilates/danca
+- Aulas de yoga/pilates/dança
 - Grupos de corrida/ciclismo
 
 6. NUTRICAO
-- Cafes da manha saudaveis
-- Frutas disponiveis
-- Opcoes vegetarianas/veganas
+- Cafés da manha saudáveis
+- Frutas disponíveis
+- Opções vegetarianas/veganas
 - Consulta com nutricionista
 
 7. ESPACOS DE DESCOMPRESSAO
 - Sala de descanso
-- Area de convivencia
-- Espaco ao ar livre
+- Área de convivência
+- Espaço ao ar livre
 
-NIVEL 3: AVANCADO (Lideranca em Bem-Estar)
+NIVEL 3: AVANCADO (Liderança em Bem-Estar)
 
 8. PROGRAMAS DE MINDFULNESS/MEDITACAO
 - Apps subsidiados (Calm, Headspace)
-- Sessoes guiadas
-- Sala de meditacao
+- Sessões guiadas
+- Sala de meditação
 
 9. PROGRAMA DE GESTAO FINANCEIRA
-- Educacao financeira
+- Educação financeira
 - Consultoria de investimentos
 - Auxilio emergencial
 
 10. BENEFICIOS PARENTAIS
-- Licenca maternidade/paternidade estendida
-- Creche ou auxilio-creche
+- Licença maternidade/paternidade estendida
+- Creche ou auxilio creche
 - Flexibilidade para pais
 
 11. DIAS DE SAUDE MENTAL
-- 1-2 dias por ano para cuidar de saude mental
+- 1-2 dias por ano para cuidar de saúde mental
 - Sem necessidade de atestado
 
 12. PROGRAMA DE RECONHECIMENTO
 - Reconhecimento regular (formal e informal)
-- Premios por desempenho
-- Celebracoes de marcos
+- Prêmios por desempenho
+- Celebrações de marcos
 
 COMO IMPLEMENTAR:
 
 PASSO 1: DIAGNOSTICO
-Pesquisa anonima: "O que voces precisam para melhorar bem-estar?"
+Pesquisa anônima: "O que vocês precisam para melhorar bem-estar?"
 
 PASSO 2: PRIORIZACAO
 Escolha 3-5 iniciativas baseadas em:
@@ -7129,22 +7121,22 @@ PASSO 4: IMPLEMENTACAO
 Lance para todos.
 
 PASSO 5: AVALIACAO
-Apos 3-6 meses, avalie:
-- Taxa de adesao
-- Satisfacao
-- Impacto (absenteismo, rotatividade, clima)
+Após 3-6 meses, avalie:
+- Taxa de adesão
+- Satisfação
+- Impacto (absenteísmo, rotatividade, clima)
 
 PASSO 6: AJUSTE E EXPANDA
-Melhore o que funciona. Elimine o que nao funciona.
+Melhore o que funciona. Elimine o que não funciona.
 
 FLEXIBILIDADE E EQUILIBRIO TRABALHO-VIDA
 
-Flexibilidade e um dos fatores mais valorizados por trabalhadores pos-pandemia.
+Flexibilidade e um dos fatores mais valorizados por trabalhadores pós pandemia.
 
 Tipos de Flexibilidade:
 
 1. HORARIO FLEXIVEL
-Nao exige presenca em horario fixo.
+Não exige presença em horário fixo.
 Exemplo: Pode trabalhar 7h-15h ou 10h-18h
 
 2. TRABALHO REMOTO/HIBRIDO
@@ -7159,69 +7151,69 @@ Trabalhou extra hoje? Sai mais cedo outro dia.
 5. FLEXIBILIDADE DE LOCALIZACAO
 Pode trabalhar de qualquer lugar (digital nomads).
 
-Beneficios da Flexibilidade:
+Benefícios da Flexibilidade:
 
-- Reducao de 25% no estresse
-- Aumento de 20% na satisfacao
-- Reducao de tempo em deslocamento
-- Melhor equilibrio familia-trabalho
-- Atracao e retencao de talentos
+- Redução de 25% no estresse
+- Aumento de 20% na satisfação
+- Redução de tempo em deslocamento
+- Melhor equilíbrio família-trabalho
+- Atração e retenção de talentos
 
-Desafios e Solucoes:
+Desafios e Soluções:
 
 DESAFIO: "Como garantir produtividade?"
-SOLUCAO: Foque em resultados, nao horas. Use OKRs.
+SOLUCAO: Foque em resultados, não horas. Use OKRs.
 
-DESAFIO: "Comunicacao fica prejudicada"
-SOLUCAO: Ferramentas (Slack, Zoom). Reunioes assincronas.
+DESAFIO: "Comunicação fica prejudicada"
+SOLUCAO: Ferramentas (Slack, Zoom). Reuniões assíncronas.
 
 DESAFIO: "Nem todos podem ter flexibilidade (operacional)"
-SOLUCAO: Ofereça outros beneficios equivalentes (bonus, reconhecimento).
+SOLUCAO: Ofereça outros benefícios equivalentes (bônus, reconhecimento).
 
 CULTURA DE AUTOCUIDADO
 
-Cultura de autocuidado = Autocuidado e valorizado, incentivado e praticado desde a lideranca.
+Cultura de autocuidado = Autocuidado e valorizado, incentivado e praticado desde à liderança.
 
 Sinais de Cultura SEM Autocuidado:
 
-- Lider nunca tira ferias e orgulha-se disso
-- Emails a meia-noite sao normalizados
-- Quem sai no horario e visto como "fraco"
+- Líder nunca tira férias e orgulha-se disso
+- E-mails a meia-noite são normalizados
+- Quem sai no horário e visto como "fraco"
 - Burnout e badge of honor ("trabalho duro")
 - Doente? Trabalha mesmo assim
 
-Consequencias: Burnout coletivo, rotatividade alta, resultados insustentaveis.
+Consequências: Burnout coletivo, rotatividade alta, resultados insustentáveis.
 
 Sinais de Cultura COM Autocuidado:
 
-- Lider modela equilibrio (tira ferias, respeita horarios)
-- Pausas e descanso sao incentivados
+- Líder modela equilíbrio (tira férias, respeita horários)
+- Pausas e descanso são incentivados
 - Flexibilidade e oferecida
-- Saude mental e tratada como saude fisica
+- Saúde mental e tratada como saúde física
 - Reconhecimento de limites e respeitado
 
 Como Construir Cultura de Autocuidado:
 
 1. LIDERANCA MODELA
-Voce E o exemplo. Se voce nao cuida de si, equipe nao cuidara.
+Você E o exemplo. Se você não cuida de si, equipe não cuidara.
 
-2. COMUNICACAO CLARA
-"Nesta equipe, incentivamos equilibrio. Tirem ferias. Respeitem horarios."
+2. COMUNICAÇÃO CLARA
+"Nesta equipe, incentivamos equilíbrio. Tirem férias. Respeitem horários."
 
 3. POLITICAS EXPLICITAS
-- Nao enviar emails apos 19h
-- Ferias obrigatorias
+- Não enviar e-mails após 19h
+- Férias obrigatórias
 - Pausas incentivadas
 
 4. RECONHECA EQUILIBRIO
-Celebre quem mantem equilibrio, nao so quem trabalha 12h/dia.
+Celebre quem mantem equilíbrio, não só quem trabalha 12h/dia.
 
 5. REMOVA BARREIRAS
-Se pessoa tem medo de tirar ferias, ha problema estrutural. Resolva.
+Se pessoa tem medo de tirar férias, há problema estrutural. Resolva.
 
 METRICAS DE BEM-ESTAR ORGANIZACIONAL
 
-"O que nao e medido nao e gerenciado."
+"O que não e medido não e gerenciado."
 
 Indicadores de Bem-Estar:
 
@@ -7231,10 +7223,10 @@ INDICADORES DE RESULTADO (Lagging):
 % de faltas. Meta: <3%
 
 2. ROTATIVIDADE VOLUNTARIA
-% que pede demissao. Meta: <10%/ano
+% que pede demissão. Meta: <10%/ano
 
 3. AFASTAMENTOS POR SAUDE MENTAL
-Numero de afastamentos CID-F. Meta: Reducao ano a ano
+Numero de afastamentos CID-F. Meta: Redução ano a ano
 
 4. UTILIZACAO DE BENEFICIOS
 % que usa PAE, academia, etc.
@@ -7242,7 +7234,7 @@ Numero de afastamentos CID-F. Meta: Reducao ano a ano
 INDICADORES DE PROCESSO (Leading):
 
 5. PESQUISA DE BEM-ESTAR (Trimestral)
-"Como voce avalia seu bem-estar no trabalho?" (1-10)
+"Como você avalia seu bem-estar no trabalho?" (1-10)
 Meta: >7
 
 6. INDICE DE EQUILIBRIO TRABALHO-VIDA
@@ -7254,7 +7246,7 @@ Media de horas extras/pessoa/mes
 Meta: <10h
 
 8. DIAS DE FERIAS TIRADOS
-% de dias de ferias usados
+% de dias de férias usados
 Meta: >90%
 
 INDICADORES QUALITATIVOS:
@@ -7263,226 +7255,226 @@ INDICADORES QUALITATIVOS:
 "O que te faz ficar aqui?" Identifica o que funciona.
 
 10. ENTREVISTA DE SAIDA
-"Por que voce esta saindo?" Identifica o que nao funciona.
+"Por que voce está saindo?" Identifica o que não funciona.
 
 Dashboard de Bem-Estar (Exemplo):
 
-Mes Atual:
-- Absenteismo: 2.5%
+Mês Atual:
+- Absenteísmo: 2.5%
 - Rotatividade: 8%/ano
-- Bem-estar medio (pesquisa): 7.2/10
-- Equilibrio trabalho-vida: 6.8/10
+- Bem-estar médio (pesquisa): 7.2/10
+- Equilíbrio trabalho vida: 6.8/10
 - Horas extras medias: 12h/pessoa
-- Utilizacao PAE: 15%
+- Utilização PAE: 15%
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Diagnostico de QVT
-Avalie sua equipe nas 8 dimensoes de Walton (1-10). Onde esta o maior gap?
+Exercício 1: Diagnóstico de QVT
+Avalie sua equipe nas 8 dimensões de Walton (1-10). Onde está o maior gap?
 
-Exercicio 2: Planejamento de Programa
-Escolha 3 iniciativas de bem-estar que voce pode implementar nos proximos 90 dias. Liste acoes concretas.
+Exercício 2: Planejamento de Programa
+Escolha 3 iniciativas de bem-estar que você pode implementar nos próximos 90 dias. Liste ações concretas.
 
-Exercicio 3: Metricas de Baseline
+Exercício 3: Métricas de Baseline
 Estabeleça linha de base atual:
-- Absenteismo: ____%
+- Absenteísmo: ____%
 - Rotatividade: ____%
-- Bem-estar medio (se tiver pesquisa): ____
+- Bem-estar médio (se tiver pesquisa): ____
 
 Acompanhe trimestralmente.
 
 CONCLUSAO DO MODULO
 
-Promover bem-estar da equipe nao e luxo - e responsabilidade fundamental da lideranca.
+Promover bem-estar da equipe não e luxo - e responsabilidade fundamental da liderança.
 
-Equipes saudaveis e equilibradas:
-- Entregam resultados sustentaveis
-- Sao leais e engajadas
+Equipes saudáveis e equilibradas:
+- Entregam resultados sustentáveis
+- São leais e engajadas
 - Inovam mais
 - Adoecem menos
 - Ficam mais tempo
 
-Investimento em bem-estar tem ROI claro e mensuravel.
+Investimento em bem-estar tem ROI claro e mensurável.
 
-Proximos Passos:
+Próximos Passos:
 1. Avalie bem-estar atual da sua equipe
-2. Implemente 1 iniciativa de bem-estar este mes
-3. Modele equilibrio voce mesmo
-4. Monitore metricas de bem-estar
+2. Implemente 1 iniciativa de bem-estar este mês
+3. Modele equilíbrio você mesmo
+4. Monitore métricas de bem-estar
 
-Lembre-se: Equipe saudavel = Resultados saudaveis. Cuide das pessoas e elas cuidarao dos resultados.
+Lembre-se: Equipe saudável = Resultados saudáveis. Cuide das pessoas e elas cuidarão dos resultados.
         `
       }
     ],
-    atividadesPraticas: [
-      "Avaliacao de qualidade de vida pessoal",
-      "Criacao de plano de autocuidado",
-      "Pratica de tecnicas de relaxamento",
-      "Workshop de gestao de tempo"
+    atividadesPráticas: [
+      "Avaliação de qualidade de vida pessoal",
+      "Criação de plano de autocuidado",
+      "Prática de técnicas de relaxamento",
+      "Workshop de gestão de tempo"
     ]
   },
   {
     id: 7,
-    slug: "lideranca-humanizada-clima-organizacional",
-    titulo: "Lideranca Humanizada e Clima Organizacional",
-    subtitulo: "Criando Ambientes de Alta Performance e Bem-Estar",
-    descricao: "Desenvolva habilidades de lideranca humanizada para criar clima organizacional saudavel, engajamento e alta performance sustentavel.",
-    duracao: "3h",
-    nivel: "Avancado",
-    categoria: "Lideranca",
-    icone: "👥",
+    slug: "liderança-humanizada-clima-organizacional",
+    título: "Liderança Humanizada e Clima Organizacional",
+    subtítulo: "Criando Ambientes de Alta Performance e Bem-Estar",
+    descrição: "Desenvolva habilidades de liderança humanizada para criar clima organizacional saudável, engajamento e alta performance sustentável.",
+    duração: "3h",
+    nível: "Avançado",
+    categoria: "Liderança",
+    ícone: "👥",
     cor: "from-indigo-600 to-purple-600",
     corBadge: "bg-indigo-100 text-indigo-700 border-indigo-200",
-    objetivo: "Capacitar lideres a criar ambientes de trabalho humanizados que promovam engajamento, bem-estar e resultados sustentaveis.",
+    objetivo: "Capacitar líderes a criar ambientes de trabalho humanizados que promovam engajamento, bem-estar e resultados sustentáveis.",
     resultadosEsperados: [
       "Melhoria significativa no clima organizacional",
-      "Aumento do engajamento e retencao de talentos",
-      "Cultura de confianca e seguranca psicologica",
-      "Resultados sustentaveis com equipes saudaveis"
+      "Aumento do engajamento e retenção de talentos",
+      "Cultura de confiança e segurança psicológica",
+      "Resultados sustentáveis com equipes saudáveis"
     ],
-    modulos: [
+    módulos: [
       {
         id: 1,
-        titulo: "Principios da Lideranca Humanizada",
-        duracao: "60 min",
-        topicos: [
-          "O que e lideranca humanizada",
-          "Diferenca entre gestao e lideranca",
-          "Seguranca psicologica",
-          "Lideranca servidora",
-          "Impacto do lider no clima"
+        título: "Princípios da Liderança Humanizada",
+        duração: "60 min",
+        tópicos: [
+          "O que e liderança humanizada",
+          "Diferença entre gestão e liderança",
+          "Segurança psicológica",
+          "Liderança servidora",
+          "Impacto do líder no clima"
         ],
-        materialDidatico: `
+        materialDidático: `
 LIDERANCA HUMANIZADA E CLIMA ORGANIZACIONAL
 
 O QUE E LIDERANCA HUMANIZADA
 
-Definicao:
-Estilo de lideranca que coloca o ser humano no centro das decisoes, reconhecendo colaboradores como pessoas integrais (nao apenas recursos), valorizando bem-estar, desenvolvimento e proposito alem de resultados financeiros.
+Definição:
+Estilo de liderança que coloca o ser humano no centro das decisões, reconhecendo colaboradores como pessoas integrais (não apenas recursos), valorizando bem-estar, desenvolvimento e proposito além de resultados financeiros.
 
-Principios Fundamentais:
+Princípios Fundamentais:
 
 1. PESSOAS EM PRIMEIRO LUGAR:
-Pessoas nao sao meios para resultados - sao o fim em si mesmas
-Cuidar das pessoas GERA resultados, nao e incompativel com eles
+Pessoas não são meios para resultados - são o fim em si mesmas
+Cuidar das pessoas GERA resultados, não e incompatível com eles
 
 2. EMPATIA GENUINA:
 Interesse real pelo bem-estar do outro
 Compreender desafios pessoais e profissionais
 
 3. VULNERABILIDADE:
-Lider humanizado admite erros, pede ajuda, mostra humanidade
-Isso cria conexao, nao fraqueza
+Líder humanizado admite erros, pede ajuda, mostra humanidade
+Isso cria conexão, não fraqueza
 
 4. PROPOSITO E SIGNIFICADO:
-Conectar trabalho a algo maior que numeros
+Conectar trabalho a algo maior que números
 Dar sentido ao que as pessoas fazem
 
 5. DESENVOLVIMENTO INTEGRAL:
 Investir no crescimento profissional E pessoal
-Apoiar vida toda, nao so carreira
+Apoiar vida toda, não só carreira
 
 DIFERENCA ENTRE GESTAO E LIDERANCA
 
 GESTAO (Administrar):
 - Foco em processos e sistemas
-- Planejamento e organizacao
+- Planejamento e organização
 - Controle e monitoramento
-- Eficiencia operacional
+- Eficiência operacional
 - Cumprimento de metas
-- Visao de curto prazo
+- Visão de curto prazo
 
 LIDERANCA (Inspirar):
-- Foco em pessoas e relacoes
-- Visao e direcao
-- Inspiracao e motivacao
+- Foco em pessoas e relações
+- Visão e direção
+- Inspiração e motivação
 - Desenvolvimento humano
-- Transformacao cultural
-- Visao de longo prazo
+- Transformação cultural
+- Visão de longo prazo
 
 Analogia:
 GESTOR = Piloto do navio (garante que funcione)
-LIDER = Capitao (define para onde vai e inspira tripulacao)
+LIDER = Capitão (define para onde vai e inspira tripulação)
 
 O Ideal: Ser AMBOS
 Gerenciar bem E liderar com proposito
 
-Evolucao da Lideranca:
+Evolução da Liderança:
 
-LIDERANCA 1.0 - Autoritaria (ate anos 1950):
-"Faca porque eu mando"
+LIDERANÇA 1.0 - Autoritária (até anos 1950):
+"Faça porque eu mando"
 - Comando e controle
-- Hierarquia rigida
+- Hierarquia rígida
 - Medo como motivador
-Resultado: Obediencia, nao engajamento
+Resultado: Obediência, não engajamento
 
 LIDERANCA 2.0 - Transacional (anos 1960-1990):
-"Faca que eu te pago"
-- Troca: Trabalho por salario
-- Premios e punicoes
+"Faça que eu te pago"
+- Troca: Trabalho por salário
+- Prêmios e punições
 - Foco em metas
-Resultado: Performance, mas sem paixao
+Resultado: Performance, mas sem paixão
 
 LIDERANCA 3.0 - Transformacional (anos 2000):
-"Faca porque acredita"
-- Inspiracao
-- Visao compartilhada
+"Faça porque acredita"
+- Inspiração
+- Visão compartilhada
 - Desenvolvimento
-Resultado: Engajamento genuino
+Resultado: Engajamento genuíno
 
 LIDERANCA 4.0 - Humanizada (atualmente):
 "Vamos fazer juntos porque importa"
-- Co-criacao
+- Co criação
 - Proposito
 - Bem-estar integral
 - Sustentabilidade
-Resultado: Alta performance com saude
+Resultado: Alta performance com saúde
 
 SEGURANCA PSICOLOGICA
 
 Conceito (Amy Edmondson - Harvard):
-Crenca compartilhada de que o ambiente e seguro para assumir riscos interpessoais. Pessoas se sentem confortaveis sendo elas mesmas, expressando ideias, admitindo erros e questionando status quo sem medo de humilhacao ou punicao.
+Crença compartilhada de que o ambiente e seguro para assumir riscos interpessoais. Pessoas se sentem confortáveis sendo elas mesmas, expressando ideias, admitindo erros e questionando status quo sem medo de humilhação ou punição.
 
-Pesquisa Google - Projeto Aristoteles:
+Pesquisa Google - Projeto Aristóteles:
 Google estudou 180 equipes por 2 anos para descobrir o que torna uma equipe excepcional.
 Resultado surpreendente: NAO foi talento individual, experiencia ou recursos.
 Foi SEGURANCA PSICOLOGICA - o fator #1
 
-Elementos da Seguranca Psicologica:
+Elementos da Segurança Psicológica:
 
 1. PODE ERRAR SEM SER PUNIDO:
 Ambiente: Erro e visto como aprendizado
 Contrario: Cultura de culpa e medo
 
 2. PODE FAZER PERGUNTAS:
-Ambiente: Nao existe pergunta burra
-Contrario: "Voce nao sabe isso ainda?"
+Ambiente: Não existe pergunta burra
+Contrario: "Você não sabe isso ainda?"
 
 3. PODE DISCORDAR:
-Ambiente: Opinioes divergentes sao valorizadas
+Ambiente: Opiniões divergentes são valorizadas
 Contrario: "Aqui quem manda sou eu"
 
-4. PODE SER VOCE MESMO:
-Ambiente: Autenticidade e aceita
-Contrario: Tem que usar mascara profissional
+4. PODE SER VOCÊ MESMO:
+Ambiente: Autenticidade é aceita
+Contrário: Tem que usar máscara profissional
 
 5. PODE PEDIR AJUDA:
-Ambiente: Pedir ajuda e sinal de maturidade
-Contrario: "Vira-te sozinho"
+Ambiente: Pedir ajuda é sinal de maturidade
+Contrário: "Vira-te sozinho"
 
-Como Criar Seguranca Psicologica:
+Como Criar Segurança Psicológica:
 
 1. MODELE VULNERABILIDADE:
-Lider admite: "Nao sei, preciso de ajuda"
-Lider compartilha: "Cometi esse erro e aprendi..."
-Resultado: Time sente permissao para ser humano
+Líder admite: "Não sei, preciso de ajuda"
+Líder compartilha: "Cometi esse erro e aprendi..."
+Resultado: Time sente permissão para ser humano
 
 2. CELEBRE ERRO COMO APRENDIZADO:
-Quando alguem erra: "O que aprendemos com isso?"
+Quando alguém erra: "O que aprendemos com isso?"
 NAO: "Quem e o culpado?"
 
 3. ESCUTA ATIVA E CURIOSIDADE:
-Faca perguntas genuinas
+Faça perguntas genuínas
 Ouça sem julgar ou interromper
 Valorize perspectivas diferentes
 
@@ -7491,70 +7483,70 @@ Valorize perspectivas diferentes
 Cria cultura onde as pessoas falam a verdade
 
 5. NAO TOLERE DESRESPEITO:
-Seguranca psicologica NAO e vale-tudo
+Segurança psicológica NAO e vale-tudo
 E respeito mutuo com espaço para ser real
 
-Indicadores de Seguranca Psicologica Alta:
+Indicadores de Segurança Psicológica Alta:
 
 - Pessoas fazem perguntas livremente
-- Erros sao reportados rapidamente
-- Inovacao acontece (risco e permitido)
-- Conflitos sao construtivos
+- Erros são reportados rapidamente
+- Inovação acontece (risco e permitido)
+- Conflitos são construtivos
 - Feedback e bidirecional
-- Pessoas sao autenticas
-- Alta retencao de talentos
+- Pessoas são autenticas
+- Alta retenção de talentos
 
-Indicadores de Seguranca Psicologica Baixa:
+Indicadores de Segurança Psicológica Baixa:
 
-- Silencio em reunioes (medo de falar)
-- Erros sao escondidos
-- Inovacao estagnada
-- Conflitos sao evitados ou destrutivos
-- Feedback so desce
+- Silencio em reuniões (medo de falar)
+- Erros são escondidos
+- Inovação estagnada
+- Conflitos são evitados ou destrutivos
+- Feedback só desce
 - Mascara profissional constante
 - Turnover alto
 
 LIDERANCA SERVIDORA (Servant Leadership)
 
 Conceito (Robert Greenleaf):
-Lider serve primeiro, lidera depois. Foco em atender necessidades da equipe para que ela prospere.
+Líder serve primeiro, lidera depois. Foco em atender necessidades da equipe para que ela prospere.
 
-Inversao da Piramide Tradicional:
+Inversão da Pirâmide Tradicional:
 
 PIRAMIDE TRADICIONAL:
 CEO no topo
 Gerentes no meio
-Funcionarios na base
+Funcionários na base
 
 PIRAMIDE INVERTIDA:
 Clientes no topo
-Funcionarios servem clientes
-Lideres servem funcionarios
+Funcionários servem clientes
+Líderes servem funcionários
 
-Filosofia: Lider remove obstaculos para equipe servir bem os clientes
+Filosofia: Líder remove obstáculos para equipe servir bem os clientes
 
-Caracteristicas do Lider Servidor:
+Características do Líder Servidor:
 
 1. ESCUTA:
 Compreende profundamente necessidades da equipe
 
 2. EMPATIA:
-Assume boa intencao, compreende perspectivas
+Assume boa intenção, compreende perspectivas
 
 3. CURA:
 Ajuda pessoas a se recuperarem de feridas
 
 4. CONSCIENTIZACAO:
-Autoconhecimento e consciencia do entorno
+Autoconhecimento e consciência do entorno
 
 5. PERSUASAO:
-Convence, nao coage
+Convence, não coage
 
 6. CONCEITUALIZACAO:
-Pensa alem do dia-a-dia, sonha grande
+Pensa além do dia-a-dia, sonha grande
 
 7. PREVISAO:
-Antecipa consequencias de decisoes
+Antecipa consequências de decisões
 
 8. MORDOMIA:
 Cuida do que lhe foi confiado (pessoas, recursos)
@@ -7565,41 +7557,41 @@ Investe no desenvolvimento de cada pessoa
 10. CONSTRUCAO DE COMUNIDADE:
 Cria senso de pertencimento
 
-Perguntas que o Lider Servidor Faz:
+Perguntas que o Líder Servidor Faz:
 
-- O que voce precisa de mim para ter sucesso?
-- Que obstaculos posso remover para voce?
+- O que você precisa de mim para ter sucesso?
+- Que obstáculos posso remover para você?
 - Como posso apoiar seu desenvolvimento?
-- Estou sendo um bom lider para voce?
+- Estou sendo um bom líder para você?
 - O que posso fazer diferente?
 
 IMPACTO DO LIDER NO CLIMA ORGANIZACIONAL
 
 Pesquisa Gallup:
-70% da variacao no engajamento e explicada pelo gestor imediato
-Pessoas nao saem de empresas - saem de chefes
+70% da variação no engajamento e explicada pelo gestor imediato
+Pessoas não saem de empresas - saem de chefes
 
-Como o Lider Impacta o Clima:
+Como o Líder Impacta o Clima:
 
 1. MODELO DE COMPORTAMENTO:
-Equipe copia o lider (para bem ou mal)
-Lider estressado = Equipe estressada
-Lider equilibrado = Equipe equilibrada
+Equipe copia o líder (para bem ou mal)
+Líder estressado = Equipe estressada
+Líder equilibrado = Equipe equilibrada
 
-2. COMUNICACAO:
-Transparencia gera confianca
+2. COMUNICAÇÃO:
+Transparência gera confiança
 Segredos geram paranoia
 
 3. RECONHECIMENTO:
-Reconhecer esforco = Motivacao
-Ignorar esforco = Desmotivacao
+Reconhecer esforço = Motivação
+Ignorar esforço = Desmotivação
 
 4. GESTAO DE CONFLITOS:
-Resolver rapido = Clima saudavel
+Resolver rápido = Clima saudável
 Ignorar = Clima toxico
 
 5. EQUIDADE:
-Tratar todos com justica = Confianca
+Tratar todos com justiça = Confiança
 Favoritismo = Ressentimento
 
 6. DESENVOLVIMENTO:
@@ -7609,213 +7601,213 @@ Explorar sem desenvolver = Turnover
 Indicadores de Clima Organizacional:
 
 POSITIVOS:
-- Baixo absenteismo
+- Baixo absenteísmo
 - Baixo turnover
 - Alta produtividade
-- Inovacao constante
-- Colaboracao natural
-- Energia positiva visivel
+- Inovação constante
+- Colaboração natural
+- Energia positiva visível
 
 NEGATIVOS:
 - Faltas frequentes
 - Rotatividade alta
 - Produtividade baixa
-- Resistencia a mudancas
-- Silos e competicao interna
-- Clima pesado, tensao visivel
+- Resistencia a mudanças
+- Silos e competição interna
+- Clima pesado, tensão visível
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Auto-Avaliacao de Lideranca
-De 0-10, como voce avalia sua lideranca em:
+Exercício 1: Autoavaliação de Liderança
+De 0-10, como você avalia sua liderança em:
 - Empatia: ___
 - Vulnerabilidade: ___
 - Desenvolvimento da equipe: ___
-- Criacao de seguranca psicologica: ___
-- Foco em bem-estar (nao apenas resultados): ___
+- Criação de segurança psicológica: ___
+- Foco em bem-estar (não apenas resultados): ___
 
-Exercicio 2: Pesquisa de Clima Simples
+Exercício 2: Pesquisa de Clima Simples
 Pergunte anonimamente a equipe:
-1. Voce se sente seguro para expressar opiniao? (Sim/Nao)
-2. Sente que seu trabalho tem proposito? (Sim/Nao)
-3. Sente que eu, como lider, me importo com voce como pessoa? (Sim/Nao)
+1. Você se sente seguro para expressar opinião? (Sim/Não)
+2. Sente que seu trabalho tem proposito? (Sim/Não)
+3. Sente que eu, como líder, me importo com você como pessoa? (Sim/Não)
 
-Se houver 1 "Nao", ha trabalho a fazer.
+Se houver 1 "Não", há trabalho a fazer.
 
 CONCLUSAO DO MODULO
 
-Lideranca humanizada nao e ser bonzinho - e ser eficaz de forma sustentavel cuidando das pessoas.
+Liderança humanizada não e ser bonzinho - e ser eficaz de forma sustentável cuidando das pessoas.
 
-Resultados extraordinarios vem de pessoas que se sentem valorizadas, seguras e inspiradas.
+Resultados extraordinários vem de pessoas que se sentem valorizadas, seguras e inspiradas.
 
-Proximos Passos:
-1. Identifique 1 comportamento de lideranca para mudar
-2. Tenha conversa vulneravel com sua equipe
-3. Pergunte: "Como posso ser melhor lider para voce?"
+Próximos Passos:
+1. Identifique 1 comportamento de liderança para mudar
+2. Tenha conversa vulnerável com sua equipe
+3. Pergunte: "Como posso ser melhor líder para você?"
 4. Aja com base no feedback
 
-Lembre-se: Pessoas nao se importam com quanto voce sabe ate saberem o quanto voce se importa.
+Lembre-se: Pessoas não se importam com quanto você sabe até saberem o quanto você se importa.
         `
       },
       {
         id: 2,
-        titulo: "Construcao de Seguranca Psicologica e Confianca",
-        duracao: "50 min",
-        topicos: [
-          "O que e seguranca psicologica e por que importa",
+        título: "Construção de Segurança Psicológica e Confiança",
+        duração: "50 min",
+        tópicos: [
+          "O que e segurança psicológica e por que importa",
           "Como criar ambiente seguro para erros e aprendizado",
-          "Construcao de confianca genuina",
+          "Construção de confiança genuína",
           "Feedback psicologicamente seguro",
-          "Metricas de seguranca psicologica"
+          "Métricas de segurança psicológica"
         ],
-        materialDidatico: `
+        materialDidático: `
 CONSTRUCAO DE SEGURANCA PSICOLOGICA E CONFIANCA
 
 INTRODUCAO
 
-Seguranca psicologica e o fator #1 que diferencia equipes de alta performance de equipes mediocres.
+Segurança psicológica e o fator #1 que diferencia equipes de alta performance de equipes medíocres.
 
-Pesquisa Google (Projeto Aristoteles):
+Pesquisa Google (Projeto Aristóteles):
 Analisaram 180 equipes durante 2 anos para descobrir o que torna equipes excepcionais.
-RESULTADO: Seguranca psicologica foi o diferencial mais importante, acima de talento individual ou recursos.
+RESULTADO: Segurança psicológica foi o diferencial mais importante, acima de talento individual ou recursos.
 
 O QUE E SEGURANCA PSICOLOGICA E POR QUE IMPORTA
 
-Definicao (Amy Edmondson - Harvard):
-"Crenca compartilhada de que o ambiente e seguro para assumir riscos interpessoais, como falar sobre erros, fazer perguntas, discordar de superiores, admitir vulnerabilidades, sem medo de punicao ou humilhacao."
+Definição (Amy Edmondson - Harvard):
+"Crença compartilhada de que o ambiente e seguro para assumir riscos interpessoais, como falar sobre erros, fazer perguntas, discordar de superiores, admitir vulnerabilidades, sem medo de punição ou humilhação."
 
-Seguranca Psicologica NAO e:
+Segurança Psicológica NAO e:
 - Ser bonzinho com todos
 - Evitar conflitos
 - Baixar standards de performance
-- Proteger pessoas de consequencias de mau desempenho
+- Proteger pessoas de consequências de mau desempenho
 
-Seguranca Psicologica E:
-- Ambiente onde erros sao oportunidades de aprendizado (nao punicao)
-- Perguntas sao celebradas (nao ridicularizadas)
-- Discordancia respeitosa e valorizada
-- Vulnerabilidade e forca, nao fraqueza
-- Feedback e bidirecional (nao so top-down)
+Segurança Psicológica E:
+- Ambiente onde erros são oportunidades de aprendizado (não punição)
+- Perguntas são celebradas (não ridicularizadas)
+- Discordância respeitosa e valorizada
+- Vulnerabilidade é força, não fraqueza
+- Feedback e bidirecional (não só top-down)
 
-Por Que Seguranca Psicologica Importa:
+Por Que Segurança Psicológica Importa:
 
 1. APRENDIZADO ACELERADO
 Equipes aprendem com erros quando podem falar abertamente sobre eles.
-Sem seguranca: Erros sao escondidos = Repetem
-Com seguranca: Erros sao compartilhados = Equipe aprende
+Sem segurança: Erros são escondidos = Repetem
+Com segurança: Erros são compartilhados = Equipe aprende
 
 2. INOVACAO
-Ideias inovadoras envolvem risco. Se pessoas tem medo de propor algo "bobo", inovacao morre.
+Ideias inovadoras envolvem risco. Se pessoas tem medo de propor algo "bobo", inovação morre.
 
 3. DETECCAO DE PROBLEMAS CEDO
 Se pessoas tem medo de avisar problemas, problemas escalam.
 
 4. ENGAJAMENTO
-Pessoas engajam quando podem ser autenticas, nao quando precisam usar mascara.
+Pessoas engajam quando podem ser autenticas, não quando precisam usar mascara.
 
 5. SAUDE MENTAL
-Esconder erros, fingir saber o que nao sabe, viver com medo = Adoecimento
+Esconder erros, fingir saber o que não sabe, viver com medo = Adoecimento
 
 Exemplo Real:
 
-Equipe A (Sem Seguranca):
-Junior identifica erro grave em codigo mas tem medo de falar (pode parecer incompetente).
-Erro vai para producao. Sistema cai. Prejuizo: R$ 500 mil.
+Equipe A (Sem Segurança):
+Junior identifica erro grave em código mas tem medo de falar (pode parecer incompetente).
+Erro vai para produção. Sistema cai. Prejuízo: R$ 500 mil.
 
-Equipe B (Com Seguranca):
+Equipe B (Com Segurança):
 Junior identifica erro, fala imediatamente.
-Equipe corrige antes de producao. Prejuizo: R$ 0.
-Lider agradece publicamente o junior por ter identificado.
+Equipe corrige antes de produção. Prejuízo: R$ 0.
+Líder agradece publicamente o júnior por ter identificado.
 
 COMO CRIAR AMBIENTE SEGURO PARA ERROS E APRENDIZADO
 
-Criar seguranca psicologica e trabalho continuo, nao evento unico.
+Criar segurança psicológica e trabalho continuo, não evento único.
 
-PILAR 1: LIDERES MODELAM VULNERABILIDADE
+PILAR 1: LÍDERES MODELAM VULNERABILIDADE
 
-Se lider nunca admite erro ou pede ajuda, mensagem implicita: "Aqui nao se pode errar".
+Se líder nunca admite erro ou pede ajuda, mensagem implícita: "Aqui não se pode errar".
 
-Frases que Lideres de Seguranca Psicologica Usam:
+Frases que Líderes de Segurança Psicológica Usam:
 
 "Errei nisso. Aprendi X."
-"Nao sei a resposta, mas vamos descobrir juntos."
-"Mudei de ideia depois de ouvir voces."
-"Preciso de ajuda com isso. Alguem pode?"
-"Essa decisao que tomei nao funcionou. Vamos corrigir."
+"Não sei a resposta, mas vamos descobrir juntos."
+"Mudei de ideia depois de ouvir vocês."
+"Preciso de ajuda com isso. Alguém pode?"
+"Essa decisão que tomei não funcionou. Vamos corrigir."
 
-Exercicio para Lider:
+Exercício para Líder:
 Semanalmente, compartilhe 1 erro ou 1 aprendizado com equipe.
 
 PILAR 2: RESPONDA A ERROS COMO OPORTUNIDADES
 
-Como voce reage ao erro define seguranca da equipe.
+Como você reage ao erro define segurança da equipe.
 
 REACAO QUE DESTROI SEGURANCA:
 
-Colaborador: "Cometi um erro no relatorio."
-Lider: "Como voce pode ser tao descuidado? Eu confiei em voce!"
+Colaborador: "Cometi um erro no relatório."
+Líder: "Como você pode ser tão descuidado? Eu confiei em você!"
 
-Mensagem: Erro = Punicao. Esconda erros.
+Mensagem: Erro = Punição. Esconda erros.
 
 REACAO QUE CONSTROI SEGURANCA:
 
-Colaborador: "Cometi um erro no relatorio."
-Lider: "Obrigado por me avisar rapidamente. Vamos corrigir juntos. O que podemos fazer para evitar isso no futuro?"
+Colaborador: "Cometi um erro no relatório."
+Líder: "Obrigado por me avisar rapidamente. Vamos corrigir juntos. O que podemos fazer para evitar isso no futuro?"
 
 Mensagem: Erro = Oportunidade de aprendizado. Fale sobre erros.
 
 Framework de Resposta a Erros:
 
 1. AGRADECA por ter compartilhado
-2. SEPARE pessoa de erro ("O processo falhou", nao "Voce falhou")
+2. SEPARE pessoa de erro ("O processo falhou", não "Você falhou")
 3. FOQUE em aprendizado ("O que podemos aprender?")
 4. CORRIJA em conjunto ("Como corrigimos?")
-5. PREVINA repeticao ("Como evitamos no futuro?")
+5. PREVINA repetição ("Como evitamos no futuro?")
 
 PILAR 3: CELEBRE PERGUNTAS E ADMISSOES DE NAO-SABER
 
-Perguntar "nao sei" requer coragem em ambientes inseguros.
+Perguntar "não sei" requer coragem em ambientes inseguros.
 
-Frases que Constroem Seguranca:
+Frases que Constroem Segurança:
 
-"Otima pergunta!"
-"Que bom que voce perguntou!"
-"Nao ha pergunta boba."
-"E corajoso admitir que nao sabe. Vamos aprender juntos."
+"Ótima pergunta!"
+"Que bom que você perguntou!"
+"Não há pergunta boba."
+"E corajoso admitir que não sabe. Vamos aprender juntos."
 
-Pratica: Reuniao de "Perguntas Bobas"
-1x por mes, reuniao onde objetivo e fazer perguntas que voce tem vergonha de fazer.
+Prática: Reunião de "Perguntas Bobas"
+1x por mês, reunião onde objetivo e fazer perguntas que você tem vergonha de fazer.
 
 PILAR 4: ENCORAJE DISCORDANCIA RESPEITOSA
 
-Equipes de alto desempenho discordam frequentemente - mas de forma saudavel.
+Equipes de alto desempenho discordam frequentemente - mas de forma saudável.
 
-Como Encorajar Discordancia:
+Como Encorajar Discordância:
 
-"Alguem ve isso de forma diferente?"
-"Qual a critica a essa ideia?"
-"Me convencam do contrario."
-"Se voce fosse contra essa decisao, qual seria seu argumento?"
+"Alguém vê isso de forma diferente?"
+"Qual a crítica a essa ideia?"
+"Me convençam do contrario."
+"Se você fosse contra essa decisão, qual seria seu argumento?"
 
-Quando Alguem Discorda:
+Quando Alguém Discorda:
 
 NAO:
-"Voce esta errado."
-"Nao entendeu nada."
+"Você está errado."
+"Não entendeu nada."
 "Vamos fazer do meu jeito."
 
 SIM:
 "Interessante perspectiva. Me explique mais."
-"Nao tinha pensado por esse angulo."
+"Não tinha pensado por esse ângulo."
 "Vamos explorar essa alternativa."
 
 PILAR 5: CRIE RITUAIS DE APRENDIZADO COM ERROS
 
 Post-Mortem Sem Culpa:
 
-Quando algo da errado, reuniao focada em:
+Quando algo da errado, reunião focada em:
 1. O que aconteceu? (Fatos)
-2. Por que aconteceu? (Causas sistemicas, nao pessoas)
+2. Por que aconteceu? (Causas sistêmicas, não pessoas)
 3. O que aprendemos?
 4. Como prevenimos?
 
@@ -7823,210 +7815,210 @@ Regra de Ouro: NUNCA pergunte "Quem errou?" Pergunte "O que no sistema permitiu 
 
 CONSTRUCAO DE CONFIANCA GENUINA
 
-Seguranca psicologica requer confianca. Confianca e construida, nao decretada.
+Segurança psicológica requer confiança. Confiança e construída, não decretada.
 
-Modelo de Confianca (Brené Brown):
+Modelo de Confiança (Brené Brown):
 
-Confianca = Acumulo de pequenos momentos ao longo do tempo onde:
-- Voce cumpre o que promete
-- Voce e vulneravel
-- Voce demonstra cuidado genuino
-- Voce mantem confidencialidade
-- Voce e consistente
+Confiança = Acumulo de pequenos momentos ao longo do tempo onde:
+- Você cumpre o que promete
+- Você e vulnerável
+- Você demonstra cuidado genuíno
+- Você mantem confidencialidade
+- Você e consistente
 
-Como Construir Confianca:
+Como Construir Confiança:
 
 1. CUMPRA PROMESSAS (Pequenas e Grandes)
 
-Se disse que vai fazer 1:1 sexta-feira, faca. Nao cancele.
+Se disse que vai fazer 1:1 sexta-feira, faca. Não cancele.
 Se disse que vai defender a equipe, defenda.
 
-Confianca e construida em pequenas promessas cumpridas consistentemente.
+Confiança e construída em pequenas promessas cumpridas consistentemente.
 
 2. SEJA VULNERAVEL PRIMEIRO
 
-Confianca nasce quando lider se abre primeiro.
+Confiança nasce quando líder se abre primeiro.
 
-"Estou inseguro sobre essa decisao."
+"Estou inseguro sobre essa decisão."
 "Tenho dificuldade com esse tipo de conflito."
-"Estou passando por momento dificil pessoalmente."
+"Estou passando por momento difícil pessoalmente."
 
 3. MOSTRE INTERESSE GENUINO
 
-Nao fa ca check-in pro forma. Interessese genuinamente.
+Não faça check-in pro forma. Interesses genuinamente.
 
 NAO: "Tudo bem?"
-SIM: "Como voce esta se sentindo em relacao ao projeto X? Vi que teve desafios."
+SIM: "Como você está se sentindo em relação ao projeto X? Vi que teve desafios."
 
 4. MANTENHA CONFIDENCIALIDADE
 
-Se pessoa compartilha algo em confianca e voce espalha, confianca morre permanentemente.
+Se pessoa compartilha algo em confiança e você espalha, confiança morre permanentemente.
 
-5. SEJA CONSISTENTE (Nao Imprevisivel)
+5. SEJA CONSISTENTE (Não Imprevisível)
 
-Lider imprevisivel (humor variavel, reacoes inconsistentes) gera medo, nao confianca.
+Líder imprevisível (humor variável, reações inconsistentes) gera medo, não confiança.
 
 FEEDBACK PSICOLOGICAMENTE SEGURO
 
-Feedback e essencial para crescimento. Mas pode ser dado de forma que aumenta ou destroi seguranca.
+Feedback é essencial para crescimento. Mas pode ser dado de forma que aumenta ou destrói segurança.
 
-Principios de Feedback Psicologicamente Seguro:
+Princípios de Feedback Psicologicamente Seguro:
 
-1. FEEDBACK REGULAR (Nao Apenas Anual)
+1. FEEDBACK REGULAR (Não Apenas Anual)
 
-Feedback surpresa em avaliacao anual = Inseguranca.
-Feedback continuo = Seguranca.
+Feedback surpresa em avaliação anual = Insegurança.
+Feedback continuo = Segurança.
 
 2. FEEDBACK BIDIRECIONAL
 
-Nao so lider → colaborador. Tambem colaborador → lider.
+Não só líder → colaborador. Também colaborador → líder.
 
 Pergunta Poderosa (Mensal):
 "O que posso fazer diferente para te apoiar melhor?"
 
 3. FEEDBACK ESPECIFICO E COMPORTAMENTAL
 
-NAO: "Voce e desorganizado."
-SIM: "Percebi que na ultima reuniao nao tinhamos agenda definida, o que gerou confusao. Podemos preparar agenda antes?"
+NAO: "Você e desorganizado."
+SIM: "Percebi que na ultima reunião não tínhamos agenda definida, o que gerou confusão. Podemos preparar agenda antes?"
 
 4. FEEDBACK EM TEMPO REAL
 
-Nao espere semanas. Feedback imediato (mas privado) e mais eficaz.
+Não espere semanas. Feedback imediato (mas privado) e mais eficaz.
 
 5. PROPORCAO 5:1 (Positivo:Negativo)
 
-Para cada feedback corretivo, ofereça 5 feedbacks positivos genuinos.
-Isso cria reserva de confianca.
+Para cada feedback corretivo, ofereça 5 feedbacks positivos genuínos.
+Isso cria reserva de confiança.
 
-Framework de Feedback SBI (Situacao-Comportamento-Impacto):
+Framework de Feedback SBI (Situação-Comportamento Impacto):
 
 SITUACAO: Quando especificamente aconteceu
-COMPORTAMENTO: O que voce observou (fato, nao julgamento)
+COMPORTAMENTO: O que você observou (fato, não julgamento)
 IMPACTO: Qual foi o impacto
 
 Exemplo:
-"Na reuniao de ontem (Situacao), voce interrompeu Maria 3 vezes (Comportamento). Percebi que ela ficou quieta o resto da reuniao e pode ter se sentido desvalorizada (Impacto). Podemos trabalhar isso juntos?"
+"Na reunião de ontem (Situação), você interrompeu Maria 3 vezes (Comportamento). Percebi que ela ficou quieta o resto da reunião e pode ter se sentido desvalorizada (Impacto). Podemos trabalhar isso juntos?"
 
 METRICAS DE SEGURANCA PSICOLOGICA
 
-Como saber se equipe tem seguranca psicologica?
+Como saber se equipe tem segurança psicológica?
 
-Questionario de Edmondson (Escala 1-7):
+Questionário de Edmondson (Escala 1-7):
 
 1. "Se cometo erro nesta equipe, frequentemente e usado contra mim." (Reverso)
-2. "Membros desta equipe conseguem trazer problemas e questoes dificeis."
+2. "Membros desta equipe conseguem trazer problemas e questões difíceis."
 3. "Pessoas nesta equipe as vezes rejeitam outros por serem diferentes." (Reverso)
 4. "E seguro assumir riscos nesta equipe."
-5. "E dificil pedir ajuda a membros desta equipe." (Reverso)
-6. "Ninguem nesta equipe agiria deliberadamente para minar meus esforcos."
-7. "Trabalhando com membros desta equipe, minhas habilidades unicas e talentos sao valorizados e utilizados."
+5. "E difícil pedir ajuda a membros desta equipe." (Reverso)
+6. "Ninguém nesta equipe agiria deliberadamente para minar meus esforços."
+7. "Trabalhando com membros desta equipe, minhas habilidades únicas e talentos são valorizados e utilizados."
 
-Media >5 = Seguranca Psicologica Alta
-Media <4 = Seguranca Psicologica Baixa - Intervencao Necessaria
+Media >5 = Segurança Psicológica Alta
+Media <4 = Segurança Psicológica Baixa - Intervenção Necessária
 
 Indicadores Qualitativos:
 
-Equipe COM Seguranca Psicologica:
-- Pessoas fazem perguntas em reunioes
-- Erros sao compartilhados abertamente
-- Ha discordancia respeitosa frequente
-- Pessoas admitem "nao sei"
-- Feedback flui em todas direcoes
+Equipe COM Segurança Psicológica:
+- Pessoas fazem perguntas em reuniões
+- Erros são compartilhados abertamente
+- Há discordância respeitosa frequente
+- Pessoas admitem "não sei"
+- Feedback flui em todas direções
 
-Equipe SEM Seguranca Psicologica:
-- Reunioes em silencio (ninguem fala)
-- Erros sao escondidos
-- Ninguem discorda do chefe
+Equipe SEM Segurança Psicológica:
+- Reuniões em silencio (ninguém fala)
+- Erros são escondidos
+- Ninguém discorda do chefe
 - Fingem saber tudo
-- Feedback so top-down
+- Feedback só top-down
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Vulnerabilidade Pessoal
-Proxima reuniao de equipe, compartilhe 1 erro ou aprendizado recente seu.
+Exercício 1: Vulnerabilidade Pessoal
+Próxima reunião de equipe, compartilhe 1 erro ou aprendizado recente seu.
 
-Exercicio 2: Pesquisa de Seguranca Psicologica
-Use o questionario de Edmondson (anonimo) com sua equipe. Analise resultados.
+Exercício 2: Pesquisa de Segurança Psicológica
+Use o questionário de Edmondson (anônimo) com sua equipe. Analise resultados.
 
-Exercicio 3: Revisao de Resposta a Erros
-Pense no ultimo erro de alguem da equipe. Como voce reagiu? Destruiu ou construiu seguranca?
+Exercício 3: Revisão de Resposta a Erros
+Pense no ultimo erro de alguém da equipe. Como você reagiu? Destruiu ou construiu segurança?
 
 CONCLUSAO DO MODULO
 
-Seguranca psicologica nao e luxo - e fundacao de equipes de alta performance.
+Segurança psicológica não e luxo - e fundação de equipes de alta performance.
 
 Equipes psicologicamente seguras:
 - Inovam mais
-- Aprendem mais rapido
+- Aprendem mais rápido
 - Detectam problemas cedo
-- Sao mais engajadas
+- São mais engajadas
 - Entregam mais
 
-Construir seguranca e trabalho diario do lider atraves de:
+Construir segurança e trabalho diário do líder através de:
 - Modelagem de vulnerabilidade
 - Resposta construtiva a erros
-- Celebracao de perguntas
-- Encorajamento de discordancia saudavel
-- Construcao de confianca genuina
+- Celebração de perguntas
+- Encorajamento de discordância saudável
+- Construção de confiança genuína
 
-Proximos Passos:
-1. Mensure seguranca psicologica atual (questionario Edmondson)
-2. Modele vulnerabilidade esta semana
-3. Responda ao proximo erro como oportunidade de aprendizado
-4. Peca feedback sobre sua lideranca
+Próximos Passos:
+1. Mensure segurança psicológica atual (questionário Edmondson)
+2. Modele vulnerabilidade está semana
+3. Responda ao próximo erro como oportunidade de aprendizado
+4. Peca feedback sobre sua liderança
 
-Lembre-se: Seguranca psicologica comeca com voce. Seja vulneravel primeiro.
+Lembre-se: Segurança psicológica começa com você. Seja vulnerável primeiro.
         `
       },
       {
         id: 3,
-        titulo: "Engajamento e Gestao de Performance Humanizada",
-        duracao: "45 min",
-        topicos: [
+        título: "Engajamento e Gestão de Performance Humanizada",
+        duração: "45 min",
+        tópicos: [
           "Drivers de engajamento (Proposito, Autonomia, Maestria)",
-          "Gestao de performance focada em desenvolvimento",
+          "Gestão de performance focada em desenvolvimento",
           "Conversas de carreira e crescimento",
-          "Reconhecimento genuino e eficaz",
+          "Reconhecimento genuíno e eficaz",
           "Lidando com baixa performance com empatia"
         ],
-        materialDidatico: `
+        materialDidático: `
 ENGAJAMENTO E GESTAO DE PERFORMANCE HUMANIZADA
 
 INTRODUCAO
 
-Funcionarios engajados sao 21% mais produtivos, tem 59% menos rotatividade e 41% menos absenteismo (Gallup).
+Funcionários engajados são 21% mais produtivos, tem 59% menos rotatividade e 41% menos absenteísmo (Gallup).
 
-Mas apenas 13% dos trabalhadores globalmente estao engajados. No Brasil, 29%.
+Mas apenas 13% dos trabalhadores globalmente estão engajados. No Brasil, 29%.
 
-Gestao de performance tradicional (avaliacao anual, ranking forcado, foco em punicao) gera desengajamento.
+Gestão de performance tradicional (avaliação anual, ranking forcado, foco em punição) gera desengajamento.
 
-Gestao de performance humanizada (desenvolvimento continuo, feedback regular, foco em crescimento) gera engajamento.
+Gestão de performance humanizada (desenvolvimento continuo, feedback regular, foco em crescimento) gera engajamento.
 
 DRIVERS DE ENGAJAMENTO (PROPOSITO, AUTONOMIA, MAESTRIA)
 
-Daniel Pink (Drive) identificou 3 motivadores intrinsecos:
+Daniel Pink (Drive) identificou 3 motivadores intrínsecos:
 
 1. PROPOSITO (Por Que Importa)
 
-Pessoas querem sentir que trabalho tem significado alem de salario.
+Pessoas querem sentir que trabalho tem significado além de salario.
 
 Como Criar Proposito:
 
 A) CONECTE TRABALHO A MISSAO MAIOR
 
-NAO: "Voce precisa fazer esse relatorio."
-SIM: "Esse relatorio ajuda a diretoria a tomar decisoes que impactam 500 familias de colaboradores."
+NAO: "Você precisa fazer esse relatório."
+SIM: "Esse relatório ajuda a diretoria a tomar decisões que impactam 500 famílias de colaboradores."
 
 B) MOSTRE IMPACTO REAL
 
-Traga cliente/usuario para contar como produto/servico ajudou.
+Traga cliente/usuário para contar como produto/serviço ajudou.
 
 C) CELEBRE CONTRIBUICOES SIGNIFICATIVAS
 
-Reconheca nao so numeros, mas impacto humano.
+Reconheça não só números, mas impacto humano.
 
 Exemplo Real:
-Hospital limpeza tem alta rotatividade. Treinamento focou em "Voce nao limpa quartos - cria ambiente de cura para pacientes." Rotatividade caiu 30%.
+Hospital limpeza tem alta rotatividade. Treinamento focou em "Você não limpa quartos - cria ambiente de cura para pacientes." Rotatividade caiu 30%.
 
 2. AUTONOMIA (Como Fazer)
 
@@ -8036,35 +8028,35 @@ Como Dar Autonomia:
 
 A) DEFINA O QUE E O PORQUE, NAO O COMO
 
-"Precisamos aumentar satisfacao do cliente em 20% (O QUE) porque retencao esta baixa (POR QUE). Como voces acham que podemos fazer isso?"
+"Precisamos aumentar satisfação do cliente em 20% (O QUE) porque retenção está baixa (POR QUE). Como vocês acham que podemos fazer isso?"
 
 B) DEIXE EQUIPE DECIDIR PROCESSOS
 
-Voce define meta. Equipe define metodologia.
+Você define meta. Equipe define metodologia.
 
 C) PERMITA EXPERIMENTACAO
 
-"Tente essa abordagem por 2 semanas. Se nao funcionar, mudamos."
+"Tente essa abordagem por 2 semanas. Se não funcionar, mudamos."
 
 D) EVITE MICROGERENCIAMENTO
 
-Microgerenciamento = Mensagem "Nao confio em voce" = Desengajamento massivo.
+Micro gerenciamento = Mensagem "Não confio em você" = Desengajamento massivo.
 
 3. MAESTRIA (Aprender e Melhorar)
 
-Pessoas querem crescer, nao estagnar.
+Pessoas querem crescer, não estagnar.
 
 Como Promover Maestria:
 
 A) DESAFIOS PROGRESSIVOS
 
-Tarefas muito faceis = Tedio
-Tarefas impossiveis = Frustração
-Tarefas desafiadoras mas alcancaveis = Flow e crescimento
+Tarefas muito fáceis = Tedio
+Tarefas impossíveis = Frustração
+Tarefas desafiadoras mas alcançáveis = Flow e crescimento
 
 B) FEEDBACK CONTINUO
 
-Sem feedback, nao ha aprendizado.
+Sem feedback, não há aprendizado.
 
 C) ACESSO A DESENVOLVIMENTO
 
@@ -8072,21 +8064,21 @@ Treinamentos, mentorias, cursos, livros, conferencias.
 
 D) CELEBRE PROGRESSO
 
-Reconheça nao so resultados, mas esforco e crescimento.
+Reconheça não só resultados, mas esforço e crescimento.
 
 GESTAO DE PERFORMANCE FOCADA EM DESENVOLVIMENTO
 
-Gestao de Performance Tradicional (Modelo Antigo):
+Gestão de Performance Tradicional (Modelo Antigo):
 
-- Avaliacao anual surpresa
+- Avaliação anual surpresa
 - Foco em erros do passado
 - Ranking forcado (curva de sino)
-- Punicao de baixa performance
-- Processo burocratico e temido
+- Punição de baixa performance
+- Processo burocrático e temido
 
-Resultado: Ansiedade, desengajamento, foco em "nao errar" ao inves de inovar.
+Resultado: Ansiedade, desengajamento, foco em "não errar" ao invés de inovar.
 
-Gestao de Performance Humanizada (Modelo Moderno):
+Gestão de Performance Humanizada (Modelo Moderno):
 
 - Conversas continuas (semanais/mensais)
 - Foco em desenvolvimento futuro
@@ -8096,49 +8088,49 @@ Gestao de Performance Humanizada (Modelo Moderno):
 
 Resultado: Engajamento, crescimento, foco em aprender.
 
-Framework de Gestao de Performance Continua:
+Framework de Gestão de Performance Continua:
 
 1. CHECK-INS SEMANAIS (15-30 min)
 
 Agenda:
-- Como voce esta?
+- Como você esta?
 - O que deu certo essa semana?
 - Onde precisa de apoio?
-- Proximas prioridades
+- Próximas prioridades
 
 2. CONVERSAS DE DESENVOLVIMENTO (Mensal)
 
-- Como voce esta se desenvolvendo?
+- Como você está se desenvolvendo?
 - O que quer aprender?
 - Como posso ajudar?
 
 3. REVISAO DE OBJETIVOS (Trimestral)
 
 - Progresso em OKRs/Metas
-- Ajustes necessarios
-- Celebracao de conquistas
+- Ajustes necessários
+- Celebração de conquistas
 
 4. CONVERSA DE CARREIRA (Semestral/Anual)
 
-- Onde voce quer estar em 1-3 anos?
-- Como chegamos la?
+- Onde você quer estar em 1-3 anos?
+- Como chegamos lá?
 - Plano de Desenvolvimento Individual (PDI)
 
 CONVERSAS DE CARREIRA E CRESCIMENTO
 
-Muitos lideres evitam conversas de carreira por medo:
-"E se pessoa quer cargo que nao posso oferecer?"
+Muitos líderes evitam conversas de carreira por medo:
+"E se pessoa quer cargo que não posso oferecer?"
 "E se pessoa quer sair da empresa?"
 
-Verdade: Se voce nao conversa sobre carreira, pessoa sai sem avisar.
+Verdade: Se você não conversa sobre carreira, pessoa sai sem avisar.
 
 Como Fazer Conversa de Carreira Eficaz:
 
 PASSO 1: PERGUNTE SOBRE ASPIRACOES
 
-"Onde voce se ve profissionalmente daqui a 3 anos?"
+"Onde você se vê profissionalmente daqui a 3 anos?"
 "O que te deixa mais empolgado no trabalho?"
-"Que habilidades voce quer desenvolver?"
+"Que habilidades você quer desenvolver?"
 
 Escute sem julgar.
 
@@ -8151,9 +8143,9 @@ Gap: ___
 PASSO 3: CRIE PLANO DE DESENVOLVIMENTO INDIVIDUAL (PDI)
 
 Para cada gap, defina:
-- Acao concreta (curso, projeto, mentoria)
+- Ação concreta (curso, projeto, mentoria)
 - Prazo
-- Responsavel (pessoa e voce)
+- Responsável (pessoa e você)
 
 PASSO 4: ACOMPANHE PROGRESSO
 
@@ -8161,39 +8153,39 @@ Check-in trimestral sobre PDI.
 
 E SE ASPIRACAO ESTA FORA DA SUA EQUIPE?
 
-NAO bloqueie. Ajude. Lider que bloqueia crescimento perde talento.
+NAO bloqueie. Ajude. Líder que bloqueia crescimento perde talento.
 
-"Legal que voce quer ir para area X. Vamos ver como podemos te preparar para isso."
+"Legal que você quer ir para área X. Vamos ver como podemos te preparar para isso."
 
-Lideres que apoiam crescimento, mesmo quando significa perder pessoa, ganham:
+Líderes que apoiam crescimento, mesmo quando significa perder pessoa, ganham:
 - Lealdade (pessoa fica mais tempo)
 - Engajamento (pessoa da 100% enquanto esta)
-- Reputacao (outros querem trabalhar com voce)
+- Reputação (outros querem trabalhar com você)
 
 RECONHECIMENTO GENUINO E EFICAZ
 
-Reconhecimento e combustivel de engajamento. Mas tem que ser GENUINO.
+Reconhecimento e combustível de engajamento. Mas tem que ser GENUINO.
 
 Reconhecimento Ineficaz:
 
-"Bom trabalho!" (Generico)
-"Parabens a todos!" (Nao-especifico)
-Bonus sem explicacao (Transacional)
+"Bom trabalho!" (Genérico)
+"Parabéns a todos!" (Não-específico)
+Bônus sem explicação (Transacional)
 
 Reconhecimento Eficaz:
 
 1. ESPECIFICO
 
-NAO: "Otimo trabalho!"
-SIM: "A forma como voce gerenciou a crise com o cliente X, mantendo calma e propondo solucoes criativas, evitou perda de R$ 50 mil. Obrigado."
+NAO: "Ótimo trabalho!"
+SIM: "A forma como você gerenciou a crise com o cliente X, mantendo calma e propondo soluções criativas, evitou perda de R$ 50 mil. Obrigado."
 
 2. OPORTUNO
 
-Reconheca QUANDO acontece, nao semanas depois.
+Reconheça QUANDO acontece, não semanas depois.
 
 3. PUBLICO (Quando Apropriado)
 
-Algumas pessoas preferem reconhecimento privado, outras publico. Conheca sua equipe.
+Algumas pessoas preferem reconhecimento privado, outras público. Conheça sua equipe.
 
 4. CONECTADO A VALORES
 
@@ -8201,15 +8193,15 @@ Algumas pessoas preferem reconhecimento privado, outras publico. Conheca sua equ
 
 5. FREQUENTE
 
-Nao so em grandes conquistas. Reconheca pequenos progressos.
+Não só em grandes conquistas. Reconheça pequenos progressos.
 
-Meta: 1 reconhecimento especifico por pessoa por semana.
+Meta: 1 reconhecimento específico por pessoa por semana.
 
-Formas de Reconhecimento (Alem de Dinheiro):
+Formas de Reconhecimento (Além de Dinheiro):
 
-- Agradecimento publico em reuniao
-- Nota escrita a mao (surpreendentemente poderosa)
-- Email copiando superior
+- Agradecimento público em reunião
+- Nota escrita a mão (surpreendentemente poderosa)
+- E-mail copiando superior
 - Responsabilidade em projeto importante
 - Flexibilidade (sair mais cedo sexta)
 - Desenvolvimento (curso desejado)
@@ -8217,37 +8209,37 @@ Formas de Reconhecimento (Alem de Dinheiro):
 
 LIDANDO COM BAIXA PERFORMANCE COM EMPATIA
 
-Gestao humanizada nao significa tolerar baixa performance. Significa lidar com ela de forma empatica e desenvolvimentista.
+Gestão humanizada não significa tolerar baixa performance. Significa lidar com ela de forma empática e desenvolvimentista.
 
 Causas de Baixa Performance:
 
-1. FALTA DE CLAREZA (Pessoa nao sabe o que se espera)
-2. FALTA DE HABILIDADE (Pessoa nao sabe como fazer)
-3. FALTA DE RECURSOS (Pessoa nao tem ferramentas/tempo)
-4. FALTA DE MOTIVACAO (Pessoa nao esta engajada)
-5. PROBLEMAS PESSOAIS (Saude, familia, etc)
-6. FIT ERRADO (Pessoa na funcao errada)
+1. FALTA DE CLAREZA (Pessoa não sabe o que se espera)
+2. FALTA DE HABILIDADE (Pessoa não sabe como fazer)
+3. FALTA DE RECURSOS (Pessoa não tem ferramentas/tempo)
+4. FALTA DE MOTIVACAO (Pessoa não está engajada)
+5. PROBLEMAS PESSOAIS (Saúde, família, etc.)
+6. FIT ERRADO (Pessoa na função errada)
 
-Seu papel como lider: DIAGNOSTICAR antes de julgar.
+Seu papel como líder: DIAGNOSTICAR antes de julgar.
 
-Framework de Gestao de Baixa Performance:
+Framework de Gestão de Baixa Performance:
 
 PASSO 1: TENHA CONVERSA DIRETA E EMPATICA
 
-"Percebi que [comportamento especifico]. Podemos conversar?"
+"Percebi que [comportamento específico]. Podemos conversar?"
 
 PASSO 2: OUCA PRIMEIRO
 
-"O que esta acontecendo na sua perspectiva?"
+"O que está acontecendo na sua perspectiva?"
 
-Muitas vezes ha contexto que voce desconhece (doenca familiar, sobrecarga, falta de recursos).
+Muitas vezes há contexto que você desconhece (doença familiar, sobrecarga, falta de recursos).
 
 PASSO 3: DIAGNOSTIQUE CAUSA
 
-- "Voce esta claro sobre o que se espera?" (Clareza)
-- "Voce sabe como fazer isso?" (Habilidade)
-- "Voce tem recursos necessarios?" (Recursos)
-- "Ha algo pessoal afetando?" (Pessoal)
+- "Você está claro sobre o que se espera?" (Clareza)
+- "Você sabe como fazer isso?" (Habilidade)
+- "Você tem recursos necessários?" (Recursos)
+- "Há algo pessoal afetando?" (Pessoal)
 
 PASSO 4: CRIE PLANO DE MELHORIA JUNTOS
 
@@ -8257,7 +8249,7 @@ NAO imponha plano. Crie em conjunto.
 
 Defina:
 - Expectativas claras
-- Suporte que voce dara
+- Suporte que você dará
 - Timeline para melhoria
 - Check-ins regulares
 
@@ -8267,118 +8259,118 @@ Check-in semanal sobre progresso.
 
 PASSO 6: SE NAO MELHORAR, DECISAO DIFICIL
 
-Se apos suporte genuino nao ha melhoria, pode ser fit errado.
+Se após suporte genuíno não há melhoria, pode ser fit errado.
 
 Conversa:
-"Demos nosso melhor para fazer isso funcionar, mas parece que nao esta alinhado. Vamos explorar se ha outra funcao melhor para voce, dentro ou fora da empresa."
+"Demos nosso melhor para fazer isso funcionar, mas parece que não está alinhado. Vamos explorar se há outra função melhor para você, dentro ou fora da empresa."
 
-Isso e empatico. Pessoa errada no lugar errado sofre.
+Isso e empático. Pessoa errada no lugar errado sofre.
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: PDI - Plano de Desenvolvimento Individual
-Faca conversa de carreira com cada pessoa da equipe este mes. Crie PDI conjunto.
+Exercício 1: PDI - Plano de Desenvolvimento Individual
+Faça conversa de carreira com cada pessoa da equipe este mês. Crie PDI conjunto.
 
-Exercicio 2: Reconhecimento Semanal
-Comprometa-se a dar 1 reconhecimento especifico a cada pessoa da equipe toda semana.
+Exercício 2: Reconhecimento Semanal
+Comprometa-se a dar 1 reconhecimento específico a cada pessoa da equipe toda semana.
 
-Exercicio 3: Analise de Baixa Performance
-Se ha alguem com baixa performance, diagnostique causa (clareza/habilidade/recursos/motivacao/pessoal/fit).
+Exercício 3: Análise de Baixa Performance
+Se há alguém com baixa performance, diagnostique causa (clareza/habilidade/recursos/motivação/pessoal/fit).
 
 CONCLUSAO DO MODULO
 
-Engajamento nao e evento - e resultado de gestao diaria que:
+Engajamento não e evento - e resultado de gestão diária que:
 - Da proposito ao trabalho
 - Concede autonomia
 - Promove maestria
 - Reconhece genuinamente
 - Desenvolve continuamente
 
-Performance nao e controlada - e desbloqueada atraves de clareza, suporte e crescimento.
+Performance não e controlada - e desbloqueada através de clareza, suporte e crescimento.
 
-Proximos Passos:
-1. Faca conversa de carreira com 1 pessoa esta semana
-2. De reconhecimento especifico a cada pessoa
+Próximos Passos:
+1. Faça conversa de carreira com 1 pessoa esta semana
+2. De reconhecimento específico a cada pessoa
 3. Diagnostique causa de baixa performance (se houver)
 4. Crie PDI para sua equipe
 
-Lembre-se: Pessoas nao deixam empresas. Deixam lideres. Seja lider que desenvolve, reconhece e inspira.
+Lembre-se: Pessoas não deixam empresas. Deixam líderes. Seja líder que desenvolve, reconhece e inspira.
         `
       },
       {
         id: 4,
-        titulo: "Gestao de Mudancas e Resiliencia Organizacional",
-        duracao: "45 min",
-        topicos: [
-          "Lideranca em tempos de mudanca e incerteza",
-          "Comunicacao de mudancas com transparencia",
-          "Gestao de resistencia a mudanca",
-          "Construcao de resiliencia da equipe",
+        título: "Gestão de Mudanças e Resiliência Organizacional",
+        duração: "45 min",
+        tópicos: [
+          "Liderança em tempos de mudança e incerteza",
+          "Comunicação de mudanças com transparência",
+          "Gestão de resistência a mudança",
+          "Construção de resiliência da equipe",
           "Adaptabilidade e aprendizado continuo"
         ],
-        materialDidatico: `
+        materialDidático: `
 GESTAO DE MUDANCAS E RESILIENCIA ORGANIZACIONAL
 
 INTRODUCAO
 
-Mudanca e unica constante. Reestruturacoes, fusoes, novas tecnologias, crises, pandemias - organizacoes em mudanca constante.
+Mudança e única constante. Reestruturações, fusões, novas tecnologias, crises, pandemias - organizações em mudança constante.
 
-Pesquisa: 70% das iniciativas de mudanca falham. Principal razao: Gestao inadequada do fator humano.
+Pesquisa: 70% das iniciativas de mudança falham. Principal razão: Gestão inadequada do fator humano.
 
-Lider humanizado nao impoe mudanca - conduz mudanca com pessoas.
+Líder humanizado não impõe mudança - conduz mudança com pessoas.
 
 LIDERANCA EM TEMPOS DE MUDANCA E INCERTEZA
 
-Mudanca gera medo. Medo do desconhecido, perda de controle, inseguranca.
+Mudança gera medo. Medo do desconhecido, perda de controle, insegurança.
 
-Reacoes Comuns a Mudanca:
+Reações Comuns a Mudança:
 
-1. NEGACAO: "Isso nao vai acontecer."
-2. RESISTENCIA: "Isso e ruim. Nao vou apoiar."
+1. NEGACAO: "Isso não vai acontecer."
+2. RESISTENCIA: "Isso e ruim. Não vou apoiar."
 3. EXPLORACAO: "Talvez isso funcione..."
 4. ACEITACAO: "Ok, vamos fazer isso funcionar."
 
-Papel do Lider:
-- Reconhecer e validar emocoes
-- Comunicar com transparencia
-- Prover seguranca no meio da incerteza
-- Inspirar confianca no futuro
+Papel do Líder:
+- Reconhecer e validar emoções
+- Comunicar com transparência
+- Prover segurança no meio da incerteza
+- Inspirar confiança no futuro
 
-Frases que Lideres Devem Usar em Mudancas:
+Frases que Líderes Devem Usar em Mudanças:
 
-"Entendo que mudanca gera incerteza. Estou aqui para apoiar voces."
-"Nao tenho todas as respostas ainda, mas vou manter voces informados."
+"Entendo que mudança gera incerteza. Estou aqui para apoiar vocês."
+"Não tenho todas as respostas ainda, mas vou manter vocês informados."
 "Vamos passar por isso juntos."
-"Suas preocupacoes sao validas. Vamos conversar sobre elas."
+"Suas preocupações são validas. Vamos conversar sobre elas."
 
-COMUNICACAO DE MUDANCAS COM TRANSPARENCIA
+COMUNICAÇÃO DE MUDANÇAS COM TRANSPARÊNCIA
 
-Forma como mudanca e comunicada define se sera sabotada ou abraçada.
+Forma como mudança e comunicada define se será sabotada ou abraçada.
 
-Principios de Comunicacao de Mudanca:
+Princípios de Comunicação de Mudança:
 
 1. COMUNIQUE CEDO E FREQUENTEMENTE
 
-Rumores surgem quando ha vacuo de informacao.
+Rumores surgem quando há vácuo de informação.
 
 Comunique ANTES de rumores começarem.
 
-2. EXPLIQUE O POR QUE (Nao Apenas O QUE)
+2. EXPLIQUE O POR QUE (Não Apenas O QUE)
 
-Pessoas aceitam mudanca quando entendem razao.
+Pessoas aceitam mudança quando entendem razão.
 
 NAO: "Vamos reestruturar a equipe."
-SIM: "Vamos reestruturar porque mercado mudou e precisamos ser mais ageis. Isso nos permite crescer e proteger empregos a longo prazo."
+SIM: "Vamos reestruturar porque mercado mudou e precisamos ser mais ágeis. Isso nos permite crescer e proteger empregos a longo prazo."
 
 3. SEJA TRANSPARENTE (Mesmo Sobre Incertezas)
 
-NAO minta ou omita. Se nao sabe algo, admita.
+NAO minta ou omita. Se não sabe algo, admita.
 
-"Ainda nao sabemos exatamente como sera estrutura final, mas vou manter voces atualizados semanalmente."
+"Ainda não sabemos exatamente como será estrutura final, mas vou manter vocês atualizados semanalmente."
 
 4. ABRA ESPACO PARA EMOCOES
 
-Mudanca gera medo, raiva, tristeza. Valide emocoes.
+Mudança gera medo, raiva, tristeza. Valide emoções.
 
 "Sei que isso e assustador. E normal se sentir assim."
 
@@ -8386,123 +8378,123 @@ Mudanca gera medo, raiva, tristeza. Valide emocoes.
 
 Pessoas precisam ouvir mensagem 7 vezes para absorver.
 
-- Reuniao geral
-- Email
+- Reunião geral
+- E-mail
 - 1:1
 - FAQ
-- Video do CEO
+- Vídeo do CEO
 
 6. MOSTRE EMPATIA, NAO SO LOGICA
 
-Mudanca e emocional, nao so racional.
+Mudança e emocional, não só racional.
 
-"Sei que muitos de voces trabalharam anos nesse projeto. E dificil ve-lo acabar. Reconheco o esforco e dedicacao de todos."
+"Sei que muitos de vocês trabalharam anos nesse projeto. E difícil vê-lo acabar. Reconheço o esforço e dedicação de todos."
 
-Framework de Comunicacao de Mudanca:
+Framework de Comunicação de Mudança:
 
-1. CONTEXTO: Por que mudanca e necessaria
-2. VISAO: Como sera futuro
-3. PLANO: Como chegaremos la
+1. CONTEXTO: Por que mudança é necessária
+2. VISAO: Como será futuro
+3. PLANO: Como chegaremos lá
 4. PAPEL: O que se espera de cada um
-5. SUPORTE: Que apoio sera dado
+5. SUPORTE: Que apoio será dado
 6. TIMELINE: Quando acontecera o que
 
 GESTAO DE RESISTENCIA A MUDANCA
 
-Resistencia e natural. Nao lute contra - entenda e trabalhe com ela.
+Resistencia e natural. Não lute contra - entenda e trabalhe com ela.
 
 Causas de Resistencia:
 
-1. MEDO DE PERDA (Status, poder, competencia, emprego)
-2. FALTA DE CONFIANCA (Nao confiam que mudanca e boa)
-3. FADIGA DE MUDANCA (Mudancas demais, sem tempo de absorver)
-4. FALTA DE PARTICIPACAO (Mudanca imposta, nao co-criada)
-5. EXPERIENCIAS PASSADAS RUINS (Ultimas mudancas falharam)
+1. MEDO DE PERDA (Status, poder, competência, emprego)
+2. FALTA DE CONFIANCA (Não confiam que mudança e boa)
+3. FADIGA DE MUDANCA (Mudanças demais, sem tempo de absorver)
+4. FALTA DE PARTICIPACAO (Mudança imposta, não co-criada)
+5. EXPERIENCIAS PASSADAS RUINS (Ultimas mudanças falharam)
 
 Como Lidar com Resistencia:
 
 PASSO 1: OUCA RESISTENCIA SEM JULGAR
 
-Resistencia contem informacao valiosa.
+Resistencia contem informação valiosa.
 
-"Voce parece preocupado com essa mudanca. Pode me contar mais?"
+"Você parece preocupado com essa mudança. Pode me contar mais?"
 
 PASSO 2: VALIDE PREOCUPACOES
 
-NAO: "Voce esta errado em resistir."
-SIM: "Entendo sua preocupacao. Faz sentido."
+NAO: "Você está errado em resistir."
+SIM: "Entendo sua preocupação. Faz sentido."
 
 PASSO 3: ENDERECE PREOCUPACOES HONESTAMENTE
 
-Se preocupacao e valida, enderece-a.
-Se nao tem solucao, seja honesto.
+Se preocupação e valida, enderece-a.
+Se não tem solução, seja honesto.
 
 PASSO 4: ENVOLVA RESISTENTES NO PROCESSO
 
 Pessoas resistem o que e imposto. Apoiam o que ajudam a criar.
 
-Convide resistentes para ajudar a desenhar mudanca.
+Convide resistentes para ajudar a desenhar mudança.
 
 PASSO 5: CELEBRE PEQUENOS GANHOS RAPIDOS
 
-Mostre que mudanca esta funcionando atraves de evidencias.
+Mostre que mudança está funcionando através de evidencias.
 
 Tipos de Resistencia e Como Lidar:
 
 RESISTENCIA PASSIVA (Silenciosa):
-Pessoa concorda superficialmente mas nao age.
+Pessoa concorda superficialmente mas não age.
 
-Acao: Conversas 1:1 para entender o que realmente pensam.
+Ação: Conversas 1:1 para entender o que realmente pensam.
 
 RESISTENCIA ATIVA (Vocal):
-Pessoa expressa oposicao abertamente.
+Pessoa expressa oposição abertamente.
 
-Acao: Escute, valide, envolva no desenho da mudanca.
+Ação: Escute, valide, envolva no desenho da mudança.
 
 RESISTENCIA AGRESSIVA (Sabotagem):
-Pessoa ativamente sabota mudanca.
+Pessoa ativamente sabota mudança.
 
-Acao: Conversa direta sobre impacto do comportamento. Se continua, consequencias.
+Ação: Conversa direta sobre impacto do comportamento. Se continua, consequências.
 
 CONSTRUCAO DE RESILIENCIA DA EQUIPE
 
-Resiliencia = Capacidade de se recuperar de adversidades.
+Resiliência = Capacidade de se recuperar de adversidades.
 
 Equipes resilientes:
-- Nao colapsam em crises
+- Não colapsam em crises
 - Aprendem com fracassos
 - Se adaptam rapidamente
 - Mantem performance em incerteza
 
-Como Construir Resiliencia:
+Como Construir Resiliência:
 
 1. CRIE SEGURANCA PSICOLOGICA
 
-Base da resiliencia: Equipe precisa se sentir segura para errar, experimentar, admitir vulnerabilidades.
+Base da resiliência: Equipe precisa se sentir segura para errar, experimentar, admitir vulnerabilidades.
 
 2. PROMOVA SENTIDO DE CONTROLE
 
-Em mudancas, pessoas perdem controle. Devolver controle onde possivel.
+Em mudanças, pessoas perdem controle. Devolver controle onde possível.
 
-"Nao podemos mudar a decisao de reestruturacao, mas voces podem decidir como reorganizamos tarefas."
+"Não podemos mudar a decisão de reestruturação, mas vocês podem decidir como reorganizamos tarefas."
 
 3. FOQUE NO QUE PODE CONTROLAR
 
 Circulo de Controle (Stephen Covey):
 - Controle: O que posso mudar
-- Influencia: O que posso influenciar
-- Preocupacao: O que nao posso mudar nem influenciar
+- Influência: O que posso influenciar
+- Preocupação: O que não posso mudar nem influenciar
 
-Resilientes focam em Controle e Influencia. Nao desperdicam energia em Preocupacao.
+Resilientes focam em Controle e Influencia. Não desperdiçam energia em Preocupação.
 
 4. REFRAME ADVERSIDADES COMO APRENDIZADO
 
 NAO: "Fracassamos."
-SIM: "Aprendemos que essa abordagem nao funciona. Vamos tentar outra."
+SIM: "Aprendemos que essa abordagem não funciona. Vamos tentar outra."
 
 5. CUIDE DO BEM-ESTAR
 
-Resiliencia requer energia. Equipes esgotadas nao tem resiliencia.
+Resiliência requer energia. Equipes esgotadas não tem resiliência.
 
 - Pausas regulares
 - Apoio emocional
@@ -8510,29 +8502,29 @@ Resiliencia requer energia. Equipes esgotadas nao tem resiliencia.
 
 6. CELEBRE VITORIAS PEQUENAS
 
-Em tempos dificeis, celebre progresso, nao so resultado final.
+Em tempos difíceis, celebre progresso, não só resultado final.
 
-Praticas de Resiliencia para Equipes:
+Práticas de Resiliência para Equipes:
 
 RITUAL SEMANAL: "O que deu certo essa semana?"
-Foco em positivo fortalece resiliencia.
+Foco em positivo fortalece resiliência.
 
 RETROSPECTIVAS: "O que aprendemos com esse desafio?"
 Transformar fracasso em aprendizado.
 
-CHECK-INS EMOCIONAIS: "Como voces estao se sentindo?"
-Validar emocoes constroi resiliencia emocional.
+CHECK-INS EMOCIONAIS: "Como vocês estão se sentindo?"
+Validar emoções constrói resiliência emocional.
 
 ADAPTABILIDADE E APRENDIZADO CONTINUO
 
-Resiliencia requer adaptabilidade. Adaptabilidade requer aprendizado.
+Resiliência requer adaptabilidade. Adaptabilidade requer aprendizado.
 
-Equipes Adaptaveis:
+Equipes Adaptáveis:
 
 - Questionam status quo
 - Experimentam sem medo
-- Aprendem rapido com erros
-- Abraçam mudanca como oportunidade
+- Aprendem rápido com erros
+- Abraçam mudança como oportunidade
 
 Como Promover Aprendizado Continuo:
 
@@ -8547,244 +8539,244 @@ Ex: 10% do tempo para aprender algo novo (Google 20% time).
 
 3. COMPARTILHAMENTO DE APRENDIZADOS
 
-Reuniao mensal: "O que voces aprenderam esse mes?"
+Reunião mensal: "O que vocês aprenderam esse mês?"
 
 4. FEEDBACK COMO APRENDIZADO
 
-Feedback nao e critica - e dado de aprendizado.
+Feedback não é crítica - e dado de aprendizado.
 
 5. CELEBRE EXPERIMENTACAO (Mesmo Quando Falha)
 
-"Tentamos abordagem X. Nao funcionou. Aprendemos Y. Vamos tentar Z."
+"Tentamos abordagem X. Não funcionou. Aprendemos Y. Vamos tentar Z."
 
 Mentalidade Fixa vs. Crescimento (Carol Dweck):
 
 MENTALIDADE FIXA:
-"Sou assim. Nao posso mudar."
+"Sou assim. Não posso mudar."
 "Fracasso define minha capacidade."
 
-Resultado: Resistencia a mudanca, medo de errar.
+Resultado: Resistencia a mudança, medo de errar.
 
 MENTALIDADE DE CRESCIMENTO:
 "Posso aprender e melhorar."
 "Fracasso e oportunidade de crescer."
 
-Resultado: Adaptabilidade, resiliencia.
+Resultado: Adaptabilidade, resiliência.
 
 Como Promover Mentalidade de Crescimento:
 
 Linguagem que Promove Crescimento:
 
-NAO: "Voce e bom nisso." (Fixa)
-SIM: "Voce trabalhou duro e melhorou muito." (Crescimento)
+NAO: "Você e bom nisso." (Fixa)
+SIM: "Você trabalhou duro e melhorou muito." (Crescimento)
 
-NAO: "Nao sou bom em apresentacoes." (Fixa)
-SIM: "Ainda nao desenvolvi habilidade de apresentacoes." (Crescimento)
+NAO: "Não sou bom em apresentações." (Fixa)
+SIM: "Ainda não desenvolvi habilidade de apresentações." (Crescimento)
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Comunicacao de Mudanca
-Se ha mudanca em andamento, use framework de comunicacao (Contexto, Visao, Plano, Papel, Suporte, Timeline).
+Exercício 1: Comunicação de Mudança
+Se há mudança em andamento, use framework de comunicação (Contexto, Visão, Plano, Papel, Suporte, Timeline).
 
-Exercicio 2: Conversa com Resistentes
-Identifique pessoa resistente. Tenha conversa genuina para entender preocupacoes.
+Exercício 2: Conversa com Resistentes
+Identifique pessoa resistente. Tenha conversa genuína para entender preocupações.
 
-Exercicio 3: Ritual de Resiliencia
+Exercício 3: Ritual de Resiliência
 Implemente ritual semanal: "O que deu certo essa semana?" com equipe.
 
 CONCLUSAO DO MODULO
 
-Mudanca e inevitavel. Sofrimento com mudanca e opcional.
+Mudança e inevitável. Sofrimento com mudança e opcional.
 
-Lideres que conduzem mudanca com humanidade:
-- Comunicam com transparencia
-- Validam emocoes
+Líderes que conduzem mudança com humanidade:
+- Comunicam com transparência
+- Validam emoções
 - Envolvem pessoas no processo
-- Constroem resiliencia
+- Constroem resiliência
 - Promovem aprendizado continuo
 
-...transformam mudanca de ameaca em oportunidade.
+...transformam mudança de ameaça em oportunidade.
 
-Proximos Passos:
-1. Se ha mudanca, comunique com framework completo
-2. Ouca resistencias sem julgar
-3. Implemente 1 pratica de resiliencia
+Próximos Passos:
+1. Se há mudança, comunique com framework completo
+2. Ouça resistências sem julgar
+3. Implemente 1 prática de resiliência
 4. Promova mentalidade de crescimento
 
-Lembre-se: Mudanca e constante. Resiliencia e construida. Lideranca humanizada faz diferenca.
+Lembre-se: Mudança e constante. Resiliência e construída. Liderança humanizada faz diferença.
         `
       }
     ],
-    atividadesPraticas: [
-      "Avaliacao 360 de lideranca",
+    atividadesPráticas: [
+      "Avaliação 360 de liderança",
       "Pesquisa de clima organizacional",
-      "Criacao de plano de desenvolvimento de equipe",
+      "Criação de plano de desenvolvimento de equipe",
       "Workshop de feedback bidirecional"
     ]
   },
   {
     id: 8,
-    slug: "diversidade-inclusao-respeito",
-    titulo: "Diversidade, Inclusao e Respeito nas Relacoes de Trabalho",
-    subtitulo: "Construindo Ambientes Equitativos e Inclusivos",
-    descricao: "Compreenda a importancia da diversidade, aprenda a promover inclusao genuina e crie ambiente de respeito onde todas as pessoas possam prosperar.",
-    duracao: "3h",
-    nivel: "Intermediario",
-    categoria: "Diversidade e Inclusao",
-    icone: "🌈",
+    slug: "diversidade-inclusão-respeito",
+    título: "Diversidade, Inclusão e Respeito nas Relações de Trabalho",
+    subtítulo: "Construindo Ambientes Equitativos e Inclusivos",
+    descrição: "Compreenda a importância da diversidade, aprenda a promover inclusão genuína e crie ambiente de respeito onde todas as pessoas possam prosperar.",
+    duração: "3h",
+    nível: "Intermediário",
+    categoria: "Diversidade e Inclusão",
+    ícone: "🌈",
     cor: "from-pink-600 to-rose-600",
     corBadge: "bg-pink-100 text-pink-700 border-pink-200",
-    objetivo: "Desenvolver consciencia sobre diversidade e competencias para criar ambientes verdadeiramente inclusivos e respeitosos.",
+    objetivo: "Desenvolver consciência sobre diversidade e competências para criar ambientes verdadeiramente inclusivos e respeitosos.",
     resultadosEsperados: [
-      "Ambiente livre de discriminacao e preconceitos",
-      "Cultura de inclusao e pertencimento",
-      "Aproveitamento de beneficios da diversidade",
-      "Conformidade com legislacao antidiscriminacao"
+      "Ambiente livre de discriminação e preconceitos",
+      "Cultura de inclusão e pertencimento",
+      "Aproveitamento de benefícios da diversidade",
+      "Conformidade com legislação antidisrítimica"
     ],
-    modulos: [
+    módulos: [
       {
         id: 1,
-        titulo: "Fundamentos de Diversidade e Inclusao",
-        duracao: "60 min",
-        topicos: [
-          "Diferenca entre diversidade e inclusao",
+        título: "Fundamentos de Diversidade e Inclusão",
+        duração: "60 min",
+        tópicos: [
+          "Diferença entre diversidade e inclusão",
           "Tipos de diversidade",
-          "Beneficios da diversidade",
-          "Vies inconsciente",
-          "Microagressoes",
+          "Benefícios da diversidade",
+          "Viés inconsciente",
+          "Micro agressões",
           "Criando cultura inclusiva"
         ],
-        materialDidatico: `
+        materialDidático: `
 DIVERSIDADE, INCLUSAO E RESPEITO NAS RELACOES DE TRABALHO
 
 DIFERENCA ENTRE DIVERSIDADE E INCLUSAO
 
-Definicoes:
+Definições:
 
 DIVERSIDADE:
-Presenca de diferencas em um grupo. E sobre CONVIDAR para a festa.
-Exemplos: Idade, genero, raca, orientacao sexual, religiao, deficiencia, origem, classe social
+Presença de diferenças em um grupo. E sobre CONVIDAR para a festa.
+Exemplos: Idade, gênero, raça, orientação sexual, religião, deficiência, origem, classe social
 
-INCLUSAO:
-Garantir que todos se sintam valorizados, respeitados e tenham oportunidades iguais. E sobre CONVIDAR PARA DANCAR na festa.
+INCLUSÃO:
+Garantir que todos se sintam valorizados, respeitados e tenham oportunidades iguais. É sobre CONVIDAR PARA DANÇAR na festa.
 
 Equidade:
-Dar a cada pessoa o que ela precisa para ter as mesmas oportunidades. E sobre ajustar a musica para que todos possam dancar.
+Dar a cada pessoa o que ela precisa para ter as mesmas oportunidades. É sobre ajustar a música para que todos possam dançar.
 
 Analogia Poderosa:
 
 DIVERSIDADE = Ser convidado para festa
-INCLUSAO = Ser convidado para dancar
-PERTENCIMENTO = Dancar a musica da sua alma
+INCLUSÃO = Ser convidado para dançar
+PERTENCIMENTO = Dançar a música da sua alma
 
-Exemplos Praticos:
+Exemplos Práticos:
 
-Empresa DIVERSA mas NAO inclusiva:
+Empresa Diversa mas NÃO inclusiva:
 - Contrata pessoas diversas
-- MAS: Mulheres nao chegam a cargos de lideranca
-- MAS: Pessoas negras sofrem microagressoes
+- MAS: Mulheres não chegam a cargos de liderança
+- MAS: Pessoas negras sofrem micro agressões
 - MAS: Pessoas LGBTQIA+ escondem identidade
-- MAS: Pessoas com deficiencia sao subestimadas
+- MAS: Pessoas com deficiência são subestimadas
 
-Empresa DIVERSA E inclusiva:
+Empresa Diversa e inclusiva:
 - Contrata pessoas diversas
-- E: Todas tem oportunidades iguais de crescimento
-- E: Todos se sentem seguros sendo autenticos
-- E: Diferentes perspectivas sao valorizadas
-- E: Politicas e praticas consideram necessidades diversas
+- E: Todas têm oportunidades iguais de crescimento
+- E: Todos se sentem seguros sendo autênticos
+- E: Diferentes perspectivas são valorizadas
+- E: Políticas e práticas consideram necessidades diversas
 
 TIPOS DE DIVERSIDADE
 
-1. DIVERSIDADE DEMOGRAFICA (Visivel):
+1. DIVERSIDADE DEMOGRÁFICA (Visível):
 
-Raca e Etnia:
-- Pessoas brancas, negras, pardas, indigenas, asiaticas
-- Importante: Brasil e pais racialmente desigual
-- Pessoas negras = 56% populacao, mas 4% em cargos executivos
+Raça e Etnia:
+- Pessoas brancas, negras, pardas, indígenas, asiáticas
+- Importante: Brasil é país racialmente desigual
+- Pessoas negras = 56% população, mas 4% em cargos executivos
 
-Genero:
-- Mulheres, homens, pessoas nao-binarias
-- Realidade: Mulheres ganham 20% menos que homens em mesma funcao
-- Mulheres sao 50% populacao, mas 13% CEOs
+Gênero:
+- Mulheres, homens, pessoas não binarias
+- Realidade: Mulheres ganham 20% menos que homens em mesma função
+- Mulheres são 50% população, mas 13% CEOs
 
 Idade:
 - Baby Boomers (1946-1964)
-- Geracao X (1965-1980)
-- Millennials (1981-1996)
-- Geracao Z (1997-2012)
-- Cada geracao tem perspectivas unicas
+- Geração X (1965-1980)
+- Millenials (1981-1996)
+- Geração Z (1997-2012)
+- Cada geração tem perspectivas únicas
 
-Deficiencia:
-- Fisica, sensorial, intelectual, psicossocial
-- 24% da populacao brasileira tem alguma deficiencia
-- Importante: Acessibilidade e direito, nao favor
+Deficiência:
+- Física, sensorial, intelectual, psicossocial
+- 24% da população brasileira tem alguma deficiência
+- Importante: Acessibilidade e direito, não favor
 
-2. DIVERSIDADE COGNITIVA (Invisivel):
+2. DIVERSIDADE COGNITIVA (Invisível):
 
 Personalidade:
 - Introvertidos vs Extrovertidos
-- Analiticos vs Criativos
-- Detalhistas vs Visionarios
+- Analíticos vs Criativos
+- Detalhistas vs Visionários
 
-Neurodivergencia:
-- Autismo, TDAH, Dislexia, etc
-- Formas diferentes de processar informacao
-- Perspectivas unicas valiosas
+Neuro divergência:
+- Autismo, TDAH, Dislexia, etc.
+- Formas diferentes de processar informação
+- Perspectivas únicas valiosas
 
 3. DIVERSIDADE DE EXPERIENCIA:
 
-Origem Socioeconomica:
+Origem Socioeconômica:
 - Diferentes realidades financeiras
 - Acesso desigual a oportunidades
 
-Educacao:
-- Diferentes niveis e tipos de formacao
-- Educacao formal vs autodidata
+Educação:
+- Diferentes níveis e tipos de formação
+- Educação formal vs autodidata
 
-Trajetoria Profissional:
-- Diferentes industrias e funcoes
+Trajetória Profissional:
+- Diferentes industrias e funções
 - Perspectivas variadas
 
 4. DIVERSIDADE DE CRENCAS:
 
-Religiao:
-- Catolicos, evangelicos, espiritas, ateus, etc
-- Respeito a todas as crencas (ou ausencia delas)
+Religião:
+- Católicos, evangélicos, espiritas, ateus, etc.
+- Respeito a todas as crenças (ou ausência delas)
 
 Valores:
-- Diferentes priori dades na vida
-- Importancia de respeitar sem impor
+- Diferentes prioridades na vida
+- Importância de respeitar sem impor
 
 BENEFICIOS DA DIVERSIDADE
 
-Dados Cientificos:
+Dados Científicos:
 
 McKinsey & Company (2023):
-- Empresas com diversidade de genero tem 21% mais chance de ter lucratividade acima da media
-- Empresas com diversidade etnica tem 33% mais chance
+- Empresas com diversidade de gênero tem 21% mais chance de ter lucratividade acima da media
+- Empresas com diversidade étnica tem 33% mais chance
 
 Harvard Business Review:
-- Equipes diversas tomam decisoes melhores em 87% dos casos
-- Empresas inclusivas tem 2,3x mais fluxo de caixa por funcionario
+- Equipes diversas tomam decisões melhores em 87% dos casos
+- Empresas inclusivas tem 2,3x mais fluxo de caixa por funcionário
 
-Beneficios Concretos:
+Benefícios Concretos:
 
 1. INOVACAO:
 Perspectivas diferentes = Ideias diferentes
-Exemplo: Equipe homogenea: 10 ideias similares
+Exemplo: Equipe homogênea: 10 ideias similares
 Equipe diversa: 30 ideias variadas
 
 2. RESOLUCAO DE PROBLEMAS:
-Angulos diferentes identificam solucoes que grupo homogeneo nao ve
+Ângulos diferentes identificam soluções que grupo homogêneo não vê
 
 3. CONEXAO COM CLIENTES:
 Equipe diversa entende clientes diversos melhor
 
 4. ATRACAO DE TALENTOS:
-Millennials e Gen Z escolhem empresas inclusivas
+Millenials e Gen. Z escolhem empresas inclusivas
 
 5. REDUCAO DE RISCOS:
-Perspectivas diversas identificam riscos que grupo similar nao viu
+Perspectivas diversas identificam riscos que grupo similar não viu
 
 6. CLIMA ORGANIZACIONAL:
 Ambiente inclusivo = Pessoas felizes = Performance
@@ -8792,262 +8784,262 @@ Ambiente inclusivo = Pessoas felizes = Performance
 VIES INCONSCIENTE (Unconscious Bias)
 
 O que e:
-Atalhos mentais automaticos que nosso cerebro usa para processar informacoes rapidamente. Baseados em experiencias, cultura, midia.
+Atalhos mentais automáticos que nosso cérebro usa para processar informações rapidamente. Baseados em experiencias, cultura, mídia.
 
 Importante: TODO MUNDO TEM VIESES
-Ter vies nao te faz pessoa ruim. AGIR com base nele sem questionar e o problema.
+Ter viés não te faz pessoa ruim. AGIR com base nele sem questionar e o problema.
 
 Tipos Comuns de Vieses:
 
 1. VIES DE AFINIDADE:
-Preferir pessoas similares a nos
+Preferir pessoas similares a nós
 Exemplo: Contratar quem estudou na mesma faculdade
 
 2. VIES DE CONFIRMACAO:
-Buscar informacoes que confirmam o que ja acreditamos
+Buscar informações que confirmam o que já acreditamos
 Exemplo: Achar que mulher e emocional, notar apenas momentos que confirmam
 
 3. EFEITO HALO:
-Uma caracteristica positiva contamina avaliacao geral
+Uma característica positiva contamina avaliação geral
 Exemplo: Pessoa bonita e assumida como competente
 
 4. VIES DE GENERO:
-Associacoes automaticas sobre homens e mulheres
+Associações automáticas sobre homens e mulheres
 Exemplos:
-- Homem assertivo = Lider / Mulher assertiva = Mandona
+- Homem assertivo = Líder / Mulher assertiva = Mandona
 - Homem ambicioso = Competente / Mulher ambiciosa = Calculista
 
 5. VIES RACIAL:
-Associacoes automaticas sobre racas
-Exemplo: Assumir que pessoa negra e da area de apoio, nao executiva
+Associações automáticas sobre raças
+Exemplo: Assumir que pessoa negra e da área de apoio, não executiva
 
 6. VIES DE IDADE:
-Estereotipos sobre geracoes
+Estereótipos sobre gerações
 Exemplos:
 - Jovem = Imaturo, sem compromisso
-- Mais velho = Resistente a mudanca, tecnologicamente atrasado
+- Mais velho = Resistente a mudança, tecnologicamente atrasado
 
 Como Combater Vieses:
 
 1. CONSCIENTIZACAO:
-Reconhecer que voce TEM vieses
-Teste de viés implicito (Harvard): https://implicit.harvard.edu
+Reconhecer que você TEM vieses
+Teste de viés implícito (Harvard): https://implicit.harvard.edu
 
 2. PAUSAR ANTES DE JULGAR:
 "Por que pensei isso? E baseado em fato ou estereotipo?"
 
 3. BUSCAR CONTRA-EVIDENCIAS:
-Procurar ativamente informacoes que desafiem sua primeira impressao
+Procurar ativamente informações que desafiem sua primeira impressão
 
 4. DIVERSIFICAR EXPOSICAO:
 Conviver com pessoas diferentes expande perspectiva
 
 5. PROCESSOS OBJETIVOS:
-Usar criterios claros em contratacao e promocao
+Usar critérios claros em contratação e promoção
 
 MICROAGRESSOES
 
-O que sao:
-Comentarios ou acoes cotidianas, geralmente nao intencionais, que comunicam mensagens hostis ou depreciativas para grupos marginalizados.
+O que são:
+Comentários ou ações cotidianas, geralmente não intencionais, que comunicam mensagens hostis ou depreciativas para grupos marginalizados.
 
-Caracteristicas:
+Características:
 - Frequentes e acumulativas
 - Pequenas individualmente, devastadoras no conjunto
 - Muitas vezes inconscientes de quem faz
 - Extremamente dolorosas para quem recebe
 
-Exemplos de Microagressoes:
+Exemplos de Micro agressões:
 
 Raciais:
-- "Voce fala tao bem!" (pressupoe que pessoa negra nao falaria bem)
-- Tocar cabelo de pessoa negra sem permissao
-- "De onde voce e REALMENTE?" (questionar pertencimento)
+- "Você fala tão bem!" (pressupõe que pessoa negra não falaria bem)
+- Tocar cabelo de pessoa negra sem permissão
+- "De onde você e REALMENTE?" (questionar pertencimento)
 - Segurar bolsa perto de pessoa negra
 
-Genero:
-- "Voce e muito emocional" (para mulheres)
-- "Voce ajuda sua esposa em casa?" (pressupoe que casa e trabalho dela)
+Gênero:
+- "Você e muito emocional" (para mulheres)
+- "Você ajuda sua esposa em casa?" (pressupõe que casa e trabalho dela)
 - Interromper mulheres constantemente
-- "Nao e brincadeira, voce e bonita E inteligente"
+- "Não é brincadeira, você e bonita E inteligente"
 
-Orientacao Sexual:
-- "Mas voce nao parece gay"
-- "Quem e o homem na relacao?"
-- Assumir que todos sao heterossexuais
+Orientação Sexual:
+- "Mas você não parece gay"
+- "Quem e o homem na relação?"
+- Assumir que todos são heterossexuais
 
-Deficiencia:
-- "Nossa, voce e tao inspirador!" (por fazer coisas normais)
-- Falar alto com pessoa cega (confundir deficiencias)
-- "Deixa que eu faco isso pra voce" (sem perguntar se precisa ajuda)
+Deficiência:
+- "Nossa, você e tão inspirador!" (por fazer coisas normais)
+- Falar alto com pessoa cega (confundir deficiências)
+- "Deixa que eu faço isso pra você" (sem perguntar se precisa ajuda)
 
 Idade:
-- "Voce e muito novo pra esse cargo"
+- "Você e muito novo pra esse cargo"
 - "Vou explicar bem devagar" (para pessoa mais velha)
 
-Como Nao Cometer Microagressoes:
+Como Não Cometer Micro agressões:
 
 1. PENSE ANTES DE FALAR:
-Esse comentario seria OK se fosse sobre mim?
+Esse comentário seria OK se fosse sobre mim?
 
 2. NAO ASSUMA:
-Nao presuma orientacao sexual, genero, capacidades
+Não presuma orientação sexual, gênero, capacidades
 
 3. TRATE TODOS COMO INDIVIDUOS:
-Nao como representantes de um grupo
+Não como representantes de um grupo
 
 4. ACEITE FEEDBACK:
-Se alguem diz que algo doeu, acredite
+Se alguém diz que algo doeu, acredite
 
 5. DESCULPE-SE:
-"Desculpa, nao foi minha intencao machucar. Vou fazer diferente."
+"Desculpa, não foi minha intenção machucar. Vou fazer diferente."
 
 CRIANDO CULTURA INCLUSIVA
 
 Pilares da Cultura Inclusiva:
 
-1. LIDERANCA COMPROMETIDA:
-Lideres modelam comportamento inclusivo
-Nao e RH que cria inclusao - e lideranca
+1. LIDERANÇA COMPROMETIDA:
+Líderes modelam comportamento inclusivo
+Não é RH que cria inclusão - e liderança
 
-2. POLITICAS CLARAS:
-Codigo de conduta anti-discriminacao
-Consequencias claras para violacoes
+2. POLÍTICAS CLARAS:
+Código de conduta ante discriminação
+Consequências claras para violações
 
 3. RECRUTAMENTO INCLUSIVO:
 Vagas abertas a todos
 Processo sem vieses
-Diversidade em todas os niveis
+Diversidade em todas os níveis
 
 4. DESENVOLVIMENTO EQUITATIVO:
 Oportunidades iguais de crescimento
-Mentoria e sponsorship para grupos sub-representados
+Mentoria e sponsorship para grupos sub-representações
 
 5. AMBIENTE SEGURO:
 Pessoas podem ser autenticas
-Erros de inclusao sao oportunidades de aprendizado
+Erros de inclusão são oportunidades de aprendizado
 
 6. CELEBRACAO DE DIFERENCAS:
-Diferentes perspectivas sao valorizadas
+Diferentes perspectivas são valorizadas
 Diversas datas comemorativas respeitadas
 
-Praticas Inclusivas no Dia-a-Dia:
+Práticas Inclusivas no Dia-a-Dia:
 
 REUNIOES:
-- Dar voz a todos (nao apenas quem fala mais alto)
+- Dar voz a todos (não apenas quem fala mais alto)
 - Creditar ideias a quem falou primeiro
-- Criar espaco seguro para discordancia
+- Criar espaço seguro para discordância
 
-COMUNICACAO:
+COMUNICAÇÃO:
 - Linguagem inclusiva (evitar "pessoal/galera")
-- Nao assumir genero (usar nome, nao "ele/ela")
+- Não assumir gênero (usar nome, não "ele/ela")
 - Acessibilidade (legendas, letras grandes)
 
 ESPACOS FISICOS:
-- Banheiros acessiveis e neutros
-- Espacos de oracao/meditacao
+- Banheiros acessíveis e neutros
+- Espaços de oração/meditação
 - Rampas e elevadores
-- Iluminacao e acustica adequadas
+- Iluminação e acústica adequadas
 
 BENEFICIOS:
-- Licenca parental (nao apenas maternidade)
-- Horarios flexiveis (diferentes necessidades)
-- Plano de saude inclusivo
+- Licença parental (não apenas maternidade)
+- Horários flexíveis (diferentes necessidades)
+- Plano de saúde inclusivo
 - PAE com foco em diversidade
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Mapeamento de Diversidade
+Exercício 1: Mapeamento de Diversidade
 Olhe para sua equipe:
 - Quantos homens vs mulheres?
-- Quantas pessoas negras em cargos de lideranca?
-- Quantas pessoas com deficiencia?
-- Diversidade etaria?
+- Quantas pessoas negras em cargos de liderança?
+- Quantas pessoas com deficiência?
+- Diversidade etária?
 
-Se sua equipe e homogenea, por que? Como mudar?
+Se sua equipe e homogênea, por que? Como mudar?
 
-Exercicio 2: Identificando Vieses
-Complete rapido:
-- Lider born e ___
+Exercício 2: Identificando Vieses
+Complete rápido:
+- Líder born e ___
 - Enfermeiro e ___
 - Engenheiro e ___
 
-Se respondeu "homem", "mulher", "homem" - vies de genero apareceu.
+Se respondeu "homem", "mulher", "homem" - viés de gênero apareceu.
 
-Exercicio 3: Auditoria de Inclusao
-- Alguem ja escondeu identidade no trabalho?
-- Alguem ja se sentiu excluido?
-- Todas as vozes sao ouvidas nas reunioes?
-- Piadas sobre grupos sao toleradas?
+Exercício 3: Auditoria de Inclusão
+- Alguém já escondeu identidade no trabalho?
+- Alguém já se sentiu excluído?
+- Todas as vozes são ouvidas nas reuniões?
+- Piadas sobre grupos são toleradas?
 
-Se sim para ultimas 3 perguntas, ha trabalho a fazer.
+Se sim para ultimas 3 perguntas, há trabalho a fazer.
 
 CONCLUSAO DO MODULO
 
-Diversidade e fato. Inclusao e escolha.
+Diversidade e fato. Inclusão e escolha.
 
-Ambientes verdadeiramente inclusivos nao acontecem por acaso - sao construidos intencionalmente todos os dias.
+Ambientes verdadeiramente inclusivos não acontecem por acaso - são construídos intencionalmente todos os dias.
 
-Como lider, voce tem poder de criar espaco onde todas as pessoas possam prosperar sendo plenamente quem sao.
+Como líder, você tem poder de criar espaço onde todas as pessoas possam prosperar sendo plenamente quem sao.
 
-Proximos Passos:
-1. Faca teste de vies implicito (Harvard)
-2. Identifique 1 vies seu para trabalhar
-3. Tenha conversa sobre inclusao com equipe
-4. Implemente 1 pratica inclusiva esta semana
+Próximos Passos:
+1. Faça teste de viés implícito (Harvard)
+2. Identifique 1 viés seu para trabalhar
+3. Tenha conversa sobre inclusão com equipe
+4. Implemente 1 prática inclusiva está semana
 
-Lembre-se: Inclusao nao e favor - e justica. E nao e apenas certo moralmente, e estrategicamente inteligente.
+Lembre-se: Inclusão não e favor - e justiça. E não e apenas certo moralmente, e estrategicamente inteligente.
         `
       },
       {
         id: 2,
-        titulo: "Equidade de Genero e Combate ao Sexismo",
-        duracao: "50 min",
-        topicos: [
-          "Desigualdades de genero no trabalho",
-          "Sexismo explicito e implicito",
-          "Barreira invisivel (teto de vidro)",
-          "Promocao de equidade de genero",
-          "Lideranca feminina e masculinidades saudaveis"
+        título: "Equidade de Gênero e Combate ao Sexismo",
+        duração: "50 min",
+        tópicos: [
+          "Desigualdades de gênero no trabalho",
+          "Sexismo explicito e implícito",
+          "Barreira invisível (teto de vidro)",
+          "Promoção de equidade de gênero",
+          "Liderança feminina e masculinidades saudáveis"
         ],
-        materialDidatico: `
+        materialDidático: `
 EQUIDADE DE GENERO E COMBATE AO SEXISMO
 
 INTRODUCAO
 
-Equidade de genero nao e questao de mulheres vs homens. E questao de justica, performance e sustentabilidade organizacional.
+Equidade de gênero não e questão de mulheres vs homens. E questão de justiça, performance e sustentabilidade organizacional.
 
 Dados Globais:
-- Mulheres sao 50% da populacao mas 13% dos CEOs globalmente
-- No ritmo atual, equidade de genero levara 132 anos para ser alcancada (WEF)
-- Empresas com lideranca diversa em genero tem performance 21% superior
+- Mulheres são 50% da população mas 13% dos CEOs globalmente
+- No ritmo atual, equidade de gênero levara 132 anos para ser alcançada (WEF)
+- Empresas com liderança diversa em gênero tem performance 21% superior
 
-Equidade de genero beneficia TODOS.
+Equidade de gênero beneficia TODOS.
 
 DESIGUALDADES DE GENERO NO TRABALHO
 
 Principais Desigualdades (Brasil 2024):
 
 1. GAP SALARIAL:
-Mulheres ganham 20-25% menos que homens em mesma funcao e experiencia.
+Mulheres ganham 20-25% menos que homens em mesma função e experiencia.
 
 Pior:
 - Mulheres negras ganham 45% menos que homens brancos
 
 2. SEGREGACAO OCUPACIONAL:
 
-Setores "Feminizados" (Baixa Remuneracao):
-- Educacao infantil, enfermagem, cuidados, limpeza
+Setores "Feminizados" (Baixa Remuneração):
+- Educação infantil, enfermagem, cuidados, limpeza
 - Media salarial: R$ 2.500
 
-Setores "Masculinizados" (Alta Remuneracao):
-- Tecnologia, engenharia, financas, executivo
+Setores "Masculinizados" (Alta Remuneração):
+- Tecnologia, engenharia, finanças, executivo
 - Media salarial: R$ 8.000
 
 3. TETO DE VIDRO:
 
-Mulheres sao:
-- 52% dos profissionais de nivel basico
-- 38% dos profissionais de nivel medio
+Mulheres são:
+- 52% dos profissionais de nível básico
+- 38% dos profissionais de nível médio
 - 21% dos gerentes
 - 13% dos diretores
 - 5% dos CEOs
@@ -9058,420 +9050,420 @@ Quanto mais alto o cargo, menos mulheres.
 
 Mulheres trabalham em media:
 - 8h/dia trabalho remunerado
-- 21h/semana trabalho domestico nao-remunerado
+- 21h/semana trabalho domestico não-remunerado
 
 Homens:
 - 8h/dia trabalho remunerado
 - 11h/semana trabalho domestico
 
-Mulheres trabalham 10 horas a mais por semana SEM remuneracao.
+Mulheres trabalham 10 horas a mais por semana SEM remuneração.
 
 5. PENALIDADE DA MATERNIDADE:
 
 Mulheres com filhos:
 - Ganham 20% menos que mulheres sem filhos
-- Sao vistas como "menos comprometidas"
-- Tem menos promocoes
+- São vistas como "menos comprometidas"
+- Tem menos promoções
 
 Homens com filhos:
-- Ganham 6% mais (bonus de paternidade!)
-- Sao vistos como "mais responsaveis"
-- Tem mais promocoes
+- Ganham 6% mais (bônus de paternidade!)
+- São vistos como "mais responsáveis"
+- Tem mais promoções
 
-Injustica estrutural.
+Injustiça estrutural.
 
 SEXISMO EXPLICITO E IMPLICITO
 
 SEXISMO EXPLICITO (Hostil):
-Discriminacao aberta e intencional.
+Discriminação aberta e intencional.
 
 Exemplos:
-- "Mulher nao aguenta pressao de cargo executivo"
-- "Nao vou contratar mulher jovem, vai engravidar"
+- "Mulher não aguenta pressão de cargo executivo"
+- "Não vou contratar mulher jovem, vai engravidar"
 - "Isso e trabalho de homem"
-- Assedio sexual
+- Assédio sexual
 - Piadas sexistas
 
 Mais raro hoje (mas ainda existe).
 
 SEXISMO IMPLICITO (Benevolente):
-Discriminacao sutil, disfarçada de "protecao" ou "elogio".
+Discriminação sutil, disfarçada de "proteção" ou "elogio".
 
 Exemplos:
 
-"Mulheres sao tao organizadas! Vou colocar voce para fazer as atas."
-→ Delega tarefas administrativas a mulheres, nao estrategicas
+"Mulheres são tão organizadas! Vou colocar você para fazer as atas."
+→ Delega tarefas administrativas a mulheres, não estratégicas
 
-"Voce e mae, nao quer viajar a trabalho, ne?"
+"Você e mãe, não quer viajar a trabalho, ne?"
 → Assume sem perguntar, limita oportunidades
 
-"Deixa que eu carrego isso, e muito pesado para voce"
+"Deixa que eu carrego isso, e muito pesado para você"
 → Subestima capacidades
 
-"Nossa, voce e agressiva" (para mulher assertiva)
+"Nossa, você e agressiva" (para mulher assertiva)
 "Ele e decidido" (para homem assertivo)
-→ Mesmo comportamento, avaliacao diferente
+→ Mesmo comportamento, avaliação diferente
 
 SEXISMO INSTITUCIONAL:
 Politicas que parecem neutras mas desfavorecem mulheres.
 
 Exemplos:
-- Reunioes sempre as 18h (quando mulheres buscam filhos)
-- Promocao baseada em "tempo de casa" (ignora licenca maternidade)
+- Reuniões sempre as 18h (quando mulheres buscam filhos)
+- Promoção baseada em "tempo de casa" (ignora licença maternidade)
 - Networking em happy hours/futebol (exclui mulheres)
-- Criterios subjetivos de promocao ("fit cultural")
+- Critérios subjetivos de promoção ("fit cultural")
 
 BARREIRA INVISIVEL (Teto de Vidro)
 
 Teto de Vidro:
-Barreira invisivel que impede mulheres de chegarem a cargos de lideranca, apesar de qualificacao.
+Barreira invisível que impede mulheres de chegarem a cargos de liderança, apesar de qualificação.
 
 Causas do Teto de Vidro:
 
 1. VIES DE LIDERANCA MASCULINA:
 
-Estereotipo: Lider = Homem (assertivo, forte, decisivo)
+Estereotipo: Líder = Homem (assertivo, forte, decisivo)
 
-Quando mulher e assertiva: "Agressiva", "Dificil", "Mandona"
-Quando homem e assertivo: "Lider nato", "Decidido"
+Quando mulher e assertiva: "Agressiva", "Difícil", "Mandona"
+Quando homem e assertivo: "Líder nato", "Decidido"
 
 Duplo vinculo (Double Bind):
 - Se mulher e assertiva → "Agressiva demais"
-- Se mulher e empatica → "Fraca demais"
+- Se mulher e empática → "Fraca demais"
 
-Homens nao enfrentam esse dilema.
+Homens não enfrentam esse dilema.
 
 2. FALTA DE PATROCINADORES:
 
-Promocoes nao vem de desempenho apenas - vem de PATROCINIO (alguem poderoso defendendo voce).
+Promoções não vem de desempenho apenas - vem de PATROCINIO (alguém poderoso defendendo você).
 
 Mulheres tem mentores. Homens tem patrocinadores.
 
 Mentoria: "Vou te aconselhar"
-Patrocinio: "Vou te promover"
+Patrocínio: "Vou te promover"
 
 3. FALTA DE REDES DE PODER:
 
-Decisoes de poder acontecem em:
+Decisões de poder acontecem em:
 - Happy hours
-- Campos de golf e
+- Campos de golfe e
 - Churrascos
-- Reunioes informais
+- Reuniões informais
 
-Mulheres frequentemente excluidas desses espacos.
+Mulheres frequentemente excluídas desses espaços.
 
 4. POLITICAS NAO-FAMILIARES:
 
 Falta de:
-- Licenca paternidade estendida
-- Flexibilidade de horario
+- Licença paternidade estendida
+- Flexibilidade de horário
 - Creche
 - Home office
 
 Como Quebrar o Teto de Vidro:
 
 1. METAS DE DIVERSIDADE:
-"Queremos 40% de mulheres em cargos de lideranca ate 2027"
+"Queremos 40% de mulheres em cargos de liderança até 2027"
 
 2. PROCESSOS DE PROMOCAO OBJETIVOS:
-Criterios claros, baseados em dados, nao "feeling"
+Critérios claros, baseados em dados, não "feeling"
 
 3. PATROCINIO ATIVO:
-Lideres homens ativamente patrocinando mulheres
+Líderes homens ativamente patrocinando mulheres
 
 4. POLITICAS FAMILY-FRIENDLY:
-Flexibilidade, licenca paternidade, creche
+Flexibilidade, licença paternidade, creche
 
 PROMOCAO DE EQUIDADE DE GENERO
 
-Acoes Praticas que Lideres Podem Tomar:
+Ações Práticas que Líderes Podem Tomar:
 
 NIVEL INDIVIDUAL:
 
 1. AMPLIFIQUE VOZES DE MULHERES:
 
-Em reunioes:
+Em reuniões:
 - Mulher da ideia, e ignorada
 - Homem repete ideia, e celebrado
 
-Acao: "Como [Nome] ja disse..."
+Ação: "Como [Nome] já disse..."
 
 2. INTERROMPA INTERRUPCOES:
 
-Mulheres sao interrompidas 3x mais que homens.
+Mulheres são interrompidas 3x mais que homens.
 
-Acao: "Deixa [Nome] terminar"
+Ação: "Deixa [Nome] terminar"
 
-3. DELEGUE TAREFAS ESTRATEGICAS (Nao So Administrativas):
+3. DELEGUE TAREFAS ESTRATEGICAS (Não Só Administrativas):
 
 Evite:
-- Sempre pedir mulheres para fazer atas, organizar festa, fazer cafe
+- Sempre pedir mulheres para fazer atas, organizar festa, fazer café
 
 De a mulheres:
 - Projetos de visibilidade
-- Apresentacoes para diretoria
-- Lideranca de iniciativas estrategicas
+- Apresentações para diretoria
+- Liderança de iniciativas estratégicas
 
-4. SEJA PATROCINADOR (Nao So Mentor):
+4. SEJA PATROCINADOR (Não Só Mentor):
 
-Ativamente defenda promocao de mulheres talentosas.
+Ativamente defenda promoção de mulheres talentosas.
 
 NIVEL ORGANIZACIONAL:
 
 5. ANALISE GAP SALARIAL:
 
 Auditoria anual:
-- Mulheres e homens em mesma funcao ganham o mesmo?
-- Se nao, corrija
+- Mulheres e homens em mesma função ganham o mesmo?
+- Se não, corrija
 
 6. PROCESSOS CEGOS DE RECRUTAMENTO:
 
-- CVs sem nome (evita vies)
+- CVs sem nome (evita viés)
 - Painel de entrevistas diverso
 - Perguntas padronizadas
 
-7. LICENCA PATERNIDADE OBRIGATORIA:
+7. LICENÇA PATERNIDADE OBRIGATÓRIA:
 
-Nao "ofereca" licenca paternidade - EXIJA.
-Quando pais tambem saem, maternidade nao e desvantagem.
+Não "ofereça" licença paternidade - EXIJA.
+Quando pais também saem, maternidade não é desvantagem.
 
 8. FLEXIBILIDADE PARA TODOS:
 
-Nao so para maes - para TODOS.
+Não só para mães - para TODOS.
 
-LIDERANCA FEMININA E MASCULINIDADES SAUDAVEIS
+LIDERANÇA FEMININA E MASCULINIDADES SAUDÁVEIS
 
 Mito: Mulheres lideram "melhor" que homens.
-Verdade: Nao ha estilo de lideranca "feminino" ou "masculino" - ha lideranca eficaz.
+Verdade: Não há estilo de liderança "feminino" ou "masculino" - há liderança eficaz.
 
-Estereotipos Prejudiciais:
+Estereótipos Prejudiciais:
 
-"Mulheres sao mais empáticas" → Isso pressiona mulheres a serem sempre "cuidadoras"
-"Homens sao mais decisivos" → Isso pressiona homens a nunca demonstrar vulnerabilidade
+"Mulheres são mais empáticas" → Isso pressiona mulheres a serem sempre "cuidadoras"
+"Homens são mais decisivos" → Isso pressiona homens a nunca demonstrar vulnerabilidade
 
 Realidade:
-Pessoas de qualquer genero podem ser empaticas E decisivas.
+Pessoas de qualquer gênero podem ser empáticas E decisivas.
 
-Masculinidades Saudaveis:
+Masculinidades Saudáveis:
 
-Masculinidade Toxica (Prejudica Todos):
-- "Homem nao chora"
+Masculinidade Tóxica (Prejudica Todos):
+- "Homem não chora"
 - "Homem tem que ser provedor"
-- "Pedir ajuda e fraqueza"
-- "Cuidar de filhos e coisa de mulher"
+- "Pedir ajuda é fraqueza"
+- "Cuidar de filhos é coisa de mulher"
 
-Consequencias:
-- Homens adoecem mais (menos cuidado com saude)
-- Suiciodio masculino e 4x maior
-- Homens tem menos redes de apoio emocional
-- Homens perdem conexao com filhos
+Consequências:
+- Homens adoecem mais (menos cuidado com saúde)
+- Suicídio masculino é 4x maior
+- Homens têm menos redes de apoio emocional
+- Homens perdem conexão com filhos
 
-Masculinidade Saudavel (Beneficia Todos):
-- Homens podem ser vulneraveis
+Masculinidade Saudável (Beneficia Todos):
+- Homens podem ser vulneráveis
 - Homens podem pedir ajuda
 - Homens podem ser cuidadores
-- Sucesso nao e medido apenas por provimento financeiro
+- Sucesso não e medido apenas por provimento financeiro
 
-Beneficios:
-- Homens mais saudaveis emocionalmente
-- Relacoes mais profundas
+Benefícios:
+- Homens mais saudáveis emocionalmente
+- Relações mais profundas
 - Paternidade ativa
 - Ambientes de trabalho mais humanos
 
-Como Promover Masculinidades Saudaveis:
+Como Promover Masculinidades Saudáveis:
 
 1. NORMALIZE VULNERABILIDADE:
-Homens podem (e devem) falar sobre saude mental, emocoes, desafios.
+Homens podem (e devem) falar sobre saúde mental, emoções, desafios.
 
 2. CELEBRE PATERNIDADE ATIVA:
-Homem que tira licenca paternidade nao e "menos comprometido" - e lider modelo.
+Homem que tira licença paternidade não e "menos comprometido" - e líder modelo.
 
 3. QUESTIONE PIADAS SEXISTAS:
-"E so uma piada" normaliza sexismo.
+"E só uma piada" normaliza sexismo.
 
 4. DIVIDA TAREFAS DOMESTICAS E CUIDADO:
-Nao "ajude" sua parceira - DIVIDA responsabilidade igualmente.
+Não "ajude" sua parceira - DIVIDA responsabilidade igualmente.
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Auditoria de Equidade de Genero
-- % de mulheres em cada nivel hierarquico na sua equipe?
-- Mulheres e homens ganham igual em mesma funcao?
-- Quem recebe tarefas estrategicas vs administrativas?
+Exercício 1: Auditoria de Equidade de Gênero
+- % de mulheres em cada nível hierárquico na sua equipe?
+- Mulheres e homens ganham igual em mesma função?
+- Quem recebe tarefas estratégicas vs administrativas?
 
-Exercicio 2: Amplificacao de Vozes
-Proximas 3 reunioes, monitore:
+Exercício 2: Amplificação de Vozes
+Próximas 3 reuniões, monitore:
 - Quem fala mais? Homens ou mulheres?
 - Quem e interrompido?
-- De quem as ideias sao creditadas?
+- De quem as ideias são creditadas?
 
 Aja ativamente para equilibrar.
 
-Exercicio 3: Conversa sobre Equidade
+Exercício 3: Conversa sobre Equidade
 Converse com equipe:
-"Como podemos promover equidade de genero aqui?"
+"Como podemos promover equidade de gênero aqui?"
 
 CONCLUSAO DO MODULO
 
-Equidade de genero nao e jogo de soma zero. Nao e mulheres ganhando e homens perdendo.
+Equidade de gênero não e jogo de soma zero. Não e mulheres ganhando e homens perdendo.
 
 E todos ganhando:
-- Mulheres: Oportunidades justas, salarios iguais, lideranca
-- Homens: Liberdade de serem vulneraveis, paternidade ativa, ambientes saudaveis
-- Empresas: Performance superior, inovacao, atracao de talentos
+- Mulheres: Oportunidades justas, salários iguais, liderança
+- Homens: Liberdade de serem vulneráveis, paternidade ativa, ambientes saudáveis
+- Empresas: Performance superior, inovação, atração de talentos
 
-Proximos Passos:
-1. Analise equidade de genero na sua equipe
+Próximos Passos:
+1. Analise equidade de gênero na sua equipe
 2. Seja patrocinador ativo de mulheres
-3. Amplifique vozes femininas em reunioes
+3. Amplifique vozes femininas em reuniões
 4. Questione masculinidade toxica
 
-Lembre-se: Equidade de genero e responsabilidade de TODOS, especialmente de homens em posicoes de poder.
+Lembre-se: Equidade de gênero e responsabilidade de TODOS, especialmente de homens em posições de poder.
         `
       },
       {
         id: 3,
-        titulo: "Antirracismo e Combate ao Racismo Estrutural",
-        duracao: "55 min",
-        topicos: [
+        título: "Antirracismo e Combate ao Racismo Estrutural",
+        duração: "55 min",
+        tópicos: [
           "Racismo estrutural e institucional",
-          "Colorismo e privilegio branco",
+          "Colorísmo e privilegio branco",
           "Representatividade e equidade racial",
-          "Praticas antirracistas",
-          "Acao afirmativa e reparacao historica"
+          "Práticas antirracistas",
+          "Ação afirmativa e reparação histórica"
         ],
-        materialDidatico: `
+        materialDidático: `
 ANTIRRACISMO E COMBATE AO RACISMO ESTRUTURAL
 
 INTRODUCAO
 
-Brasil e pais com segunda maior populacao negra do mundo (56% da populacao se declara preta ou parda).
+Brasil é país com segunda maior população negra do mundo (56% da população se declara preta ou parda).
 
 Mas:
-- Pessoas negras sao 70% da populacao em situacao de pobreza
-- Pessoas negras sao 4% dos cargos executivos
-- Pessoas negras ganham 45% menos que brancos em mesma funcao
-- Mulheres negras sao as mais afetadas pela desigualdade
+- Pessoas negras são 70% da população em situação de pobreza
+- Pessoas negras são 4% dos cargos executivos
+- Pessoas negras ganham 45% menos que brancos em mesma função
+- Mulheres negras são as mais afetadas pela desigualdade
 
-Isso nao e acidente. E resultado de racismo estrutural.
+Isso não é acidente. É resultado de racismo estrutural.
 
-O QUE E RACISMO ESTRUTURAL E INSTITUCIONAL
+O QUE É RACISMO ESTRUTURAL E INSTITUCIONAL
 
 RACISMO INDIVIDUAL:
-Preconceito e discriminacao de uma pessoa contra outra baseado em raca.
+Preconceito e discriminação de uma pessoa contra outra baseado em raça.
 Exemplo: Pessoa branca ofende pessoa negra com termo racista.
 
 RACISMO INSTITUCIONAL:
-Praticas de instituicoes que discriminam pessoas negras, mesmo sem intencao explicita.
-Exemplo: Empresa que so contrata via indicacao (redes sao majoritariamente brancas).
+Práticas de instituições que discriminam pessoas negras, mesmo sem intenção explícita.
+Exemplo: Empresa que só contrata via indicação (redes são majoritariamente brancas).
 
 RACISMO ESTRUTURAL:
-Sistema social, economico, politico que normaliza e perpetua desigualdades raciais.
+Sistema social, econômico, político que normaliza e perpetua desigualdades raciais.
 
 Racismo estrutural significa:
-- Nao e apenas "pessoas racistas" - e todo sistema organizado para favorecer brancos
-- Esta em politicas, processos, normas, cultura
+- Não é apenas "pessoas racistas" - é todo sistema organizado para favorecer brancos
+- Está em políticas, processos, normas, cultura
 - Pessoas bem-intencionadas podem perpetuar racismo estrutural sem perceber
 
 Exemplo de Racismo Estrutural no Trabalho:
 
 1. RECRUTAMENTO:
-Processos valorizam "fit cultural" = "Parece com quem ja esta aqui" = Brancos contratam brancos
+Processos valorizam "fit cultural" = "Parece com quem já está aqui" = Brancos contratam brancos
 
-CVs com nomes "brancos" (Joao, Maria) recebem 30% mais retorno que CVs identicos com nomes "negros" (Joao da Silva, Maria Aparecida).
+CVs com nomes "brancos" (Joao, Maria) recebem 30% mais retorno que CVs idênticos com nomes "negros" (Joao da Silva, Maria Aparecida).
 
 2. PROMOCAO:
-Criterios subjetivos favorecem quem tem acesso a redes de poder (majoritariamente brancas).
+Critérios subjetivos favorecem quem tem acesso a redes de poder (majoritariamente brancas).
 
 3. NETWORKING:
 Eventos em clubes exclusivos, golfe, happy hours caros = Exclui pessoas negras de classes populares.
 
 4. CODIGO DE VESTIMENTA:
 "Cabelo profissional" = Cabelo liso (discrimina cabelos afro/crespos)
-"Aparencia corporativa" = Estetica branca europeia
+"Aparência corporativa" = Estética branca europeia
 
 5. MICROAGRESSOES:
-"Voce e articulado!" (Surpresa que pessoa negra seja articulada = Racismo)
-Tocar cabelo de pessoa negra sem permissao
-"De onde voce e? Nao, DE ONDE VOCE E MESMO?"
+"Você e articulado!" (Surpresa que pessoa negra seja articulada = Racismo)
+Tocar cabelo de pessoa negra sem permissão
+"De onde você e? Não, DE ONDE VOCE E MESMO?"
 
 COLORISMO E PRIVILEGIO BRANCO
 
 COLORISMO:
-Discriminacao baseada em tom de pele DENTRO da comunidade negra.
+Descriminação baseada em tom de pele DENTRO da comunidade negra.
 
 Hierarquia:
 - Pessoas de pele mais clara (pardas) tem mais oportunidades
-- Pessoas de pele mais escura (pretas) sofrem mais discriminacao
+- Pessoas de pele mais escura (pretas) sofrem mais discriminação
 
 Exemplo:
-- 70% das pessoas em cargos de lideranca que se declaram "pardas" tem pele clara
-- Pessoas pretas (pele escura) sao maioria em trabalhos precarios
+- 70% das pessoas em cargos de liderança que se declaram "pardas" tem pele clara
+- Pessoas pretas (pele escura) são maioria em trabalhos precários
 
 PRIVILEGIO BRANCO:
-Vantagens sistematicas que pessoas brancas tem por serem brancas, independente de esforco ou merito.
+Vantagens sistemáticas que pessoas brancas tem por serem brancas, independente de esforço ou mérito.
 
 Exemplos de Privilegio Branco:
 
-- Nao ser seguido em loja por segurancas
-- Nao ter CV ignorado por ter nome "negro"
-- Nao ouvir "Voce so esta aqui por cota"
-- Nao ter cabelo natural visto como "nao-profissional"
-- Ser visto como individuo (nao como representante de toda raca)
-- Nao ser parado por policia sem razao
+- Não ser seguido em loja por seguranças
+- Não ter CV ignorado por ter nome "negro"
+- Não ouvir "Você só está aqui por cota"
+- Não ter cabelo natural visto como "não profissional"
+- Ser visto como individuo (não como representante de toda raça)
+- Não ser parado por policia sem razão
 - Procurar "curativo cor de pele" e encontrar da sua cor
 
 Importante:
-Privilegio branco NAO significa que brancos nao sofrem ou nao trabalham duro.
-Significa que raca nao e uma das barreiras que enfrentam.
+Privilegio branco NAO significa que brancos não sofrem ou não trabalham duro.
+Significa que raça não e uma das barreiras que enfrentam.
 
-Pessoa branca pobre ainda tem privilegio racial (mas nao tem privilegio de classe).
+Pessoa branca pobre ainda tem privilegio racial (mas não tem privilegio de classe).
 
 REPRESENTATIVIDADE E EQUIDADE RACIAL
 
 Representatividade Importa:
 
-Quando pessoas negras nao veem outras pessoas negras em cargos de lideranca:
-- "Esse lugar nao e para mim"
+Quando pessoas negras não veem outras pessoas negras em cargos de liderança:
+- "Esse lugar não e para mim"
 - Falta de modelos
-- Falta de esperanca
+- Falta de esperança
 
-Quando ha representatividade:
-- "Eu posso chegar la"
-- Modelos de inspiracao
-- Caminhos possiveis
+Quando há representatividade:
+- "Eu posso chegar lá"
+- Modelos de inspiração
+- Caminhos possíveis
 
 Dados Brasileiros:
 
 POPULACAO: 56% negra (pretos + pardos)
 
 CARGOS:
-- Nivel operacional: 60% negros
-- Nivel tecnico: 40% negros
+- Nível operacional: 60% negros
+- Nível técnico: 40% negros
 - Gerencia: 20% negros
 - Diretoria: 10% negros
 - CEO: 4% negros
 
-Piramide social = Piramide racial.
+Pirâmide social = Pirâmide racial.
 
 Quanto mais alto, mais branco.
 
 Equidade Racial significa:
-Representacao proporcional em TODOS os niveis, nao apenas nos cargos baixos.
+Representação proporcional em TODOS os níveis, não apenas nos cargos baixos.
 
 PRATICAS ANTIRRACISTAS
 
-Diferenca:
+Diferença:
 
 NAO-RACISTA:
-"Eu nao sou racista."
-Postura passiva. Nao perpetua racismo, mas tambem nao combate.
+"Eu não sou racista."
+Postura passiva. Não perpetua racismo, mas também não combate.
 
 ANTIRRACISTA:
 "Eu combato racismo ativamente."
-Postura ativa. Identifica e desmantel a racismo.
+Postura ativa. Identifica e desmantela racismo.
 
-Como Ser Antirracista (Acoes Concretas):
+Como Ser Antirracista (Ações Concretas):
 
 NIVEL INDIVIDUAL:
 
@@ -9479,24 +9471,24 @@ NIVEL INDIVIDUAL:
 "Tenho vantagens estruturais por ser branco. Vou usa-las para promover equidade."
 
 2. ESCUTE PESSOAS NEGRAS:
-Nao fale POR pessoas negras. Amplifique vozes.
+Não fale POR pessoas negras. Amplifique vozes.
 
 3. EDUQUE-SE:
-Livros, cursos, documentarios sobre racismo.
-Responsabilidade de aprender e sua, nao de pessoas negras te educarem.
+Livros, cursos, documentários sobre racismo.
+Responsabilidade de aprender e sua, não de pessoas negras te educarem.
 
 4. INTERROMPA RACISMO:
-Quando presenciar piada racista, comentario, acao → INTERROMPA.
+Quando presenciar piada racista, comentário, ação → INTERROMPA.
 
-"Isso e racista. Nao vamos aceitar isso aqui."
+"Isso e racista. Não vamos aceitar isso aqui."
 
 5. APOIE NEGOCIOS NEGROS:
-Use poder de compra para promover equidade economica.
+Use poder de compra para promover equidade econômica.
 
 NIVEL ORGANIZACIONAL:
 
 6. METAS DE DIVERSIDADE RACIAL:
-"Queremos 40% de pessoas negras em cargos de lideranca ate 2027."
+"Queremos 40% de pessoas negras em cargos de liderança até 2027."
 
 7. RECRUTAMENTO ATIVO DE TALENTOS NEGROS:
 - Parcerias com universidades historicamente negras
@@ -9506,163 +9498,163 @@ NIVEL ORGANIZACIONAL:
 8. PROCESSOS CEGOS:
 - CVs sem nome, foto
 - Entrevistas estruturadas (mesmas perguntas para todos)
-- Paineis de entrevista diversos
+- Painéis de entrevista diversos
 
 9. POLITICA DE CABELO:
 Aceite e celebre cabelos naturais/afro/crespos.
-Proiba discriminacao capilar.
+Proíba discriminação capilar.
 
 10. COMBATE A MICROAGRESSOES:
-Treinamentos sobre microagressoes raciais.
-Consequencias para quem as perpetua.
+Treinamentos sobre micro agressões raciais.
+Consequências para quem as perpetua.
 
 11. MENTORIA E PATROCINIO:
-Lideres brancos ativamente patrocinando talentos negros.
+Líderes brancos ativamente patrocinando talentos negros.
 
 12. AUDITORIA SALARIAL:
-Pessoas negras e brancas em mesma funcao ganham o mesmo?
-Se nao, corrija.
+Pessoas negras e brancas em mesma função ganham o mesmo?
+Se não, corrija.
 
 ACAO AFIRMATIVA E REPARACAO HISTORICA
 
 ACAO AFIRMATIVA (Cotas):
-Politicas que reservam vagas/oportunidades para grupos historicamente excluidos.
+Políticas que reservam vagas/oportunidades para grupos historicamente excluídos.
 
 Exemplo:
 - 50% das vagas de trainee para pessoas negras
-- 30% dos cargos de lideranca para pessoas negras
+- 30% dos cargos de liderança para pessoas negras
 
-Por Que Cotas Sao Necessarias:
+Por Que Cotas São Necessárias:
 
-MITO: "Devemos contratar pelo merito, nao pela cor"
+MITO: "Devemos contratar pelo mérito, não pela cor"
 
 REALIDADE:
-- Sistema atual JA favorece brancos (racismo estrutural)
-- "Merito" e construido em sistema desigual
+- Sistema atual JÁ favorece brancos (racismo estrutural)
+- "Mérito" é construído em sistema desigual
 - Pessoa negra precisa ser 2x melhor para conseguir mesma oportunidade
-- Cotas corrigem distorcao, nao criam
+- Cotas corrigem distorção, não criam
 
 Analogia:
 Corrida de 100m onde brancos largam 50m a frente.
-"Merito" = Brancos ganham porque largaram na frente.
+"Mérito" = Brancos ganham porque largaram na frente.
 Cotas = Todos largam do mesmo lugar.
 
-REPARACAO HISTORICA:
+REPARAÇÃO HISTÓRICA:
 
-Brasil foi ultimo pais a abolir escravidao (1888 - apenas 136 anos atras).
+Brasil foi último país a abolir escravidão (1888 - apenas 136 anos atrás).
 
-Pos-abolicao:
-- Nenhuma reparacao a pessoas escravizadas
-- Politicas de "branqueamento" (incentivo a imigracao europeia)
-- Exclusao de pessoas negras de terra, educacao, trabalho formal
+Pós abolição:
+- Nenhuma reparação a pessoas escravizadas
+- Políticas de "branqueamento" (incentivo à imigração europeia)
+- Exclusão de pessoas negras de terra, educação, trabalho formal
 
-Consequencia: Desigualdade racial atual.
+Consequência: Desigualdade racial atual.
 
-Reparacao historica significa:
-Reconhecer divida historica e ativamente corrigi-la atraves de politicas afirmativas.
+Reparação histórica significa:
+Reconhecer dívida histórica e ativamente corrigi-la através de políticas afirmativas.
 
-Objecoes Comuns e Respostas:
+Objeções Comuns e Respostas:
 
-"Cotas sao racismo reverso."
-→ Nao. Racismo e sistema de poder. Cotas corrigem desigualdade, nao criam discriminacao.
+"Cotas são racismo reverso."
+→ Não. Racismo e sistema de poder. Cotas corrigem desigualdade, não criam discriminação.
 
 "Cotas baixam qualidade."
 → Falso. Estudos mostram que cotistas tem desempenho igual ou superior.
 
-"Eu sou branco e pobre, nao tenho privilegio."
-→ Voce tem privilegio racial (nao de classe). Lutas se somam, nao competem.
+"Eu sou branco e pobre, não tenho privilegio."
+→ Você tem privilegio racial (não de classe). Lutas se somam, não competem.
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Auditoria Racial
-- % de pessoas negras em cada nivel hierarquico?
+Exercício 1: Auditoria Racial
+- % de pessoas negras em cada nível hierárquico?
 - Pessoas negras e brancas ganham igual?
 - Quem tem acesso a oportunidades de desenvolvimento?
 
-Exercicio 2: Teste de Privilegio Branco (Se Branco)
+Exercício 2: Teste de Privilegio Branco (Se Branco)
 Responda:
-- Ja fui seguido em loja por seguranca por "parecer suspeito"?
-- Ja tive cabelo/estetica rotulados como "nao-profissionais"?
-- Ja ouvi "Voce so esta aqui por cota"?
+- Já fui seguido em loja por segurança por "parecer suspeito"?
+- Já tive cabelo/estética rotulados como "não profissionais"?
+- Já ouvi "Você só está aqui por cota"?
 
-Se respondeu nao, voce tem privilegio branco.
+Se respondeu não, você tem privilegio branco.
 
-Exercicio 3: Plano Antirracista
-Liste 3 acoes concretas que voce fara nos proximos 30 dias para combater racismo.
+Exercício 3: Plano Antirracista
+Liste 3 ações concretas que você fara nos próximos 30 dias para combater racismo.
 
 CONCLUSAO DO MODULO
 
-Antirracismo nao e opcional. E obrigacao moral e estrategica.
+Antirracismo não e opcional. E obrigação moral e estratégica.
 
 Empresas antirracistas:
 - Refletem sociedade (56% negra)
-- Tem performance superior (diversidade = inovacao)
+- Tem performance superior (diversidade = inovação)
 - Atraem talentos
-- Constroem reputacao
-- Promovem justica
+- Constroem reputação
+- Promovem justiça
 
-Racismo nao vai acabar sozinho. Exige acao intencional, continua, corajosa.
+Racismo não vai acabar sozinho. Exige ação intencional, continua, corajosa.
 
-Proximos Passos:
+Próximos Passos:
 1. Analise equidade racial na sua equipe
-2. Implemente 1 pratica antirracista este mes
-3. Interrompa proxima situacao racista que presenciar
+2. Implemente 1 prática antirracista este mês
+3. Interrompa próxima situação racista que presenciar
 4. Eduque-se continuamente
 
-Lembre-se: Ser nao-racista nao basta. Seja antirracista.
+Lembre-se: Ser não racista não basta. Seja antirracista.
         `
       },
       {
         id: 4,
-        titulo: "Inclusao de Pessoas LGBTQIA+ e Neurodivergentes",
-        duracao: "50 min",
-        topicos: [
-          "Diversidade de orientacao sexual e identidade de genero",
+        título: "Inclusão de Pessoas LGBTQIA+ e Neuro divergentes",
+        duração: "50 min",
+        tópicos: [
+          "Diversidade de orientação sexual e identidade de gênero",
           "Combate a LGBTfobia",
-          "Neurodiversidade (Autismo, TDAH, Dislexia)",
-          "Acessibilidade e adaptacoes razoaveis",
+          "Neuro diversidade (Autismo, TDAH, Dislexia)",
+          "Acessibilidade e adaptações razoáveis",
           "Linguagem inclusiva e respeitosa"
         ],
-        materialDidatico: `
+        materialDidático: `
 INCLUSAO DE PESSOAS LGBTQIA+ E NEURODIVERGENTES
 
 INTRODUCAO
 
-Pessoas LGBTQIA+ e neurodivergentes sao frequentemente invisiveis ou excluidas no ambiente de trabalho.
+Pessoas LGBTQIA+ e neuro divergentes são frequentemente invisíveis ou excluídas no ambiente de trabalho.
 
 Dados:
 - 40% das pessoas LGBTQIA+ escondem identidade no trabalho por medo (LinkedIn)
-- 60% ja sofreram discriminacao no trabalho
-- Pessoas neurodivergentes tem taxa de desemprego 3x maior
+- 60% já sofreram discriminação no trabalho
+- Pessoas neuro divergentes tem taxa de desemprego 3x maior
 
 Ambiente inclusivo significa pessoas podem ser autenticas e prosperar.
 
 DIVERSIDADE DE ORIENTACAO SEXUAL E IDENTIDADE DE GENERO
 
-Conceitos Basicos:
+Conceitos Básicos:
 
 ORIENTACAO SEXUAL:
-Por quem voce se sente atraido romanticamente/sexualmente.
+Por quem você se sente atraído romanticamente/sexualmente.
 
-- Heterossexual: Atraido por genero oposto
-- Homossexual (Gay/Lesbica): Atraido por mesmo genero
-- Bissexual: Atraido por mais de um genero
-- Pansexual: Atraido por pessoas independente de genero
-- Assexual: Nao sente atracao sexual
+- Heterossexual: Atraído por gênero oposto
+- Homossexual (Gay/Lésbica): Atraído por mesmo gênero
+- Bissexual: Atraído por mais de um gênero
+- Pansexual: Atraído por pessoas independente de gênero
+- Assexual: Não sente atração sexual
 
 IDENTIDADE DE GENERO:
-Como voce se identifica internamente.
+Como você se identifica internamente.
 
-- Cisgener o: Identidade coincide com sexo biologico (ex: nasceu mulher, se identifica mulher)
-- Transgenero: Identidade difere de sexo biologico (ex: nasceu homem, se identifica mulher)
-- Nao-binario: Nao se identifica exclusivamente como homem ou mulher
-- Genero-fluido: Identidade varia ao longo do tempo
+- Cisgênero: Identidade coincide com sexo biológico (ex: nasceu mulher, se identifica mulher)
+- Transgénero: Identidade difere de sexo biológico (ex: nasceu homem, se identifica mulher)
+- Não binário: Não se identifica exclusivamente como homem ou mulher
+- Gênero-fluido: Identidade varia ao longo do tempo
 
 EXPRESSAO DE GENERO:
-Como voce se apresenta externamente (roupa, cabelo, comportamento).
+Como você se apresenta externamente (roupa, cabelo, comportamento).
 
 Importante:
-- Orientacao sexual ≠ Identidade de genero
+- Orientação sexual ≠ Identidade de genero
 - Mulher trans pode ser lesbica, heterossexual, bi, etc
 - Pessoa nao-binaria pode ser gay, hetero, etc
 
@@ -9674,7 +9666,7 @@ Discriminacao, preconceito, violencia contra pessoas LGBTQIA+.
 Formas de LGBTfobia no Trabalho:
 
 1. EXCLUSAO:
-- Nao convidar pessoa LGBT para eventos sociais
+- Não convidar pessoa LGBT para eventos sociais
 - Piadas homofobicas/transfobicas
 - Isolar pessoa LGBT
 
@@ -9682,20 +9674,20 @@ Formas de LGBTfobia no Trabalho:
 - Negar uso de nome social (pessoa trans)
 - Usar pronomes errados intencionalmente
 - "E uma fase"
-- "Voce nao parece gay"
+- "Você não parece gay"
 
-3. ASSEDIO:
+3. ASSÉDIO:
 - Perguntas invasivas sobre vida pessoal/sexual
 - Comentarios sexualizados
-- Assedio moral
+- Assédio moral
 
 4. DISCRIMINACAO INSTITUCIONAL:
 - Politicas que so reconhecem casamentos heterossexuais
 - Banheiros que forcam pessoas trans a escolherem "homem" ou "mulher"
-- Codigo de vestimenta rigido baseado em genero binario
+- Código de vestimenta rigido baseado em genero binario
 
 5. VIOLENCIA:
-- Brasil e pais que mais mata pessoas trans no mundo
+- Brasil é país que mais mata pessoas trans no mundo
 - 1 pessoa LGBT+ e morta a cada 34 horas no Brasil
 
 Como Combater LGBTfobia:
@@ -9703,19 +9695,19 @@ Como Combater LGBTfobia:
 NIVEL INDIVIDUAL:
 
 1. USE PRONOMES CORRETOS:
-Pergunte: "Quais sao seus pronomes?"
+Pergunte: "Quais são seus pronomes?"
 Respeite: Ela/dela, Ele/dele, Elu/delu (nao-binario)
 
-Se errar: Corrija rapidamente e siga em frente. Nao faca drama.
+Se errar: Corrija rapidamente e siga em frente. Não faca drama.
 
 2. USE NOME SOCIAL:
 Se pessoa trans usa nome social (diferente de nome de registro), USE nome social.
 Nome social e nome verdadeiro.
 
 3. NAO FACA PERGUNTAS INVASIVAS:
-NAO: "Voce ja fez a cirurgia?"
-NAO: "Como e o sexo gay?"
-NAO: "Quem e o homem/mulher na relacao?"
+NAO: "Você já fez a cirurgia?"
+NAO: "Como é o sexo gay?"
+NAO: "Quem é o homem/mulher na relação?"
 
 4. INCLUA TODOS:
 "Meu marido..." (homem gay)
@@ -9723,7 +9715,7 @@ NAO: "Quem e o homem/mulher na relacao?"
 → Trate igual a casais heterossexuais.
 
 5. INTERROMPA PIADAS HOMOFOBICAS:
-"Isso e ofensivo. Nao vamos aceitar isso aqui."
+"Isso e ofensivo. Não vamos aceitar isso aqui."
 
 NIVEL ORGANIZACIONAL:
 
@@ -9741,7 +9733,7 @@ Nao force "roupa feminina" ou "roupa masculina".
 Permite que cada pessoa vista-se conforme identidade.
 
 9. NOME SOCIAL EM SISTEMAS:
-Sistemas internos devem exibir nome social, nao nome de registro.
+Sistemas internos devem exibir nome social, não nome de registro.
 
 10. DIA/SEMANA DO ORGULHO LGBT:
 Celebre diversidade. Mostre apoio visivel.
@@ -9755,13 +9747,13 @@ Tipos de Neurodivergencia:
 
 1. AUTISMO (TEA - Transtorno do Espectro Autista):
 - Processamento sensorial diferente
-- Comunicacao social atipica
+- Comúnicacao social atipica
 - Padroes de comportamento repetitivos
-- Hiperfoco em interesses especificos
+- Hiperfoco em interesses específicos
 
 Forcas:
 - Atencao a detalhes
-- Pensamento sistematico
+- Pensamento sistemático
 - Honestidade direta
 - Expertise profunda em areas de interesse
 
@@ -9769,7 +9761,7 @@ Desafios:
 - Interacoes sociais "pequenas conversas"
 - Ambientes sensoriais intensos (barulho, luzes)
 - Mudancas de rotina
-- Comunicacao implicita (sarcasmo, metaforas)
+- Comúnicacao implicita (sarcasmo, metaforas)
 
 2. TDAH (Transtorno do Deficit de Atencao com Hiperatividade):
 - Dificuldade de concentracao em tarefas nao-estimulantes
@@ -9809,7 +9801,7 @@ Adaptacoes para Pessoas Neurodivergentes:
 
 Para Autismo:
 - Ambiente de trabalho previsivel (rotinas claras)
-- Comunicacao direta e literal (evitar sarcasmo)
+- Comúnicacao direta e literal (evitar sarcasmo)
 - Espaco de trabalho com controle sensorial (fones com cancelamento de ruido, luz ajustavel)
 - Pausas sensoriais
 - Instrucoes escritas (nao apenas orais)
@@ -9829,15 +9821,15 @@ Para Dislexia:
 
 Adaptacoes Custam Pouco ou Nada:
 - Permitir fones de ouvido: R$ 0
-- Comunicacao clara: R$ 0
+- Comúnicacao clara: R$ 0
 - Flexibilidade de movimento: R$ 0
 - Software de leitura: R$ 50/mes
 
-Beneficio: Acesso a talentos unicos.
+Beneficio: Acesso a talentos únicos.
 
 LINGUAGEM INCLUSIVA E RESPEITOSA
 
-Principios de Linguagem Inclusiva:
+Princípios de Linguagem Inclusiva:
 
 1. USE LINGUAGEM NEUTRA QUANDO POSSIVEL:
 
@@ -9855,12 +9847,12 @@ SIM: "Traga seu/sua parceiro(a) para confraternizacao"
 3. RESPEITE PRONOMES:
 
 Pergunte pronomes como pergunta nome.
-"Oi, sou Joao, meus pronomes sao ele/dele. E voce?"
+"Oi, sou Joao, meus pronomes são ele/dele. E voce?"
 
 4. USE NOME SOCIAL:
 
 Se pessoa pede para ser chamada de [Nome], use [Nome].
-Nao importa o que esta em documentos.
+Nao importa o que está em documentos.
 
 5. EVITE TERMOS GENERICOS MASCULINOS:
 
@@ -9869,32 +9861,32 @@ SIM: "As pessoas candidatas devem..." ou "Candidatos e candidatas devem..."
 
 6. NAO USE DIAGNOSTICOS COMO XINGAMENTOS:
 
-NAO: "Voce e autista?" (Como ofensa)
-NAO: "Que bipolar!" (Como critica)
+NAO: "Você é autista?" (Como ofensa)
+NAO: "Que bipolar!" (Como crítica)
 NAO: "Ela e meio esquizofrenica" (Como zueira)
 
 Isso estigmatiza pessoas com diagnosticos reais.
 
 EXERCICIOS PRATICOS
 
-Exercicio 1: Auditoria de Inclusao LGBT e Neurodiversidade
-- Pessoas LGBT se sentem seguras sendo autenticas aqui?
-- Ha politicas inclusivas para LGBT?
-- Ha adaptacoes para neurodivergentes?
+Exercício 1: Auditoria de Inclusão LGBT e Neurodiversidade
+- Pessoas LGBT se sentem seguras sendo autênticas aqui?
+- Há políticas inclusivas para LGBT?
+- Há adaptações para neurodivergentes?
 
-Exercicio 2: Pratica de Pronomes
+Exercício 2: Prática de Pronomes
 Adicione pronomes a sua assinatura de email.
 "Joao Silva | Gerente | Ele/dele"
 
-Isso normaliza pratica e mostra que e espaco seguro.
+- Isso normaliza prática e mostra que é espaço seguro.
 
-Exercicio 3: Linguagem Inclusiva
-Revise 1 comunicacao corporativa (email, politica, manual).
-Identifique linguagem nao-inclusiva. Corrija.
+Exercício 3: Linguagem Inclusiva
+Revise 1 comunicação corporativa (email, política, manual).
+Identifique linguagem não inclusiva. Corrija.
 
-CONCLUSAO DO MODULO
+CONCLUSÃO DO MÓDULO
 
-Inclusao de pessoas LGBTQIA+ e neurodivergentes nao e "politicamente correto" - e justica e inteligencia.
+Inclusao de pessoas LGBTQIA+ e neurodivergentes não e "politicamente correto" - e justica e inteligencia.
 
 Ambientes inclusivos:
 - Atraem talentos diversos
@@ -9905,34 +9897,34 @@ Ambientes inclusivos:
 Inclusao requer intencao, educacao, acoes concretas.
 
 Proximos Passos:
-1. Adicione pronomes a assinatura de email
-2. Pergunte a equipe que adaptacoes precisam
-3. Revise politicas para garantir inclusao LGBT
-4. Interrompa proxima piada LGBTfobica
+1. Adicione pronomes à assinatura de email
+2. Pergunte à equipe que adaptações precisam
+3. Revise políticas para garantir inclusão LGBT
+4. Interrompa próxima piada LGBTfóbica
 
-Lembre-se: Quando pessoas podem ser plenamente quem sao, todos prosperamos.
+Lembre-se: Quando pessoas podem ser plenamente quem são, todos prosperamos.
         `
       },
       {
         id: 5,
-        titulo: "Criacao de Cultura Verdadeiramente Inclusiva",
-        duracao: "45 min",
-        topicos: [
-          "Diferenca entre diversidade simbolica e inclusao real",
-          "Metricas de diversidade e inclusao",
-          "Responsabilidade e prestacao de contas",
+        título: "Criação de Cultura Verdadeiramente Inclusiva",
+        duração: "45 min",
+        tópicos: [
+          "Diferença entre diversidade simbólica e inclusão real",
+          "Métricas de diversidade e inclusão",
+          "Responsabilidade e prestação de contas",
           "Grupos de afinidade e aliados",
           "Sustentabilidade de iniciativas de D&I"
         ],
-        materialDidatico: `
+        materialDidático: `
 CRIACAO DE CULTURA VERDADEIRAMENTE INCLUSIVA
 
 INTRODUCAO
 
 Muitas empresas fazem "diversity washing":
 - Colocam pessoas diversas em publicidade
-- Mas nao promovem internamente
-- Nao criam ambiente inclusivo
+- Mas não promovem internamente
+- Não criam ambiente inclusivo
 - Usam diversidade como marketing
 
 Cultura verdadeiramente inclusiva vai alem de contratar pessoas diversas.
@@ -9946,21 +9938,21 @@ Contratar pessoas de grupos minoritarios para "parecer bem", mas sem real inclus
 Sinais de Tokenismo:
 
 1. UNICA PESSOA:
-Unica mulher na equipe, unico negro, unico LGBT.
+Única mulher na equipe, único negro, único LGBT.
 → Pessoa vira "representante de todo grupo"
 → Pressao imensa
 
 2. SEM VOZ REAL:
-Pessoa esta presente mas opiniao nao e ouvida/valorizada.
+Pessoa está presente mas opiniao não e ouvida/valorizada.
 
 3. SEM OPORTUNIDADES DE CRESCIMENTO:
 Pessoa fica estagnada em cargo inicial.
 
 4. USADA EM MARKETING:
-Foto de pessoa diversa em site, mas nao em cargos de decisao.
+Foto de pessoa diversa em site, mas não em cargos de decisao.
 
 5. NAO-PERTENCIMENTO:
-Pessoa sente que "nao pertence", esta la para "preencher cota".
+Pessoa sente que "nao pertence", está la para "preencher cota".
 
 INCLUSAO REAL:
 
@@ -9976,19 +9968,19 @@ Pessoas diversas tem poder de decisao real.
 Pessoas diversas crescem na mesma velocidade que maioria.
 
 4. PERTENCIMENTO:
-Pessoas sentem que pertencem, nao que sao "exceçao".
+Pessoas sentem que pertencem, não que são "exceçao".
 
 5. POLITICAS E CULTURA INCLUSIVAS:
-Ambiente adaptado para TODOS, nao so para maioria.
+Ambiente adaptado para TODOS, não so para maioria.
 
 METRICAS DE DIVERSIDADE E INCLUSAO
 
-"O que nao e medido nao e gerenciado."
+"O que não e medido não e gerenciado."
 
-Metricas de DIVERSIDADE (Quantitativas):
+Métricas de DIVERSIDADE (Quantitativas):
 
 1. REPRESENTACAO POR NIVEL HIERARQUICO:
-% de mulheres, negros, LGBT, PcD em cada nivel (operacional, tecnico, gerencia, diretoria, C-level)
+% de mulheres, negros, LGBT, PcD em cada nivel (operacional, técnico, gerencia, diretoria, C-level)
 
 Meta: Refletir demografia da sociedade.
 
@@ -10003,30 +9995,30 @@ Meta: Gap zero.
 Se rotatividade de mulheres negras e 40% e de homens brancos e 10%, ha problema.
 
 4. TAXA DE PROMOCAO:
-% de pessoas de cada grupo que sao promovidas anualmente.
+% de pessoas de cada grupo que são promovidas anualmente.
 
-Se homens brancos sao promovidos 2x mais, ha vies.
+Se homens brancos são promovidos 2x mais, ha vies.
 
-Metricas de INCLUSAO (Qualitativas):
+Métricas de INCLUSAO (Qualitativas):
 
 5. PESQUISA DE PERTENCIMENTO:
-"Sinto que pertenco aqui" (1-10)
-"Posso ser autentico aqui" (1-10)
-"Minhas ideias sao valorizadas" (1-10)
+"Sinto que pertenço aqui" (1-10)
+"Posso ser autêntico aqui" (1-10)
+"Minhas ideias são valorizadas" (1-10)
 
-Analise por grupo demografico.
-Se mulheres respondem 5 e homens 8, ha gap de inclusao.
+Analise por grupo demográfico.
+Se mulheres respondem 5 e homens 8, há gap de inclusão.
 
-6. SEGURANCA PSICOLOGICA:
-"Posso falar sobre discriminacao sem medo de retaliacao?"
+6. SEGURANÇA PSICOLÓGICA:
+"Posso falar sobre discriminação sem medo de retaliação?"
 
 7. ACESSO A OPORTUNIDADES:
 "Tenho acesso igual a projetos de visibilidade, treinamentos, mentorias?"
 
-RESPONSABILIDADE E PRESTACAO DE CONTAS
+RESPONSABILIDADE E PRESTAÇÃO DE CONTAS
 
-Diversidade e Inclusao nao podem ser "iniciativa de RH".
-Tem que ser responsabilidade de LIDERANCA.
+Diversidade e Inclusão não podem ser "iniciativa de RH".
+Tem que ser responsabilidade de LIDERANÇA.
 
 Como Criar Responsabilidade:
 
@@ -10034,16 +10026,16 @@ Como Criar Responsabilidade:
 
 Bonus de CEOs/diretores vinculado a metas de D&I.
 
-"Se nao atingirmos 30% de mulheres em gerencia ate 2025, bonus reduzido em 20%."
+"Se não atingirmos 30% de mulheres em gerencia ate 2025, bonus reduzido em 20%."
 
 Isso torna D&I prioridade estrategica.
 
 2. RELATORIOS PUBLICOS:
 
 Transparencia:
-- Publica dados de diversidade anualmente
-- Publica gap salarial
-- Publica plano de acao
+- Pública dados de diversidade anualmente
+- Pública gap salarial
+- Pública plano de acao
 
 Transparencia gera pressao para agir.
 
@@ -10054,8 +10046,8 @@ Comite com poder de veto em decisoes que impactam D&I.
 
 4. CONSEQUENCIAS PARA DISCRIMINACAO:
 
-Politica clara:
-"Discriminacao, assedio, microagressoes = Advertencia/demissao."
+Política clara:
+"Discriminacao, assédio, microagressoes = Advertencia/demissao."
 
 Consequencias reais para violacoes.
 
@@ -10083,7 +10075,7 @@ Conexao entre pessoas de grupo minoritario.
 Mentorias, treinamentos, apoio a crescimento.
 
 4. ADVOCACY:
-Levar demandas a lideranca.
+Levar demandas à liderança.
 
 5. EDUCACAO:
 Educar empresa sobre experiencias de grupo.
@@ -10092,7 +10084,7 @@ Como Apoiar ERGs:
 
 - Tempo remunerado para participar
 - Budget para eventos/iniciativas
-- Acesso a lideranca
+- Acesso à liderança
 - Reconhecimento de contribuicoes
 
 ALIADOS:
@@ -10101,21 +10093,21 @@ Pessoas de grupo majoritario que apoiam ativamente grupos minoritarios.
 Como Ser Aliado Eficaz:
 
 1. ESCUTE MAIS, FALE MENOS:
-Amplifique vozes de grupos minoritarios, nao fale por eles.
+Amplifique vozes de grupos minoritarios, não fale por eles.
 
 2. EDUQUE-SE:
-Responsabilidade sua aprender, nao de grupos minoritarios te educarem.
+Responsabilidade sua aprender, não de grupos minoritarios te educarem.
 
 3. USE SEU PRIVILEGIO PARA AJUDAR:
 - Indique pessoas de grupos minoritarios para oportunidades
 - Interrompa discriminacao
-- Patrocine (nao apenas mentore)
+- Patrocine (não apenas mentore)
 
 4. ACEITE FEEDBACK:
 Quando errar, ouca, desculpe-se, aprenda.
 
 5. NAO ESPERE RECONHECIMENTO:
-Ser aliado nao e para ganhar "pontos". E fazer o certo.
+Ser aliado não é para ganhar "pontos". É fazer o certo.
 
 SUSTENTABILIDADE DE INICIATIVAS DE D&I
 
@@ -10124,19 +10116,19 @@ Muitas iniciativas de D&I morrem apos 1-2 anos.
 Por que falham:
 
 1. FALTA DE COMPROMISSO DA LIDERANCA:
-D&I e delegado para RH. Lideranca nao se envolve.
+D&I é delegado para RH. Liderança não se envolve.
 
 2. FALTA DE RECURSOS:
-Nao ha budget, tempo, pessoas dedicadas.
+Não há budget, tempo, pessoas dedicadas.
 
 3. RESISTENCIA NAO-ENDEREÇADA:
-Pessoas resistem ("Isso e besteira politicamente correta") e nao ha consequencias.
+Pessoas resistem ("Isso é besteira politicamente correta") e não há consequências.
 
 4. FALTA DE MEDICAO:
-Nao ha metricas, entao nao da para saber se funciona.
+Não há métricas, então não dá para saber se funciona.
 
 5. INICIATIVAS SUPERFICIAIS:
-Palestras sem mudancas estruturais reais.
+Palestras sem mudanças estruturais reais.
 
 Como Garantir Sustentabilidade:
 
@@ -10144,32 +10136,32 @@ Como Garantir Sustentabilidade:
 CEO e board comprometidos publicamente.
 
 2. RECURSOS DEDICADOS:
-- Equipe de D&I com orcamento
+- Equipe de D&I com orçamento
 - Tempo de trabalho alocado para iniciativas
 
 3. INTEGRAÇÃO EM TODOS PROCESSOS:
-D&I nao e "programa separado".
-D&I esta integrado em:
+D&I não é "programa separado".
+D&I está integrado em:
 - Recrutamento
-- Promocao
-- Avaliacao de desempenho
+- Promoção
+- Avaliação de desempenho
 - Desenvolvimento
-- Remuneracao
+- Remuneração
 
 4. MEDICAO E AJUSTE CONTINUO:
-Revisao trimestral de metricas.
-Ajuste de estrategia baseado em dados.
+Revisão trimestral de métricas.
+Ajuste de estratégia baseado em dados.
 
 5. MUDANCAS ESTRUTURAIS:
-Nao so treinamentos.
+Não só treinamentos.
 Mudancas em:
-- Politicas
+- Políticas
 - Processos
 - Sistemas
 - Cultura
 
 6. CELEBRE PROGRESSO, RECONHEÇA GAPS:
-Transparencia sobre o que funciona e o que ainda precisa melhorar.
+Transparência sobre o que funciona e o que ainda precisa melhorar.
 
 EXERCICIOS PRATICOS
 
@@ -10181,16 +10173,16 @@ Colete dados:
 
 Identifique gaps.
 
-Exercicio 2: Pesquisa de Inclusao
+Exercício 2: Pesquisa de Inclusão
 Pergunte anonimamente:
-- "Voce sente que pertence aqui?" (1-10)
-- "Voce pode ser autentico aqui?" (1-10)
+- "Você sente que pertence aqui?" (1-10)
+- "Você pode ser autêntico aqui?" (1-10)
 
-Analise por grupo demografico.
+Analise por grupo demográfico.
 
 Exercicio 3: Plano de Acao
 Com base em dados, crie plano com:
-- 3 metas especificas
+- 3 metas específicas
 - Acoes concretas
 - Responsaveis
 - Timeline
@@ -10203,12 +10195,12 @@ Cultura verdadeiramente inclusiva:
 - Representa sociedade em todos os niveis
 - Todos se sentem pertencentes
 - Todos tem oportunidades iguais
-- Diferenças sao celebradas, nao toleradas
-- Lideranca e responsavel
+- Diferenças são celebradas, não toleradas
+- Liderança e responsavel
 
 Construir cultura inclusiva e trabalho de longo prazo, continuo, intencional.
 
-Mas beneficios sao imensos:
+Mas beneficios são imensos:
 - Inovacao
 - Performance
 - Atracao e retencao
@@ -10227,47 +10219,24 @@ FIM DO CURSO DE DIVERSIDADE, INCLUSAO E RESPEITO
         `
       }
     ],
-    atividadesPraticas: [
+    atividadesPráticas: [
       "Teste de vies implicito",
-      "Auditoria de praticas inclusivas",
+      "Auditoria de práticas inclusivas",
       "Workshop de linguagem inclusiva",
-      "Criacao de plano de diversidade e inclusao"
+      "Criação de plano de diversidade e inclusão"
     ]
   }
 ];
 
-const corrigirArray = (arr?: string[]) => (arr ? arr.map(corrigirPTBR) : arr);
-
-function corrigirModulo(m: Modulo): Modulo {
-  return {
-    ...m,
-    titulo: corrigirPTBR(m.titulo),
-    // mantemos duracao sem alteração de tipo
-    duracao: m.duracao,
-    topicos: m.topicos?.map(corrigirPTBR) ?? [],
-    materialDidatico: corrigirPTBR(m.materialDidatico),
-  };
-}
-
-function corrigirCurso(c: Curso): Curso {
-  return {
-    ...c,
-    titulo: corrigirPTBR(c.titulo),
-    subtitulo: corrigirPTBR(c.subtitulo),
-    descricao: corrigirPTBR(c.descricao),
-    // não alterar c.nivel para evitar conflito com o tipo literal
-    objetivo: corrigirPTBR(c.objetivo),
-    resultadosEsperados: c.resultadosEsperados.map(corrigirPTBR),
-    modulos: c.modulos.map(corrigirModulo),
-    atividadesPraticas: corrigirArray(c.atividadesPraticas),
-    integracaoPGR: corrigirArray(c.integracaoPGR),
-  };
-}
-
-export const cursos: Curso[] = cursosRaw.map(corrigirCurso);
+const normalizeSlug = (s: string) => {
+  const base = String(s || "").toLowerCase();
+  const ascii = base.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return ascii.replace(/\s+/g, '-').replace(/_/g, '-');
+};
 
 export const getCursoBySlug = (slug: string): Curso | undefined => {
-  return cursos.find(curso => curso.slug === slug);
+  const target = normalizeSlug(slug);
+  return cursos.find(curso => normalizeSlug(curso.slug) === target);
 };
 
 export const getAllCursos = (): Curso[] => {

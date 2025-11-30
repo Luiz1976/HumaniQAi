@@ -93,15 +93,19 @@ const corsOptions = {
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) {
+    const extraAllowed = (process.env.CORS_ALLOWED_ORIGINS || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
     const allowedOrigins = [
       'http://localhost:5000',
       'http://localhost:3000',
       'https://www.humaniqai.com.br',
       'https://humaniqai.com.br',
       'https://h2-8xej.onrender.com',
-      // Removido domínio fixo de vercel para lógica dinâmica
       process.env.FRONTEND_URL,
       process.env.CORS_ORIGIN,
+      ...extraAllowed,
     ].filter(Boolean);
 
     // Permitir requests sem origin (mobile apps, server-to-server)

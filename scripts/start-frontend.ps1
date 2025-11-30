@@ -3,22 +3,22 @@
 # Este script garante que o frontend rode exclusivamente na porta 5000
 
 param(
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [switch]$SkipPortCheck,
     
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [switch]$Force,
     
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [switch]$NoBrowser
 )
 
 # Cores para output
 $Colors = @{
     Success = "Green"
-    Error = "Red"
+    Error   = "Red"
     Warning = "Yellow"
-    Info = "Cyan"
+    Info    = "Cyan"
     Default = "White"
 }
 
@@ -56,15 +56,15 @@ function Get-ProcessByPort {
                 $process = Get-Process -Id $conn.OwningProcess -ErrorAction SilentlyContinue
                 if ($process) {
                     $processes += [PSCustomObject]@{
-                        PID = $process.Id
-                        Name = $process.ProcessName
+                        PID       = $process.Id
+                        Name      = $process.ProcessName
                         StartTime = $process.StartTime
-                        Port = $Port
+                        Port      = $Port
                     }
                 }
             }
             catch {
-                Write-ColorOutput "⚠️  Não foi possível obter informações do processo $($conn.OwningProcess)" "Warning"
+                Write-ColorOutput "[WARN] Nao foi possivel obter informacoes do processo $($conn.OwningProcess)" "Warning"
             }
         }
     }
@@ -81,17 +81,17 @@ function Stop-ProcessByPort {
     $processes = Get-ProcessByPort -Port $Port
     
     if ($processes.Count -eq 0) {
-        Write-ColorOutput "✅ Nenhum processo encontrado na porta $Port" "Success"
+        Write-ColorOutput "[OK] Nenhum processo encontrado na porta $Port" "Success"
         return $true
     }
     
-    Write-ColorOutput "🔍 Processos encontrados na porta $Port:" "Info"
+    Write-ColorOutput ("Processos encontrados na porta {0}:" -f $Port) "Info"
     $processes | Format-Table -AutoSize
     
     if (!$Force) {
         $confirm = Read-Host "Deseja encerrar estes processos? (S/N)"
         if ($confirm -ne 'S' -and $confirm -ne 's') {
-            Write-ColorOutput "❌ Operação cancelada pelo usuário" "Error"
+            Write-ColorOutput "[ERROR] Operacao cancelada pelo usuario" "Error"
             return $false
         }
     }
@@ -99,10 +99,10 @@ function Stop-ProcessByPort {
     foreach ($proc in $processes) {
         try {
             Stop-Process -Id $proc.PID -Force -ErrorAction Stop
-            Write-ColorOutput "✅ Processo $($proc.Name) (PID: $($proc.PID)) encerrado" "Success"
+            Write-ColorOutput "[OK] Processo $($proc.Name) (PID: $($proc.PID)) encerrado" "Success"
         }
         catch {
-            Write-ColorOutput "❌ Erro ao encerrar processo $($proc.Name) (PID: $($proc.PID)): $_" "Error"
+            Write-ColorOutput "[ERROR] Erro ao encerrar processo $($proc.Name) (PID: $($proc.PID)): $_" "Error"
             return $false
         }
     }
@@ -113,11 +113,11 @@ function Stop-ProcessByPort {
     # Verificar se ainda há processos
     $remaining = Get-ProcessByPort -Port $Port
     if ($remaining.Count -gt 0) {
-        Write-ColorOutput "⚠️  Ainda há processos na porta $Port após tentativa de encerramento" "Warning"
+        Write-ColorOutput "[WARN] Ainda ha processos na porta $Port apos tentativa de encerramento" "Warning"
         return $false
     }
     
-    Write-ColorOutput "✅ Porta $Port liberada com sucesso!" "Success"
+    Write-ColorOutput "[OK] Porta $Port liberada com sucesso!" "Success"
     return $true
 }
 
@@ -149,24 +149,17 @@ function Write-StartupLog {
 }
 
 function Show-StartupBanner {
-    Write-ColorOutput @"
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                          🚀 HUMANIQ FRONTEND                               ║
-║                     Inicializando na porta 5000...                        ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-"@ "Info"
+    Write-ColorOutput "HUMANIQ FRONTEND - Inicializando na porta 5000..." "Info"
 }
 
 function Start-FrontendDevelopment {
     Write-StartupLog "Iniciando frontend HumaniQ em modo desenvolvimento"
-    Write-StartupLog "Porta obrigatória: 5000"
+    Write-StartupLog "Porta obrigatoria: 5000"
     
     # Verificar se node_modules existe
     $nodeModulesPath = Join-Path (Split-Path $PSScriptRoot -Parent) "node_modules"
     if (!(Test-Path $nodeModulesPath)) {
-        Write-ColorOutput "❌ node_modules não encontrado. Execute 'npm install' primeiro." "Error"
+        Write-ColorOutput "[ERROR] node_modules nao encontrado. Execute 'npm install' primeiro." "Error"
         exit 1
     }
     
@@ -174,7 +167,7 @@ function Start-FrontendDevelopment {
     $projectRoot = Split-Path $PSScriptRoot -Parent
     Set-Location $projectRoot
     
-    Write-StartupLog "Diretório do projeto: $projectRoot"
+    Write-StartupLog "Diretorio do projeto: $projectRoot"
     
     # Executar comando npm
     try {
@@ -211,7 +204,7 @@ function Start-FrontendDevelopment {
         Write-StartupLog "Frontend encerrado (PID: $($process.Id))" "WARN"
         
         if ($process.ExitCode -ne 0) {
-            Write-StartupLog "Frontend encerrado com erro (código: $($process.ExitCode))" "ERROR"
+            Write-StartupLog "Frontend encerrado com erro (codigo: $($process.ExitCode))" "ERROR"
         }
     }
     catch {
@@ -224,27 +217,27 @@ function Start-FrontendDevelopment {
 function Main {
     Show-StartupBanner
     
-    Write-ColorOutput "🔧 Configuração obrigatória: Frontend deve rodar na porta 5000" "Info"
-    Write-ColorOutput "📋 Verificando disponibilidade da porta 5000..." "Info"
+    Write-ColorOutput "[CONFIG] Configuracao obrigatoria: Frontend deve rodar na porta 5000" "Info"
+    Write-ColorOutput "[CHECK] Verificando disponibilidade da porta 5000..." "Info"
     
     # Verificar disponibilidade da porta 5000
     $portAvailable = Test-PortAvailability -Port 5000
     
     if (!$portAvailable -and !$SkipPortCheck) {
-        Write-ColorOutput "❌ Porta 5000 está ocupada!" "Error"
+        Write-ColorOutput "[ERROR] Porta 5000 esta ocupada!" "Error"
         
         $processes = Get-ProcessByPort -Port 5000
         if ($processes.Count -gt 0) {
-            Write-ColorOutput "🔍 Processos encontrados:" "Warning"
+            Write-ColorOutput "[WARN] Processos encontrados:" "Warning"
             $processes | Format-Table -AutoSize
         }
         
-        Write-ColorOutput "🔄 Tentando liberar porta 5000..." "Info"
+        Write-ColorOutput "[RETRY] Tentando liberar porta 5000..." "Info"
         $success = Stop-ProcessByPort -Port 5000 -Force:$Force
         
         if (!$success) {
-            Write-ColorOutput "❌ Não foi possível liberar a porta 5000. Encerrando..." "Error"
-            Write-ColorOutput "💡 Dica: Execute com -Force para forçar encerramento" "Info"
+            Write-ColorOutput "[ERROR] Nao foi possivel liberar a porta 5000. Encerrando..." "Error"
+            Write-ColorOutput "[TIP] Dica: Execute com -Force para forcar encerramento" "Info"
             exit 1
         }
         
@@ -253,20 +246,20 @@ function Main {
         
         # Verificar novamente
         if (!(Test-PortAvailability -Port 5000)) {
-            Write-ColorOutput "❌ Porta 5000 ainda ocupada após tentativa de liberação" "Error"
+            Write-ColorOutput "[ERROR] Porta 5000 ainda ocupada apos tentativa de liberacao" "Error"
             exit 1
         }
     }
     
-    Write-ColorOutput "✅ Porta 5000 está disponível!" "Success"
-    Write-ColorOutput "🚀 Iniciando frontend HumaniQ..." "Info"
+    Write-ColorOutput "[OK] Porta 5000 esta disponivel!" "Success"
+    Write-ColorOutput "[START] Iniciando frontend HumaniQ..." "Info"
     
     # Registrar evento de inicialização
-    Write-StartupLog "=== INICIALIZAÇÃO DO FRONTEND HUMANIQ ===" "SUCCESS"
-    Write-StartupLog "Porta: 5000 (obrigatória)"
+    Write-StartupLog "=== INICIALIZACAO DO FRONTEND HUMANIQ ===" "SUCCESS"
+    Write-StartupLog "Porta: 5000 (obrigatoria)"
     Write-StartupLog "Data/Hora: $(Get-Date)"
-    Write-StartupLog "Usuário: $env:USERNAME"
-    Write-StartupLog "Máquina: $env:COMPUTERNAME"
+    Write-StartupLog "Usuario: $env:USERNAME"
+    Write-StartupLog "Maquina: $env:COMPUTERNAME"
     
     # Iniciar desenvolvimento
     Start-FrontendDevelopment

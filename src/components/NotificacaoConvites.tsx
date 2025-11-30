@@ -249,7 +249,7 @@ const NotificacaoConvites = () => {
   const renovarConvite = async (conviteId: string) => {
     try {
       // Simular renovação do convite
-      toast.success("Convite renovado com sucesso", {
+      toast.success("Convite renovado com sucesso!", {
         description: "O prazo foi estendido por mais 30 dias"
       });
       
@@ -257,7 +257,7 @@ const NotificacaoConvites = () => {
       setNotificacoes(prev => prev.filter(n => n.convite?.id !== conviteId));
       
     } catch (error) {
-      toast.error("Erro ao renovar convite.");
+      toast.error("Erro ao renovar convite");
     }
   };
 
@@ -266,7 +266,7 @@ const NotificacaoConvites = () => {
       const convite = notificacoes.find(n => n.convite?.id === conviteId)?.convite;
       if (convite) {
         await emailService.enviarLembreteExpiracao(convite);
-        toast.success("Lembrete enviado", {
+        toast.success("Lembrete enviado!", {
           description: `E-mail de lembrete enviado para ${convite.emailContato}`
         });
         
@@ -274,7 +274,7 @@ const NotificacaoConvites = () => {
         marcarComoLida(`baixa-utilizacao-${conviteId}`);
       }
     } catch (error) {
-      toast.error("Erro ao enviar lembrete.");
+      toast.error("Erro ao enviar lembrete");
     }
   };
 

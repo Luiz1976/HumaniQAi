@@ -5,11 +5,6 @@ import './index.css'
 
 console.log('🔍 [MAIN] Iniciando aplicação React');
 console.log('🔍 [MAIN] Procurando elemento root...');
-const __isProd = import.meta.env.MODE === 'production';
-const __apiOk = Boolean(import.meta.env.VITE_API_URL);
-if (__isProd && !__apiOk) {
-  console.error('Configuração VITE_API_URL ausente em produção');
-}
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

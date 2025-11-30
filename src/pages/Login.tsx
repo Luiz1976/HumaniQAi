@@ -28,13 +28,13 @@ export default function Login() {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-    
+
     console.log('🔍 [LOGIN] Tentativa de login iniciada');
-    
+
     try {
-      const result = await login(email, password);
+      const result = await login(email.trim(), password);
       console.log('🔍 [LOGIN] Resultado do login:', result);
-      
+
       if (result.success && result.user) {
         console.log('🔍 [LOGIN] Login bem-sucedido, redirecionando para animação pós-login');
         navigate('/post-login-animation');
@@ -61,23 +61,23 @@ export default function Login() {
   const videoType = isMov
     ? 'video/quicktime'
     : /\.mp4$/i.test(bgUrl)
-    ? 'video/mp4'
-    : /\.webm$/i.test(bgUrl)
-    ? 'video/webm'
-    : /\.ogg$/i.test(bgUrl)
-    ? 'video/ogg'
-    : undefined;
+      ? 'video/mp4'
+      : /\.webm$/i.test(bgUrl)
+        ? 'video/webm'
+        : /\.ogg$/i.test(bgUrl)
+          ? 'video/ogg'
+          : undefined;
 
   // Fallback para quando o vídeo não funciona
   const [videoFailed, setVideoFailed] = useState(false);
-  
+
   // Usar animação CSS como fallback principal
   const useVideoBackground = isVideo && !videoFailed;
-  
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Background Animado - sempre visível */}
-      <div 
+      <div
         className="absolute inset-0 w-full h-full z-0"
         style={{
           background: 'linear-gradient(-45deg, #0f172a, #1e293b, #334155, #0f172a, #1e40af, #0f172a)',
@@ -85,7 +85,7 @@ export default function Login() {
           animation: 'gradient 20s ease infinite'
         }}
       />
-      
+
       {/* Tentativa de vídeo por cima do background animado */}
       {useVideoBackground ? (
         <video
@@ -152,7 +152,7 @@ export default function Login() {
           </div>
 
           {/* Login Card - Glassmorphism */}
-          <div 
+          <div
             className="relative backdrop-blur-2xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-blue-500/20 hover:shadow-3xl"
             style={{
               animation: 'slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -160,14 +160,14 @@ export default function Login() {
           >
             {/* Gradient Border Glow */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-cyan-500/20 opacity-0 transition-opacity duration-500 hover:opacity-100 pointer-events-none" />
-            
+
             {/* Header */}
             <div className="relative px-8 pt-8 pb-6 text-center">
               {/* Logo/Icon with Glow */}
               <div className="inline-flex items-center justify-center mb-4 transform hover:scale-110 transition-transform duration-300">
                 <HumaniQLogoHQ size="lg" />
               </div>
-              
+
               {/* PNL: Presupposition & Sensory Language */}
               <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
                 Bem-vindo de Volta
@@ -187,9 +187,8 @@ export default function Login() {
                 </Label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Mail className={`w-5 h-5 transition-colors duration-300 ${
-                      focusedField === 'email' || email ? 'text-slate-500' : 'text-slate-400'
-                    }`} />
+                    <Mail className={`w-5 h-5 transition-colors duration-300 ${focusedField === 'email' || email ? 'text-slate-500' : 'text-slate-400'
+                      }`} />
                   </div>
                   <Input
                     id="email"
@@ -201,16 +200,14 @@ export default function Login() {
                     onChange={(e) => setEmail(e.target.value)}
                     onFocus={() => setFocusedField('email')}
                     onBlur={() => setFocusedField(null)}
-                    className={`pl-11 h-12 rounded-xl backdrop-blur-sm transition-all duration-300 ${
-                      focusedField === 'email' || email
+                    className={`pl-11 h-12 rounded-xl backdrop-blur-sm transition-all duration-300 ${focusedField === 'email' || email
                         ? 'bg-white text-slate-900 placeholder:text-slate-400 border-blue-400/50 shadow-lg shadow-blue-500/20'
                         : 'bg-slate-700/40 border-slate-600/30 text-slate-300 placeholder:text-slate-400'
-                    }`}
+                      }`}
                   />
                   {/* Focus Indicator */}
-                  <div className={`absolute inset-0 rounded-xl border-2 border-blue-400 pointer-events-none transition-opacity duration-300 ${
-                    focusedField === 'email' ? 'opacity-50' : 'opacity-0'
-                  }`} style={{ filter: 'blur(8px)' }} />
+                  <div className={`absolute inset-0 rounded-xl border-2 border-blue-400 pointer-events-none transition-opacity duration-300 ${focusedField === 'email' ? 'opacity-50' : 'opacity-0'
+                    }`} style={{ filter: 'blur(8px)' }} />
                 </div>
               </div>
 
@@ -221,9 +218,8 @@ export default function Login() {
                 </Label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Lock className={`w-5 h-5 transition-colors duration-300 ${
-                      focusedField === 'password' || password ? 'text-slate-500' : 'text-slate-400'
-                    }`} />
+                    <Lock className={`w-5 h-5 transition-colors duration-300 ${focusedField === 'password' || password ? 'text-slate-500' : 'text-slate-400'
+                      }`} />
                   </div>
                   <Input
                     id="password"
@@ -235,33 +231,30 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     onFocus={() => setFocusedField('password')}
                     onBlur={() => setFocusedField(null)}
-                    className={`pl-11 pr-11 h-12 rounded-xl backdrop-blur-sm transition-all duration-300 ${
-                      focusedField === 'password' || password
+                    className={`pl-11 pr-11 h-12 rounded-xl backdrop-blur-sm transition-all duration-300 ${focusedField === 'password' || password
                         ? 'bg-white text-slate-900 placeholder:text-slate-400 border-purple-400/50 shadow-lg shadow-purple-500/20'
                         : 'bg-slate-700/40 border-slate-600/30 text-slate-300 placeholder:text-slate-400'
-                    }`}
+                      }`}
                   />
                   {/* Toggle Password Visibility */}
                   <button
                     type="button"
                     data-testid="button-toggle-password"
                     onClick={() => setShowPassword(!showPassword)}
-                    className={`absolute inset-y-0 right-0 pr-3.5 flex items-center transition-colors duration-200 ${
-                      focusedField === 'password' || password ? 'text-slate-500 hover:text-slate-700' : 'text-slate-400 hover:text-slate-300'
-                    }`}
+                    className={`absolute inset-y-0 right-0 pr-3.5 flex items-center transition-colors duration-200 ${focusedField === 'password' || password ? 'text-slate-500 hover:text-slate-700' : 'text-slate-400 hover:text-slate-300'
+                      }`}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                   {/* Focus Indicator */}
-                  <div className={`absolute inset-0 rounded-xl border-2 border-purple-400 pointer-events-none transition-opacity duration-300 ${
-                    focusedField === 'password' ? 'opacity-50' : 'opacity-0'
-                  }`} style={{ filter: 'blur(8px)' }} />
+                  <div className={`absolute inset-0 rounded-xl border-2 border-purple-400 pointer-events-none transition-opacity duration-300 ${focusedField === 'password' ? 'opacity-50' : 'opacity-0'
+                    }`} style={{ filter: 'blur(8px)' }} />
                 </div>
               </div>
 
               {/* Error Message */}
               {error && (
-                <div 
+                <div
                   data-testid="text-error"
                   className="p-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-200 text-sm animate-shake"
                   style={{
@@ -297,14 +290,14 @@ export default function Login() {
                     <span>Acessando...</span>
                   </div>
                 ) : (
-                  <span>Entrar agora</span>
+                  <span>Entrar Agora</span>
                 )}
               </Button>
 
               {/* Rapport Building - Reassurance */}
               <div className="pt-4 text-center">
                 <p className="text-white/50 text-xs leading-relaxed">
-                  🔒 Suas informações estão protegidas com criptografia de ponta.
+                  🔒 Suas informações estão protegidas com criptografia de ponta
                 </p>
               </div>
             </form>

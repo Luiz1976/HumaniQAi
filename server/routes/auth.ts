@@ -50,34 +50,32 @@ router.post('/login', async (req, res) => {
     }
 
     const { email, password } = validationResult.data;
+    const emailTrimmed = email.trim().toLowerCase();
+
+    logger.info(`🔐 [AUTH/LOGIN] Tentativa de login para: ${emailTrimmed}`);
 
     let user;
     let role: 'admin' | 'empresa' | 'colaborador';
     let empresaId: string | undefined;
     let colaboradorId: string | undefined;
 
-    const [empresa] = await db
-      .select()
-      .from(empresas)
-      .where(sql`lower(${empresas.emailContato}) = ${email.toLowerCase()}`)
-      .limit(1);
-
+    // Check empresa
+    const [empresa] = await db.select().from(empresas).where(sql`lower(${empresas.emailContato}) = ${emailTrimmed}`);
     if (empresa) {
       const validPasswordEmpresa = await comparePassword(password, (empresa as any).senha);
       if (validPasswordEmpresa) {
         user = empresa;
         role = 'empresa';
         empresaId = (empresa as any).id;
-        logger.info('✅ [AUTH/LOGIN] Role selecionado: empresa', { email, empresaId });
+        logger.info(`✅ [AUTH/LOGIN] Empresa encontrada e senha válida: ${emailTrimmed}`);
+      } else {
+        logger.warn(`⚠️ [AUTH/LOGIN] Empresa encontrada mas SENHA INVÁLIDA: ${emailTrimmed}`);
       }
     }
 
+    // Check colaborador if not found as empresa
     if (!user) {
-      const [colaborador] = await db
-        .select()
-        .from(colaboradores)
-        .where(sql`lower(${colaboradores.email}) = ${email.toLowerCase()}`)
-        .limit(1);
+      const [colaborador] = await db.select().from(colaboradores).where(sql`lower(${colaboradores.email}) = ${emailTrimmed}`);
       if (colaborador) {
         const validPasswordColab = await comparePassword(password, (colaborador as any).senha);
         if (validPasswordColab) {
@@ -85,35 +83,37 @@ router.post('/login', async (req, res) => {
           role = 'colaborador';
           empresaId = (colaborador as any).empresaId || undefined;
           colaboradorId = (colaborador as any).id;
-          logger.info('✅ [AUTH/LOGIN] Role selecionado: colaborador', { email, empresaId, colaboradorId });
+          logger.info(`✅ [AUTH/LOGIN] Colaborador encontrado e senha válida: ${emailTrimmed}`);
+        } else {
+          logger.warn(`⚠️ [AUTH/LOGIN] Colaborador encontrado mas SENHA INVÁLIDA: ${emailTrimmed}`);
         }
       }
     }
 
+    // Check admin if not found elsewhere
     if (!user) {
-      const [admin] = await db
-        .select()
-        .from(admins)
-        .where(sql`lower(${admins.email}) = ${email.toLowerCase()}`)
-        .limit(1);
+      const [admin] = await db.select().from(admins).where(sql`lower(${admins.email}) = ${emailTrimmed}`);
       if (admin) {
         const validPasswordAdmin = await comparePassword(password, (admin as any).senha);
         if (validPasswordAdmin) {
           user = admin;
           role = 'admin';
-          logger.info('✅ [AUTH/LOGIN] Role selecionado: admin', { email });
+          logger.info(`✅ [AUTH/LOGIN] Admin encontrado e senha válida: ${emailTrimmed}`);
+        } else {
+          logger.warn(`⚠️ [AUTH/LOGIN] Admin encontrado mas SENHA INVÁLIDA: ${emailTrimmed}`);
         }
       }
     }
 
     if (!user) {
+      logger.warn(`❌ [AUTH/LOGIN] Usuário não encontrado ou credenciais inválidas para: ${emailTrimmed}`);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const token = generateToken({
       userId: user.id,
       email: user.email || (user as any).emailContato,
-      role,
+      role: role!,
       empresaId,
       colaboradorId,
     });
@@ -245,8 +245,8 @@ router.post('/recuperar-senha', async (req, res) => {
       logger.info(`Solicitação de recuperação de senha para: ${email}`);
     }
 
-    res.json({ 
-      message: 'Se o email existir em nossa base, você receberá instruções para redefinir sua senha.' 
+    res.json({
+      message: 'Se o email existir em nossa base, você receberá instruções para redefinir sua senha.'
     });
   } catch (error) {
     logger.error('Erro ao processar recuperação de senha:', error);

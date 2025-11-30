@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
@@ -23,8 +23,6 @@ import {
   Scale,
   Loader2
 } from 'lucide-react'
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
 
 interface QVTResult {
   id: string
@@ -108,7 +106,6 @@ export default function QVTResultPage() {
   const [result, setResult] = useState<QVTResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (status === 'loading') return
@@ -164,28 +161,9 @@ export default function QVTResultPage() {
     }
   }
 
-  const handleDownloadPDF = async () => {
-    if (!contentRef.current) return
-    try {
-      const canvas = await html2canvas(contentRef.current, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const pdfW = pdf.internal.pageSize.getWidth()
-      const pdfH = pdf.internal.pageSize.getHeight()
-      const img = canvas.toDataURL('image/png', 1.0)
-      const ratio = canvas.width / canvas.height
-      let w = pdfW
-      let h = w / ratio
-      if (h > pdfH) {
-        h = pdfH
-        w = h * ratio
-      }
-      const x = (pdfW - w) / 2
-      const y = 0
-      pdf.addImage(img, 'PNG', x, y, w, h)
-      pdf.save(`resultado-qvt-${params.id}.pdf`)
-    } catch (e) {
-      console.error(e)
-    }
+  const handleDownloadPDF = () => {
+    // Implementar download do PDF
+    alert('Funcionalidade de download em desenvolvimento')
   }
 
   if (loading) {
@@ -225,7 +203,7 @@ export default function QVTResultPage() {
   const overallLevel = getScoreLevel(result.overallScore)
 
   return (
-    <div ref={contentRef} className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8">

@@ -1,5 +1,5 @@
 /*.jpg /:splat 200
 /*.png /:splat 200
 /*.svg /:splat 200
- /api/* https://humaniqai-server.up.railway.app/api/:splat 200
+ /api/* https://h2-8xej.onrender.com/api/:splat 200
 /* /index.html 200

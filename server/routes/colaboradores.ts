@@ -1,8 +1,8 @@
 import express from 'express';
 import { db, dbType } from '../db-config';
-import { colaboradores, cursoProgresso, cursoCertificados, cursoDisponibilidade, resultados } from '../../shared/schema';
+import { colaboradores, cursoProgresso, cursoCertificados, cursoDisponibilidade, cursoAvaliacoes } from '../../shared/schema';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { z } from 'zod';
 import { cursos } from '../../src/data/cursosData';
 import logger from '../utils/logger';
@@ -33,52 +33,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
         .from(colaboradores)
         .where(eq(colaboradores.empresaId, req.user.empresaId));
 
-      const enriquecidos = await Promise.all(
-        lista.map(async (c) => {
-          let totalTestes = 0;
-          let ultimoTeste: string | null = null;
-          try {
-            const [countRow] = await db
-              .select({ count: sql<number>`count(*)` })
-              .from(resultados)
-              .where(and(eq(resultados.colaboradorId, c.id), eq(resultados.status, 'concluido')));
-            totalTestes = Number((countRow as any)?.count || 0);
-
-            const [last] = await db
-              .select({ dataRealizacao: resultados.dataRealizacao })
-              .from(resultados)
-              .where(eq(resultados.colaboradorId, c.id))
-              .orderBy(desc(resultados.dataRealizacao))
-              .limit(1);
-            ultimoTeste = last?.dataRealizacao || null;
-          } catch (_) {}
-
-          const situacaoPsicossocial = totalTestes > 0
-            ? {
-                status: 'bom',
-                descricao: 'Participação ativa',
-                cor: 'blue',
-                totalTestes,
-                ultimoTeste,
-              }
-            : {
-                status: 'nao_avaliado',
-                descricao: 'Nenhum teste realizado',
-                cor: 'gray',
-                totalTestes: 0,
-                ultimoTeste: null,
-              };
-
-          return {
-            ...c,
-            total_testes: totalTestes,
-            ultimo_teste: ultimoTeste,
-            situacaoPsicossocial,
-          };
-        })
-      );
-
-      return res.json({ data: enriquecidos });
+      return res.json({ data: lista });
     }
 
     // Admin: pode listar por empresaId via query param
@@ -316,6 +271,16 @@ router.get('/:id/cursos-detalhes', authenticateToken, async (req: AuthRequest, r
       }
       const disponibilidade = disponibilidades.find(d => d.cursoId === curso.slug) || null;
       return {
+        // aliases ASCII para consumo no frontend
+        titulo: (curso as any)['título'],
+        subtitulo: (curso as any)['subtítulo'],
+        descricao: (curso as any)['descrição'],
+        duracao: (curso as any)['duração'],
+        nivel: (curso as any)['nível'],
+        categoria: (curso as any)['categoria'],
+        icone: (curso as any)['ícone'],
+        modulos: (curso as any)['módulos'] || [],
+        // dados brutos do catálogo também permanecem disponíveis
         ...curso,
         disponivel: disponibilidade?.disponivel || false,
         progresso: progresso ? {
@@ -446,9 +411,9 @@ router.get('/:id/certificado/:cursoSlug', authenticateToken, async (req: AuthReq
         colaboradorId: id,
         cursoId: curso.slug,
         cursoSlug,
-        cursoTitulo: curso.titulo,
+        cursoTitulo: (curso as any)['título'],
         colaboradorNome: 'Colaborador',
-        cargaHoraria: String(curso.duracao || '1h'),
+        cargaHoraria: String(((curso as any)['duração']) || '1h'),
         dataEmissao: dataEmissaoISO,
         codigoAutenticacao: `TEMP-${String(id).slice(0,8)}-${cursoSlug}`,
         qrCodeUrl: `${process.env.REPLIT_DEV_DOMAIN || 'https://humaniq.ai'}/validar-certificado/temp`,
@@ -459,6 +424,176 @@ router.get('/:id/certificado/:cursoSlug', authenticateToken, async (req: AuthReq
     res.json(certificado);
   } catch (error) {
     logger.error('Erro ao buscar certificado do colaborador:', error);
+  res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+const deleteCursosPorEmailSchema = z.object({ email: z.string().email() });
+
+router.delete('/remover-cursos', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const emailInput = String(((req.query as any)?.email || (req.body as any)?.email || '')).toLowerCase().trim();
+    const parsed = deleteCursosPorEmailSchema.safeParse({ email: emailInput });
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Email inválido' });
+    }
+    const email = parsed.data.email;
+
+    const [colab] = await db
+      .select()
+      .from(colaboradores)
+      .where(eq(colaboradores.email, email))
+      .limit(1);
+    if (!colab) {
+      return res.status(404).json({ error: 'Colaborador não encontrado' });
+    }
+
+    if (req.user?.role === 'empresa') {
+      if (!req.user.empresaId || colab.empresaId !== req.user.empresaId) {
+        return res.status(403).json({ error: 'Acesso negado' });
+      }
+    } else if (req.user?.role !== 'admin') {
+      return res.status(403).json({ error: 'Acesso negado' });
+    }
+
+    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
+
+    if (isSqlite) {
+      const { sqlite } = await import('../db-sqlite');
+      const before = {
+        certificados: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_certificados WHERE colaborador_id = ?').get(colab.id) as any)?.c || 0),
+        avaliacoes: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_avaliacoes WHERE colaborador_id = ?').get(colab.id) as any)?.c || 0),
+        progresso: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_progresso WHERE colaborador_id = ?').get(colab.id) as any)?.c || 0),
+        disponibilidade: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_disponibilidade WHERE colaborador_id = ?').get(colab.id) as any)?.c || 0),
+      };
+
+      sqlite.exec('BEGIN');
+      try {
+        sqlite.prepare('DELETE FROM curso_certificados WHERE colaborador_id = ?').run(colab.id);
+        sqlite.prepare('DELETE FROM curso_avaliacoes WHERE colaborador_id = ?').run(colab.id);
+        sqlite.prepare('DELETE FROM curso_progresso WHERE colaborador_id = ?').run(colab.id);
+        sqlite.prepare('DELETE FROM curso_disponibilidade WHERE colaborador_id = ?').run(colab.id);
+        sqlite.exec('COMMIT');
+      } catch (e) {
+        try { sqlite.exec('ROLLBACK'); } catch (_) {}
+        logger.error('Falha ao remover cursos (SQLite):', e);
+        return res.status(500).json({ error: 'Erro interno ao remover cursos' });
+      }
+
+      const after = {
+        certificados: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_certificados WHERE colaborador_id = ?').get(colab.id) as any)?.c || 0),
+        avaliacoes: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_avaliacoes WHERE colaborador_id = ?').get(colab.id) as any)?.c || 0),
+        progresso: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_progresso WHERE colaborador_id = ?').get(colab.id) as any)?.c || 0),
+        disponibilidade: Number((sqlite.prepare('SELECT COUNT(1) AS c FROM curso_disponibilidade WHERE colaborador_id = ?').get(colab.id) as any)?.c || 0),
+      };
+
+      try {
+        logger.info('AUDIT_CURSOS_REMOVIDOS', {
+          ts: new Date().toISOString(),
+          email,
+          colaboradorId: colab.id,
+          empresaId: colab.empresaId,
+          before,
+          after,
+          performedBy: req.user?.userId,
+          role: req.user?.role,
+          ip: (req as any).ip,
+          userAgent: req.headers['user-agent'],
+        });
+      } catch (_) {}
+
+      return res.json({
+        success: true,
+        irreversible: true,
+        email,
+        colaboradorId: colab.id,
+        before,
+        after,
+        colaboradorAindaExiste: true,
+        notificacoesDisparadas: ['logs'],
+      });
+    } else {
+      const beforeCertificados = await db
+        .select()
+        .from(cursoCertificados)
+        .where(eq(cursoCertificados.colaboradorId, colab.id));
+      const beforeAvaliacoes = await db
+        .select()
+        .from(cursoAvaliacoes)
+        .where(eq(cursoAvaliacoes.colaboradorId, colab.id));
+      const beforeProgresso = await db
+        .select()
+        .from(cursoProgresso)
+        .where(eq(cursoProgresso.colaboradorId, colab.id));
+      const beforeDisponibilidade = await db
+        .select()
+        .from(cursoDisponibilidade)
+        .where(eq(cursoDisponibilidade.colaboradorId, colab.id));
+      const before = {
+        certificados: beforeCertificados.length,
+        avaliacoes: beforeAvaliacoes.length,
+        progresso: beforeProgresso.length,
+        disponibilidade: beforeDisponibilidade.length,
+      };
+
+      await db.transaction(async (tx: any) => {
+        await tx.delete(cursoCertificados).where(eq(cursoCertificados.colaboradorId, colab.id));
+        await tx.delete(cursoAvaliacoes).where(eq(cursoAvaliacoes.colaboradorId, colab.id));
+        await tx.delete(cursoProgresso).where(eq(cursoProgresso.colaboradorId, colab.id));
+        await tx.delete(cursoDisponibilidade).where(eq(cursoDisponibilidade.colaboradorId, colab.id));
+      });
+
+      const afterCertificados = await db
+        .select()
+        .from(cursoCertificados)
+        .where(eq(cursoCertificados.colaboradorId, colab.id));
+      const afterAvaliacoes = await db
+        .select()
+        .from(cursoAvaliacoes)
+        .where(eq(cursoAvaliacoes.colaboradorId, colab.id));
+      const afterProgresso = await db
+        .select()
+        .from(cursoProgresso)
+        .where(eq(cursoProgresso.colaboradorId, colab.id));
+      const afterDisponibilidade = await db
+        .select()
+        .from(cursoDisponibilidade)
+        .where(eq(cursoDisponibilidade.colaboradorId, colab.id));
+      const after = {
+        certificados: afterCertificados.length,
+        avaliacoes: afterAvaliacoes.length,
+        progresso: afterProgresso.length,
+        disponibilidade: afterDisponibilidade.length,
+      };
+
+      try {
+        logger.info('AUDIT_CURSOS_REMOVIDOS', {
+          ts: new Date().toISOString(),
+          email,
+          colaboradorId: colab.id,
+          empresaId: colab.empresaId,
+          before,
+          after,
+          performedBy: req.user?.userId,
+          role: req.user?.role,
+          ip: (req as any).ip,
+          userAgent: req.headers['user-agent'],
+        });
+      } catch (_) {}
+
+      return res.json({
+        success: true,
+        irreversible: true,
+        email,
+        colaboradorId: colab.id,
+        before,
+        after,
+        colaboradorAindaExiste: true,
+        notificacoesDisparadas: ['logs'],
+      });
+    }
+  } catch (error) {
+    logger.error('Erro ao remover registros de cursos:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/AuthContext";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import Login from './pages/Login';
@@ -12,7 +12,6 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { EmpresaLayout } from "@/components/layout/EmpresaLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import Colaborador from "./pages/Colaborador";
 import Empresa from "./pages/Empresa";
 import EmpresaDashboard from "./pages/EmpresaDashboard";
@@ -88,21 +87,10 @@ import { Chatbot } from "./components/Chatbot";
 import { OnlineStatus } from "./components/OnlineStatus";
 import HomeRoute from "./components/layout/HomeRoute";
 
-function OnlineStatusGuard() {
-  const location = useLocation();
-  if (location.pathname === "/landing" || location.pathname === "/") {
-    return null;
-  }
-  return <OnlineStatus />;
-}
-
 function App() {
   console.log('🔍 [APP] Componente App iniciado');
   console.log('🔍 [APP] Location atual:', window.location.href);
   console.log('🔍 [APP] LandingPage importado?', LandingPage ? 'SIM' : 'NÃO');
-  const isProd = import.meta.env.MODE === 'production';
-  const apiConfigured = Boolean(import.meta.env.VITE_API_URL);
-  const showEnvWarning = isProd && !apiConfigured;
   
   return (
   <QueryClientProvider client={queryClient}>
@@ -112,17 +100,8 @@ function App() {
       <ErrorBoundary>
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AuthProvider>
-            {showEnvWarning && (
-              <div className="fixed top-0 left-0 right-0 z-50 p-2">
-                <Alert variant="destructive">
-                  <AlertDescription>
-                    Configuração da API ausente em produção. Defina a variável de ambiente `VITE_API_URL`.
-                  </AlertDescription>
-                </Alert>
-              </div>
-            )}
             <Chatbot />
-            <OnlineStatusGuard />
+            <OnlineStatus />
             <Routes>
               {/* Rotas públicas - SEM autenticação */}
               <Route path="/landing" element={<LandingPage />} />

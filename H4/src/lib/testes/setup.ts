@@ -1,1 +1,0 @@
-// Arquivo de setup para testes do Vitest

@@ -8,7 +8,6 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Curso } from "@/data/cursosData.ts";
-import { corrigirPTBR } from '@/utils/corrigirPTBR';
 
 interface AvaliacaoFinalProps {
   curso: Curso;
@@ -31,9 +30,9 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
   // Adicionar 1-2 perguntas sobre o objetivo e resultados do curso
   questoes.push({
     id: questaoId++,
-    pergunta: `Qual é o objetivo principal do curso "${corrigirPTBR(curso.titulo)}"?`,
+    pergunta: `Qual é o objetivo principal do curso "${(curso as any).título ?? (curso as any).titulo ?? ''}"?`,
     opcoes: [
-      corrigirPTBR(curso.objetivo),
+      curso.objetivo,
       "Aprender apenas teoria sem aplicação prática",
       "Desenvolver habilidades técnicas não relacionadas",
       "Estudar conteúdos genéricos sem foco específico"
@@ -41,24 +40,34 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
     respostaCorreta: 0
   });
 
+  const modulosCurso = Array.isArray((curso as any)?.modulos)
+    ? (curso as any).modulos
+    : Array.isArray((curso as any)?.módulos)
+      ? (curso as any).módulos
+      : [];
+
   // Para cada módulo, criar perguntas baseadas nos tópicos
-  curso.modulos.forEach((modulo, moduloIndex) => {
+  modulosCurso.forEach((modulo: any, moduloIndex: number) => {
     // Pegar os principais tópicos do módulo
-    const topicos = modulo.topicos || [];
+    const topicos = Array.isArray(modulo?.tópicos)
+      ? modulo.tópicos
+      : Array.isArray(modulo?.topicos)
+        ? modulo.topicos
+        : [];
     
     if (topicos.length > 0) {
       // Criar pergunta sobre o primeiro tópico importante
       const topicoDestaque = topicos[0];
       const opcoesEmbaralhadas = [
         "Conceitos não relacionados ao tema",
-        corrigirPTBR(topicoDestaque),
+        topicoDestaque,
         "Assuntos fora do escopo do curso",
         "Teorias sem aplicação prática"
       ].sort(() => Math.random() - 0.5);
       
       questoes.push({
         id: questaoId++,
-        pergunta: `No módulo "${corrigirPTBR(modulo.titulo)}", qual é um dos principais tópicos abordados?`,
+        pergunta: `No módulo "${(modulo as any).título ?? (modulo as any).titulo ?? ''}", qual é um dos principais tópicos abordados?`,
         opcoes: opcoesEmbaralhadas,
         respostaCorreta: opcoesEmbaralhadas.indexOf(topicoDestaque)
       });
@@ -68,7 +77,7 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
     if (topicos.length > 1) {
       const topicoSecundario = topicos[Math.min(1, topicos.length - 1)];
       const opcoesEmbaralhadas2 = [
-        corrigirPTBR(topicoSecundario),
+        topicoSecundario,
         "Estratégias de marketing digital",
         "Programação de computadores",
         "Gestão financeira pessoal"
@@ -76,7 +85,7 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
       
       questoes.push({
         id: questaoId++,
-        pergunta: `Qual dos seguintes tópicos é abordado no módulo "${corrigirPTBR(modulo.titulo)}"?`,
+        pergunta: `Qual dos seguintes tópicos é abordado no módulo "${(modulo as any).título ?? (modulo as any).titulo ?? ''}"?`,
         opcoes: opcoesEmbaralhadas2,
         respostaCorreta: opcoesEmbaralhadas2.indexOf(topicoSecundario)
       });
@@ -84,11 +93,12 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
   });
 
   // Adicionar pergunta sobre resultados esperados
-  if (curso.resultadosEsperados && curso.resultadosEsperados.length > 0) {
-    const resultadoDestaque = curso.resultadosEsperados[0];
+  const resultados = Array.isArray((curso as any)?.resultadosEsperados) ? (curso as any).resultadosEsperados : [];
+  if (resultados.length > 0) {
+    const resultadoDestaque = resultados[0];
     const opcoesEmbaralhadas3 = [
       "Nenhum resultado prático mensurável",
-      corrigirPTBR(resultadoDestaque),
+      resultadoDestaque,
       "Certificação em outra área não relacionada",
       "Apenas conhecimento teórico sem aplicação"
     ].sort(() => Math.random() - 0.5);
@@ -101,7 +111,54 @@ const gerarQuestoes = (curso: Curso): Questao[] => {
     });
   }
 
-  // Limitar a 10 questões no máximo
+  // Fallbacks para completar 10 questões
+  const tituloCurso = (curso as any).título ?? (curso as any).titulo ?? '';
+  const nivelCurso = (curso as any).nível ?? (curso as any).nivel ?? '';
+  const duracaoCurso = (curso as any).duração ?? (curso as any).duracao ?? '';
+
+  const adicionarQuestaoNivel = () => {
+    const opcoes = ["Iniciante", "Intermediário", "Avançado"];
+    const corretiva = nivelCurso && opcoes.includes(nivelCurso) ? nivelCurso : opcoes[1];
+    const embaralhadas = [...opcoes].sort(() => Math.random() - 0.5);
+    questoes.push({
+      id: questaoId++,
+      pergunta: `Qual é o nível do curso "${tituloCurso}"?`,
+      opcoes: embaralhadas,
+      respostaCorreta: embaralhadas.indexOf(corretiva)
+    });
+  };
+
+  const adicionarQuestaoDuracao = () => {
+    const candidatos = ["2h", "4h", "6h", "8h", "10h"];
+    const incorretas = candidatos.filter(c => c !== duracaoCurso).slice(0, 3);
+    const opcoes = [duracaoCurso || "4h", ...incorretas].sort(() => Math.random() - 0.5);
+    const correta = duracaoCurso || "4h";
+    questoes.push({
+      id: questaoId++,
+      pergunta: `Qual é a carga horária total do curso?`,
+      opcoes,
+      respostaCorreta: opcoes.indexOf(correta)
+    });
+  };
+
+  const adicionarQuestaoCategoria = () => {
+    const categoria = (curso as any).categoria ?? "Compliance e Legal";
+    const incorretas = ["Tecnologia", "Esportes", "Culinária"];
+    const opcoes = [categoria, ...incorretas].sort(() => Math.random() - 0.5);
+    questoes.push({
+      id: questaoId++,
+      pergunta: `Este curso pertence a qual categoria?`,
+      opcoes,
+      respostaCorreta: opcoes.indexOf(categoria)
+    });
+  };
+
+  while (questoes.length < 10) {
+    if (questoes.length <= 5) adicionarQuestaoNivel();
+    else if (questoes.length <= 7) adicionarQuestaoDuracao();
+    else adicionarQuestaoCategoria();
+  }
+
   return questoes.slice(0, 10);
 };
 
@@ -154,8 +211,8 @@ export default function AvaliacaoFinal({ curso, progresso, avaliacaoRealizada }:
         method: 'POST',
         body: JSON.stringify({
           cursoId: curso.id.toString(),
-          cursoTitulo: corrigirPTBR(curso.titulo),
-          cargaHoraria: curso.duracao
+          cursoTitulo: (curso as any).título ?? (curso as any).titulo ?? '',
+          cargaHoraria: (curso as any)?.duracao ?? (curso as any)?.duração ?? ''
         })
       });
     },
@@ -374,7 +431,7 @@ export default function AvaliacaoFinal({ curso, progresso, avaliacaoRealizada }:
       <Card className="border-2 border-blue-200">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Avaliação Final - {corrigirPTBR(curso.titulo)}</span>
+            <span>Avaliação Final - {(curso as any).título ?? (curso as any).titulo ?? ''}</span>
             <Badge className="bg-blue-100 text-blue-700">
               {Object.keys(respostas).length}/{questoes.length} respondidas
             </Badge>
