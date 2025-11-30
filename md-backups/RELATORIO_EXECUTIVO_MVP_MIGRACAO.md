@@ -204,7 +204,7 @@ STRIPE_SECRET_KEY=<payment_key>
 
 ### ⚠️ Melhorias Recomendadas
 
-1. **Raté Limiting**: Adicionar `express-raté-limit` para prevenir abuse
+1. **Rate Limiting**: Adicionar `express-rate-limit` para prevenir abuse
 2. **Helmet.js**: Adicionar headers de segurança HTTP
 3. **Error Logging**: Implementar sistema de logs estruturado (Winston/Pino)
 4. **Health Check Endpoint**: Adicionar `/api/health` para monitoramento
@@ -259,7 +259,7 @@ STRIPE_SECRET_KEY=<payment_key>
     "server": "tsx server/index.ts",              // Backend
     "build": "vite build",                        // Produção
     "db:push": "drizzle-kit push",                // Sync DB
-    "db:generaté": "drizzle-kit generaté"         // Migrations
+    "db:generate": "drizzle-kit generate"         // Migrations
   }
 }
 ```
@@ -373,7 +373,7 @@ com certificação digital reconhecida..."
 - [ ] **Resolver 23 TODOs/FIXMEs** no código
 - [ ] **Remover arquivos JavaScript legados** (`server/app.js`, `server/config/supabase.js`)
 - [ ] **Criar arquivo `.env.example`** com placeholders
-- [ ] **Adicionar Raté Limiting** nos endpoints de autenticação
+- [ ] **Adicionar Rate Limiting** nos endpoints de autenticação
 - [ ] **Implementar Helmet.js** para headers de segurança
 - [ ] **Adicionar endpoint `/api/health`** para monitoramento
 - [ ] **Revisar e validar todos os secrets** em produção
@@ -498,11 +498,11 @@ git push origin main → auto-deploy
 
 ```bash
 # Instalar dependências de segurança
-npm install helmet express-raté-limit compression
+npm install helmet express-rate-limit compression
 
 # server/index.ts
 import helmet from 'helmet';
-import rateLimit from 'express-raté-limit';
+import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 
 app.use(helmet());
@@ -533,7 +533,7 @@ O HumaniQ AI demonstra:
 
 #### **Fase 1: Pré-Deploy (1-2 semanas)**
 1. Resolver TODOs/FIXMEs críticos
-2. Adicionar raté limiting e Helmet.js
+2. Adicionar rate limiting e Helmet.js
 3. Criar .env.example
 4. Implementar logging estruturado
 5. Escrever testes de integração básicos
@@ -596,7 +596,7 @@ O HumaniQ AI demonstra:
 - **.gitignore Configurado**: ✅
 - **Senhas Hasheadas**: ✅ (bcrypt)
 - **Tokens JWT**: ✅
-- **Raté Limiting**: ⚠️ (implementar)
+- **Rate Limiting**: ⚠️ (implementar)
 - **Helmet.js**: ⚠️ (implementar)
 
 ### 📚 Documentação
@@ -622,7 +622,7 @@ O projeto HumaniQ AI está **substancialmente pronto** para lançamento como MVP
 ### 📌 Requisitos Obrigatórios Antes do Deploy
 
 1. ✅ Resolver 23 TODOs/FIXMEs
-2. ✅ Adicionar Raté Limiting
+2. ✅ Adicionar Rate Limiting
 3. ✅ Implementar Helmet.js
 4. ✅ Criar .env.example
 5. ✅ Adicionar logging estruturado

@@ -74,7 +74,7 @@ interface ResultadoQVT {
   }>;
   riscoTurnover: boolean;
   insights: string[];
-  recomendações: string[];
+  recomendacoes: string[];
   alertasCriticos: any[];
   metadados: {
     teste_nome: string;

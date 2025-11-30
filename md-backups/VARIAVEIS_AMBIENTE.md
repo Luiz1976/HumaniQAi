@@ -171,7 +171,7 @@ postgresql://humaniq_user:AbCd1234@ep-example-123.us-east-1.aws.neon.tech/neondb
 
 1. Acesse https://makersuite.google.com/app/apikey
 2. Crie um novo projeto (se necessário)
-3. Clique em **Creaté API Key**
+3. Clique em **Create API Key**
 4. Copie a chave (AIza...)
 5. Adicione como `GOOGLE_API_KEY` no Render
 
@@ -189,7 +189,7 @@ Se quiser enviar emails via SendGrid:
 
 1. Acesse https://app.sendgrid.com
 2. Vá em **Settings** → **API Keys**
-3. Clique em **Creaté API Key**
+3. Clique em **Create API Key**
 4. Nome: "HumaniQ Production"
 5. Permissões: **Full Access** ou **Mail Send**
 6. Copie a chave (SG....)

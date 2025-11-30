@@ -21,7 +21,7 @@ The HumaniQ psychological assessment platform has been successfully migrated fro
 - **convites_colaborador** - Employee invitation tokens (Company → Employee)
 
 #### Assessment System Tables
-- **testes** - Psychological test definitions (QVT, RPO, Climaté, etc.)
+- **testes** - Psychological test definitions (QVT, RPO, Climate, etc.)
 - **perguntas** - Test questions with types and validation
 - **respostas** - Individual user responses to questions
 - **resultados** - Final test results with scores and metadata
@@ -53,8 +53,8 @@ The HumaniQ psychological assessment platform has been successfully migrated fro
 - `POST /api/auth/login` - Multi-role login (admin/empresa/colaborador)
 - `POST /api/auth/register/admin` - Admin registration
 
-**Validation:** Zod schemas validaté all request bodies  
-**Server:** Express.js on port 3001 (ready to integraté)
+**Validation:** Zod schemas validate all request bodies  
+**Server:** Express.js on port 3001 (ready to integrate)
 
 ---
 
@@ -71,17 +71,17 @@ The HumaniQ psychological assessment platform has been successfully migrated fro
 ### Next Steps (Required for Full Migration)
 
 #### 1. Frontend Integration
-Updaté these service files to use the new API instead of Supabase:
+Update these service files to use the new API instead of Supabase:
 - `src/services/authService.ts` - Replace Supabase auth calls
-- `src/services/conviteService.ts` - Updaté invitation endpoints
-- `src/services/colaboradorService.ts` - Updaté employee management
+- `src/services/conviteService.ts` - Update invitation endpoints
+- `src/services/colaboradorService.ts` - Update employee management
 - `src/lib/supabase.ts` - Remove or replace with API client
 
-#### 2. Creaté Additional API Routes
+#### 2. Create Additional API Routes
 The backend needs these routes to replace Supabase functionality:
 - **Invitations API** (`/api/invitations/*`)
-  - Creaté company invitations (admin only)
-  - Creaté employee invitations (company only)
+  - Create company invitations (admin only)
+  - Create employee invitations (company only)
   - Accept invitation and register
   - List invitations
   
@@ -93,13 +93,13 @@ The backend needs these routes to replace Supabase functionality:
   
 - **Companies API** (`/api/empresas/*`)
   - Get company details
-  - Updaté company settings
+  - Update company settings
   - List company employees
   
 - **Employees API** (`/api/colaboradores/*`)
   - Get employee details
   - List employees (company view)
-  - Updaté employee information
+  - Update employee information
 
 #### 3. Cleanup
 - Remove `@supabase/supabase-js` from dependencies
@@ -151,7 +151,7 @@ import { db } from './db';
 ├── src/                       # Frontend (Vite + React)
 │   ├── components/
 │   ├── pages/
-│   └── services/              # ⚠️ Still using Supabase - needs updaté
+│   └── services/              # ⚠️ Still using Supabase - needs update
 ├── drizzle.config.ts
 └── package.json
 ```
@@ -173,16 +173,16 @@ import { db } from './db';
 ## 🚀 How to Continue Development
 
 ### Option 1: Complete the Migration Yourself
-1. Updaté frontend services in `src/services/` to call `/api/*` endpoints
-2. Creaté remaining API routes in `server/routes/`
+1. Update frontend services in `src/services/` to call `/api/*` endpoints
+2. Create remaining API routes in `server/routes/`
 3. Test each feature thoroughly
 4. Remove Supabase dependencies when confirmed working
 
 ### Option 2: Request Agent Assistance
 Ask me to:
-- "Creaté the invitations API routes"
-- "Updaté the frontend auth service to use the new API"
-- "Creaté API routes for psychological tests"
+- "Create the invitations API routes"
+- "Update the frontend auth service to use the new API"
+- "Create API routes for psychological tests"
 - "Complete the full migration"
 
 ---
@@ -222,7 +222,7 @@ curl -X POST http://localhost:3001/api/auth/login \
 All test types from the original system are supported:
 1. Quality of Life at Work (QVT)
 2. Occupational Psychosocial Risks (RPO)
-3. Climaté and Well-being
+3. Climate and Well-being
 4. Occupational Stress Assessment
 5. Karasek-Siegrist Model
 6. Harassment Perception (PAS)
@@ -243,4 +243,4 @@ All test types from the original system are supported:
 **Status:** Ready for frontend integration  
 **Application:** Running on port 5000  
 **Database:** Connected to Neon PostgreSQL  
-**Next Action:** Updaté frontend services or creaté additional API routes
+**Next Action:** Update frontend services or create additional API routes

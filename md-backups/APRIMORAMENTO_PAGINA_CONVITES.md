@@ -108,7 +108,7 @@ Escala e praticidade em segundos
 - Título: "Convite Personalizado"
 - Descrição com PNL: "**Atenção individual,** resultados excepcionais. Ideal para colaboradores VIP e casos especiais."
 - Ícone maior e com animação hover (scale)
-- Background gradiente sútil
+- Background gradiente sutil
 
 **Botão:**
 ```
@@ -239,7 +239,7 @@ shadow-orange-500/20
 ### **Sistema (Roxo/Rosa)**
 ```css
 from-purple-500 to-blue-500
-from-slaté-900 via-purple-900 to-slaté-900
+from-slate-900 via-purple-900 to-slate-900
 ```
 
 ---
@@ -249,10 +249,10 @@ from-slaté-900 via-purple-900 to-slaté-900
 ### **Animação Blob (Background)**
 ```css
 @keyframes blob {
-  0%, 100% { transform: translaté(0, 0) scale(1); }
-  25% { transform: translaté(20px, -20px) scale(1.1); }
-  50% { transform: translaté(-20px, 20px) scale(0.9); }
-  75% { transform: translaté(20px, 20px) scale(1.05); }
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(20px, -20px) scale(1.1); }
+  50% { transform: translate(-20px, 20px) scale(0.9); }
+  75% { transform: translate(20px, 20px) scale(1.05); }
 }
 ```
 - Duração: 7 segundos

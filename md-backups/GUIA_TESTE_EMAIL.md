@@ -10,9 +10,9 @@
 ### 1. **Serviço de Email** (`server/services/emailService.ts`)
 - ✅ Cliente SendGrid configurado com autenticação Replit Connectors
 - ✅ Função genérica `enviarEmail()` para qualquer tipo de email
-- ✅ Templaté profissional para convite de empresa
-- ✅ Templaté profissional para convite de colaborador
-- ✅ Templaté de boas-vindas
+- ✅ Template profissional para convite de empresa
+- ✅ Template profissional para convite de colaborador
+- ✅ Template de boas-vindas
 
 ### 2. **Integração Automática**
 - ✅ Emails enviados automaticamente ao criar convites
@@ -127,8 +127,8 @@ curl -X POST https://seu-dominio.replit.dev/api/email/test-email \
 
 **Tipos disponíveis:**
 - `teste-simples` - Email básico de teste
-- `convite-empresa` - Templaté completo de convite empresa
-- `convite-colaborador` - Templaté completo de convite colaborador
+- `convite-empresa` - Template completo de convite empresa
+- `convite-colaborador` - Template completo de convite colaborador
 - `boas-vindas-empresa` - Email de boas-vindas empresa
 - `boas-vindas-colaborador` - Email de boas-vindas colaborador
 
@@ -159,8 +159,8 @@ Marque conforme testar:
 
 - [ ] **Status do SendGrid:** API retorna `configured: true`
 - [ ] **Email de teste simples:** Recebido na caixa de entrada
-- [ ] **Email convite empresa:** Recebido com templaté correto
-- [ ] **Email convite colaborador:** Recebido com templaté correto
+- [ ] **Email convite empresa:** Recebido com template correto
+- [ ] **Email convite colaborador:** Recebido com template correto
 - [ ] **Links funcionando:** Clicar no botão redireciona corretamente
 - [ ] **Design responsivo:** Email visualizado bem em mobile
 - [ ] **Não cai em spam:** Email chegou na caixa principal (não spam)

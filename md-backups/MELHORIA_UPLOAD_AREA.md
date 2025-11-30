@@ -76,7 +76,7 @@
 Dimensões: w-full h-32 (largura total, altura fixa)
 Borda: border-2 border-dashed (tracejada, 2px)
 Cor da borda: border-orange-500/30 (laranja 30% opacidade)
-Background: bg-orange-500/5 (laranja muito sútil)
+Background: bg-orange-500/5 (laranja muito sutil)
 Cantos: rounded-xl (arredondados)
 Cursor: cursor-pointer (mão ao hover)
 ```
@@ -148,7 +148,7 @@ Spinner:
   - h-5 w-5 border-2
   - border-orange-500
   - border-t-transparent
-  - animaté-spin
+  - animate-spin
 
 Texto:
   - Título: font-medium text-orange-300
@@ -293,7 +293,7 @@ transition-all
 
 ### **Spinner de Loading**
 ```css
-animaté-spin (360° infinito)
+animate-spin (360° infinito)
 border-2 (borda uniforme)
 border-t-transparent (topo transparente)
 Velocidade: 1s por rotação completa
@@ -408,7 +408,7 @@ Resultado: Ícone muda de cor quando hover no label
     <div className="flex items-center gap-3 text-orange-300 text-sm 
                     bg-gradient-to-r from-orange-500/10 to-amber-500/10 
                     border border-orange-500/20 p-4 rounded-lg">
-      <div className="animaté-spin rounded-full h-5 w-5 border-2 
+      <div className="animate-spin rounded-full h-5 w-5 border-2 
                       border-orange-500 border-t-transparent" />
       <div>
         <p className="font-medium">Processando planilha...</p>

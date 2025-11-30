@@ -154,13 +154,13 @@ Authorization: Bearer {token}
 
 #### Atualizar Configurações da Empresa
 ```http
-PATCH /api/empresas/configurações
+PATCH /api/empresas/configuracoes
 Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "configurações": {
-    "notificações": true,
+  "configuracoes": {
+    "notificacoes": true,
     "limiteColaboradores": 100
   }
 }

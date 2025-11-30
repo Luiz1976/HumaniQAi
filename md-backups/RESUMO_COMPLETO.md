@@ -77,7 +77,7 @@
 | GET | `/api/empresas/me` | Dados da minha empresa | Empresa |
 | GET | `/api/empresas/colaboradores` | Listar colaboradores | Empresa |
 | GET | `/api/empresas/todas` | Listar todas empresas | Admin |
-| PATCH | `/api/empresas/configurações` | Atualizar configurações | Empresa |
+| PATCH | `/api/empresas/configuracoes` | Atualizar configurações | Empresa |
 
 ### 4. 🧠 Testes Psicológicos
 

@@ -109,7 +109,7 @@ A aplicação estará disponível em:
 - `GET /api/empresas/me` - Dados da própria empresa
 - `GET /api/empresas/colaboradores` - Listar colaboradores
 - `GET /api/empresas/todas` - Listar todas (Admin)
-- `PATCH /api/empresas/configurações` - Atualizar configurações
+- `PATCH /api/empresas/configuracoes` - Atualizar configurações
 
 ### Testes Psicológicos
 - `GET /api/testes` - Listar testes disponíveis
@@ -281,7 +281,7 @@ curl -X POST http://localhost:3001/api/convites/empresa/aceitar/TOKEN_DO_CONVITE
 npm run dev           # Inicia frontend (Vite)
 npm run server        # Inicia backend (Express)
 npm run db:push       # Sincroniza schema com banco
-npm run db:generaté   # Gera migrations
+npm run db:generate   # Gera migrations
 npm run build         # Build para produção
 ```
 

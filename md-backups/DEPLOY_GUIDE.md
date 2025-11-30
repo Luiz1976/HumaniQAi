@@ -16,7 +16,7 @@
 
 ### ✅ Configuração Atual (IMPLEMENTADA)
 
-O backend está configurado para deploy no **Render.com** com as seguintes específicações:
+O backend está configurado para deploy no **Render.com** com as seguintes especificações:
 
 #### Arquivo `render.yaml`
 ```yaml
@@ -393,7 +393,7 @@ railway variables
 psql $DATABASE_URL -c "SELECT 1"
 ```
 
-### Raté Limiting em Produção
+### Rate Limiting em Produção
 
 ```bash
 # Ajustar em server/index.ts

@@ -375,7 +375,7 @@ Deve carregar a aplicação HumaniQ AI normalmente.
 3. Abra **DevTools** → **Console** e veja se há erros
 4. Verifique **Network tab** para ver quais URLs estão sendo chamadas
 
-### ❌ SSL Certificaté Error
+### ❌ SSL Certificate Error
 **Causa**: DNS não propagou completamente
 
 **Solução**:

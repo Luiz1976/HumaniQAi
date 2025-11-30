@@ -137,7 +137,7 @@ callback(null, true); // Linha 32 - PERMISSIVO DEMAIS
 
 **CHECKLIST DE SEGURANÇA:**
 - [ ] Revisar política CORS para produção
-- [ ] Validar raté limiting em endpoints sensíveis
+- [ ] Validar rate limiting em endpoints sensíveis
 - [ ] Confirmar sanitização de inputs
 - [ ] Verificar proteção contra SQL injection (Drizzle ORM ✅)
 - [ ] Validar tokens JWT em todos os endpoints protegidos

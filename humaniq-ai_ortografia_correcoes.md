@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # HumaniQ AI - Registro de Correções Ortográficas
 
 ## Data: 2024-11-20
@@ -110,3 +111,17 @@ Para cada correção:
 ---
 
 **Status**: Revisão em andamento - aguardando escaneamento completo do projeto
+=======
+# Registro de Correções Ortográficas - HumaniQ AI
+
+| Arquivo | Trecho Original | Trecho Corrigido | Tipo | Justificativa |
+| :--- | :--- | :--- | :--- | :--- |
+| `src/pages/TesteEstresseOcupacionalIntroducao.tsx` | `Científicamente validado` | `Cientificamente validado` | Corrigido | Remoção de acento incorreto em advérbio terminado em -mente. |
+| `src/pages/TesteRPOIntroducao.tsx` | `Científicamente validado` | `Cientificamente validado` | Corrigido | Remoção de acento incorreto em advérbio terminado em -mente. |
+| `src/components/DebugResultado.tsx` | `Usuario ID` | `Usuário ID` | Corrigido | Adição de acento agudo em "Usuário". |
+| `src/components/ui/pagination.tsx` | `Previous` | `Anterior` | Corrigido | Tradução para PT-BR. |
+| `src/components/ui/pagination.tsx` | `Next` | `Próximo` | Corrigido | Tradução para PT-BR. |
+| `src/components/ui/pagination.tsx` | `More pages` | `Mais páginas` | Corrigido | Tradução para PT-BR. |
+| `src/data/cursosData.ts` (linhas 64-1491) | Múltiplas ocorrências sem acentuação | Texto corrigido com acentuação PT-BR | Corrigido | Correção sistemática de acentuação em todo o conteúdo didático dos primeiros 4 módulos do curso de Inteligência Emocional: substituição de palavras como "e" por "é", "nao" por "não", "voce" por "você", "emocoes" por "emoções", "decisoes" por "decisões", "tecnicas" por "técnicas", "praticos" por "práticos", "conclusao" por "conclusão", entre outras. Total de aproximadamente 1.500 linhas corrigidas manualmente. |
+| `src/data/cursosData.ts` (todo o arquivo) | Padrões comuns sem acentuação | Correções aplicadas via script Node.js | Corrigido | Script Node.js executado com sucesso aplicando ~100 padrões de correção de acentuação em todo o arquivo (10.245 linhas). Palavras corrigidas incluem: não, você, está, são, emoções, decisões, situações, ações, técnicas, práticas, específico, crítico, próximo, também, além, através, até, já, exercício, módulo, líder, liderança, experiência, influência, importância, resiliência, confiança, diferença, inteligência, saúde, possível, nível, fácil, difícil, útil, responsável, disponível, saudável, agradável, incrível, flexível, variável, notável, favorável, vulnerável, entre outras. |
+>>>>>>> b648ea9 (Preparar deploy - configuração ambiente (Netlify/Render/Neon))

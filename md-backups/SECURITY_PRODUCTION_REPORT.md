@@ -86,7 +86,7 @@ app.use(helmet({
 
 ---
 
-### 3. Raté Limiting com express-raté-limit
+### 3. Rate Limiting com express-rate-limit
 
 **Status:** ✅ Concluído e Validado (após correção de trust proxy)  
 **Arquivo:** `server/index.ts` (linhas 29, 43-63)
@@ -96,7 +96,7 @@ app.use(helmet({
 // CRÍTICO: Trust proxy configurado ANTES dos limiters
 app.set('trust proxy', 1);
 
-// Raté limiter global
+// Rate limiter global
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 100, // 100 requisições
@@ -105,7 +105,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Raté limiter específico para autenticação
+// Rate limiter específico para autenticação
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5, // 5 tentativas de login
@@ -230,7 +230,7 @@ O architect revisou todas as implementações e confirmou:
 ### ✅ Aprovações
 
 1. **Segurança HTTP (Helmet):** Configuração correta para produção
-2. **Raté Limiting:** Trust proxy corrigido, funcionará corretamente em Railway/Vercel
+2. **Rate Limiting:** Trust proxy corrigido, funcionará corretamente em Railway/Vercel
 3. **Logging:** Winston bem configurado, IPs reais preservados
 4. **CI/CD:** Pipeline completo e consistente com DEPLOY_GUIDE
 5. **Documentação:** Clara, completa e prática
@@ -238,15 +238,15 @@ O architect revisou todas as implementações e confirmou:
 ### 🔧 Correções Realizadas
 
 **Problema Crítico Identificado:**
-> "Raté limiting setup is currently ineffective in production hosting behind proxies because `app.set('trust proxy', 1)` was dropped, so Railway/Vercel clients will all share the proxy IP and quickly exhaust the global 100-requests/15-min window."
+> "Rate limiting setup is currently ineffective in production hosting behind proxies because `app.set('trust proxy', 1)` was dropped, so Railway/Vercel clients will all share the proxy IP and quickly exhaust the global 100-requests/15-min window."
 
 **Solução Implementada:**
 ```typescript
 // Linha 29 em server/index.ts
-app.set('trust proxy', 1); // ANTES dos raté limiters
+app.set('trust proxy', 1); // ANTES dos rate limiters
 ```
 
-**Resultado:** Raté limiting agora funciona corretamente em produção, preservando IPs reais para bucketing e logs.
+**Resultado:** Rate limiting agora funciona corretamente em produção, preservando IPs reais para bucketing e logs.
 
 ---
 
@@ -286,7 +286,7 @@ app.set('trust proxy', 1); // ANTES dos raté limiters
 - TypeScript: ~85% (backend com JS legado)
 
 ### Depois (30/10/2025)
-- ✅ Segurança: Enterprise (Helmet + Raté Limiting + Winston)
+- ✅ Segurança: Enterprise (Helmet + Rate Limiting + Winston)
 - ✅ Logging: Estruturado com rotação diária
 - ✅ Deploy: 100% Automatizado (CI/CD)
 - ✅ Documentação: Completa (.env.example + DEPLOY_GUIDE)
@@ -305,7 +305,7 @@ app.set('trust proxy', 1); // ANTES dos raté limiters
 ### Médio Prazo (Próximas 2 Semanas)
 5. ⏳ Resolver TODOs/FIXMEs (tarefa 7)
 6. ⏳ Refatorar componentes grandes (tarefa 8)
-7. ⏳ Monitorar logs de produção e ajustar raté limits se necessário
+7. ⏳ Monitorar logs de produção e ajustar rate limits se necessário
 
 ### Longo Prazo (Próximo Mês)
 8. ⏳ Implementar testes de integração (tarefa 10)
@@ -330,12 +330,12 @@ curl https://api.humaniq.ai/health
 
 ### Monitoramento
 - **Health Endpoint:** `GET /health`
-- **Raté Limit Headers:** `X-RateLimit-Limit`, `X-RateLimit-Remaining`
+- **Rate Limit Headers:** `X-RateLimit-Limit`, `X-RateLimit-Remaining`
 - **Winston Logs:** `logs/error-*.log`, `logs/combined-*.log`
 
 ### Alertas Recomendados
 - [ ] Taxa de erro > 5%
-- [ ] Raté limit atingido > 10x/hora
+- [ ] Rate limit atingido > 10x/hora
 - [ ] Health check falhou
 - [ ] Deploy falhou
 

@@ -4,7 +4,7 @@ Este documento consolida os ajustes finais para preparar o sistema para produç�
 
 ## Ajustes Realizados
 - Logger padronizado em rotas principais (`empresas`, `testes`, `erp`, entre outras) e middleware central.
-- Proteção nas rotas ERP com `x-api-key` via `API_INTEGRATION_KEY` e raté limiting dedicado (`ERP_RATE_LIMIT_*`).
+- Proteção nas rotas ERP com `x-api-key` via `API_INTEGRATION_KEY` e rate limiting dedicado (`ERP_RATE_LIMIT_*`).
 - Índices PostgreSQL criados para consultas de alta demanda (dashboards, disponibilidade, certificados).
 - `.env.example` atualizado com variáveis essenciais para operação em produção.
 
@@ -16,7 +16,7 @@ Este documento consolida os ajustes finais para preparar o sistema para produç�
 - `ERP_RATE_LIMIT_WINDOW_MS`, `ERP_RATE_LIMIT_MAX`: limites por IP para ERP.
 - `BACKUP_ENABLED`, `BACKUP_DIR`, `BACKUP_INTERVAL_MINUTES`: controle do backup.
 
-## Raté Limiting ERP
+## Rate Limiting ERP
 - Aplicado middleware dedicado em `/api/erp` com cabeçalho `x-api-key` obrigatório.
 - Janela e máximo configuráveis por ambiente.
 

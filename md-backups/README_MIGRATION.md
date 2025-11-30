@@ -26,12 +26,12 @@ I've successfully migrated the core infrastructure of your HumaniQ psychological
 
 To complete the migration, you need to:
 
-1. **Updaté Frontend Services** - Replace Supabase calls with local API:
+1. **Update Frontend Services** - Replace Supabase calls with local API:
    - `src/services/authService.ts`
    - `src/services/conviteService.ts`
    - Other service files
 
-2. **Creaté Additional API Routes**:
+2. **Create Additional API Routes**:
    - Invitation management
    - Test management
    - Company/employee CRUD
@@ -54,7 +54,7 @@ curl -X POST http://localhost:3001/api/auth/login \
   -d '{"email":"your@email.com","password":"yourpassword"}'
 ```
 
-### Creaté Your First Admin
+### Create Your First Admin
 ```bash
 curl -X POST http://localhost:3001/api/auth/register/admin \
   -H "Content-Type: application/json" \
@@ -84,14 +84,14 @@ Already configured for you:
 
 ### Option 1: Let me help!
 Just ask:
-- "Creaté the invitations API"
-- "Updaté frontend to use new API"
+- "Create the invitations API"
+- "Update frontend to use new API"
 - "Complete the migration"
 
 ### Option 2: Do it yourself
 1. Check `MIGRATION_STATUS.md` for detailed guidance
-2. Updaté frontend services to call `/api/*` endpoints
-3. Creaté remaining API routes in `server/routes/`
+2. Update frontend services to call `/api/*` endpoints
+3. Create remaining API routes in `server/routes/`
 
 ## 📊 Migration Progress
 
@@ -106,7 +106,7 @@ Just ask:
 ## 💡 Need Help?
 
 - Check `MIGRATION_STATUS.md` for detailed technical info
-- Check `.local/staté/replit/agent/progress_tracker.md` for checklist
+- Check `.local/state/replit/agent/progress_tracker.md` for checklist
 - Ask me to continue the migration anytime!
 
 ---

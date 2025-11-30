@@ -1,6 +1,10 @@
 [build]
+<<<<<<< HEAD
   base = "H4"
   command = "npm install --include=dev && npm run build"
+=======
+  command = "npm ci && npm run build"
+>>>>>>> b648ea9 (Preparar deploy - configuração ambiente (Netlify/Render/Neon))
   publish = "dist"
 
 [build.environment]

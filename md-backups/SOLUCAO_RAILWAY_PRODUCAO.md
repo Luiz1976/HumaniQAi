@@ -97,7 +97,7 @@ npm install -g heroku
 
 # Login e criar app
 heroku login
-heroku creaté humaniq-backend-prod
+heroku create humaniq-backend-prod
 
 # Deploy
 git push heroku main

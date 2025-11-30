@@ -10,7 +10,7 @@
 - ✅ **Servidor funcionando:** http://localhost:10000
 - ✅ **Health check ativo:** http://localhost:10000/health
 - ✅ **Arquivo:** server.cjs (CommonJS compatível)
-- ✅ **Configuração completa:** CORS, raté limiting, segurança, PostgreSQL
+- ✅ **Configuração completa:** CORS, rate limiting, segurança, PostgreSQL
 - ✅ **Dependências funcionais:** Express, CORS, Helmet, dotenv
 
 #### Frontend de Teste Funcionando
@@ -26,7 +26,7 @@
 - ✅ Criado `server.js` na raiz com CommonJS
 - ✅ Configurado `package.json` para usar `node server.js`
 - ✅ Implementados endpoints essenciais: `/health`, `/api/health`
-- ✅ Middleware completo: CORS, Helmet, Raté Limiting
+- ✅ Middleware completo: CORS, Helmet, Rate Limiting
 
 #### 2. Dependências Instaladas
 ```json
@@ -34,7 +34,7 @@
   "express": "^5.1.0",
   "cors": "^2.8.5", 
   "helmet": "^7.1.0",
-  "express-raté-limit": "^8.2.0",
+  "express-rate-limit": "^8.2.0",
   "dotenv": "^17.2.3"
 }
 ```
@@ -43,7 +43,7 @@
 - ✅ **Porta:** 10000 (configurável via PORT)
 - ✅ **Ambiente:** production
 - ✅ **CORS:** localhost:5000, localhost:3000, Vercel
-- ✅ **Raté Limiting:** 100 req/15min por IP
+- ✅ **Rate Limiting:** 100 req/15min por IP
 
 ### 🌐 URLS FUNCIONAIS
 

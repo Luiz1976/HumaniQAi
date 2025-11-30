@@ -152,7 +152,7 @@ Inconsistência de nomenclatura entre campos:
 ### Dependências de Segurança
 - Manter todas as variáveis de ambiente em `.env` (nunca commitar valores reais)
 - Usar apenas `sk-xxx` ou placeholders em documentação
-- Implementar raté limiting para APIs públicas
+- Implementar rate limiting para APIs públicas
 - Manter logs de auditoria para ações críticas
 
 ---
