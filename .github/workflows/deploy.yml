@@ -11,17 +11,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Enable Corepack
-        run: corepack enable
+          cache: 'pnpm'
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
       - name: Install deps (pnpm)
         run: pnpm install --frozen-lockfile
+
       - name: Build
-        run: npm run build
+        run: pnpm run build
+
       - name: Deploy to Vercel
+        if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != '' }}
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -29,12 +38,15 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: .
           prod: true
+
       - name: Verify post-deploy
+        if: ${{ secrets.DEPLOY_BASE_URL != '' }}
         env:
           DEPLOY_BASE_URL: ${{ secrets.DEPLOY_BASE_URL }}
-        run: npm run verify:deploy
+        run: pnpm run verify:deploy
+
       - name: Rollback on failure
-        if: failure()
+        if: ${{ failure() && secrets.VERCEL_TOKEN != '' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: npx vercel rollback production --token "$VERCEL_TOKEN"
