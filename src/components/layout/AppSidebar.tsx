@@ -198,7 +198,7 @@ export function AppSidebar() {
         <div className="relative flex h-20 items-center px-6 border-b border-border/10">
           {!isCollapsed ? (
             <>
-              <div className="w-full flex justify-center">
+              <div className="w-full flex justify-center ml-6">
                 <Logo size="xl" showText={true} />
               </div>
               <div className="absolute right-6 top-1/2 -translate-y-1/2">
