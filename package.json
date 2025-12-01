@@ -10,6 +10,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+    "verify:deploy": "node scripts/verify-deploy.mjs",
     "test": "vitest",
     "test:integration": "vitest --config vitest.integration.config.ts",
     "test:integration:ui": "vitest --ui --config vitest.integration.config.ts",
