@@ -121,7 +121,7 @@ const corsOptions = {
       if (hostname.endsWith('.onrender.com')) {
         return callback(null, true);
       }
-    } catch (_) {}
+    } catch (_) { }
 
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -131,7 +131,7 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 };
 
@@ -225,7 +225,7 @@ app.use('/api/export', exportRoutes);
 app.post('/api/audit/logs', (req, res) => {
   try {
     logger.info('AUDIT_LOG', { payload: req.body, ts: new Date().toISOString() });
-  } catch (_) {}
+  } catch (_) { }
   res.json({ success: true });
 });
 
