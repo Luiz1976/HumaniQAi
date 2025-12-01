@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { colaboradorService, ColaboradorCompleto } from "@/services/colaboradorService";
 import AvatarSelector from "@/components/AvatarSelector";
 import { toast } from "sonner";
+import { getAvatar, saveAvatar, storageKeyForUser } from "@/lib/services/avatar-storage";
 import {
   Sidebar,
   SidebarContent,
@@ -51,6 +52,7 @@ export function AppSidebar() {
   const [loadingColaborador, setLoadingColaborador] = useState(true);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [localAvatar, setLocalAvatar] = useState<string | null>(null);
 
   // Buscar dados do colaborador logado
   const hasLoadedRef = useRef(false);
@@ -60,6 +62,10 @@ export function AppSidebar() {
       console.log('👤 [AppSidebar] Usuário atual:', user);
       
       if (user) {
+        try {
+          const a = getAvatar(user.id);
+          if (a) setLocalAvatar(a);
+        } catch (_) {}
         if (hasLoadedRef.current) {
           return;
         }
@@ -70,6 +76,9 @@ export function AppSidebar() {
           const dadosColaborador = await colaboradorService.getDadosColaboradorLogado();
           console.log('📋 [AppSidebar] Dados do colaborador recebidos:', dadosColaborador);
           setColaborador(dadosColaborador);
+          if (dadosColaborador?.avatar) {
+            try { saveAvatar(user.id, dadosColaborador.avatar); setLocalAvatar(dadosColaborador.avatar); } catch (_) {}
+          }
         } catch (error) {
           console.error('❌ [AppSidebar] Erro ao carregar dados do colaborador:', error);
         } finally {
@@ -81,6 +90,7 @@ export function AppSidebar() {
         setColaborador(null);
         setLoadingColaborador(false);
         hasLoadedRef.current = false;
+        setLocalAvatar(null);
       }
     };
 
@@ -91,13 +101,29 @@ export function AppSidebar() {
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
+    const handleStorage = (e: StorageEvent) => {
+      if (!user) return;
+      const expectedKey = storageKeyForUser(user.id);
+      if (e.key === expectedKey && typeof e.newValue === 'string') {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          const data = parsed?.data;
+          if (typeof data === 'string') {
+            setLocalAvatar(data);
+            setColaborador(prev => prev ? { ...prev, avatar: data } : prev);
+          }
+        } catch (_) {}
+      }
+    };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+    window.addEventListener('storage', handleStorage);
 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('storage', handleStorage);
     };
   }, []);
 
@@ -124,42 +150,30 @@ export function AppSidebar() {
         const reader = new FileReader();
         reader.onloadend = async () => {
           const result = reader.result as string;
-          
+          setColaborador(prev => prev ? { ...prev, avatar: result } : null);
+          try { saveAvatar(user!.id, result); setLocalAvatar(result); } catch (_) {}
           try {
-            // Atualizar no banco de dados
-            await colaboradorService.atualizarColaborador(colaborador.id, {
-              avatar: result
-            });
-
-            // Atualizar estado local
-            setColaborador(prev => prev ? { ...prev, avatar: result } : null);
-            
+            await colaboradorService.atualizarColaborador(colaborador.id, { avatar: result });
             toast.success('Avatar atualizado com sucesso!');
             setShowAvatarSelector(false);
           } catch (error) {
             console.error('Erro ao atualizar avatar:', error);
-            toast.error('Erro ao atualizar avatar. Tente novamente.');
+            toast.error('Avatar salvo localmente. Sincronizaremos quando online.');
           }
         };
         reader.readAsDataURL(newAvatar);
       } else if (typeof newAvatar === 'string') {
         // É uma string (base64 ou URL), usar diretamente
         base64String = newAvatar;
-        
+        setColaborador(prev => prev ? { ...prev, avatar: base64String } : null);
+        try { saveAvatar(user!.id, base64String); setLocalAvatar(base64String); } catch (_) {}
         try {
-          // Atualizar no banco de dados
-          await colaboradorService.atualizarColaborador(colaborador.id, {
-            avatar: base64String
-          });
-
-          // Atualizar estado local
-          setColaborador(prev => prev ? { ...prev, avatar: base64String } : null);
-          
+          await colaboradorService.atualizarColaborador(colaborador.id, { avatar: base64String });
           toast.success('Avatar atualizado com sucesso!');
           setShowAvatarSelector(false);
         } catch (error) {
           console.error('Erro ao atualizar avatar:', error);
-          toast.error('Erro ao atualizar avatar. Tente novamente.');
+          toast.error('Avatar salvo localmente. Sincronizaremos quando online.');
         }
       } else {
         throw new Error('Tipo de avatar inválido. Esperado File ou string.');
@@ -211,9 +225,9 @@ export function AppSidebar() {
                   className="h-20 w-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border border-primary/20 hover:from-primary/30 hover:to-primary/20 transition-all duration-200 cursor-pointer"
                   title="Clique para alterar avatar"
                 >
-                  {colaborador?.avatar ? (
+                  {(colaborador?.avatar || localAvatar) ? (
                     <img 
-                      src={colaborador.avatar} 
+                      src={colaborador?.avatar || localAvatar || ''} 
                       alt={colaborador.nome} 
                       className="h-20 w-20 rounded-full object-cover"
                     />

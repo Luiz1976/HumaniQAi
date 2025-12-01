@@ -93,6 +93,16 @@ const PRIORIDADE_COLORS = {
   média: 'bg-yellow-100 text-yellow-800 border-yellow-300',
   baixa: 'bg-blue-100 text-blue-800 border-blue-300',
 };
+const LABELS_MAP: Record<string, string> = {
+  'qualidade-vida-trabalho': 'Qualidade de Vida',
+  'clima-organizacional': 'Clima Organizacional',
+  'rpo': 'RPO',
+  'estresse-ocupacional': 'Estresse Ocupacional',
+  'percepcao-assedio': 'Percepção de Assédio',
+  'humaniq-insight': 'HumaniQ Insight',
+  'karasek-siegrist': 'Karasek-Siegrist',
+  'riscos-psicossociais': 'Riscos Psicossociais',
+};
 
 export default function AdminEmpresaDetalhes() {
   const { id } = useParams<{ id: string }>();
@@ -145,10 +155,17 @@ export default function AdminEmpresaDetalhes() {
 
   if (!indicadores) return null;
 
-  const categoriaData = Object.entries(indicadores.testes.porCategoria || {}).map(([nome, valor]) => ({
-    nome,
-    valor,
-  }));
+  const formatCategoriaNome = (s: string) => {
+    const m = LABELS_MAP[s];
+    if (m) return m;
+    const t = s.replace(/[-_]+/g, ' ').trim();
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  };
+  const entries = Object.entries(indicadores.testes.porCategoria || {}).sort((a, b) => (b[1] || 0) - (a[1] || 0));
+  const limite = 6;
+  const principais = entries.slice(0, limite).map(([nome, valor]) => ({ nome: formatCategoriaNome(nome), valor }));
+  const outrosValor = entries.slice(limite).reduce((acc, [, v]) => acc + (v || 0), 0);
+  const categoriaData = outrosValor > 0 ? [...principais, { nome: 'Outros', valor: outrosValor }] : principais;
 
   const distribuicaoData = [
     { periodo: 'Manhã\n(6h-12h)', quantidade: indicadores.analise?.distribuicaoTemporal?.manha || 0, icon: 'sunrise' },
@@ -156,6 +173,19 @@ export default function AdminEmpresaDetalhes() {
     { periodo: 'Noite\n(18h-00h)', quantidade: indicadores.analise?.distribuicaoTemporal?.noite || 0, icon: 'sunset' },
     { periodo: 'Madrugada\n(0h-6h)', quantidade: indicadores.analise?.distribuicaoTemporal?.madrugada || 0, icon: 'moon' },
   ];
+  const totalCategoria = categoriaData.reduce((s, d) => s + (d.valor || 0), 0);
+  const RADIAN = Math.PI / 180;
+  const renderPieLabel = ({ cx, cy, midAngle, outerRadius, percent, name }: any) => {
+    if (percent < 0.05) return null;
+    const r = outerRadius + 16;
+    const x = cx + r * Math.cos(-midAngle * RADIAN);
+    const y = cy + r * Math.sin(-midAngle * RADIAN);
+    return (
+      <text x={x} y={y} fill="#64748b" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" fontSize={12}>
+        {`${name}: ${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
@@ -589,69 +619,45 @@ export default function AdminEmpresaDetalhes() {
         </div>
 
         {/* Gráficos - Linha 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Categorias */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="grid grid-cols-1 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 w-full">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center mb-6">
               <PieChart className="w-5 h-5 mr-2 text-green-600" />
               Distribuição por Categoria
             </h3>
             {categoriaData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={380}>
                 <RechartsPie>
                   <Pie
                     data={categoriaData}
                     cx="50%"
                     cy="50%"
-                    labelLine={false}
-                    label={({ nome, percent }) => `${nome}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
-                    fill="#8884d8"
+                    innerRadius={60}
+                    outerRadius={110}
+                    paddingAngle={2}
+                    minAngle={5}
+                    startAngle={90}
+                    endAngle={450}
+                    labelLine
+                    label={renderPieLabel}
+                    nameKey="nome"
                     dataKey="valor"
                   >
                     {categoriaData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Legend layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 12 }} />
+                  <Tooltip formatter={(value: any, _name: any, props: any) => {
+                    const v = Number(value || 0);
+                    const p = totalCategoria > 0 ? ((v / totalCategoria) * 100).toFixed(1) + '%' : '0%';
+                    return [`${v} (${p})`, props?.payload?.nome || ''];
+                  }} />
                 </RechartsPie>
               </ResponsiveContainer>
             ) : (
               <div className="flex items-center justify-center h-[300px] text-gray-400">
                 <p>Nenhum teste realizado ainda</p>
-              </div>
-            )}
-          </div>
-
-          {/* Categorias de Risco */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center mb-6">
-              <AlertTriangle className="w-5 h-5 mr-2 text-red-600" />
-              Categorias de Risco Identificadas
-            </h3>
-            {indicadores.saude?.categoriasRisco && indicadores.saude.categoriasRisco.length > 0 ? (
-              <div className="space-y-3">
-                {indicadores.saude.categoriasRisco.map((cat, index) => (
-                  <div key={index} className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-red-900">{cat.categoria}</h4>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        cat.nivel === 'Crítico' 
-                          ? 'bg-red-200 text-red-900' 
-                          : 'bg-orange-200 text-orange-900'
-                      }`}>
-                        {cat.nivel}
-                      </span>
-                    </div>
-                    <p className="text-sm text-red-700">{cat.testes} testes com baixa pontuação</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-[240px] text-center">
-                <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
-                <p className="text-green-600 font-semibold">Nenhuma categoria de risco identificada</p>
-                <p className="text-sm text-gray-500 mt-2">Todas as áreas estão dentro dos parâmetros esperados</p>
               </div>
             )}
           </div>
