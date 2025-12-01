@@ -195,16 +195,24 @@ export function AppSidebar() {
     >
       <div className="flex h-full flex-col">
         {/* Header - Logo e Toggle */}
-        <div className="flex h-20 items-center justify-between px-6 border-b border-border/10">
-          {!isCollapsed && (
-            <Logo size="xl" showText={true} />
-          )}
-          {isCollapsed && (
-            <div className="flex items-center justify-center w-full">
+        <div className="relative flex h-20 items-center px-6 border-b border-border/10">
+          {!isCollapsed ? (
+            <>
+              <div className="w-full flex justify-center">
+                <Logo size="xl" showText={true} />
+              </div>
+              <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                <SidebarTrigger className="h-9 w-9 hover:bg-accent/50 rounded-xl transition-colors" />
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center w-full relative group">
               <Logo size="lg" showText={false} />
+              <div className="absolute -right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <SidebarTrigger className="h-6 w-6" />
+              </div>
             </div>
           )}
-          <SidebarTrigger className="h-9 w-9 hover:bg-accent/50 rounded-xl transition-colors" />
         </div>
 
         {/* Identificação do Usuário */}

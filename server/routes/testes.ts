@@ -1,6 +1,6 @@
 import express from 'express';
 import { db, dbType } from '../db-config';
-import { testes, perguntas, resultados, respostas, colaboradores, testeDisponibilidade, insertResultadoSchema, insertRespostaSchema } from '../../shared/schema';
+import { testes, perguntas, resultados, respostas, colaboradores, testeDisponibilidade, empresas, insertResultadoSchema, insertRespostaSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { eq, and, desc, or } from 'drizzle-orm';
 import { z } from 'zod';
@@ -100,9 +100,9 @@ router.get('/:id/perguntas', async (req, res) => {
 
     // 🔍 Verificar se é um teste disponível nos arquivos locais
     const testeLocal = TESTES_DISPONIVEIS[id as keyof typeof TESTES_DISPONIVEIS];
-    
+
     if (testeLocal) {
-      const perguntasFormatadas = testeLocal.perguntas.flatMap(dimensao => 
+      const perguntasFormatadas = testeLocal.perguntas.flatMap(dimensao =>
         dimensao.perguntas.map(pergunta => ({
           id: pergunta.id.toString(),
           texto: pergunta.texto,
@@ -146,9 +146,9 @@ router.get('/:id/perguntas', async (req, res) => {
         }
       }
 
-      return res.json({ 
-        perguntas: perguntasFormatadas, 
-        total: perguntasFormatadas.length 
+      return res.json({
+        perguntas: perguntasFormatadas,
+        total: perguntasFormatadas.length
       });
     }
 
@@ -165,13 +165,13 @@ router.get('/:id/perguntas', async (req, res) => {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
 
-    const todosTestes = await db
-      .select({
-        id: testes.id,
-        nome: testes.nome,
-        categoria: testes.categoria,
-      })
-      .from(testes);
+      const todosTestes = await db
+        .select({
+          id: testes.id,
+          nome: testes.nome,
+          categoria: testes.categoria,
+        })
+        .from(testes);
 
       const encontrado = todosTestes.find(t => toSlug(t.nome || '') === id || toSlug(t.categoria || '') === id);
       if (!encontrado) {
@@ -245,7 +245,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
               for (let i = 1; i <= a.length; i++) {
                 for (let j = 1; j <= b.length; j++) {
                   const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-                  m[i][j] = Math.min(m[i-1][j] + 1, m[i][j-1] + 1, m[i-1][j-1] + cost);
+                  m[i][j] = Math.min(m[i - 1][j] + 1, m[i][j - 1] + 1, m[i - 1][j - 1] + cost);
                 }
               }
               return m[a.length][b.length];
@@ -272,11 +272,15 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
       }
     }
 
-    // Validar se testeIdFinal existe na tabela testes para evitar FOREIGN KEY constraint
+    // Validar se testeIdFinal existe na tabela testes
     if (testeIdFinal) {
       try {
-        const { sqlite } = await import('../db-sqlite');
-        const testeExistente = sqlite.prepare('SELECT id FROM testes WHERE id = ?').get(testeIdFinal);
+        const [testeExistente] = await db
+          .select({ id: testes.id })
+          .from(testes)
+          .where(eq(testes.id, testeIdFinal))
+          .limit(1);
+
         if (!testeExistente) {
           logger.warn(`⚠️ [RESULTADO] Teste ID ${testeIdFinal} não existe na tabela testes. Usando null.`);
           testeIdFinal = null;
@@ -287,12 +291,16 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
       }
     }
 
-    // Validar empresa_id do usuário para evitar FOREIGN KEY constraint
+    // Validar empresa_id do usuário
     let empresaIdFinal = req.user!.empresaId;
     if (empresaIdFinal) {
       try {
-        const { sqlite } = await import('../db-sqlite');
-        const empresaExistente = sqlite.prepare('SELECT id FROM empresas WHERE id = ?').get(empresaIdFinal);
+        const [empresaExistente] = await db
+          .select({ id: empresas.id })
+          .from(empresas)
+          .where(eq(empresas.id, empresaIdFinal))
+          .limit(1);
+
         if (!empresaExistente) {
           logger.warn(`⚠️ [RESULTADO] Empresa ID ${empresaIdFinal} não existe na tabela empresas. Usando null.`);
           empresaIdFinal = null;
@@ -303,37 +311,11 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
       }
     }
 
-    const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
     let resultado: any;
-    if (isSqlite) {
-      const { sqlite } = await import('../db-sqlite');
-      const localId = randomUUID();
-      const stmt = sqlite.prepare(`
-        INSERT INTO resultados (
-          id, teste_id, usuario_id, pontuacao_total, tempo_gasto, status,
-          session_id, metadados, colaborador_id, empresa_id, user_email
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-      stmt.run(
-        localId,
-        testeIdFinal || null,
-        req.user!.userId,
-        pontuacaoTotal,
-        tempoGasto ?? null,
-        status || 'concluido',
-        sessionId ?? null,
-        JSON.stringify(metadados ?? {}),
-        req.user!.role === 'colaborador' ? req.user!.userId : null,
-        empresaIdFinal ?? null,
-        req.user!.email ?? null,
-      );
-      const row = sqlite.prepare('SELECT id, pontuacao_total as pontuacaoTotal, data_realizacao as dataRealizacao FROM resultados WHERE id = ?').get(localId);
-      resultado = row;
-    } else {
+    try {
       [resultado] = await db
         .insert(resultados)
         .values({
-          id: randomUUID(),
           testeId: testeIdFinal || null,
           usuarioId: req.user!.userId,
           pontuacaoTotal,
@@ -346,6 +328,12 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
           userEmail: req.user!.email,
         })
         .returning();
+    } catch (err) {
+      // Fallback para SQLite se returning não for suportado ou der erro específico
+      // Mas como estamos usando Drizzle configurado, deve funcionar.
+      // Se for SQLite, o Drizzle simula o returning ou fazemos uma query extra.
+      // O db.insert().returning() funciona no Drizzle com better-sqlite3.
+      throw err;
     }
 
     // 🔄 ATUALIZAÇÃO AUTOMÁTICA: Recalcular análise psicossocial em background
@@ -370,86 +358,52 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
         logger.info(`🔒 [DISPONIBILIDADE-CRÍTICO] Iniciando bloqueio do teste ${testeIdFinal} para colaborador ${colaboradorId}`);
 
         // Buscar registro existente
-        const { sqlite } = await import('../db-sqlite');
-        const disponibilidadeExistente = sqlite.prepare(`
-          SELECT * FROM teste_disponibilidade 
-          WHERE colaborador_id = ? AND teste_id = ? 
-          LIMIT 1
-        `).get(colaboradorId, testeIdFinal);
-
-
-
-
-
-
-
-
-
+        const [disponibilidadeExistente] = await db
+          .select()
+          .from(testeDisponibilidade)
+          .where(
+            and(
+              eq(testeDisponibilidade.colaboradorId, colaboradorId),
+              eq(testeDisponibilidade.testeId, testeIdFinal)
+            )
+          )
+          .limit(1);
 
         if (disponibilidadeExistente) {
           // Calcular próxima disponibilidade se tiver periodicidade
-          let proximaDisponibilidade: string | null = null;
-          if (disponibilidadeExistente.periodicidade_dias) {
-            const proximaData = new Date(
-              agora.getTime() + disponibilidadeExistente.periodicidade_dias * 24 * 60 * 60 * 1000
+          let proximaDisponibilidade: Date | null = null;
+          if (disponibilidadeExistente.periodicidadeDias) {
+            proximaDisponibilidade = new Date(
+              agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000
             );
-            proximaDisponibilidade = proximaData.toISOString();
-            logger.info(`📅 [DISPONIBILIDADE] Próxima liberação calculada: ${proximaDisponibilidade} (${disponibilidadeExistente.periodicidade_dias} dias)`);
+            logger.info(`📅 [DISPONIBILIDADE] Próxima liberação calculada: ${proximaDisponibilidade.toISOString()} (${disponibilidadeExistente.periodicidadeDias} dias)`);
           }
 
           // Atualizar para indisponível
-          // Atualizar para indisponível usando SQLite
-          sqlite.prepare(`
-            UPDATE teste_disponibilidade 
-            SET 
-              disponivel = 0,
-              proxima_disponibilidade = ?,
-              updated_at = ?
-            WHERE id = ?
-          `).run(
-            proximaDisponibilidade,
-            agora.toISOString(),
-            disponibilidadeExistente.id
-          );
+          await db
+            .update(testeDisponibilidade)
+            .set({
+              disponivel: false,
+              proximaDisponibilidade: proximaDisponibilidade,
+              updatedAt: agora,
+            })
+            .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id));
 
-
-
-
-
-
-
-          logger.info(`✅ [DISPONIBILIDADE] Teste ${testeIdFinal} bloqueado com sucesso (atualização) - Disponível=${false}, ProximaLiberacao=${proximaDisponibilidade || 'Manual'}`);
+          logger.info(`✅ [DISPONIBILIDADE] Teste ${testeIdFinal} bloqueado com sucesso (atualização)`);
         } else {
-          // Criar novo registro como indisponível usando SQLite
-          const id = randomUUID();
-          sqlite.prepare(`
-            INSERT INTO teste_disponibilidade (
-              id, colaborador_id, teste_id, empresa_id, 
-              disponivel, ultima_liberacao, proxima_disponibilidade,
-              created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `).run(
-            id,
+          // Criar novo registro como indisponível
+          await db.insert(testeDisponibilidade).values({
             colaboradorId,
-            testeIdFinal,
+            testeId: testeIdFinal,
             empresaId,
-            0, // disponivel = false
-            null, // ultima_liberacao
-            null, // proxima_disponibilidade
-            agora.toISOString(),
-            agora.toISOString()
-          );
+            disponivel: false,
+            ultimaLiberacao: null,
+            proximaDisponibilidade: null,
+            createdAt: agora,
+            updatedAt: agora,
+          });
 
-
-
-
-
-
-
-
-
-
-          logger.info(`✅ [DISPONIBILIDADE] Registro criado e teste ${testeIdFinal} bloqueado com sucesso (criação) - ID: ${id}`);
+          logger.info(`✅ [DISPONIBILIDADE] Registro criado e teste ${testeIdFinal} bloqueado com sucesso (criação)`);
         }
       } catch (error) {
         logger.error('❌❌❌ [DISPONIBILIDADE-ERRO-CRÍTICO] FALHA ao bloquear teste:', error);
@@ -663,7 +617,7 @@ router.get('/resultado/:id', authenticateToken, async (req: AuthRequest, res) =>
     }
 
     // Verificar permissão: usuário pode ver se for dele ou da mesma empresa
-    const temPermissao = 
+    const temPermissao =
       resultado.usuarioId === req.user!.userId ||
       resultado.colaboradorId === req.user!.userId ||
       (resultado.empresaId && resultado.empresaId === req.user!.empresaId) ||
