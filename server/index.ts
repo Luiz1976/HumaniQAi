@@ -11,6 +11,16 @@ import rateLimit from 'express-rate-limit';
 import { db, runMigrations } from './db-config';
 import logger, { logRequest } from './utils/logger';
 
+// Tratamento de erros não capturados (deve vir antes de outros imports que podem falhar)
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection:', { reason, promise });
+});
+
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
 // Importar rotas
 import authRoutes from './routes/auth';
 import testesRoutes from './routes/testes';
@@ -39,7 +49,7 @@ import postgres from 'postgres';
 const app = express();
 // Desabilitar ETag para evitar 304 em desenvolvimento (garante dados atualizados)
 app.set('etag', false);
-const PORT = process.env.BACKEND_PORT || process.env.PORT || 3001;
+const PORT = Number(process.env.BACKEND_PORT || process.env.PORT || 3001);
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const IS_DEV = NODE_ENV === 'development';
 
@@ -301,13 +311,6 @@ process.on('SIGINT', () => {
 });
 
 // Tratamento de erros não capturados
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection:', { reason, promise });
-});
 
-process.on('uncaughtException', (error) => {
-  logger.error('Uncaught Exception:', error);
-  process.exit(1);
-});
 
 export default app;
