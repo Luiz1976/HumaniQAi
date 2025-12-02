@@ -370,7 +370,68 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
           motivo: 'liberacao_manual',
         },
       ];
+      let proximaDisponibilidade: Date | null = null;
+      if (disponibilidadeExistente.periodicidadeDias) {
+        proximaDisponibilidade = new Date(
+          agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000
+        );
+      }
 
+      const [atualizado] = await db
+        .update(testeDisponibilidade)
+        .set({
+          disponivel: true,
+          ultimaLiberacao: agora,
+          proximaDisponibilidade,
+          historicoLiberacoes: novoHistorico,
+          updatedAt: agora,
+        })
+        .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id))
+        .returning();
+
+      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: atualizado.id, ts: agora.toISOString() });
+      return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: atualizado });
+    }
+
+    if ((dbType || '').toLowerCase().includes('sqlite')) {
+      const id = (await import('crypto')).randomUUID();
+      const proxima = null;
+      const historico = JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_manual' }]);
+      const stmt = sqliteDb.prepare(`
+        INSERT INTO teste_disponibilidade (
+          id, colaborador_id, teste_id, empresa_id, disponivel,
+          periodicidade_dias, ultima_liberacao, proxima_disponibilidade, historico_liberacoes,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      `);
+      stmt.run(
+        id,
+        colaboradorId,
+        teste.id,
+        empresaId,
+        1,
+        null,
+        agora.toISOString(),
+        proxima,
+        historico
+      );
+      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: id, ts: agora.toISOString() });
+      return res.json({ success: true, message: 'Teste liberado com sucesso' });
+    } else {
+      const [novo] = await db
+        .insert(testeDisponibilidade)
+        .values({
+          colaboradorId,
+          testeId: teste.id,
+          empresaId,
+          disponivel: true,
+          ultimaLiberacao: agora,
+          proximaDisponibilidade: null,
+          historicoLiberacoes: [{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_manual' }],
+        })
+        .returning();
+      logger.info('LIBERAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: novo.id, ts: agora.toISOString() });
+      return res.json({ success: true, message: 'Teste liberado com sucesso', disponibilidade: novo });
     }
   } catch (error) {
     console.error('Erro ao liberar teste:', error);
