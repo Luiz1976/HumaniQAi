@@ -8,14 +8,22 @@ import logger from '../utils/logger';
 
 const router = Router();
 
-// Verificar se a chave do Stripe está configurada
-if (!process.env.STRIPE_SECRET_KEY) {
-  logger.warn('⚠️  STRIPE_SECRET_KEY not set. Stripe operations will fail.');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy_key_for_development', {
-  apiVersion: '2025-09-30.clover',
-});
+// Inicialização segura do Stripe (evita crash em deploy)
+let stripe: Stripe | null = null;
+(() => {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    logger.warn('⚠️  STRIPE_SECRET_KEY não configurada. Operações Stripe serão desabilitadas.');
+    return;
+  }
+  try {
+    stripe = new Stripe(key, { apiVersion: '2022-11-15' });
+    logger.info('✅ Cliente Stripe inicializado com sucesso');
+  } catch (err) {
+    logger.error('❌ Falha ao inicializar Stripe client:', err as any);
+    stripe = null;
+  }
+})();
 
 const PLANS = {
   essencial: {
@@ -37,6 +45,9 @@ const PLANS = {
 
 router.post('/create-checkout-session', async (req, res) => {
   try {
+    if (!stripe) {
+      return res.status(503).json({ error: 'Stripe indisponível' });
+    }
     const { planType, employeeCount, empresaId, email, nomeEmpresa } = req.body;
 
     if (!planType || !employeeCount || !email) {
@@ -143,6 +154,9 @@ router.post('/webhook', async (req, res) => {
   let event: Stripe.Event;
 
   try {
+    if (!stripe) {
+      return res.status(503).json({ error: 'Stripe indisponível' });
+    }
     event = stripe.webhooks.constructEvent(
       req.body,
       sig,
@@ -279,7 +293,7 @@ router.get('/subscription-status/:empresaId', async (req, res) => {
 
     let subscriptionData: any = null;
 
-    if (empresa.stripeSubscriptionId) {
+    if (stripe && empresa.stripeSubscriptionId) {
       try {
         const subscription = await stripe.subscriptions.retrieve(
           empresa.stripeSubscriptionId
@@ -330,6 +344,9 @@ router.post('/cancel-subscription/:empresaId', async (req, res) => {
       return res.status(400).json({ error: 'Nenhuma assinatura ativa encontrada' });
     }
 
+    if (!stripe) {
+      return res.status(503).json({ error: 'Stripe indisponível' });
+    }
     const subscription = await stripe.subscriptions.update(
       empresa.stripeSubscriptionId,
       {
@@ -370,6 +387,9 @@ router.get('/convite-session/:sessionId', async (req, res) => {
       .limit(1);
 
     if (!convite) {
+      if (!stripe) {
+        return res.status(503).json({ error: 'Stripe indisponível' });
+      }
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       
       const metadados = session.metadata as any;
