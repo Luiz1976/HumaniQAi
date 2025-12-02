@@ -7,7 +7,7 @@ import { ArrowLeft, CheckCircle, Loader2, AlertCircle, Clock } from "lucide-reac
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/AuthContext";
 import { obterPerguntasMaturidadeRiscosPsicossociais, calcularResultadoMaturidadeRiscosPsicossociais } from "@/lib/testes/maturidade-riscos-psicossociais";
-import { processamentoService, respostasService, resultadosService } from "@/lib/database";
+import { respostasService, resultadosService } from "@/lib/database";
 import { sessionService } from "@/lib/services/session-service";
 import { supabase } from "@/lib/supabase";
 import { numeroParaLetra } from "@/lib/utils";

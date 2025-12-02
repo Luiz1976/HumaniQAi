@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { obterTodasPerguntas } from "@/lib/testes/clima-organizacional";
 import { obterTodasPerguntasKS } from "@/lib/testes/karasek-siegrist";
 import { obterTodasPerguntasHumaniQInsight } from "@/lib/testes/humaniq-insight";
-import { processamentoService, respostasService } from "@/lib/database";
 import { numeroParaLetra } from "@/lib/utils";
 import ProcessingAnimation from "@/components/ProcessingAnimation";
 import { apiService } from "@/services/apiService";
@@ -331,6 +330,7 @@ export default function TestePerguntas() {
       try {
         // Processar teste no backend com os parâmetros corretos
         console.log('🔍 [DEBUG] Iniciando processamento...');
+        const { processamentoService } = await import("@/lib/database");
         const resultado = await processamentoService.processarTesteCompleto(
           testeIdResolved!,
           respostas,

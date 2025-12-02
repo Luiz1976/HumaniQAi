@@ -7,7 +7,7 @@ import { ArrowLeft, CheckCircle, Loader2, AlertCircle, Clock } from "lucide-reac
 import { useToast } from "@/hooks/use-toast";
 import { obterTodasPerguntasKS, escalaLikert4, escalaLikert5, calcularResultadoKarasekSiegrist } from "@/lib/testes/karasek-siegrist";
 import { karasekSiegristService } from "@/lib/services/karasek-siegrist-service";
-import { processamentoService, respostasService, resultadosService } from "@/lib/database";
+import { respostasService, resultadosService } from "@/lib/database";
 import { sessionService } from "@/lib/services/session-service";
 import { numeroParaLetra } from "@/lib/utils";
 import ProcessingAnimation from "@/components/ProcessingAnimation";

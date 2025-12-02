@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/AuthContext";
 import { obterTodasPerguntasInsight, escalaLikertInsight, calcularResultadoClimaBemEstar } from "@/lib/testes/clima-bem-estar";
 import { climaBemEstarService } from "@/lib/services/clima-bem-estar-service";
-import { processamentoService, respostasService, resultadosService } from "@/lib/database";
+import { respostasService, resultadosService } from "@/lib/database";
 import { sessionService } from "@/lib/services/session-service";
 import { supabase } from "@/lib/supabase";
 import ProcessingAnimation from "@/components/ProcessingAnimation";

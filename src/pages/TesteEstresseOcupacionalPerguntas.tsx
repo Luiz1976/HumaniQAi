@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/AuthContext";
 import { obterTodasPerguntasEO, escalaLikert, calcularResultadoEstresseOcupacional } from "@/lib/testes/estresse-ocupacional";
 import { estresseOcupacionalService } from "@/lib/services/estresse-ocupacional-service";
-import { processamentoService, respostasService, resultadosService } from "@/lib/database";
+import { respostasService, resultadosService } from "@/lib/database";
 import { sessionService } from "@/lib/services/session-service";
 import { supabase } from "@/lib/supabase";
 import { numeroParaLetra } from "@/lib/utils";
