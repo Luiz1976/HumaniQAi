@@ -86,8 +86,14 @@ export default function Testes() {
   }, [queryClient]);
 
   let testes = (data?.testes || []).filter(t => {
-    // Esconder testes concluídos que não foram re-liberados
+    const nomeNorm = (t.nome || '').toLowerCase();
     if (t.motivo === 'teste_concluido' && !t.disponivel) {
+      return false;
+    }
+    if (nomeNorm.includes('humaniq') && nomeNorm.includes('insight')) {
+      return false;
+    }
+    if (nomeNorm.includes('humaniq-insight') || nomeNorm.includes('insight')) {
       return false;
     }
     return true;
