@@ -2,7 +2,7 @@ import { supabase, retryWithBackoff } from './supabase';
 import type { Teste, Pergunta, Resultado, Resposta, AnaliseResultado } from './types';
 import { climaOrganizacionalService } from './services/clima-organizacional-service';
 import { karasekSiegristService } from './services/karasek-siegrist-service';
-import { humaniQInsightService } from './services/humaniq-insight-service';
+
 import { sessionService } from './services/session-service';
 import { apiService } from '@/services/apiService';
 
@@ -750,7 +750,7 @@ const TESTE_SLUG_TO_UUID: Record<string, string> = {
   'estresse-ocupacional': '2c8e3f9a-4b5d-6e7a-8c9d-0e1f2a3b4c5d',
   'pas': '4e0a5b1c-6d7f-8e9a-0f1a-2b3c4d5e6f7a',
   'mgrp': '5f1a6c2d-7e8f-9a0b-1c2d-3e4f5a6b7c8d',
-  'humaniq-insight': 'd4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a'
+
 };
 
 export const processamentoService = {
@@ -794,17 +794,17 @@ export const processamentoService = {
           const resultadoKS = await karasekSiegristService.processarRespostas(usuarioId, respostas);
           return resultadoKS;
 
-        case 'humaniq-insight':
-          console.log('🔍 [DATABASE] Processando teste HumaniQ Insight');
-          console.log('🔍 [DATABASE] UUID do teste:', testeUUID);
-          const resultadoHumaniQ = await humaniQInsightService.processarResultado(
-            respostas,
-            usuarioNome,
-            usuarioEmail,
-            tempoGasto,
-            testeUUID // Passar o UUID em vez do slug
-          );
-          return resultadoHumaniQ;
+
+
+
+
+
+
+
+
+
+
+
 
         default:
           // Para testes que ainda não têm service específico, usar processamento genérico
@@ -872,7 +872,7 @@ export const processamentoService = {
       status: 'concluido',
       metadados: {
         tipo_teste: testeId,
-        teste_nome: teste.nome,
+        teste_nome: teste.titulo,
         usuario_nome: usuarioNome,
         usuario_email: usuarioEmail,
         usuario_id_auth: usuarioIdFinal, // Manter referência ao ID real do usuário
@@ -894,7 +894,7 @@ export const processamentoService = {
     // Salvar respostas individuais
     const respostasArray: Omit<Resposta, 'id' | 'created_at'>[] = Object.entries(respostas).map(([perguntaId, valor]) => ({
       resultado_id: resultado.id,
-      pergunta_id: parseInt(perguntaId),
+      pergunta_id: perguntaId,
       valor
     }));
 

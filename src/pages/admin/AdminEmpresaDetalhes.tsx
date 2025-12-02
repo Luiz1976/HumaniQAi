@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
+import {
   ArrowLeft, Building2, Users, Mail, TrendingUp, TrendingDown, Activity, Target, Award,
   Calendar, CheckCircle, XCircle, Clock, BarChart3, PieChart, Briefcase, AlertTriangle,
   AlertCircle, Info, Zap, TrendingDown as Down, Shield, DollarSign, Percent, UserCheck,
@@ -99,7 +99,7 @@ const LABELS_MAP: Record<string, string> = {
   'rpo': 'RPO',
   'estresse-ocupacional': 'Estresse Ocupacional',
   'percepcao-assedio': 'Percepção de Assédio',
-  'humaniq-insight': 'HumaniQ Insight',
+
   'karasek-siegrist': 'Karasek-Siegrist',
   'riscos-psicossociais': 'Riscos Psicossociais',
 };
@@ -118,7 +118,7 @@ export default function AdminEmpresaDetalhes() {
     try {
       setLoading(true);
       const token = localStorage.getItem('authToken');
-      
+
       const response = await fetch(`/api/empresas/${id}/indicadores`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -235,11 +235,10 @@ export default function AdminEmpresaDetalhes() {
                 <p className="text-xs text-gray-500">Índice de Saúde</p>
                 <p className="text-2xl font-bold text-green-600">{indicadores.saude?.indiceGeral || 0}%</p>
               </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                indicadores.empresa?.ativa 
-                  ? 'bg-green-100 text-green-800' 
+              <span className={`px-3 py-1 rounded-full text-sm font-medium ${indicadores.empresa?.ativa
+                  ? 'bg-green-100 text-green-800'
                   : 'bg-red-100 text-red-800'
-              }`}>
+                }`}>
                 {indicadores.empresa?.ativa ? 'Ativa' : 'Inativa'}
               </span>
             </div>
@@ -257,7 +256,7 @@ export default function AdminEmpresaDetalhes() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {indicadores.analise.alertas.map((alerta, index) => (
-                <div 
+                <div
                   key={index}
                   className={`p-4 rounded-lg border-l-4 ${PRIORIDADE_COLORS[alerta.prioridade as keyof typeof PRIORIDADE_COLORS]}`}
                 >
@@ -350,11 +349,10 @@ export default function AdminEmpresaDetalhes() {
                       <div className="p-2 bg-purple-100 rounded-lg">
                         <Award className="w-5 h-5 text-purple-600" />
                       </div>
-                      <span className={`px-2 py-1 text-xs rounded-full font-medium ${
-                        indicadores.faturamento.statusPagamento === 'ativo' 
+                      <span className={`px-2 py-1 text-xs rounded-full font-medium ${indicadores.faturamento.statusPagamento === 'ativo'
                           ? 'bg-green-100 text-green-700'
                           : 'bg-red-100 text-red-700'
-                      }`}>
+                        }`}>
                         {indicadores.faturamento.statusPagamento}
                       </span>
                     </div>
@@ -571,19 +569,19 @@ export default function AdminEmpresaDetalhes() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis dataKey="mes" stroke="#94a3b8" style={{ fontSize: '12px' }} />
                 <YAxis stroke="#94a3b8" style={{ fontSize: '12px' }} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
                     border: '1px solid #e2e8f0',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                  }} 
+                  }}
                 />
                 <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="testes" 
-                  stroke="#3b82f6" 
+                <Line
+                  type="monotone"
+                  dataKey="testes"
+                  stroke="#3b82f6"
                   strokeWidth={3}
                   dot={{ fill: '#3b82f6', r: 5 }}
                   activeDot={{ r: 7 }}
@@ -604,13 +602,13 @@ export default function AdminEmpresaDetalhes() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis dataKey="periodo" stroke="#94a3b8" style={{ fontSize: '11px' }} />
                 <YAxis stroke="#94a3b8" style={{ fontSize: '12px' }} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
                     border: '1px solid #e2e8f0',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                  }} 
+                  }}
                 />
                 <Bar dataKey="quantidade" name="Testes" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
               </BarChart>

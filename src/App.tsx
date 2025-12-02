@@ -45,8 +45,7 @@ import TesteClimaOrganizacionalIntroducao from "./pages/TesteClimaOrganizacional
 import TesteEstresseOcupacionalIntroducao from "./pages/TesteEstresseOcupacionalIntroducao";
 import TesteClimaBemEstarIntroducao from "./pages/TesteClimaBemEstarIntroducao";
 import TesteClimaBemEstarPerguntas from "./pages/TesteClimaBemEstarPerguntas";
-import TesteHumaniQInsightIntroducao from "./pages/TesteHumaniQInsightIntroducao";
-import ResultadoHumaniQInsight from "./pages/ResultadoHumaniQInsight";
+
 import ResultadoClimaBemEstar from "./pages/ResultadoClimaBemEstar";
 import FinalizacaoAmigavel from "./pages/FinalizacaoAmigavel";
 import TesteMGRPIntroducao from "./pages/TesteMGRPIntroducao";
@@ -91,581 +90,565 @@ function App() {
   console.log('🔍 [APP] Componente App iniciado');
   console.log('🔍 [APP] Location atual:', window.location.href);
   console.log('🔍 [APP] LandingPage importado?', LandingPage ? 'SIM' : 'NÃO');
-  
+
   return (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <ErrorBoundary>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <AuthProvider>
-            <Chatbot />
-            <OnlineStatus />
-            <Routes>
-              {/* Rotas públicas - SEM autenticação */}
-              <Route path="/landing" element={<LandingPage />} />
-              <Route path="/quick-check" element={<QuickCheckEstresse />} />
-              <Route path="/validar-certificado/:codigo?" element={<ValidarCertificado />} />
-              <Route path="/checkout/:planType" element={<CheckoutPage />} />
-              <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
-              <Route path="/checkout/cancelado" element={<CheckoutCanceladoPage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/recuperar-senha" element={<RecuperarSenha />} />
-              <Route path="/aceitar-convite/:token" element={<AcessoConvite />} />
-              <Route path="/pgr/compartilhado/:token" element={<PRGPublico />} />
-              <Route 
-                path="/post-login-animation" 
-                element={
-                  <ProtectedRoute>
-                    <PostLoginAnimation />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/" 
-                element={<HomeRoute />} 
-              />
-              <Route 
-                path="/Colaborador" 
-                element={
-                  <ProtectedRoute allowedRoles={['colaborador']}>
-                    <MainLayout>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <ErrorBoundary>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <AuthProvider>
+              <Chatbot />
+              <OnlineStatus />
+              <Routes>
+                {/* Rotas públicas - SEM autenticação */}
+                <Route path="/landing" element={<LandingPage />} />
+                <Route path="/quick-check" element={<QuickCheckEstresse />} />
+                <Route path="/validar-certificado/:codigo?" element={<ValidarCertificado />} />
+                <Route path="/checkout/:planType" element={<CheckoutPage />} />
+                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+                <Route path="/checkout/cancelado" element={<CheckoutCanceladoPage />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+                <Route path="/aceitar-convite/:token" element={<AcessoConvite />} />
+                <Route path="/pgr/compartilhado/:token" element={<PRGPublico />} />
+                <Route
+                  path="/post-login-animation"
+                  element={
+                    <ProtectedRoute>
+                      <PostLoginAnimation />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/"
+                  element={<HomeRoute />}
+                />
+                <Route
+                  path="/Colaborador"
+                  element={
+                    <ProtectedRoute allowedRoles={['colaborador']}>
+                      <MainLayout>
+                        <Colaborador />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/Empresa"
+                  element={
+                    <ProtectedRoute allowedRoles={['empresa']}>
+                      <EmpresaLayout>
+                        <Empresa />
+                      </EmpresaLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Rota Colaborador */}
+                <Route
+                  path="/colaborador"
+                  element={
+                    <ProtectedRoute allowedRoles={['colaborador']}>
                       <Colaborador />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/Empresa" 
-                element={
-                  <ProtectedRoute allowedRoles={['empresa']}>
-                    <EmpresaLayout>
-                      <Empresa />
-                    </EmpresaLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              {/* Rota Colaborador */}
-              <Route 
-                path="/colaborador" 
-                element={
-                  <ProtectedRoute allowedRoles={['colaborador']}>
-                    <Colaborador />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/colaborador/cursos" 
-                element={
-                  <ProtectedRoute allowedRoles={['colaborador']}>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/colaborador/cursos"
+                  element={
+                    <ProtectedRoute allowedRoles={['colaborador']}>
+                      <MainLayout>
+                        <ColaboradorCursos />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/colaborador/cursos/:slug"
+                  element={
+                    <ProtectedRoute allowedRoles={['colaborador']}>
+                      <MainLayout>
+                        <CursoDetalhes />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/colaborador/cursos/:slug/certificado"
+                  element={
+                    <ProtectedRoute allowedRoles={['colaborador']}>
+                      <ColaboradorCertificado />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Rotas Admin com Sidebar */}
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminDashboard />} />
+                  {/* Alias explícito para dashboard */}
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="empresas" element={<AdminEmpresas />} />
+                  <Route path="empresas/:id" element={<AdminEmpresaDetalhes />} />
+                  <Route path="convites" element={<AdminConvites />} />
+                  <Route path="estatisticas" element={<AdminEstatisticas />} />
+                </Route>
+
+                {/* Rotas Empresa com Sidebar */}
+                <Route
+                  path="/empresa"
+                  element={
+                    <ProtectedRoute allowedRoles={['empresa', 'admin']}>
+                      <EmpresaDashboard />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<EmpresaOverview />} />
+                  {/* Alias explícito para dashboard */}
+                  <Route path="dashboard" element={<EmpresaOverview />} />
+                  <Route path="overview" element={<EmpresaOverview />} />
+                  <Route path="visao-geral" element={<EmpresaOverview />} />
+                  <Route path="gestao-colaboradores" element={<EmpresaColaboradores />} />
+                  <Route path="convites" element={<EmpresaConvites />} />
+                  <Route path="gestao-convites" element={<EmpresaGestaoConvites />} />
+                  <Route path="gerar-convite" element={<EmpresaGerarConvite />} />
+                  <Route path="estado-psicossocial" element={<EmpresaEstadoPsicossocial />} />
+                  <Route path="pgr" element={<EmpresaPRG />} />
+                  <Route path="resultados" element={<EmpresaResultados />} />
+                  <Route path="colaborador/:colaboradorId/resultados" element={<EmpresaColaboradorResultados />} />
+                </Route>
+                {/* Rota para visualização de certificado pela empresa (sem sidebar) */}
+                <Route
+                  path="/empresa/colaborador/:colaboradorId/certificado/:cursoSlug"
+                  element={
+                    <ProtectedRoute allowedRoles={['empresa', 'admin']}>
+                      <EmpresaColaboradorCertificado />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/GestaoAI"
+                  element={
+                    <ProtectedRoute>
+                      <GestaoAI />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/GestaoAI/Convite"
+                  element={
+                    <ProtectedRoute>
+                      <GestaoConvite />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/GestaoAI/Dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <DashboardConvites />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/convite/:codigo"
+                  element={<AcessoConvite />}
+                />
+                <Route
+                  path="/convite/empresa/:token"
+                  element={<AcessoConvite />}
+                />
+                <Route
+                  path="/convite/colaborador/:token"
+                  element={<AcessoConvite />}
+                />
+                <Route
+                  path="/testes"
+                  element={
                     <MainLayout>
-                      <ColaboradorCursos />
+                      <Testes />
                     </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/colaborador/cursos/:slug" 
-                element={
-                  <ProtectedRoute allowedRoles={['colaborador']}>
+                  }
+                />
+                <Route
+                  path="/resultados"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <Resultados />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/todos-resultados"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TodosResultados />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/:testeId/introducao"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/:testeId/perguntas"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TestePerguntas />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/karasek-siegrist"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteKarasekSiegristIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/karasek-siegrist/perguntas"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteKarasekSiegristPerguntas />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/karasek-siegrist/:resultadoId"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <FinalizacaoAmigavel />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/clima-organizacional"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteClimaOrganizacionalIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/teste/estresse-ocupacional"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteEstresseOcupacionalIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/estresse-ocupacional/perguntas"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteEstresseOcupacionalPerguntas />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/estresse-ocupacional/:resultadoId"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <FinalizacaoAmigavel />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/clima-bem-estar"
+                  element={
                     <MainLayout>
-                      <CursoDetalhes />
+                      <TesteClimaBemEstarIntroducao />
                     </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/colaborador/cursos/:slug/certificado" 
-                element={
-                  <ProtectedRoute allowedRoles={['colaborador']}>
-                    <ColaboradorCertificado />
-                  </ProtectedRoute>
-                } 
-              />
-              {/* Rotas Admin com Sidebar */}
-              <Route 
-                path="/admin" 
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminLayout />
-                  </ProtectedRoute>
-                } 
-              >
-                <Route index element={<AdminDashboard />} />
-                {/* Alias explícito para dashboard */}
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="empresas" element={<AdminEmpresas />} />
-                <Route path="empresas/:id" element={<AdminEmpresaDetalhes />} />
-                <Route path="convites" element={<AdminConvites />} />
-                <Route path="estatisticas" element={<AdminEstatisticas />} />
-              </Route>
-              
-              {/* Rotas Empresa com Sidebar */}
-              <Route 
-                path="/empresa" 
-                element={
-                  <ProtectedRoute allowedRoles={['empresa', 'admin']}>
-                    <EmpresaDashboard />
-                  </ProtectedRoute>
-                } 
-              >
-                <Route index element={<EmpresaOverview />} />
-                {/* Alias explícito para dashboard */}
-                <Route path="dashboard" element={<EmpresaOverview />} />
-                <Route path="overview" element={<EmpresaOverview />} />
-                <Route path="visao-geral" element={<EmpresaOverview />} />
-                <Route path="gestao-colaboradores" element={<EmpresaColaboradores />} />
-                <Route path="convites" element={<EmpresaConvites />} />
-                <Route path="gestao-convites" element={<EmpresaGestaoConvites />} />
-                <Route path="gerar-convite" element={<EmpresaGerarConvite />} />
-                <Route path="estado-psicossocial" element={<EmpresaEstadoPsicossocial />} />
-                <Route path="pgr" element={<EmpresaPRG />} />
-                <Route path="resultados" element={<EmpresaResultados />} />
-                <Route path="colaborador/:colaboradorId/resultados" element={<EmpresaColaboradorResultados />} />
-              </Route>
-              {/* Rota para visualização de certificado pela empresa (sem sidebar) */}
-              <Route 
-                path="/empresa/colaborador/:colaboradorId/certificado/:cursoSlug" 
-                element={
-                  <ProtectedRoute allowedRoles={['empresa', 'admin']}>
-                    <EmpresaColaboradorCertificado />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/GestaoAI" 
-                element={
-                  <ProtectedRoute>
-                    <GestaoAI />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/GestaoAI/Convite" 
-                element={
-                  <ProtectedRoute>
-                    <GestaoConvite />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/GestaoAI/Dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <DashboardConvites />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/convite/:codigo" 
-                element={<AcessoConvite />} 
-              />
-              <Route 
-                path="/convite/empresa/:token" 
-                element={<AcessoConvite />} 
-              />
-              <Route 
-                path="/convite/colaborador/:token" 
-                element={<AcessoConvite />} 
-              />
-              <Route 
-                path="/testes" 
-                element={
-                  <MainLayout>
-                    <Testes />
-                  </MainLayout>
-                } 
-              />
-              <Route 
-                path="/resultados" 
-                element={
-                  <ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/clima-bem-estar/perguntas"
+                  element={
                     <MainLayout>
-                      <Resultados />
+                      <TesteClimaBemEstarPerguntas />
                     </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/todos-resultados" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TodosResultados />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/:testeId/introducao" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/:testeId/perguntas" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TestePerguntas />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/karasek-siegrist" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteKarasekSiegristIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/karasek-siegrist/perguntas" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteKarasekSiegristPerguntas />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/karasek-siegrist/:resultadoId" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <FinalizacaoAmigavel />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/clima-organizacional" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteClimaOrganizacionalIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/humaniq-insight" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteHumaniQInsightIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/estresse-ocupacional" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteEstresseOcupacionalIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/estresse-ocupacional/perguntas" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteEstresseOcupacionalPerguntas />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/estresse-ocupacional/:resultadoId" 
-                element={
-                  <ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/clima-bem-estar/:resultadoId"
+                  element={
                     <MainLayout>
                       <FinalizacaoAmigavel />
                     </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/clima-bem-estar" 
-                element={
-                  <MainLayout>
-                    <TesteClimaBemEstarIntroducao />
-                  </MainLayout>
-                } 
-              />
-              <Route 
-                path="/teste/clima-bem-estar/perguntas" 
-                element={
-                  <MainLayout>
-                    <TesteClimaBemEstarPerguntas />
-                  </MainLayout>
-                } 
-              />
-              <Route 
-                path="/resultado/clima-bem-estar/:resultadoId" 
-                element={
-                  <MainLayout>
-                    <FinalizacaoAmigavel />
-                  </MainLayout>
-                } 
-              />
-              <Route 
-                path="/teste/maturidade-gestao-riscos" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteMGRPIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              {/* Alias para maturidade de riscos psicossociais */}
-              <Route 
-                path="/teste/maturidade-riscos-psicossociais" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteMGRPIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/maturidade-gestao-riscos/perguntas" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteMGRPPerguntas />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              {/* Alias para maturidade de riscos psicossociais - perguntas */}
-              <Route 
-                path="/teste/maturidade-riscos-psicossociais/perguntas" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteMGRPPerguntas />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/maturidade-gestao-riscos/:resultadoId" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <FinalizacaoAmigavel />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/maturidade-riscos-psicossociais/:resultadoId" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <FinalizacaoAmigavel />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/percepcao-assedio" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TestePASIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/percepcao-assedio/perguntas" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TestePASPerguntas />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/percepcao-assedio/:resultadoId" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <FinalizacaoAmigavel />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/qualidade-vida-trabalho" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteQVTIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/qualidade-vida-trabalho/perguntas" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteQVTPerguntas />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/qualidade-vida-trabalho/:resultadoId" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <FinalizacaoAmigavel />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/rpo" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteRPOIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/rpo/perguntas" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteRPOPerguntas />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/rpo/:resultadoId" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <FinalizacaoAmigavel />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/riscos-psicossociais-ocupacionais" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteRPOIntroducao />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/teste/riscos-psicossociais-ocupacionais/perguntas" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TesteRPOPerguntas />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/riscos-psicossociais-ocupacionais/:resultadoId" 
-                element={
-                  <ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/maturidade-gestao-riscos"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteMGRPIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Alias para maturidade de riscos psicossociais */}
+                <Route
+                  path="/teste/maturidade-riscos-psicossociais"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteMGRPIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/maturidade-gestao-riscos/perguntas"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteMGRPPerguntas />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Alias para maturidade de riscos psicossociais - perguntas */}
+                <Route
+                  path="/teste/maturidade-riscos-psicossociais/perguntas"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteMGRPPerguntas />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/maturidade-gestao-riscos/:resultadoId"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <FinalizacaoAmigavel />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/maturidade-riscos-psicossociais/:resultadoId"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <FinalizacaoAmigavel />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/percepcao-assedio"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TestePASIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/percepcao-assedio/perguntas"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TestePASPerguntas />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/percepcao-assedio/:resultadoId"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <FinalizacaoAmigavel />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/qualidade-vida-trabalho"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteQVTIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/qualidade-vida-trabalho/perguntas"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteQVTPerguntas />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/qualidade-vida-trabalho/:resultadoId"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <FinalizacaoAmigavel />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/rpo"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteRPOIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/rpo/perguntas"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteRPOPerguntas />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/rpo/:resultadoId"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <FinalizacaoAmigavel />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/riscos-psicossociais-ocupacionais"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteRPOIntroducao />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/teste/riscos-psicossociais-ocupacionais/perguntas"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TesteRPOPerguntas />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/riscos-psicossociais-ocupacionais/:resultadoId"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <FinalizacaoAmigavel />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/resultado/:tipoTeste/:resultadoId"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <FinalizacaoAmigavel />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resultado/:resultadoId"
+                  element={
                     <MainLayout>
                       <FinalizacaoAmigavel />
                     </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/humaniq-insight/:resultadoId" 
-                element={
-                  <MainLayout>
-                    <FinalizacaoAmigavel />
-                  </MainLayout>
-                } 
-              />
-              <Route 
-                path="/resultado/:tipoTeste/:resultadoId" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <FinalizacaoAmigavel />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/resultado/:resultadoId" 
-                element={
-                  <MainLayout>
-                    <FinalizacaoAmigavel />
-                  </MainLayout>
-                } 
-              />
-              <Route 
-                path="/test-supabase" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <TestSupabaseConnection />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/debug-resultado" 
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <DebugResultado />
-                    </MainLayout>
-                  </ProtectedRoute>
-                } 
-              />
-              {/* Rotas de cadastro via convite */}
-              <Route 
-                path="/cadastro/empresa/:token" 
-                element={<CadastroEmpresa />} 
-              />
-              <Route 
-                path="/cadastro/colaborador/:token" 
-                element={<CadastroColaborador />} 
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
-        </BrowserRouter>
-      </ErrorBoundary>
-    </TooltipProvider>
-  </QueryClientProvider>
+                  }
+                />
+                <Route
+                  path="/test-supabase"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <TestSupabaseConnection />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/debug-resultado"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout>
+                        <DebugResultado />
+                      </MainLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Rotas de cadastro via convite */}
+                <Route
+                  path="/cadastro/empresa/:token"
+                  element={<CadastroEmpresa />}
+                />
+                <Route
+                  path="/cadastro/colaborador/:token"
+                  element={<CadastroColaborador />}
+                />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
+          </BrowserRouter>
+        </ErrorBoundary>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 

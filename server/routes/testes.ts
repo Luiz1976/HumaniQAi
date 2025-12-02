@@ -10,7 +10,7 @@ import { randomUUID } from 'crypto';
 // Importar perguntas dos arquivos locais
 import { dimensoesClimaOrganizacional } from '../../src/lib/testes/clima-organizacional';
 import { dimensoesKarasekSiegrist } from '../../src/lib/testes/karasek-siegrist';
-import { dimensoesHumaniQInsight } from '../../src/lib/testes/humaniq-insight';
+
 
 // Mapeamento de testes por slug
 const TESTES_DISPONIVEIS = {
@@ -30,14 +30,7 @@ const TESTES_DISPONIVEIS = {
     tempoEstimado: 20,
     perguntas: dimensoesKarasekSiegrist
   },
-  'humaniq-insight': {
-    id: 'humaniq-insight',
-    nome: 'HumaniQ Insight',
-    categoria: 'Desenvolvimento Pessoal',
-    descricao: 'Análise comportamental e insights de desenvolvimento',
-    tempoEstimado: 25,
-    perguntas: dimensoesHumaniQInsight
-  }
+
 };
 
 const router = express.Router();
@@ -64,7 +57,7 @@ router.get('/', async (req, res) => {
 });
 
 // Obter detalhes de um teste específico
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: any, res) => {
   try {
     const { id } = req.params;
 
@@ -94,7 +87,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Obter perguntas de um teste
-router.get('/:id/perguntas', async (req, res) => {
+router.get('/:id/perguntas', async (req: any, res) => {
   try {
     const { id } = req.params as { id: string };
 
@@ -127,7 +120,7 @@ router.get('/:id/perguntas', async (req, res) => {
         const todosTestes = await db
           .select({ id: testes.id, nome: testes.nome, categoria: testes.categoria })
           .from(testes);
-        const encontrado = todosTestes.find(t => toSlug(t.nome || '') === id || toSlug(t.categoria || '') === id);
+        const encontrado = todosTestes.find((t: any) => toSlug(t.nome || '') === id || toSlug(t.categoria || '') === id);
         if (!encontrado) {
           return res.status(403).json({ error: 'Teste bloqueado' });
         }
@@ -173,7 +166,7 @@ router.get('/:id/perguntas', async (req, res) => {
         })
         .from(testes);
 
-      const encontrado = todosTestes.find(t => toSlug(t.nome || '') === id || toSlug(t.categoria || '') === id);
+      const encontrado = todosTestes.find((t: any) => toSlug(t.nome || '') === id || toSlug(t.categoria || '') === id);
       if (!encontrado) {
         return res.status(404).json({ error: 'Teste não encontrado' });
       }
@@ -239,7 +232,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
         logger.info(`🔍 [RESULTADO] Total de testes no banco: ${todos.length}`);
 
         // Estratégia 1: Match exato por slug
-        let encontrado = todos.find(t => toSlug(t.nome || '') === nomeSlug || toSlug(t.categoria || '') === nomeSlug);
+        let encontrado = todos.find((t: any) => toSlug(t.nome || '') === nomeSlug || toSlug(t.categoria || '') === nomeSlug);
 
         if (encontrado) {
           logger.info(`✅ [RESULTADO] Match exato encontrado: "${encontrado.nome}"`);
@@ -247,7 +240,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
 
         // Estratégia 2: Match case-insensitive por nome ou categoria
         if (!encontrado) {
-          encontrado = todos.find(t =>
+          encontrado = todos.find((t: any) =>
             (t.nome || '').toLowerCase() === nomeNormalizado ||
             (t.categoria || '').toLowerCase() === nomeNormalizado
           );
@@ -256,10 +249,10 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
           }
         }
 
-        // Estratégia 3: Match por contains (útil para "HumaniQ Insight" vs "HumaniQ Insight - etc")
+        // Estratégia 3: Match por contains
         if (!encontrado) {
-          const nomes = todos.map(t => ({ t, nome: toSlug(t.nome || ''), cat: toSlug(t.categoria || ''), nomeOriginal: t.nome || '' }));
-          encontrado = nomes.find(n =>
+          const nomes = todos.map((t: any) => ({ t, nome: toSlug(t.nome || ''), cat: toSlug(t.categoria || ''), nomeOriginal: t.nome || '' }));
+          encontrado = nomes.find((n: any) =>
             nomeSlug.includes(n.nome) ||
             n.nome.includes(nomeSlug) ||
             nomeSlug.includes(n.cat) ||
@@ -285,7 +278,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
             }
             return m[a.length][b.length];
           };
-          const nomes = todos.map(t => ({ t, nome: toSlug(t.nome || ''), cat: toSlug(t.categoria || '') }));
+          const nomes = todos.map((t: any) => ({ t, nome: toSlug(t.nome || ''), cat: toSlug(t.categoria || '') }));
           let best: { t: typeof todos[number] | undefined; d: number; matchType: string } = { t: undefined, d: Infinity, matchType: '' };
           for (const n of nomes) {
             const dNome = dist(nomeSlug, n.nome);
@@ -304,7 +297,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
           logger.info(`✅ [RESULTADO] Teste "${nomeEntrada}" → ID resolvido: ${testeIdFinal} (${encontrado.nome})`);
         } else {
           logger.error(`❌ [RESULTADO-CRÍTICO] Teste "${nomeEntrada}" NÃO ENCONTRADO no banco de dados!`);
-          logger.error(`❌ [RESULTADO-CRÍTICO] Testes disponíveis no banco:`, todos.map(t => ({ nome: t.nome, categoria: t.categoria, id: t.id })));
+          logger.error(`❌ [RESULTADO-CRÍTICO] Testes disponíveis no banco:`, todos.map((t: any) => ({ nome: t.nome, categoria: t.categoria, id: t.id })));
         }
       } catch (error) {
         logger.error('❌ [RESULTADO] Erro ao buscar ID do teste:', error);
@@ -322,7 +315,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
 
         if (!testeExistente) {
           logger.warn(`⚠️ [RESULTADO] Teste ID ${testeIdFinal} não existe na tabela testes. Usando null.`);
-          testeIdFinal = null;
+          testeIdFinal = undefined;
         }
       } catch (error) {
         logger.error('❌ [RESULTADO] Erro ao validar teste_id:', error);
@@ -342,7 +335,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
 
         if (!empresaExistente) {
           logger.warn(`⚠️ [RESULTADO] Empresa ID ${empresaIdFinal} não existe na tabela empresas. Usando null.`);
-          empresaIdFinal = null;
+          empresaIdFinal = undefined;
         }
       } catch (error) {
         logger.error('❌ [RESULTADO] Erro ao validar empresa_id:', error);
@@ -574,7 +567,7 @@ router.get('/resultados/meus', authenticateToken, async (req: AuthRequest, res) 
       .orderBy(desc(resultados.dataRealizacao));
 
     // Enriquecer metadados com nome do teste se disponível
-    const resultadosEnriquecidos = meusResultados.map(r => {
+    const resultadosEnriquecidos = meusResultados.map((r: any) => {
       const metadadosBase = (r.metadados as Record<string, any>) || {};
       let nomeTesteFinal = r.testeNome || metadadosBase.teste_nome;
       let categoriaFinal = r.testeCategoria || metadadosBase.teste_categoria;

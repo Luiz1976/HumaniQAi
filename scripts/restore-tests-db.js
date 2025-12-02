@@ -6,7 +6,7 @@ const tests = [
   { nome: 'HumaniQ - Clima', categoria: 'clima-organizacional', descricao: 'Avaliação do clima organizacional e satisfação dos colaboradores', tempo_estimado: 15 },
   { nome: 'HumaniQ - Karasek-Siegrist', categoria: 'karasek-siegrist', descricao: 'Modelo demanda-controle e recompensa-esforço', tempo_estimado: 20 },
   { nome: 'HumaniQ EO – Estresse Ocupacional, Burnout e Resiliência', categoria: 'estresse-ocupacional', descricao: 'Estresse ocupacional e fatores de resiliência', tempo_estimado: 20 },
-  { nome: 'HumaniQ Insight', categoria: 'humaniq-insight', descricao: 'Insights comportamentais e desenvolvimento', tempo_estimado: 25 },
+
   { nome: 'HumaniQ MGRP – Maturidade em Gestão de Riscos Psicossociais', categoria: 'maturidade-riscos-psicossociais', descricao: 'Maturidade na gestão de riscos psicossociais', tempo_estimado: 15 },
   { nome: 'HumaniQ PAS – Percepção de Assédio Moral e Sexual', categoria: 'percepcao-assedio', descricao: 'Percepção e prevenção de assédio', tempo_estimado: 10 },
   { nome: 'HumaniQ QVT – Qualidade de Vida no Trabalho', categoria: 'qualidade-vida-trabalho', descricao: 'Indicadores de qualidade de vida no trabalho', tempo_estimado: 15 },
@@ -28,10 +28,9 @@ try {
   const insert = db.prepare('INSERT INTO testes (id, nome, descricao, categoria, tempo_estimado, ativo) VALUES (?, ?, ?, ?, ?, 1)');
   const update = db.prepare('UPDATE testes SET nome = ?, descricao = ?, categoria = ?, tempo_estimado = ?, ativo = 1 WHERE id = ?');
 
-  // Remover duplicatas de "HumaniQ Insight" mantendo apenas a instância com id 'humaniq-insight'
-  const desiredInsightId = 'humaniq-insight';
-  const deleteDup = db.prepare("DELETE FROM testes WHERE LOWER(nome) LIKE 'humaniq insight%' AND id != ?");
-  deleteDup.run(desiredInsightId);
+  // Remover HumaniQ Insight
+  const deleteInsight = db.prepare("DELETE FROM testes WHERE id = 'humaniq-insight' OR categoria = 'humaniq-insight'");
+  deleteInsight.run();
   // Remover entradas antigas de 'clima-bem-estar' para evitar conflitos
   const deleteOldClima = db.prepare("DELETE FROM testes WHERE categoria = 'clima-bem-estar'");
   deleteOldClima.run();

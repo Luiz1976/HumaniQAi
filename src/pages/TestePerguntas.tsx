@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, Loader2, AlertCircle, Clock } from 
 import { useToast } from "@/hooks/use-toast";
 import { obterTodasPerguntas } from "@/lib/testes/clima-organizacional";
 import { obterTodasPerguntasKS } from "@/lib/testes/karasek-siegrist";
-import { obterTodasPerguntasHumaniQInsight } from "@/lib/testes/humaniq-insight";
+
 import { numeroParaLetra } from "@/lib/utils";
 import ProcessingAnimation from "@/components/ProcessingAnimation";
 import { apiService } from "@/services/apiService";
@@ -30,7 +30,7 @@ export default function TestePerguntas() {
     const m = window.location.pathname.match(/^\/teste\/([^\/]+)\/perguntas/);
     return m?.[1];
   })();
-  
+
   const [perguntas, setPerguntas] = useState<PerguntaAPI[]>([]);
   const [perguntaAtual, setPerguntaAtual] = useState(0);
   const [respostas, setRespostas] = useState<{ [key: string]: number }>({});
@@ -38,17 +38,17 @@ export default function TestePerguntas() {
   const [tempoInicio] = useState(Date.now());
   const [carregando, setCarregando] = useState(true);
   const [erroCarregamento, setErroCarregamento] = useState<string | null>(null);
-  
+
   // Estados para controle do avanço automático
   const [salvandoResposta, setSalvandoResposta] = useState(false);
   const [respostaSalva, setRespostaSalva] = useState(false);
   const [erroSalvamento, setErroSalvamento] = useState<string | null>(null);
   const [avancandoAutomaticamente, setAvancandoAutomaticamente] = useState(false);
-  
+
   // Novo estado para proteção contra múltiplos cliques
   const [processandoResposta, setProcessandoResposta] = useState(false);
   const [mostrarBotaoFinalizar, setMostrarBotaoFinalizar] = useState(false);
-  
+
   // Estado para controlar a animação de processamento
   const [mostrarAnimacaoProcessamento, setMostrarAnimacaoProcessamento] = useState(false);
   useEffect(() => {
@@ -120,7 +120,7 @@ export default function TestePerguntas() {
 
     carregarPerguntas();
   }, [testeId, toast]);
-  
+
   // Mostrar estados de carregamento, erro ou vazio
   if (carregando) {
     return (
@@ -218,10 +218,10 @@ export default function TestePerguntas() {
       // Aqui você faria a chamada real para o backend
       // Por enquanto, vamos simular sucesso
       console.log('Resposta salva:', respostaData);
-      
+
       setRespostaSalva(true);
       return true;
-      
+
     } catch (error) {
       console.error('Erro ao salvar resposta:', error);
       setErroSalvamento('Falha ao salvar resposta. Tente novamente.');
@@ -251,7 +251,7 @@ export default function TestePerguntas() {
 
       // Salvar resposta no backend
       const sucessoSalvamento = await salvarRespostaIndividual(pergunta.id, valor);
-      
+
       if (sucessoSalvamento) {
         // Mostrar feedback de sucesso
         toast({
@@ -311,16 +311,16 @@ export default function TestePerguntas() {
     try {
       setProcessandoTeste(true);
       setMostrarAnimacaoProcessamento(true); // Mostrar animação
-      
+
       console.log('🔍 [DEBUG] Iniciando finalização do teste');
       console.log('🔍 [DEBUG] testeId:', testeId);
       console.log('🔍 [DEBUG] respostas:', respostas);
       console.log('🔍 [DEBUG] número de respostas:', Object.keys(respostas).length);
       console.log('🔍 [DEBUG] número de perguntas:', perguntas.length);
-      
+
       // Calcular tempo de resposta em segundos
       const tempoResposta = Math.round((Date.now() - tempoInicio) / 1000);
-      
+
       console.log('🔍 [DEBUG] Parâmetros para processamento:');
       console.log('🔍 [DEBUG] - testeId:', testeIdResolved);
       console.log('🔍 [DEBUG] - respostas:', respostas);
@@ -338,11 +338,11 @@ export default function TestePerguntas() {
           undefined, // usuarioEmail
           tempoResposta
         );
-        
+
         console.log('🔍 [DEBUG] Resultado recebido:', resultado);
         console.log('🔍 [DEBUG] Resultado.resultado:', resultado.resultado);
         console.log('🔍 [DEBUG] Resultado.resultado.id:', resultado.resultado.id);
-        
+
         toast({
           title: "Teste finalizado!",
           description: "Suas respostas foram processadas com sucesso.",
@@ -351,14 +351,14 @@ export default function TestePerguntas() {
         // Navegar para resultados com o ID do resultado
         console.log('🔍 [DEBUG] Navegando para resultado:', `/resultado/${testeIdResolved}/${resultado.resultado.id}`);
         navigate(`/resultado/${testeIdResolved}/${resultado.resultado.id}`);
-        
+
       } catch (processError) {
         console.error('❌ [ERROR] Erro específico no processamento:', processError);
         console.error('❌ [ERROR] Tipo do erro:', typeof processError);
         console.error('❌ [ERROR] Nome do erro:', processError instanceof Error ? processError.name : 'Unknown');
         console.error('❌ [ERROR] Mensagem do erro:', processError instanceof Error ? processError.message : String(processError));
         console.error('❌ [ERROR] Stack trace completo:', processError instanceof Error ? processError.stack : 'No stack trace');
-        
+
         // Verificar se é erro de rede, banco de dados, etc.
         if (processError instanceof Error) {
           if (processError.message.includes('fetch')) {
@@ -369,15 +369,15 @@ export default function TestePerguntas() {
             console.error('❌ [ERROR] Erro de validação detectado');
           }
         }
-        
+
         throw processError; // Re-throw para ser capturado pelo catch externo
       }
-      
+
     } catch (error) {
       console.error('❌ [ERROR] Erro ao processar teste:', error);
       console.error('❌ [ERROR] Stack trace:', error instanceof Error ? error.stack : 'No stack trace');
       console.error('❌ [ERROR] Error message:', error instanceof Error ? error.message : String(error));
-      
+
       toast({
         title: "Erro ao processar teste",
         description: "Ocorreu um erro ao processar suas respostas. Tente novamente.",
@@ -419,7 +419,7 @@ export default function TestePerguntas() {
             </span>
           </div>
           <Progress value={progresso} className="h-3 bg-slate-200" />
-          
+
           {/* Indicador de status do salvamento */}
           {(operacaoEmAndamento || respostaSalva || erroSalvamento) && (
             <div className="mt-4 flex items-center justify-center">
@@ -487,7 +487,7 @@ export default function TestePerguntas() {
               <div className="space-y-4">
                 {/* Barra de progresso da escala */}
                 <div className="w-full h-2 bg-gradient-to-r from-blue-500 via-gray-400 to-green-500 rounded-full"></div>
-                
+
                 {/* Indicadores da escala */}
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-blue-500">Discordo</span>
@@ -501,14 +501,14 @@ export default function TestePerguntas() {
                 {pergunta.escala.map((opcao, index) => {
                   const isSelected = respostas[pergunta.id] === index + 1;
                   const valor = index + 1;
-                  
+
                   const getButtonColor = () => {
                     if (operacaoEmAndamento) {
-                      return isSelected 
-                        ? 'bg-slate-300 text-slate-500 border-slate-300' 
+                      return isSelected
+                        ? 'bg-slate-300 text-slate-500 border-slate-300'
                         : 'bg-slate-100 text-slate-400 border-slate-200';
                     }
-                    
+
                     switch (valor) {
                       case 1: return isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200' : 'bg-white text-blue-600 border-blue-300 hover:bg-blue-50';
                       case 2: return isSelected ? 'bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-200' : 'bg-white text-blue-500 border-blue-300 hover:bg-blue-50';
@@ -538,9 +538,8 @@ export default function TestePerguntas() {
                       >
                         {numeroParaLetra(valor)}
                       </button>
-                      <span className={`text-xs font-medium text-center leading-tight max-w-20 ${
-                        operacaoEmAndamento ? 'text-slate-400' : 'text-slate-600'
-                      }`}>
+                      <span className={`text-xs font-medium text-center leading-tight max-w-20 ${operacaoEmAndamento ? 'text-slate-400' : 'text-slate-600'
+                        }`}>
                         {opcao}
                       </span>
                     </div>

@@ -73,7 +73,7 @@ export default function ColaboradorTestes() {
 
   const getTesteUrl = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
-    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return '/teste/humaniq-insight';
+
     if (nomeNorm.includes('clima organizacional')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return '/teste/karasek-siegrist';
     if (nomeNorm.includes('estresse ocupacional')) return '/teste/estresse-ocupacional';
@@ -182,8 +182,8 @@ export default function ColaboradorTestes() {
 
               <Button
                 className={`w-full rounded-xl py-3 font-medium transition-colors duration-200 ${teste.disponivel
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                    : 'bg-gray-300 cursor-not-allowed text-gray-600'
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  : 'bg-gray-300 cursor-not-allowed text-gray-600'
                   }`}
                 onClick={() => teste.disponivel && navigate(getTesteUrl(teste.nome))}
                 disabled={!teste.disponivel}

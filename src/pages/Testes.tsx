@@ -12,7 +12,7 @@ import { infoTesteMaturidadeRiscosPsicossociais } from "@/lib/testes/maturidade-
 import { configPercepacaoAssedio } from "@/lib/testes/percepcao-assedio";
 import { configQualidadeVidaTrabalho } from "@/lib/testes/qualidade-vida-trabalho";
 import { obterInfoTesteRPO } from "@/lib/testes/riscos-psicossociais-ocupacionais";
-import { infoHumaniQInsight } from "@/lib/testes/humaniq-insight";
+
 
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -115,7 +115,7 @@ export default function Testes() {
   const getTesteInfo = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
 
-    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return infoHumaniQInsight;
+
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return infoTesteClimaOrganizacional;
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return infoTesteClimaOrganizacional;
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return infoTesteKarasekSiegrist;
@@ -131,7 +131,7 @@ export default function Testes() {
   const getTesteRoute = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
 
-    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return '/teste/humaniq-insight';
+
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return '/teste/karasek-siegrist';
@@ -147,7 +147,7 @@ export default function Testes() {
   const getTesteIcon = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
 
-    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return <Lightbulb className="h-8 w-8 text-white" />;
+
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return <Building2 className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('clima organizacional')) return <Building2 className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return <Scale className="h-8 w-8 text-white" />;
@@ -162,7 +162,7 @@ export default function Testes() {
 
   const getTesteColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
-    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return 'bg-sky-500';
+
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return 'bg-blue-500';
     if (nomeNorm.includes('clima organizacional')) return 'bg-blue-500';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'bg-purple-500';
@@ -177,7 +177,7 @@ export default function Testes() {
 
   const getTesteBadgeColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
-    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return 'text-sky-600 border-sky-200 bg-sky-50 dark:bg-sky-900/20 dark:text-sky-400 dark:border-sky-800';
+
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
     if (nomeNorm.includes('clima organizacional')) return 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800';
@@ -192,7 +192,7 @@ export default function Testes() {
 
   const getTesteButtonColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
-    if (nomeNorm.includes('humaniq insight') || nomeNorm.includes('humaniq-insight')) return 'bg-sky-600 hover:bg-sky-700';
+
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return 'bg-blue-600 hover:bg-blue-700';
     if (nomeNorm.includes('clima organizacional')) return 'bg-blue-600 hover:bg-blue-700';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'bg-purple-600 hover:bg-purple-700';

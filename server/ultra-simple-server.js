@@ -136,7 +136,7 @@ const server = http.createServer((req, res) => {
         const set = global.__concludedTests.get(key) || new Set();
         set.add(testeId);
         global.__concludedTests.set(key, set);
-        try { fs.appendFileSync('./server/audit.log', JSON.stringify({ type: 'bloqueio', testeId, colaboradorId: key, ts: new Date().toISOString() }) + '\n'); } catch (_) {}
+        try { fs.appendFileSync('./server/audit.log', JSON.stringify({ type: 'bloqueio', testeId, colaboradorId: key, ts: new Date().toISOString() }) + '\n'); } catch (_) { }
         saveConcluded();
         res.writeHead(200, corsHeaders);
         res.end(JSON.stringify({ success: true, message: 'Teste marcado como concluído' }));
@@ -170,7 +170,7 @@ const server = http.createServer((req, res) => {
           }
         });
       }
-    } catch (_) {}
+    } catch (_) { }
 
     const makeTeste = (id, nome, categoria, tempoEstimado, descricao) => ({
       id,
@@ -789,8 +789,8 @@ const server = http.createServer((req, res) => {
         ultimoResultado: null,
         foiConcluido: false
       },
-      {
-        id: 'humaniq-insight',
+      /*
+        // REMOVED
         nome: 'HumaniQ Insight',
         descricao: 'Análise comportamental e insights de desenvolvimento',
         categoria: 'Desenvolvimento Pessoal',
@@ -805,7 +805,7 @@ const server = http.createServer((req, res) => {
         },
         ultimoResultado: null,
         foiConcluido: false
-      }
+      */
     ];
 
     res.writeHead(200, corsHeaders);
@@ -829,9 +829,9 @@ const server = http.createServer((req, res) => {
           }
         });
       }
-    } catch (_) {}
+    } catch (_) { }
     console.log(`[LIBERAR] Teste ${testeId} liberado globalmente por ${colaboradorId} em ${new Date().toISOString()}`);
-    try { fs.appendFileSync('./server/audit.log', JSON.stringify({ type: 'liberacao', testeId, by: colaboradorId, ts: new Date().toISOString() }) + '\n'); } catch (_) {}
+    try { fs.appendFileSync('./server/audit.log', JSON.stringify({ type: 'liberacao', testeId, by: colaboradorId, ts: new Date().toISOString() }) + '\n'); } catch (_) { }
     saveConcluded();
     res.writeHead(200, corsHeaders);
     res.end(JSON.stringify({ success: true, message: 'Teste liberado' }));
@@ -858,7 +858,7 @@ const server = http.createServer((req, res) => {
       global.__concludedTests.set(key, set);
       saveConcluded();
 
-      try { fs.appendFileSync('./server/audit.log', JSON.stringify({ type: 'bloqueio_total', testes: todosTestes, by: 'empresa', ts: new Date().toISOString() }) + '\n'); } catch (_) {}
+      try { fs.appendFileSync('./server/audit.log', JSON.stringify({ type: 'bloqueio_total', testes: todosTestes, by: 'empresa', ts: new Date().toISOString() }) + '\n'); } catch (_) { }
 
       res.writeHead(200, corsHeaders);
       res.end(JSON.stringify({ success: true, message: 'Todos os testes foram bloqueados. Somente a empresa pode liberar.', totalBloqueados: todosTestes.length }));
@@ -990,7 +990,7 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body);
         console.log('Course progress request:', data);
-        
+
         // Mock response - simular erro de curso não liberado
         res.writeHead(400, corsHeaders);
         res.end(JSON.stringify({
@@ -1024,7 +1024,7 @@ const server = http.createServer((req, res) => {
         concluido: false
       },
       {
-        id: '2', 
+        id: '2',
         nome: 'Teste de Estresse Ocupacional',
         descricao: 'Avaliação de níveis de estresse',
         disponivel: true,
@@ -1037,11 +1037,11 @@ const server = http.createServer((req, res) => {
   // Perguntas de testes endpoint - carrega perguntas reais dos documentos Word
   if (path.startsWith('/api/testes/') && path.endsWith('/perguntas') && method === 'GET') {
     const testeTipo = path.split('/')[3]; // extrai o tipo do teste da URL
-    
+
     try {
       // Carrega as perguntas do arquivo JSON
       const perguntasData = JSON.parse(fs.readFileSync('./server/perguntas-testes.json', 'utf8'));
-      
+
       // Mapeia os tipos de teste para os nomes no JSON
       const tipoMap = {
         'clima-organizacional': 'clima-organizacional',
@@ -1055,23 +1055,23 @@ const server = http.createServer((req, res) => {
         'eo': 'eo',
         'ks': 'ks'
       };
-      
+
       let perguntas = perguntasData[tipoMap[testeTipo]] || [];
-      
+
       // Análise de segurança das perguntas antes de enviar
       const perguntasSeguras = [];
       const alertasSeguranca = [];
-      
+
       perguntas.forEach((pergunta, index) => {
         if (pergunta.texto) {
           // Analisar conteúdo da pergunta para garantir que não há assédio
           const analise = monitor.analisarConteudo(
-            pergunta.texto, 
-            `pergunta_teste_${testeTipo}`, 
-            'sistema', 
+            pergunta.texto,
+            `pergunta_teste_${testeTipo}`,
+            'sistema',
             testeTipo
           );
-          
+
           if (analise.bloqueado) {
             console.log(`🚨 [ALERTA] Pergunta bloqueada no teste ${testeTipo}: ${pergunta.texto}`);
             alertasSeguranca.push({
@@ -1086,7 +1086,7 @@ const server = http.createServer((req, res) => {
           perguntasSeguras.push(pergunta);
         }
       });
-      
+
       // Se todas as perguntas foram bloqueadas, retornar erro
       if (perguntasSeguras.length === 0 && perguntas.length > 0) {
         res.writeHead(403, corsHeaders);
@@ -1098,11 +1098,11 @@ const server = http.createServer((req, res) => {
         }));
         return;
       }
-      
+
       // Se não encontrar perguntas específicas, retorna perguntas genéricas
       if (perguntasSeguras.length === 0) {
         res.writeHead(200, corsHeaders);
-        res.end(JSON.stringify({ 
+        res.end(JSON.stringify({
           perguntas: [
             {
               id: '1',
@@ -1116,20 +1116,20 @@ const server = http.createServer((req, res) => {
         }));
         return;
       }
-      
+
       res.writeHead(200, corsHeaders);
-      res.end(JSON.stringify({ 
+      res.end(JSON.stringify({
         perguntas: perguntasSeguras,
         total: perguntasSeguras.length,
         alertasSeguranca: alertasSeguranca
       }));
       return;
-      
+
     } catch (error) {
       console.error('Erro ao carregar perguntas:', error);
       // Em caso de erro, retorna perguntas genéricas
       res.writeHead(200, corsHeaders);
-      res.end(JSON.stringify({ 
+      res.end(JSON.stringify({
         perguntas: [
           {
             id: '1',
@@ -1154,20 +1154,20 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body);
         console.log('Teste resultado recebido:', data);
-        
+
         // Análise automática de conteúdo para detectar assédio
         if (data.respostas && Array.isArray(data.respostas)) {
           const usuarioId = data.usuarioId || 'usuario-anonimo';
           const testeId = data.testeId || 'teste-desconhecido';
-          
+
           // Analisar cada resposta
           data.respostas.forEach((resposta, index) => {
             if (resposta.texto || resposta.resposta) {
               const texto = resposta.texto || resposta.resposta;
               const contexto = `pergunta_${resposta.perguntaId || index}`;
-              
+
               const analise = monitor.analisarConteudo(texto, contexto, usuarioId, testeId);
-              
+
               if (analise.bloqueado) {
                 console.log(`🚨 [BLOQUEIO] Teste bloqueado para usuário ${usuarioId} devido a conteúdo inadequado`);
                 res.writeHead(403, corsHeaders);
@@ -1186,7 +1186,7 @@ const server = http.createServer((req, res) => {
             }
           });
         }
-        
+
         res.writeHead(200, corsHeaders);
         res.end(JSON.stringify({
           message: 'Resultado salvo com sucesso',
@@ -1347,7 +1347,7 @@ const server = http.createServer((req, res) => {
   }
 
   // ===== SISTEMA DE BLOQUEIO AUTOMÁTICO HUMANIQ PAS =====
-  
+
   // Verificar se usuário está bloqueado (middleware-like)
   if (req.headers['x-user-id']) {
     const userId = req.headers['x-user-id'];
@@ -1377,7 +1377,7 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body);
         const { texto, contexto, usuarioId, testeId } = data;
-        
+
         if (!texto) {
           res.writeHead(400, corsHeaders);
           res.end(JSON.stringify({ error: 'Texto é obrigatório para análise' }));
@@ -1385,7 +1385,7 @@ const server = http.createServer((req, res) => {
         }
 
         const resultado = monitor.analisarConteudo(texto, contexto, usuarioId, testeId);
-        
+
         res.writeHead(200, corsHeaders);
         res.end(JSON.stringify({
           success: true,
@@ -1402,11 +1402,11 @@ const server = http.createServer((req, res) => {
 
   // Endpoint para listar bloqueios
   if (path === '/api/bloqueio/listar' && method === 'GET') {
-    const ativo = parsedUrl.query.ativo === 'true' ? true : 
-                 parsedUrl.query.ativo === 'false' ? false : null;
-    
+    const ativo = parsedUrl.query.ativo === 'true' ? true :
+      parsedUrl.query.ativo === 'false' ? false : null;
+
     const bloqueios = monitor.listarBloqueios(ativo);
-    
+
     res.writeHead(200, corsHeaders);
     res.end(JSON.stringify({
       success: true,
@@ -1419,7 +1419,7 @@ const server = http.createServer((req, res) => {
   // Endpoint para estatísticas de bloqueio
   if (path === '/api/bloqueio/estatisticas' && method === 'GET') {
     const estatisticas = monitor.getEstatisticas();
-    
+
     res.writeHead(200, corsHeaders);
     res.end(JSON.stringify({
       success: true,
@@ -1436,7 +1436,7 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body);
         const { blockId, revisadoPor, observacoes } = data;
-        
+
         if (!blockId || !revisadoPor) {
           res.writeHead(400, corsHeaders);
           res.end(JSON.stringify({ error: 'blockId e revisadoPor são obrigatórios' }));
@@ -1444,7 +1444,7 @@ const server = http.createServer((req, res) => {
         }
 
         const bloqueio = monitor.desbloquearConteudo(blockId, revisadoPor, observacoes);
-        
+
         res.writeHead(200, corsHeaders);
         res.end(JSON.stringify({
           success: true,
@@ -1462,7 +1462,7 @@ const server = http.createServer((req, res) => {
   // Endpoint para verificar status de bloqueio de usuário
   if (path === '/api/bloqueio/status' && method === 'GET') {
     const usuarioId = parsedUrl.query.usuarioId;
-    
+
     if (!usuarioId) {
       res.writeHead(400, corsHeaders);
       res.end(JSON.stringify({ error: 'usuarioId é obrigatório' }));
@@ -1470,7 +1470,7 @@ const server = http.createServer((req, res) => {
     }
 
     const bloqueio = monitor.isUsuarioBloqueado(usuarioId);
-    
+
     res.writeHead(200, corsHeaders);
     res.end(JSON.stringify({
       success: true,
@@ -1529,7 +1529,7 @@ function saveConcluded() {
       });
     }
     fs.writeFileSync('./server/concluded-tests.json', JSON.stringify(obj, null, 2), 'utf8');
-  } catch (_) {}
+  } catch (_) { }
 }
 
 loadConcluded();
