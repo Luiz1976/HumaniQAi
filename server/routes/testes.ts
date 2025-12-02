@@ -2,7 +2,7 @@ import express from 'express';
 import { db, dbType } from '../db-config';
 import { testes, perguntas, resultados, respostas, colaboradores, testeDisponibilidade, empresas, insertResultadoSchema, insertRespostaSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
-import { eq, and, desc, or } from 'drizzle-orm';
+import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import logger from '../utils/logger';
 import { randomUUID } from 'crypto';
@@ -202,7 +202,7 @@ router.get('/:id/perguntas', async (req, res) => {
 router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const validationResult = z.object({
-      testeId: z.string().uuid().nullable().optional(),
+      testeId: z.string().nullable().optional(),
       pontuacaoTotal: z.number(),
       tempoGasto: z.number().optional(),
       sessionId: z.string().optional(),
@@ -317,7 +317,7 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
         const [testeExistente] = await db
           .select({ id: testes.id })
           .from(testes)
-          .where(eq(testes.id, testeIdFinal))
+          .where(sql`${testes.id} = ${testeIdFinal}`)
           .limit(1);
 
         if (!testeExistente) {

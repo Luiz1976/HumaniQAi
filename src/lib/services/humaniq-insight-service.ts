@@ -104,11 +104,12 @@ class HumaniQInsightService {
           const catSlug = toSlug(t.categoria || '');
           return nomeSlug === alvo || catSlug === alvo || nomeSlug.includes('insight') || nomeSlug.includes('humaniq');
         });
-        const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        resolvedTesteId = encontrado?.id && uuidRe.test(String(encontrado.id)) ? String(encontrado.id) : null;
+
+        // Aceitar ID mesmo que não seja UUID (para casos como humaniq-insight)
+        resolvedTesteId = encontrado?.id ? String(encontrado.id) : null;
       } catch (_) {
-        const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        resolvedTesteId = testeId && uuidRe.test(String(testeId)) ? String(testeId) : null;
+        // Aceitar ID mesmo que não seja UUID
+        resolvedTesteId = testeId ? String(testeId) : null;
       }
 
       const dadosResultado = {
