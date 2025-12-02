@@ -1,5 +1,5 @@
-import { 
-  calcularResultadoHumaniQInsight, 
+import {
+  calcularResultadoHumaniQInsight,
   ResultadoHumaniQInsight,
   dimensoesHumaniQInsight,
   classificacaoMedia
@@ -21,7 +21,7 @@ export interface Resultado {
 }
 
 class HumaniQInsightService {
-  
+
   /**
    * Processa as respostas do teste e salva no banco de dados
    */
@@ -32,26 +32,26 @@ class HumaniQInsightService {
     tempoGasto: number = 0,
     testeId?: string // Adicionar o parâmetro testeId
   ): Promise<{ resultado: Resultado; analise: ResultadoHumaniQInsight }> {
-    
+
     try {
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Iniciando processamento do resultado');
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Teste ID recebido:', testeId);
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Respostas recebidas:', respostas);
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Número de respostas:', Object.keys(respostas).length);
-      
+
       // Calcular resultado usando a função específica do teste
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Calculando resultado...');
       const analiseHumaniQInsight = calcularResultadoHumaniQInsight(respostas);
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Análise calculada:', analiseHumaniQInsight);
-      
+
       // Converter para o formato do banco de dados (compatível com agregação do backend)
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Convertendo pontuações das dimensões...');
       const pontuacoesDimensoes: Record<string, number> = {};
       const dimensoesParaBackend: Record<string, { percentual: number; media: number; pontuacao: number }> = {};
-      
+
       Object.entries(analiseHumaniQInsight.dimensoes).forEach(([dimensaoId, dados]) => {
         pontuacoesDimensoes[dimensaoId] = dados.media;
-        
+
         // Formato para agregação do backend (percentual de 0-100)
         dimensoesParaBackend[dimensaoId] = {
           percentual: (dados.media / 5) * 100, // Converter escala 1-5 para 0-100
@@ -61,17 +61,17 @@ class HumaniQInsightService {
       });
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Pontuações das dimensões:', pontuacoesDimensoes);
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Dimensões formatadas para backend:', dimensoesParaBackend);
-      
+
       // Gerar interpretação textual
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Gerando interpretação...');
       const interpretacao = this.gerarInterpretacao(analiseHumaniQInsight);
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Interpretação gerada:', interpretacao.substring(0, 100) + '...');
-      
+
       // Gerar recomendações
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Gerando recomendações...');
       const recomendacoes = this.gerarRecomendacoes(analiseHumaniQInsight);
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Recomendações geradas:', recomendacoes.length, 'itens');
-      
+
       // Gerar alertas críticos baseados nas dimensões problemáticas
       const alertasCriticos: string[] = [];
       Object.entries(analiseHumaniQInsight.dimensoes).forEach(([dimensaoId, dados]) => {
@@ -83,11 +83,11 @@ class HumaniQInsightService {
         }
       });
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Alertas críticos gerados:', alertasCriticos.length, 'itens');
-      
+
       // Obter session_id para persistência
       const sessionId = sessionService.getSessionId();
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Session ID obtido:', sessionId);
-      
+
       // Preparar dados para salvar no banco
       let resolvedTesteId: string | null = null;
       try {
@@ -125,7 +125,7 @@ class HumaniQInsightService {
           usuario_nome: usuarioNome,
           usuario_email: usuarioEmail,
           pontuacoes_dimensoes: pontuacoesDimensoes,
-// Formato compatível com agregação do backend (estado-psicossocial e PGR)
+          // Formato compatível com agregação do backend (estado-psicossocial e PGR)
           analise_completa: {
             ...analiseHumaniQInsight,
             dimensoes: dimensoesParaBackend // Dimensões no formato esperado pelo backend
@@ -137,43 +137,43 @@ class HumaniQInsightService {
           data_calculo: new Date().toISOString()
         }
       };
-      
+
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Dados preparados para salvamento:', {
         session_id: dadosResultado.session_id,
         pontuacao_total: dadosResultado.pontuacao_total,
         status: dadosResultado.status,
         metadados_keys: Object.keys(dadosResultado.metadados)
       });
-      
+
       // Salvar no banco de dados
       console.log('🔍 [HUMANIQ-INSIGHT-SERVICE] Salvando resultado no banco...');
       const resultadoSalvo = await resultadosService.salvarResultado(dadosResultado);
       console.log('✅ [HUMANIQ-INSIGHT-SERVICE] Resultado salvo com sucesso:', resultadoSalvo);
-      
+
       return {
         resultado: resultadoSalvo as unknown as Resultado,
         analise: analiseHumaniQInsight
       };
-      
+
     } catch (error) {
       console.error('❌ [HUMANIQ-INSIGHT-SERVICE] Erro no processamento:', error);
       console.error('❌ [HUMANIQ-INSIGHT-SERVICE] Stack trace:', error instanceof Error ? error.stack : 'No stack trace');
       throw error;
     }
   }
-  
+
   /**
    * Gera interpretação textual do resultado
    */
   private gerarInterpretacao(analise: ResultadoHumaniQInsight): string {
     const { mediaGeral, nivelGeral, dimensoes } = analise;
-    
+
     let interpretacao = `## Análise HumaniQ Insight\n\n`;
     interpretacao += `**Pontuação Geral:** ${mediaGeral.toFixed(2)}/5.00\n`;
     interpretacao += `**Classificação:** ${classificacaoMedia[nivelGeral].label}\n\n`;
-    
+
     interpretacao += `### Visão Geral\n\n`;
-    
+
     if (nivelGeral === 'saudavel') {
       interpretacao += `Sua organização apresenta um clima organizacional **positivo e saudável**. `;
       interpretacao += `O ambiente de trabalho demonstra bons níveis de segurança psicológica, comunicação, pertencimento e justiça organizacional. `;
@@ -187,9 +187,9 @@ class HumaniQInsightService {
       interpretacao += `Os resultados indicam desafios significativos que podem estar impactando negativamente o bem-estar, `;
       interpretacao += `a motivação e o engajamento dos colaboradores.\n\n`;
     }
-    
+
     interpretacao += `### Análise por Dimensão\n\n`;
-    
+
     Object.entries(dimensoes).forEach(([dimensaoId, dados]) => {
       const dimensaoInfo = dimensoesHumaniQInsight.find(d => d.id === dimensaoId);
       if (dimensaoInfo) {
@@ -197,21 +197,21 @@ class HumaniQInsightService {
         interpretacao += `*${dimensaoInfo.descricao}*\n\n`;
       }
     });
-    
+
     return interpretacao;
   }
-  
+
   /**
    * Gera recomendações específicas baseadas no resultado
    */
   private gerarRecomendacoes(analise: ResultadoHumaniQInsight): string[] {
     const recomendacoes: string[] = [];
     const { dimensoes } = analise;
-    
+
     // Recomendações por dimensão
     Object.entries(dimensoes).forEach(([dimensaoId, dados]) => {
       const dimensaoInfo = dimensoesHumaniQInsight.find(d => d.id === dimensaoId);
-      
+
       if (dimensaoInfo && dados.nivel === 'problematico') {
         if (dimensaoId === 'seguranca-psicologica') {
           recomendacoes.push('Promover treinamentos sobre segurança psicológica para líderes e equipes');
@@ -232,7 +232,7 @@ class HumaniQInsightService {
         }
       }
     });
-    
+
     // Recomendações gerais
     if (analise.nivelGeral === 'problematico') {
       recomendacoes.push('Realizar diagnóstico detalhado com grupos focais e entrevistas');
@@ -247,7 +247,7 @@ class HumaniQInsightService {
       recomendacoes.push('Compartilhar boas práticas com outras áreas ou unidades');
       recomendacoes.push('Realizar avaliações periódicas para monitoramento contínuo');
     }
-    
+
     return recomendacoes;
   }
 }

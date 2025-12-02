@@ -228,44 +228,83 @@ router.post('/resultado', authenticateToken, async (req: AuthRequest, res) => {
 
         const nomeEntrada = String(metadados.teste_nome);
         const nomeSlug = toSlug(nomeEntrada);
+        const nomeNormalizado = nomeEntrada.toLowerCase();
+
+        logger.info(`🔍 [RESULTADO] Buscando teste: "${nomeEntrada}" (slug: "${nomeSlug}")`);
 
         const todos = await db
           .select({ id: testes.id, nome: testes.nome, categoria: testes.categoria })
           .from(testes);
 
+        logger.info(`🔍 [RESULTADO] Total de testes no banco: ${todos.length}`);
+
+        // Estratégia 1: Match exato por slug
         let encontrado = todos.find(t => toSlug(t.nome || '') === nomeSlug || toSlug(t.categoria || '') === nomeSlug);
+
+        if (encontrado) {
+          logger.info(`✅ [RESULTADO] Match exato encontrado: "${encontrado.nome}"`);
+        }
+
+        // Estratégia 2: Match case-insensitive por nome ou categoria
         if (!encontrado) {
-          const nomes = todos.map(t => ({ t, nome: toSlug(t.nome || ''), cat: toSlug(t.categoria || '') }));
-          encontrado = nomes.find(n => nomeSlug.includes(n.nome) || n.nome.includes(nomeSlug) || nomeSlug.includes(n.cat))?.t;
-          if (!encontrado) {
-            const dist = (a: string, b: string) => {
-              const m: number[][] = Array(a.length + 1).fill(0).map(() => Array(b.length + 1).fill(0));
-              for (let i = 0; i <= a.length; i++) m[i][0] = i;
-              for (let j = 0; j <= b.length; j++) m[0][j] = j;
-              for (let i = 1; i <= a.length; i++) {
-                for (let j = 1; j <= b.length; j++) {
-                  const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-                  m[i][j] = Math.min(m[i - 1][j] + 1, m[i][j - 1] + 1, m[i - 1][j - 1] + cost);
-                }
+          encontrado = todos.find(t =>
+            (t.nome || '').toLowerCase() === nomeNormalizado ||
+            (t.categoria || '').toLowerCase() === nomeNormalizado
+          );
+          if (encontrado) {
+            logger.info(`✅ [RESULTADO] Match case-insensitive encontrado: "${encontrado.nome}"`);
+          }
+        }
+
+        // Estratégia 3: Match por contains (útil para "HumaniQ Insight" vs "HumaniQ Insight - etc")
+        if (!encontrado) {
+          const nomes = todos.map(t => ({ t, nome: toSlug(t.nome || ''), cat: toSlug(t.categoria || ''), nomeOriginal: t.nome || '' }));
+          encontrado = nomes.find(n =>
+            nomeSlug.includes(n.nome) ||
+            n.nome.includes(nomeSlug) ||
+            nomeSlug.includes(n.cat) ||
+            n.nomeOriginal.toLowerCase().includes(nomeNormalizado) ||
+            nomeNormalizado.includes(n.nomeOriginal.toLowerCase())
+          )?.t;
+          if (encontrado) {
+            logger.info(`✅ [RESULTADO] Match por contains encontrado: "${encontrado.nome}"`);
+          }
+        }
+
+        // Estratégia 4: Fuzzy matching (Levenshtein distance)
+        if (!encontrado) {
+          const dist = (a: string, b: string) => {
+            const m: number[][] = Array(a.length + 1).fill(0).map(() => Array(b.length + 1).fill(0));
+            for (let i = 0; i <= a.length; i++) m[i][0] = i;
+            for (let j = 0; j <= b.length; j++) m[0][j] = j;
+            for (let i = 1; i <= a.length; i++) {
+              for (let j = 1; j <= b.length; j++) {
+                const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                m[i][j] = Math.min(m[i - 1][j] + 1, m[i][j - 1] + 1, m[i - 1][j - 1] + cost);
               }
-              return m[a.length][b.length];
-            };
-            let best: { t: typeof todos[number] | undefined; d: number } = { t: undefined, d: Infinity };
-            for (const n of nomes) {
-              const dNome = dist(nomeSlug, n.nome);
-              const dCat = dist(nomeSlug, n.cat);
-              const d = Math.min(dNome, dCat);
-              if (d < best.d) best = { t: n.t, d };
             }
-            if (best.d <= 2) encontrado = best.t;
+            return m[a.length][b.length];
+          };
+          const nomes = todos.map(t => ({ t, nome: toSlug(t.nome || ''), cat: toSlug(t.categoria || '') }));
+          let best: { t: typeof todos[number] | undefined; d: number; matchType: string } = { t: undefined, d: Infinity, matchType: '' };
+          for (const n of nomes) {
+            const dNome = dist(nomeSlug, n.nome);
+            const dCat = dist(nomeSlug, n.cat);
+            const d = Math.min(dNome, dCat);
+            if (d < best.d) best = { t: n.t, d, matchType: dNome < dCat ? 'nome' : 'categoria' };
+          }
+          if (best.d <= 3) { // Aumentado de 2 para 3 para maior tolerância
+            encontrado = best.t;
+            logger.info(`✅ [RESULTADO] Match fuzzy encontrado (distância: ${best.d}, por ${best.matchType}): "${encontrado?.nome}"`);
           }
         }
 
         if (encontrado) {
           testeIdFinal = encontrado.id as any;
-          logger.info(`🔍 [RESULTADO] Teste "${nomeEntrada}" correspondente encontrado. ID: ${testeIdFinal}`);
+          logger.info(`✅ [RESULTADO] Teste "${nomeEntrada}" → ID resolvido: ${testeIdFinal} (${encontrado.nome})`);
         } else {
-          logger.warn(`⚠️ [RESULTADO] Teste "${nomeEntrada}" não encontrado`);
+          logger.error(`❌ [RESULTADO-CRÍTICO] Teste "${nomeEntrada}" NÃO ENCONTRADO no banco de dados!`);
+          logger.error(`❌ [RESULTADO-CRÍTICO] Testes disponíveis no banco:`, todos.map(t => ({ nome: t.nome, categoria: t.categoria, id: t.id })));
         }
       } catch (error) {
         logger.error('❌ [RESULTADO] Erro ao buscar ID do teste:', error);
