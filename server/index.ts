@@ -17,8 +17,10 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 process.on('uncaughtException', (error) => {
-  logger.error('Uncaught Exception:', error);
-  process.exit(1);
+  try {
+    logger.error('Uncaught Exception:', error);
+  } catch (_) { }
+  // Não encerrar o processo automaticamente; manter serviço vivo para health/port binding
 });
 
 // Importar rotas
