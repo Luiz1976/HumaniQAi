@@ -349,15 +349,45 @@ router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, a
 
     // Enriquecer os resultados com informações formatadas
     const resultadosEnriquecidos = resultadosList.map(resultado => {
-      const metadadosBase = resultado.metadados as Record<string, any> || {};
-      
-      // Calcular pontuação máxima e percentual
-      const pontuacaoMaxima = metadadosBase.pontuacao_maxima || 100;
-      const pontuacao = resultado.pontuacaoTotal || 0;
-      const percentual = pontuacaoMaxima > 0 
-        ? Math.round((pontuacao / pontuacaoMaxima) * 100) 
-        : 0;
-      
+      const metadadosBase = (resultado.metadados as Record<string, any>) || {};
+      const analise = metadadosBase.analise_completa || {};
+
+      const testeId = String(resultado.testeId || '').toLowerCase();
+      const nomeTeste = String(resultado.testeNome || metadadosBase.teste_nome || '').toLowerCase();
+
+      const MAX_BY_TEST: Record<string, number> = {
+        'clima-organizacional': 280,
+        'karasek-siegrist': 250,
+        'estresse-ocupacional': 200,
+      };
+
+      let pontuacaoMaxima: number = Number(metadadosBase.pontuacao_maxima) || 0;
+      if (!pontuacaoMaxima) {
+        const key = Object.keys(MAX_BY_TEST).find(k => testeId.includes(k) || nomeTeste.includes(k));
+        pontuacaoMaxima = key ? MAX_BY_TEST[key] : 100;
+      }
+
+      const pontuacao = typeof resultado.pontuacaoTotal === 'number' ? resultado.pontuacaoTotal : 0;
+
+      let percentual: number | undefined;
+
+      const riscoGeralPct = analise?.riscoGeral?.percentual;
+      const maturidadeGeralPct = analise?.maturidadeGeral?.percentual;
+      const indiceGeralRisco = analise?.indiceGeralRisco;
+
+      if (typeof riscoGeralPct === 'number') {
+        percentual = Math.round(Math.max(0, Math.min(100, riscoGeralPct)));
+      } else if (typeof maturidadeGeralPct === 'number') {
+        percentual = Math.round(Math.max(0, Math.min(100, maturidadeGeralPct)));
+      } else if (typeof indiceGeralRisco === 'number') {
+        const scaled = (indiceGeralRisco / 5) * 100;
+        percentual = Math.round(Math.max(0, Math.min(100, scaled)));
+      } else if (pontuacaoMaxima > 0 && typeof pontuacao === 'number') {
+        percentual = Math.round(Math.max(0, Math.min(100, (pontuacao / pontuacaoMaxima) * 100)));
+      } else {
+        percentual = 0;
+      }
+
       return {
         id: resultado.id,
         testeId: resultado.testeId,
@@ -365,7 +395,7 @@ router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, a
         categoria: resultado.testeCategoria || metadadosBase.teste_categoria || '',
         pontuacao: pontuacao,
         pontuacaoMaxima: pontuacaoMaxima,
-        percentual: percentual,
+        percentual,
         status: resultado.status || 'concluido',
         dataRealizacao: resultado.dataRealizacao,
         tempoDuracao: resultado.tempoGasto ? Math.round(resultado.tempoGasto / 60) : undefined, // converter segundos para minutos
