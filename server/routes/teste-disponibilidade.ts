@@ -306,7 +306,20 @@ router.get('/empresa/colaborador/:colaboradorId/testes', authenticateToken, requ
 router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authenticateToken, requireRole('empresa', 'admin'), async (req: AuthRequest, res) => {
   try {
     const { colaboradorId, testeId } = req.params;
-    const empresaId = req.user!.empresaId!;
+    let empresaId: string | null = req.user!.empresaId || null;
+    if (!empresaId && req.user!.role === 'admin') {
+      try {
+        const [colabEmpresa] = await db
+          .select({ empresaId: colaboradores.empresaId })
+          .from(colaboradores)
+          .where(eq(colaboradores.id, colaboradorId))
+          .limit(1);
+        empresaId = colabEmpresa?.empresaId || null;
+      } catch (_) {}
+    }
+    if (!empresaId) {
+      return res.status(400).json({ error: 'Empresa não identificada' });
+    }
     const requestId = Math.random().toString(36).slice(2);
     const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
 
