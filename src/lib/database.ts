@@ -102,7 +102,7 @@ export const resultadosService = {
     try {
       console.log('🔍 [DATABASE] Iniciando salvamento do resultado via API local');
       console.log('🔍 [DATABASE] Dados recebidos:', resultado);
-      
+
       // Preparar dados no formato esperado pela API
       const isUuid = (v: any) => typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
       const dadosAPI = {
@@ -113,23 +113,23 @@ export const resultadosService = {
         metadados: resultado.metadados,
         status: resultado.status || 'concluido'
       };
-      
+
       console.log('🔍 [DATABASE] Dados formatados para API:', dadosAPI);
-      
+
       // Chamar API local usando o método correto
       const response = await apiService.salvarResultadoTeste(dadosAPI);
       console.log('✅ [DATABASE] Resposta da API:', response);
-      
+
       // Retornar no formato esperado
       const resultadoItem = {
         ...resultado,
         id: response.id || sessionService.getSessionId(),
         data_realizacao: response.dataRealizacao || new Date().toISOString()
       };
-      
+
       console.log('✅ [DATABASE] Resultado processado com sucesso via API local');
       return resultadoItem;
-      
+
     } catch (error) {
       console.error('❌ [DATABASE] Erro ao salvar resultado via API:', error);
       console.error('❌ [DATABASE] Stack trace:', error instanceof Error ? error.stack : 'Sem stack trace');
@@ -149,7 +149,7 @@ export const resultadosService = {
     try {
       console.log('🔍 [DATABASE] Iniciando salvamento de resposta individual');
       console.log('📊 [DATABASE] Dados da resposta:', JSON.stringify(resposta, null, 2));
-      
+
       // Garantir UUID v4 válido no session_id
       const isValidUUIDv4 = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
       let sessionIdToUse = resposta.session_id;
@@ -161,7 +161,7 @@ export const resultadosService = {
         });
         sessionIdToUse = regenerated;
       }
-      
+
       // MIGRAÇÃO DE SUPABASE → API LOCAL
       // As respostas individuais são salvas em localStorage como backup
       // O resultado final será salvo via API local quando o teste for concluído
@@ -176,22 +176,22 @@ export const resultadosService = {
         tempo_resposta: null,
         created_at: resposta.timestamp
       };
-      
+
       localStorage.setItem(chaveStorage, JSON.stringify(dadosResposta));
-      
+
       console.log('✅ [DATABASE] Resposta individual salva no localStorage');
       console.log('📄 [DATABASE] Chave:', chaveStorage);
-      
+
       // Nota: As respostas serão persistidas no banco de dados
       // quando o teste for finalizado, via apiService.submeterResultado()
-      
+
     } catch (error) {
       console.error('❌ [DATABASE] Erro geral no salvamento da resposta:', error);
       console.error('🔍 [DATABASE] Tipo do erro:', typeof error);
       console.error('🔍 [DATABASE] Nome do erro:', error instanceof Error ? error.name : 'Unknown');
       console.error('🔍 [DATABASE] Mensagem do erro:', error instanceof Error ? error.message : String(error));
       console.error('🔍 [DATABASE] Stack trace:', error instanceof Error ? error.stack : 'Sem stack trace');
-      
+
       throw error;
     }
   },
@@ -200,7 +200,7 @@ export const resultadosService = {
   async verificarResultadoPorId(id: string): Promise<{ existe: boolean; sessionId?: string; resultado?: any }> {
     try {
       console.log('🔍 [VERIFICAR-RESULTADO] Verificando resultado com ID:', id);
-      
+
       const { data, error } = await supabase
         .from('resultados')
         .select(`
@@ -249,26 +249,26 @@ export const resultadosService = {
     try {
       console.log('🔍 [BUSCAR-RESULTADO-POR-ID] ===== INICIANDO BUSCA VIA API LOCAL =====');
       console.log('🔍 [BUSCAR-RESULTADO-POR-ID] ID solicitado:', id);
-      
+
       // Importar apiService para usar API local
       const { apiService } = await import('../services/apiService');
-      
+
       // Fazer requisição à API local (autenticação feita automaticamente pelo backend)
       const response = await apiService.obterResultadoPorId(id);
-      
+
       if (!response || !response.resultado) {
         console.log('❌ [BUSCAR-RESULTADO-POR-ID] Nenhum resultado encontrado para ID:', id);
         return null;
       }
-      
+
       const data = response.resultado;
-      
+
       console.log('✅ [BUSCAR-RESULTADO-POR-ID] Resultado encontrado!');
       console.log('🔍 [BUSCAR-RESULTADO-POR-ID] ID do resultado:', data.id);
       console.log('🔍 [BUSCAR-RESULTADO-POR-ID] teste_id:', data.testeId);
       console.log('🔍 [BUSCAR-RESULTADO-POR-ID] pontuacao_total:', data.pontuacaoTotal);
       console.log('🔍 [BUSCAR-RESULTADO-POR-ID] metadados existe?', !!data.metadados);
-      
+
       // Mapear dados da API para o formato esperado pelo frontend
       const resultado = {
         id: data.id,
@@ -279,13 +279,13 @@ export const resultadosService = {
         teste_id: data.testeId,
         metadados: data.metadados || {},
         respostas: [],
-        
+
         // Incluir campos extras se existirem nos metadados
         ...(data.metadados || {})
       };
-      
+
       console.log('🔍 [BUSCAR-RESULTADO-POR-ID] ===== BUSCA CONCLUÍDA VIA API LOCAL =====');
-      
+
       return resultado;
     } catch (error) {
       console.error('❌ [BUSCAR-RESULTADO-POR-ID] Erro inesperado:', error);
@@ -350,26 +350,26 @@ export const resultadosService = {
 
       if (filtros?.dataInicio) {
         const dataInicio = new Date(filtros.dataInicio);
-        resultadosFiltrados = resultadosFiltrados.filter((resultado: any) => 
+        resultadosFiltrados = resultadosFiltrados.filter((resultado: any) =>
           new Date(resultado.data_realizacao) >= dataInicio
         );
       }
 
       if (filtros?.dataFim) {
         const dataFim = new Date(filtros.dataFim);
-        resultadosFiltrados = resultadosFiltrados.filter((resultado: any) => 
+        resultadosFiltrados = resultadosFiltrados.filter((resultado: any) =>
           new Date(resultado.data_realizacao) <= dataFim
         );
       }
 
       if (filtros?.pontuacaoMin !== undefined) {
-        resultadosFiltrados = resultadosFiltrados.filter((resultado: any) => 
+        resultadosFiltrados = resultadosFiltrados.filter((resultado: any) =>
           resultado.pontuacao_total >= filtros.pontuacaoMin!
         );
       }
 
       if (filtros?.pontuacaoMax !== undefined) {
-        resultadosFiltrados = resultadosFiltrados.filter((resultado: any) => 
+        resultadosFiltrados = resultadosFiltrados.filter((resultado: any) =>
           resultado.pontuacao_total <= filtros.pontuacaoMax!
         );
       }
@@ -384,11 +384,11 @@ export const resultadosService = {
       }
 
       console.log('✅ [BUSCAR-TODOS-RESULTADOS-RPC] Resultados encontrados:', resultadosFiltrados?.length || 0);
-      
+
       // Processar resultados para garantir que tenham nome do teste
       console.log('🔍 [DEBUG] Dados brutos recebidos:', resultadosFiltrados?.length || 0);
       console.log('🔍 [DEBUG] Primeiros 3 resultados brutos:', JSON.stringify(resultadosFiltrados?.slice(0, 3), null, 2));
-      
+
       const resultadosProcessados = (resultadosFiltrados || [])
         .map((resultado, index) => {
           console.log(`🔍 [DEBUG-MAP] Processando resultado ${index + 1}:`, {
@@ -397,10 +397,10 @@ export const resultadosService = {
             metadados_tipo_teste: resultado.metadados?.tipo_teste,
             metadados_teste_nome: resultado.metadados?.teste_nome
           });
-          
+
           // Obter nome do teste dos metadados
           let nomeTeste = resultado.metadados?.teste_nome;
-          
+
           if (!nomeTeste && resultado.metadados?.tipo_teste) {
             // Mapear tipos de teste conhecidos
             const tiposConhecidos: Record<string, string> = {
@@ -416,10 +416,10 @@ export const resultadosService = {
             nomeTeste = tiposConhecidos[resultado.metadados.tipo_teste] || resultado.metadados.tipo_teste;
             console.log(`🔍 [DEBUG-MAP] Nome obtido de tipo_teste: "${nomeTeste}"`);
           }
-          
+
           const nomeTesteFinal = nomeTeste || 'Teste Desconhecido';
           console.log(`🔍 [DEBUG-MAP] Nome final para resultado ${resultado.id}: "${nomeTesteFinal}"`);
-          
+
           return {
             ...resultado,
             testes: resultado.testes || { nome: nomeTesteFinal }
@@ -427,7 +427,7 @@ export const resultadosService = {
         })
         .filter((resultado, index) => {
           const metadados = resultado.metadados || {};
-          
+
           // Filtrar resultados marcados como deletados
           if (metadados.deleted === true) {
             console.log('🗑️ [BUSCAR-TODOS-RESULTADOS] Resultado deletado filtrado:', {
@@ -437,16 +437,16 @@ export const resultadosService = {
             });
             return false;
           }
-          
+
           // Filtrar resultados sem teste válido
           const nomeTesteValido = resultado.testes?.nome;
-          
+
           console.log(`🔍 [DEBUG-FILTER] Avaliando resultado ${index + 1} (ID: ${resultado.id}):`, {
             nome: nomeTesteValido,
             teste_id: resultado.teste_id,
             tipo_teste: resultado.metadados?.tipo_teste
           });
-          
+
           // Excluir se:
           // 1. Nome é "Teste Desconhecido"
           // 2. teste_id é null E não tem tipo_teste válido nos metadados
@@ -454,12 +454,12 @@ export const resultadosService = {
             console.log('🚫 [FILTRO] Excluindo resultado "Teste Desconhecido":', resultado.id);
             return false;
           }
-          
+
           if (!resultado.teste_id && !resultado.metadados?.tipo_teste) {
             console.log('🚫 [FILTRO] Excluindo resultado sem teste_id e sem tipo_teste:', resultado.id);
             return false;
           }
-          
+
           console.log('✅ [FILTRO] Mantendo resultado real:', resultado.id, nomeTesteValido);
           return true;
         });
@@ -497,7 +497,7 @@ export const resultadosService = {
     try {
       console.log('🔍 [BUSCAR-POR-SESSAO] Buscando resultados para sessão:', sessionId);
       console.log('🔍 [BUSCAR-POR-SESSAO] Filtros aplicados:', filtros);
-      
+
       let query = supabase
         .from('resultados')
         .select(`
@@ -736,88 +736,7 @@ export const analiseService = {
       case 'baixo': return ['Desenvolver estratégias de melhoria', 'Buscar capacitação'];
       case 'medio': return ['Manter consistência', 'Aprimorar pontos específicos'];
       case 'alto': return ['Manter excelência', 'Compartilhar boas práticas'];
-      default: return [];
-    }
-  }
-};
-
-// ==================== PROCESSAMENTO UNIFICADO ====================
-
-// Mapeamento de slugs para UUIDs dos testes no banco de dados
-const TESTE_SLUG_TO_UUID: Record<string, string> = {
-  'clima-organizacional': '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5',
-  'karasek-siegrist': '9b7d4c8e-1a2b-4f3e-9d7a-5e6f7a8b9c0d',
-  'estresse-ocupacional': '2c8e3f9a-4b5d-6e7a-8c9d-0e1f2a3b4c5d',
-  'pas': '4e0a5b1c-6d7f-8e9a-0f1a-2b3c4d5e6f7a',
-  'mgrp': '5f1a6c2d-7e8f-9a0b-1c2d-3e4f5a6b7c8d'
-};
-
-export const processamentoService = {
-  /**
-   * Processa respostas de qualquer teste usando o service apropriado
-   */
-  async processarTesteCompleto(
-    testeId: string,
-    respostas: Record<number, number>,
-    usuarioNome?: string,
-    usuarioEmail?: string,
-    tempoGasto: number = 0
-  ): Promise<{ resultado: Resultado; analise: AnaliseResultado }> {
-    
-    // Validações básicas
-    if (!testeId || !respostas || Object.keys(respostas).length === 0) {
-      throw new Error('Dados inválidos para processamento');
-    }
-
-    // Converter slug para UUID se necessário
-    const testeSlug = testeId; // Guardar o slug original para o switch
-    const testeUUID = TESTE_SLUG_TO_UUID[testeId] || testeId; // Converter para UUID se existir no mapa
-    
-    console.log('🔍 [PROCESSAMENTO] Slug recebido:', testeSlug);
-    console.log('🔍 [PROCESSAMENTO] UUID do teste:', testeUUID);
-
-    try {
-      // Determinar qual service usar baseado no teste (usar slug original)
-      switch (testeSlug) {
-        case 'clima-organizacional':
-          const resultadoClima = await climaOrganizacionalService.processarResultado(
-            respostas, usuarioNome, usuarioEmail, tempoGasto
-          );
-          return {
-            resultado: resultadoClima.resultado,
-            analise: climaOrganizacionalService.converterParaAnaliseResultado(resultadoClima.analise)
-          };
-
-        case 'karasek-siegrist':
-          const usuarioId = usuarioEmail || crypto.randomUUID();
-          const resultadoKS = await karasekSiegristService.processarRespostas(usuarioId, respostas);
-          return resultadoKS;
-
-        case 'humaniq-insight':
-          console.log('🔍 [DATABASE] Processando teste HumaniQ Insight');
-          console.log('🔍 [DATABASE] UUID do teste:', testeUUID);
-          const resultadoHumaniQ = await humaniQInsightService.processarResultado(
-            respostas,
-            usuarioNome,
-            usuarioEmail,
-            tempoGasto,
-            testeUUID // Passar o UUID em vez do slug
-          );
-          return resultadoHumaniQ;
-
-        default:
-          // Para testes que ainda não têm service específico, usar processamento genérico
-          return await this.processarTesteGenerico(testeUUID, respostas, usuarioNome, usuarioEmail, tempoGasto);
-      }
-    } catch (error) {
-      console.error('❌ [DATABASE] Erro ao processar teste:', error);
-      console.error('❌ [DATABASE] Tipo do erro:', typeof error);
-      console.error('❌ [DATABASE] Nome do erro:', error instanceof Error ? error.name : 'Unknown');
-      console.error('❌ [DATABASE] Mensagem do erro:', error instanceof Error ? error.message : String(error));
-      console.error('❌ [DATABASE] Stack trace:', error instanceof Error ? error.stack : 'No stack trace');
-      
-      // Re-throw o erro original em vez de mascarar
-      throw error;
+        throw error;
     }
   },
 
@@ -831,7 +750,7 @@ export const processamentoService = {
     usuarioEmail?: string,
     tempoGasto: number = 0
   ): Promise<{ resultado: Resultado; analise: AnaliseResultado }> {
-    
+
     // Buscar informações do teste
     const teste = await testesService.buscarTestePorId(testeId);
     if (!teste) {
@@ -840,17 +759,17 @@ export const processamentoService = {
 
     // Buscar perguntas do teste
     const perguntas = await perguntasService.buscarPerguntasPorTeste(testeId);
-    
+
     // Calcular pontuação total simples
     const valores = Object.values(respostas);
     const pontuacaoTotal = Math.round((valores.reduce((a, b) => a + b, 0) / valores.length) * 20);
-    
+
     // Obter session_id para persistência
     const sessionId = sessionService.getSessionId();
-    
+
     // CORREÇÃO: Garantir que usuario_id seja sempre preenchido baseado no usuário autenticado
     let usuarioIdFinal: string | null = null;
-    
+
     // Tentar obter usuário autenticado
     const currentUser = authService.getCurrentUser();
     if (currentUser) {
@@ -863,13 +782,13 @@ export const processamentoService = {
     } else {
       console.warn('⚠️ [PROCESSAMENTO-GENERICO] Nenhum usuário autenticado encontrado');
     }
-    
+
     // Se não temos usuario_id do auth, usar o email como fallback (compatibilidade)
     if (!usuarioIdFinal && usuarioEmail) {
       usuarioIdFinal = usuarioEmail;
       console.log('🔍 [PROCESSAMENTO-GENERICO] Usando email como usuario_id (fallback):', usuarioEmail);
     }
-    
+
     // Criar resultado
     const dadosResultado: Omit<Resultado, 'id' | 'data_realizacao'> = {
       teste_id: testeId,
