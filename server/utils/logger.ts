@@ -1,6 +1,16 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import path from 'path';
+import fs from 'fs';
+
+const logDir = 'logs';
+if (!fs.existsSync(logDir)) {
+  try {
+    fs.mkdirSync(logDir);
+  } catch (e) {
+    console.error('Could not create logs directory:', e);
+  }
+}
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -74,7 +84,7 @@ export default logger;
 
 export const logRequest = (req: any, res: any, next: any) => {
   const start = Date.now();
-  
+
   res.on('finish', () => {
     const duration = Date.now() - start;
     const logData = {
