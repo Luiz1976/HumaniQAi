@@ -20,7 +20,9 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
 console.log('📦 Carregando configurações de banco de dados...');
-import { db, runMigrations } from './db-config';
+import { db as getDb, dbType as getDbType, runMigrations } from './db-config';
+const db = getDb;
+const dbType = getDbType;
 
 console.log('📦 Carregando logger...');
 import logger, { logRequest } from './utils/logger';
