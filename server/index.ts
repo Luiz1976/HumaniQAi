@@ -2,28 +2,30 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Tratamento de erros não capturados (deve vir antes de outros imports que podem falhar)
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection:', { reason, promise });
+});
 
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Não encerrar o processo automaticamente; manter serviço vivo para health/port binding se possível
+});
+
+console.log('🚀 Iniciando servidor HumaniQ AI...');
 
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+
+console.log('📦 Carregando configurações de banco de dados...');
 import { db, runMigrations } from './db-config';
+
+console.log('📦 Carregando logger...');
 import logger, { logRequest } from './utils/logger';
 
-// Tratamento de erros não capturados (deve vir antes de outros imports que podem falhar)
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection:', { reason, promise });
-});
-
-process.on('uncaughtException', (error) => {
-  try {
-    logger.error('Uncaught Exception:', error);
-  } catch (_) { }
-  // Não encerrar o processo automaticamente; manter serviço vivo para health/port binding
-});
-
-// Importar rotas
+console.log('📦 Carregando rotas...');
 import authRoutes from './routes/auth';
 import testesRoutes from './routes/testes';
 import empresasRoutes from './routes/empresas';
@@ -46,18 +48,20 @@ import { cacheMiddleware } from './utils/cache';
 import requireApiKey from './middleware/apiKey';
 import postgres from 'postgres';
 
-
+console.log('✅ Todas as rotas carregadas.');
 
 const app = express();
 // Desabilitar ETag para evitar 304 em desenvolvimento (garante dados atualizados)
 app.set('etag', false);
-const PORT = Number((process.env.NODE_ENV === 'production' ? (process.env.PORT || 10000) : (process.env.BACKEND_PORT || process.env.PORT || 3001)));
+
+// Configuração de PORTA robusta para Render
+const PORT = Number(process.env.PORT || 10000);
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const IS_DEV = NODE_ENV === 'development';
 
-app.set('trust proxy', 1);
+console.log(`⚙️ Configuração: PORT=${PORT}, NODE_ENV=${NODE_ENV}`);
 
-// Logger centralizado
+app.set('trust proxy', 1);
 
 // Configurar rate limiting
 const limiter = rateLimit({
@@ -82,11 +86,10 @@ const erpLimiter = rateLimit({
   message: 'Limite de requisições ao ERP excedido. Tente novamente em breve.',
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => IS_DEV, // Skip rate limit in dev
 });
 
 // Middleware de segurança
-// Migrações serão disparadas uma vez no final do arquivo para evitar duplicidade
-
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: {
@@ -95,11 +98,12 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https:", "wss:"], // Added wss: for potential websocket/SSE
     },
   },
 }));
 
-// Configurar CORS (inclui produção)
+// Configurar CORS
 const corsOptions = {
   origin: function (
     origin: string | undefined,
@@ -138,7 +142,7 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      logger.warn(`CORS bloqueado para origem: ${origin}`);
+      console.warn(`CORS bloqueado para origem: ${origin}`);
       callback(new Error('Não permitido pelo CORS'), false);
     }
   },
@@ -157,27 +161,23 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Middleware de logging
 app.use(logRequest);
 
-// Health check endpoint
-// Health check endpoint
+// Health check endpoint (simples, sem dependências)
 app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     environment: NODE_ENV,
     port: PORT,
-    database: 'connected',
     version: '1.0.0',
   });
 });
 
-// API Health check endpoint (para compatibilidade com frontend)
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     environment: NODE_ENV,
     port: PORT,
-    database: 'connected',
     version: '1.0.0'
   });
 });
@@ -191,8 +191,9 @@ app.get('/api/db/ping', async (req, res) => {
       return res.json({ connected: true, type: 'postgres' });
     }
     return res.json({ connected: true, type: 'sqlite' });
-  } catch (err) {
-    return res.status(500).json({ connected: false });
+  } catch (err: any) {
+    logger.error('Erro no ping do banco:', err);
+    return res.status(500).json({ connected: false, error: err.message });
   }
 });
 
@@ -206,9 +207,6 @@ app.get('/', (req, res) => {
       health: '/health',
       auth: '/api/auth',
       testes: '/api/testes',
-      empresas: '/api/empresas',
-      colaboradores: '/api/colaboradores',
-      admin: '/api/admin'
     }
   });
 });
@@ -223,7 +221,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/admin', adminIndicadoresRoutes);
 app.use('/api/chatbot', cacheMiddleware(10), chatbotRoutes);
 app.use('/api/stripe', stripeRoutes);
-// ERP functionality removed - routes disabled
 // app.use('/api/erp', requireApiKey, erpLimiter, cacheMiddleware(15), erpRoutes);
 app.use('/api/teste-disponibilidade', testeDisponibilidadeRoutes);
 app.use('/api/curso-disponibilidade', cursoDisponibilidadeRoutes);
@@ -241,7 +238,7 @@ app.post('/api/audit/logs', (req, res) => {
   res.json({ success: true });
 });
 
-// Middleware para rotas não encontradas (sem wildcard inválido)
+// Middleware para rotas não encontradas
 app.use((req, res) => {
   res.status(404).json({
     error: 'Endpoint não encontrado',
@@ -271,48 +268,49 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 let server: any;
 
 async function bootstrap() {
+  console.log('🔄 Iniciando bootstrap...');
   try {
+    console.log('🔄 Executando migrações...');
     await runMigrations();
+    console.log('✅ Migrações concluídas.');
   } catch (err) {
-    logger.error('Falha ao executar migrações no startup:', err);
+    console.error('❌ Falha ao executar migrações no startup:', err);
+    // Não falhar o startup por causa de migrações, para permitir debug
   }
 
   server = app.listen(PORT, '0.0.0.0', () => {
-    logger.info(`🚀 HumaniQ Backend iniciado com sucesso!`);
-    logger.info(`📍 Servidor rodando em: http://0.0.0.0:${PORT}`);
-    logger.info(`📊 Ambiente: ${NODE_ENV}`);
-    logger.info(`🗄️ Banco de dados: ${process.env.DATABASE_URL ? 'PostgreSQL (Neon)' : 'DESCONHECIDO'}`);
-    logger.info(`🔒 CORS configurado para: ${process.env.CORS_ORIGIN || 'localhost:5000'}`);
-    logger.info(`⚡ Rate limiting: 100 req/15min por IP`);
+    console.log(`🚀 HumaniQ Backend iniciado com sucesso!`);
+    console.log(`📍 Servidor rodando em: http://0.0.0.0:${PORT}`);
+    console.log(`📊 Ambiente: ${NODE_ENV}`);
+
     try {
       scheduleBackupFromEnv();
-      logger.info('🗂️ Backup agendado conforme configuração de ambiente.');
+      console.log('🗂️ Backup agendado conforme configuração de ambiente.');
     } catch (backupErr) {
-      logger.error('Erro ao agendar backups:', backupErr);
+      console.error('Erro ao agendar backups:', backupErr);
     }
   });
 }
 
-bootstrap();
+bootstrap().catch(err => {
+  console.error('❌ Erro fatal no bootstrap:', err);
+});
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  logger.info('SIGTERM recebido. Encerrando servidor graciosamente...');
+  console.log('SIGTERM recebido. Encerrando servidor graciosamente...');
   server?.close(() => {
-    logger.info('Servidor encerrado.');
+    console.log('Servidor encerrado.');
     process.exit(0);
   });
 });
 
 process.on('SIGINT', () => {
-  logger.info('SIGINT recebido. Encerrando servidor graciosamente...');
+  console.log('SIGINT recebido. Encerrando servidor graciosamente...');
   server?.close(() => {
-    logger.info('Servidor encerrado.');
+    console.log('Servidor encerrado.');
     process.exit(0);
   });
 });
-
-// Tratamento de erros não capturados
-
 
 export default app;
