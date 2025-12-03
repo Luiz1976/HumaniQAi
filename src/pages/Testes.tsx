@@ -90,12 +90,13 @@ export default function Testes() {
     if (t.motivo === 'teste_concluido' && !t.disponivel) {
       return false;
     }
-    if (nomeNorm.includes('humaniq') && nomeNorm.includes('insight')) {
-      return false;
-    }
-    if (nomeNorm.includes('humaniq-insight') || nomeNorm.includes('insight')) {
-      return false;
-    }
+    // Filtro removido para permitir a exibição do HumaniQ Insight
+    // if (nomeNorm.includes('humaniq') && nomeNorm.includes('insight')) {
+    //   return false;
+    // }
+    // if (nomeNorm.includes('humaniq-insight') || nomeNorm.includes('insight')) {
+    //   return false;
+    // }
     return true;
   });
 
@@ -122,6 +123,7 @@ export default function Testes() {
     const nomeNorm = nome.toLowerCase();
 
 
+    if (nomeNorm.includes('insight')) return infoTesteClimaBemEstar;
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return infoTesteClimaOrganizacional;
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return infoTesteClimaOrganizacional;
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return infoTesteKarasekSiegrist;
@@ -138,6 +140,7 @@ export default function Testes() {
     const nomeNorm = nome.toLowerCase();
 
 
+    if (nomeNorm.includes('insight')) return '/teste/clima-bem-estar';
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return '/teste/karasek-siegrist';
@@ -154,6 +157,7 @@ export default function Testes() {
     const nomeNorm = nome.toLowerCase();
 
 
+    if (nomeNorm.includes('insight')) return <Users className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return <Building2 className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('clima organizacional')) return <Building2 className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return <Scale className="h-8 w-8 text-white" />;
@@ -169,6 +173,7 @@ export default function Testes() {
   const getTesteColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
 
+    if (nomeNorm.includes('insight')) return 'bg-green-500';
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return 'bg-blue-500';
     if (nomeNorm.includes('clima organizacional')) return 'bg-blue-500';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'bg-purple-500';
@@ -184,6 +189,7 @@ export default function Testes() {
   const getTesteBadgeColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
 
+    if (nomeNorm.includes('insight')) return 'text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800';
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
     if (nomeNorm.includes('clima organizacional')) return 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800';
@@ -199,6 +205,7 @@ export default function Testes() {
   const getTesteButtonColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
 
+    if (nomeNorm.includes('insight')) return 'bg-green-600 hover:bg-green-700';
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return 'bg-blue-600 hover:bg-blue-700';
     if (nomeNorm.includes('clima organizacional')) return 'bg-blue-600 hover:bg-blue-700';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'bg-purple-600 hover:bg-purple-700';
