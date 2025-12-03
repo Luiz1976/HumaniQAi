@@ -29,22 +29,38 @@ import logger, { logRequest } from './utils/logger';
 
 console.log('📦 Carregando rotas...');
 import authRoutes from './routes/auth';
+console.log('✅ Rota importada: auth');
 import testesRoutes from './routes/testes';
+console.log('✅ Rota importada: testes');
 import empresasRoutes from './routes/empresas';
+console.log('✅ Rota importada: empresas');
 import colaboradoresRoutes from './routes/colaboradores';
+console.log('✅ Rota importada: colaboradores');
 import convitesRoutes from './routes/convites';
+console.log('✅ Rota importada: convites');
 import adminRoutes from './routes/admin';
+console.log('✅ Rota importada: admin');
 import adminIndicadoresRoutes from './routes/admin-indicadores';
+console.log('✅ Rota importada: admin-indicadores');
 import chatbotRoutes from './routes/chatbot';
+console.log('✅ Rota importada: chatbot');
 import stripeRoutes from './routes/stripe';
+console.log('✅ Rota importada: stripe');
 // import erpRoutes from './routes/erp'; // ERP functionality removed
 import testeDisponibilidadeRoutes from './routes/teste-disponibilidade';
+console.log('✅ Rota importada: teste-disponibilidade');
 import cursoDisponibilidadeRoutes from './routes/curso-disponibilidade';
+console.log('✅ Rota importada: curso-disponibilidade');
 import cursosRoutes from './routes/cursos';
+console.log('✅ Rota importada: cursos');
 import emailTestRoutes from './routes/email-test';
+console.log('✅ Rota importada: email-test');
 import analyticsRoutes from './routes/analytics';
+console.log('✅ Rota importada: analytics');
 import notificationsRoutes from './routes/notifications';
+console.log('✅ Rota importada: notifications');
 import exportRoutes from './routes/export';
+console.log('✅ Rota importada: export');
 import { scheduleBackupFromEnv } from './utils/backup';
 import { cacheMiddleware } from './utils/cache';
 import requireApiKey from './middleware/apiKey';
@@ -313,6 +329,14 @@ process.on('SIGINT', () => {
     console.log('Servidor encerrado.');
     process.exit(0);
   });
+});
+
+process.on('beforeExit', (code) => {
+  console.error('⚠️ beforeExit', code);
+});
+
+process.on('exit', (code) => {
+  console.error('⚠️ exit', code);
 });
 
 export default app;
