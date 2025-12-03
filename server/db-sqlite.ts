@@ -5,40 +5,95 @@ import { hashPassword } from './utils/auth';
 
 const require = createRequire(import.meta.url);
 
-let sqlite: any;
-let db: any;
+let sqlite: any = null;
+let db: any = null;
+let isInitialized = false;
+let initError: Error | null = null;
 
-try {
-  // Tentar carregar dependências do SQLite apenas se disponíveis
-  // Isso evita erros em produção onde essas libs não estão instaladas
-  const Database = require('better-sqlite3');
-  const { drizzle } = require('drizzle-orm/better-sqlite3');
-
-  // Criar banco SQLite local para desenvolvimento
-  sqlite = new Database('humaniq-dev.db');
-  
-  // Configurar WAL mode para melhor performance
-  sqlite.pragma('journal_mode = WAL');
-
-  // Função compatível com defaults de Drizzle (Postgres) usada no schema compartilhado
-  sqlite.function('gen_random_uuid', () => randomUUID());
-
-  db = drizzle(sqlite, { schema });
-} catch (error) {
-  // Em produção, é esperado que isso falhe se as deps não estiverem presentes
-  // O erro só deve ser logado se estivermos tentando usar SQLite explicitamente
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn('⚠️ [SQLite] Dependências não encontradas ou erro ao inicializar. (Isso é normal em produção usando Postgres)', (error as any)?.message);
+// Lazy initialization: only load SQLite when explicitly needed
+function initSQLite() {
+  if (isInitialized) {
+    return { sqlite, db };
   }
+
+  // Don't even try to initialize in production
+  if (process.env.NODE_ENV === 'production') {
+    initError = new Error('SQLite not available in production');
+    isInitialized = true;
+    return { sqlite: null, db: null };
+  }
+
+  try {
+    const Database = require('better-sqlite3');
+    const { drizzle } = require('drizzle-orm/better-sqlite3');
+
+    // Criar banco SQLite local para desenvolvimento
+    sqlite = new Database('humaniq-dev.db');
+
+    // Configurar WAL mode para melhor performance
+    sqlite.pragma('journal_mode = WAL');
+
+    // Função compatível com defaults de Drizzle (Postgres) usada no schema compartilhado
+    sqlite.function('gen_random_uuid', () => randomUUID());
+
+    db = drizzle(sqlite, { schema });
+    isInitialized = true;
+    console.log('✅ SQLite inicializado com sucesso (lazy loading)');
+  } catch (error) {
+    initError = error as Error;
+    isInitialized = true;
+    console.warn('⚠️ [SQLite] Erro ao inicializar:', (error as any)?.message);
+  }
+
+  return { sqlite, db };
 }
 
-export { sqlite, db };
+// Export getters that initialize on first access
+export const getSQLite = () => {
+  if (!isInitialized) {
+    initSQLite();
+  }
+  if (initError && process.env.NODE_ENV !== 'production') {
+    throw initError;
+  }
+  return sqlite;
+};
+
+export const getDb = () => {
+  if (!isInitialized) {
+    initSQLite();
+  }
+  if (initError && process.env.NODE_ENV !== 'production') {
+    throw initError;
+  }
+  return db;
+};
+
+// Legacy exports for backward compatibility - but these will initialize on access
+Object.defineProperty(exports, 'sqlite', {
+  get: getSQLite,
+  enumerable: true
+});
+
+Object.defineProperty(exports, 'db', {
+  get: getDb,
+  enumerable: true
+});
+
+// Named exports for convenience
+export { getSQLite as sqlite, getDb as db };
 
 // Função para executar migrações
 export async function runMigrations() {
   try {
     console.log('🔄 Executando migrações SQLite...');
-    
+
+    // Initialize SQLite first
+    const { sqlite: sqliteInstance } = initSQLite();
+    if (!sqliteInstance) {
+      throw new Error('SQLite não disponível');
+    }
+
     // Criar tabelas básicas se não existirem
     await createTables();
     // Garantir colunas obrigatórias conforme schema compartilhado
@@ -47,7 +102,7 @@ export async function runMigrations() {
     await seedDevAdmin();
     // Seed de desenvolvimento (empresa padrão, via .env)
     await seedDevEmpresa();
-    
+
     console.log('✅ Migrações SQLite concluídas com sucesso!');
   } catch (error) {
     console.error('❌ Erro ao executar migrações:', error);
@@ -57,8 +112,13 @@ export async function runMigrations() {
 
 // Função para criar tabelas básicas
 async function createTables() {
+  const sqliteInstance = getSQLite();
+  if (!sqliteInstance) {
+    throw new Error('SQLite não disponível');
+  }
+
   // Criar tabela admins
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS admins (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       email TEXT UNIQUE NOT NULL,
@@ -70,7 +130,7 @@ async function createTables() {
   `);
 
   // Criar tabela empresas
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS empresas (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       nome_empresa TEXT NOT NULL,
@@ -99,7 +159,7 @@ async function createTables() {
   `);
 
   // Criar tabela colaboradores
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS colaboradores (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       nome TEXT NOT NULL,
@@ -117,7 +177,7 @@ async function createTables() {
   `);
 
   // Criar tabela testes
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS testes (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       nome TEXT NOT NULL,
@@ -132,7 +192,7 @@ async function createTables() {
   `);
 
   // Criar tabela resultados (usada pelo PGR)
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS resultados (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       teste_id TEXT REFERENCES testes(id),
@@ -152,7 +212,7 @@ async function createTables() {
   `);
 
   // Criar tabela perguntas
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS perguntas (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       teste_id TEXT REFERENCES testes(id) ON DELETE CASCADE,
@@ -166,11 +226,11 @@ async function createTables() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
   `);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_perguntas_teste_id ON perguntas(teste_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_perguntas_ordem ON perguntas(teste_id, ordem);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_perguntas_teste_id ON perguntas(teste_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_perguntas_ordem ON perguntas(teste_id, ordem);`);
 
   // Criar tabela respostas
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS respostas (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       resultado_id TEXT REFERENCES resultados(id) ON DELETE CASCADE,
@@ -180,10 +240,10 @@ async function createTables() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
   `);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_respostas_resultado_id ON respostas(resultado_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_respostas_pergunta_id ON respostas(pergunta_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_respostas_resultado_id ON respostas(resultado_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_respostas_pergunta_id ON respostas(pergunta_id);`);
 
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS teste_disponibilidade (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
@@ -199,14 +259,14 @@ async function createTables() {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
   `);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_colaborador_id ON teste_disponibilidade(colaborador_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_teste_id ON teste_disponibilidade(teste_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_empresa_id ON teste_disponibilidade(empresa_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_disponivel ON teste_disponibilidade(disponivel);`);
-  sqlite.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_teste_disp_colab_teste_unique ON teste_disponibilidade(colaborador_id, teste_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_colaborador_id ON teste_disponibilidade(colaborador_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_teste_id ON teste_disponibilidade(teste_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_empresa_id ON teste_disponibilidade(empresa_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_teste_disp_disponivel ON teste_disponibilidade(disponivel);`);
+  sqliteInstance.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_teste_disp_colab_teste_unique ON teste_disponibilidade(colaborador_id, teste_id);`);
 
   // Criar tabela convites_empresa
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS convites_empresa (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       token TEXT UNIQUE NOT NULL,
@@ -224,12 +284,12 @@ async function createTables() {
     );
   `);
   // Índices para convites_empresa
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_empresa_token ON convites_empresa(token);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_empresa_status ON convites_empresa(status);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_empresa_validade ON convites_empresa(validade);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_convites_empresa_token ON convites_empresa(token);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_convites_empresa_status ON convites_empresa(status);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_convites_empresa_validade ON convites_empresa(validade);`);
 
   // Criar tabela convites_colaborador
-  sqlite.exec(`
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS convites_colaborador (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       token TEXT UNIQUE NOT NULL,
@@ -245,12 +305,12 @@ async function createTables() {
     );
   `);
   // Índices para convites_colaborador
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_token ON convites_colaborador(token);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_empresa_id ON convites_colaborador(empresa_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_status ON convites_colaborador(status);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_token ON convites_colaborador(token);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_empresa_id ON convites_colaborador(empresa_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_status ON convites_colaborador(status);`);
 
-  
-  sqlite.exec(`
+
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS curso_disponibilidade (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
@@ -267,14 +327,14 @@ async function createTables() {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
   `);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_colaborador_id ON curso_disponibilidade(colaborador_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_curso_id ON curso_disponibilidade(curso_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_empresa_id ON curso_disponibilidade(empresa_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_disponivel ON curso_disponibilidade(disponivel);`);
-  sqlite.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_curso_disp_colab_curso_unique ON curso_disponibilidade(colaborador_id, curso_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_colaborador_id ON curso_disponibilidade(colaborador_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_curso_id ON curso_disponibilidade(curso_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_empresa_id ON curso_disponibilidade(empresa_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_disp_disponivel ON curso_disponibilidade(disponivel);`);
+  sqliteInstance.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_curso_disp_colab_curso_unique ON curso_disponibilidade(colaborador_id, curso_id);`);
 
-  
-  sqlite.exec(`
+
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS curso_progresso (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
@@ -294,12 +354,12 @@ async function createTables() {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
   `);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_progresso_colaborador_id ON curso_progresso(colaborador_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_progresso_curso_id ON curso_progresso(curso_id);`);
-  sqlite.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_curso_progresso_colab_curso_unique ON curso_progresso(colaborador_id, curso_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_progresso_colaborador_id ON curso_progresso(colaborador_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_progresso_curso_id ON curso_progresso(curso_id);`);
+  sqliteInstance.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_curso_progresso_colab_curso_unique ON curso_progresso(colaborador_id, curso_id);`);
 
-  
-  sqlite.exec(`
+
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS curso_avaliacoes (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
@@ -315,12 +375,12 @@ async function createTables() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
   `);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_avaliacoes_colaborador_id ON curso_avaliacoes(colaborador_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_avaliacoes_curso_id ON curso_avaliacoes(curso_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_avaliacoes_aprovado ON curso_avaliacoes(aprovado);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_avaliacoes_colaborador_id ON curso_avaliacoes(colaborador_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_avaliacoes_curso_id ON curso_avaliacoes(curso_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_avaliacoes_aprovado ON curso_avaliacoes(aprovado);`);
 
-  
-  sqlite.exec(`
+
+  sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS curso_certificados (
       id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       colaborador_id TEXT REFERENCES colaboradores(id) ON DELETE CASCADE NOT NULL,
@@ -337,9 +397,9 @@ async function createTables() {
       metadados TEXT DEFAULT '{}'
     );
   `);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_cert_colaborador_id ON curso_certificados(colaborador_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_cert_curso_id ON curso_certificados(curso_id);`);
-  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_curso_cert_codigo ON curso_certificados(codigo_autenticacao);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_cert_colaborador_id ON curso_certificados(colaborador_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_cert_curso_id ON curso_certificados(curso_id);`);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_curso_cert_codigo ON curso_certificados(codigo_autenticacao);`);
 
   console.log('📊 Tabelas SQLite criadas com sucesso!');
 }
@@ -347,9 +407,14 @@ async function createTables() {
 
 // Garantir colunas requeridas quando a tabela já existe
 async function ensureRequiredColumns() {
+  const sqliteInstance = getSQLite();
+  if (!sqliteInstance) {
+    throw new Error('SQLite não disponível');
+  }
+
   // Helper para checar colunas existentes
   const hasColumn = (table: string, column: string) => {
-    const stmt = sqlite.prepare(`PRAGMA table_info(${table})`);
+    const stmt = sqliteInstance.prepare(`PRAGMA table_info(${table})`);
     const cols = stmt.all() as Array<{ name: string }>;
     return cols.some((c) => c.name === column);
   };
@@ -368,7 +433,7 @@ async function ensureRequiredColumns() {
   ];
   for (const [name, alterSql] of empresasCols) {
     try {
-      if (!hasColumn('empresas', name)) sqlite.exec(alterSql);
+      if (!hasColumn('empresas', name)) sqliteInstance.exec(alterSql);
     } catch (e) {
       // Ignorar se a coluna já existir ou se houver limitações
       console.warn(`[SQLite] Aviso ao adicionar coluna ${name} em empresas:`, (e as any)?.message);
@@ -382,7 +447,7 @@ async function ensureRequiredColumns() {
   ];
   for (const [name, alterSql] of colaboradoresCols) {
     try {
-      if (!hasColumn('colaboradores', name)) sqlite.exec(alterSql);
+      if (!hasColumn('colaboradores', name)) sqliteInstance.exec(alterSql);
     } catch (e) {
       console.warn(`[SQLite] Aviso ao adicionar coluna ${name} em colaboradores:`, (e as any)?.message);
     }
@@ -390,7 +455,7 @@ async function ensureRequiredColumns() {
 
   // Testes: instrucoes
   if (!hasColumn('testes', 'instrucoes')) {
-    try { sqlite.exec('ALTER TABLE testes ADD COLUMN instrucoes TEXT'); } catch (e) {
+    try { sqliteInstance.exec('ALTER TABLE testes ADD COLUMN instrucoes TEXT'); } catch (e) {
       console.warn(`[SQLite] Aviso ao adicionar coluna instrucoes em testes:`, (e as any)?.message);
     }
   }
@@ -399,14 +464,17 @@ async function ensureRequiredColumns() {
 // Seed de desenvolvimento: cria um admin padrão se não existir
 async function seedDevAdmin() {
   try {
+    const sqliteInstance = getSQLite();
+    if (!sqliteInstance) return;
+
     const seedEmail = process.env.SEED_ADMIN_EMAIL || 'admin.dev@local.test';
     const seedNome = process.env.SEED_ADMIN_NOME || 'Admin Dev';
     const seedSenha = process.env.SEED_ADMIN_SENHA || 'Admin123!';
-    const countStmt = sqlite.prepare('SELECT COUNT(1) as c FROM admins WHERE email = ?');
+    const countStmt = sqliteInstance.prepare('SELECT COUNT(1) as c FROM admins WHERE email = ?');
     const exists = countStmt.get(seedEmail) as { c: number } | undefined;
     if (!exists || exists.c === 0) {
       const senhaHash = await hashPassword(seedSenha);
-      const insertStmt = sqlite.prepare('INSERT INTO admins (email, nome, senha) VALUES (?, ?, ?)');
+      const insertStmt = sqliteInstance.prepare('INSERT INTO admins (email, nome, senha) VALUES (?, ?, ?)');
       insertStmt.run(seedEmail, seedNome, senhaHash);
       console.log(`🌱 [SQLite] Admin de desenvolvimento criado: ${seedEmail}`);
     }
@@ -418,6 +486,9 @@ async function seedDevAdmin() {
 // Seed de desenvolvimento: cria uma empresa padrão se configurada via .env
 async function seedDevEmpresa() {
   try {
+    const sqliteInstance = getSQLite();
+    if (!sqliteInstance) return;
+
     const seedEmail = process.env.SEED_EMPRESA_EMAIL;
     const seedNomeEmpresa = process.env.SEED_EMPRESA_NOME_EMPRESA;
     const seedSenha = process.env.SEED_EMPRESA_SENHA;
@@ -427,11 +498,11 @@ async function seedDevEmpresa() {
       return;
     }
 
-    const countStmt = sqlite.prepare('SELECT COUNT(1) as c FROM empresas WHERE email_contato = ?');
+    const countStmt = sqliteInstance.prepare('SELECT COUNT(1) as c FROM empresas WHERE email_contato = ?');
     const exists = countStmt.get(seedEmail) as { c: number } | undefined;
     if (!exists || exists.c === 0) {
       const senhaHash = await hashPassword(seedSenha);
-      const insertStmt = sqlite.prepare('INSERT INTO empresas (nome_empresa, email_contato, senha, ativo, configuracoes) VALUES (?, ?, ?, 1, ?)');
+      const insertStmt = sqliteInstance.prepare('INSERT INTO empresas (nome_empresa, email_contato, senha, ativo, configuracoes) VALUES (?, ?, ?, 1, ?)');
       insertStmt.run(seedNomeEmpresa, seedEmail, senhaHash, JSON.stringify({ seeded: true }));
       console.log(`🌱 [SQLite] Empresa de desenvolvimento criada: ${seedEmail} (${seedNomeEmpresa})`);
     }

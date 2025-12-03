@@ -78,9 +78,13 @@ export async function runMigrations() {
     console.log(`🔄 Executando migrações ${dbType}...`);
 
     if (dbType.includes('SQLite')) {
-      // Executar migrações SQLite
-      const { runMigrations: runSQLiteMigrations } = await import('./db-sqlite');
-      await runSQLiteMigrations();
+      // Apenas importar e executar migrações SQLite se não estivermos em produção
+      if (process.env.NODE_ENV !== 'production') {
+        const { runMigrations: runSQLiteMigrations } = await import('./db-sqlite');
+        await runSQLiteMigrations();
+      } else {
+        console.log('⚠️ Tentativa de executar migrações SQLite em produção - ignorado');
+      }
     } else {
       // Para PostgreSQL, assumir que as tabelas já existem
       console.log('✅ PostgreSQL: assumindo que as tabelas já existem');
