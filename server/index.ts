@@ -111,6 +111,41 @@ async function loadRoutesAndStart() {
     app.use('/api/export', exportRoutes);
     console.log('✅ exportRoutes importado');
 
+    // Endpoint simples de auditoria para receber logs do frontend
+    app.post('/api/audit/logs', (req, res) => {
+      try {
+        logger.info('AUDIT_LOG', { payload: req.body, ts: new Date().toISOString() });
+      } catch (_) { }
+      res.json({ success: true });
+    });
+
+    // Middleware para rotas não encontradas
+    app.use((req, res) => {
+      res.status(404).json({
+        error: 'Endpoint não encontrado',
+        path: req.originalUrl,
+        method: req.method,
+        timestamp: new Date().toISOString()
+      });
+    });
+
+    // Middleware de tratamento de erros
+    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+      logger.error('Erro não tratado:', {
+        error: err.message,
+        stack: err.stack,
+        path: req.path,
+        method: req.method,
+        ip: req.ip
+      });
+
+      res.status(err.status || 500).json({
+        error: NODE_ENV === 'production' ? 'Erro interno do servidor' : err.message,
+        timestamp: new Date().toISOString(),
+        ...(NODE_ENV !== 'production' && { stack: err.stack })
+      });
+    });
+
     console.log('✅ Todas as rotas carregadas.');
 
     // Continuação do bootstrap
@@ -287,60 +322,6 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       testes: '/api/testes',
     }
-  });
-});
-
-// Configurar rotas da API
-app.use('/api/auth', authRoutes);
-app.use('/api/testes', cacheMiddleware(30), testesRoutes);
-app.use('/api/empresas', empresasRoutes);
-app.use('/api/colaboradores', colaboradoresRoutes);
-app.use('/api/convites', cacheMiddleware(15), convitesRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/admin', adminIndicadoresRoutes);
-app.use('/api/chatbot', cacheMiddleware(10), chatbotRoutes);
-app.use('/api/stripe', stripeRoutes);
-// app.use('/api/erp', requireApiKey, erpLimiter, cacheMiddleware(15), erpRoutes);
-app.use('/api/teste-disponibilidade', testeDisponibilidadeRoutes);
-app.use('/api/curso-disponibilidade', cursoDisponibilidadeRoutes);
-app.use('/api/cursos', cacheMiddleware(20), cursosRoutes);
-app.use('/api/email-test', emailTestRoutes);
-app.use('/api/analytics', analyticsRoutes);
-app.use('/api/notifications', notificationsRoutes);
-app.use('/api/export', exportRoutes);
-
-// Endpoint simples de auditoria para receber logs do frontend
-app.post('/api/audit/logs', (req, res) => {
-  try {
-    logger.info('AUDIT_LOG', { payload: req.body, ts: new Date().toISOString() });
-  } catch (_) { }
-  res.json({ success: true });
-});
-
-// Middleware para rotas não encontradas
-app.use((req, res) => {
-  res.status(404).json({
-    error: 'Endpoint não encontrado',
-    path: req.originalUrl,
-    method: req.method,
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Middleware de tratamento de erros
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  logger.error('Erro não tratado:', {
-    error: err.message,
-    stack: err.stack,
-    path: req.path,
-    method: req.method,
-    ip: req.ip
-  });
-
-  res.status(err.status || 500).json({
-    error: NODE_ENV === 'production' ? 'Erro interno do servidor' : err.message,
-    timestamp: new Date().toISOString(),
-    ...(NODE_ENV !== 'production' && { stack: err.stack })
   });
 });
 
