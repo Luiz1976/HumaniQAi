@@ -18,7 +18,9 @@ router.post('/empresa', authenticateToken, requireAdmin, async (req: AuthRequest
       bodyKeys: Object.keys(req.body || {})
     });
     const validationResult = insertConviteEmpresaSchema.omit({ token: true, validade: true, adminId: true }).extend({
-      diasValidade: z.number().min(1).max(30).default(7),
+      diasValidade: z.coerce.number().min(1).max(30).default(7),
+      numeroColaboradores: z.coerce.number().optional().nullable(),
+      diasAcesso: z.coerce.number().optional().nullable(),
       telefone: z.string().optional().nullable(),
     }).safeParse(req.body);
 
@@ -248,7 +250,7 @@ router.post('/colaborador', authenticateToken, requireEmpresa, async (req: AuthR
     });
 
     const validationResult = insertConviteColaboradorSchema.omit({ token: true, validade: true, empresaId: true }).extend({
-      diasValidade: z.number().min(1).max(30).default(3),
+      diasValidade: z.coerce.number().min(1).max(30).default(3),
     }).safeParse(req.body);
 
     if (!validationResult.success) {
