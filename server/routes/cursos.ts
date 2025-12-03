@@ -480,7 +480,7 @@ router.post('/avaliacao/:cursoSlug', authenticateToken, async (req: AuthRequest,
     const novaTentativa = tentativasAtuais + 1;
 
     // Criar avaliação
-    const isSqliteEval = (process.env.NODE_ENV !== 'production') || ((dbType || '').toLowerCase().includes('sqlite'));
+    const isSqliteEval = (dbType || '').toLowerCase().includes('sqlite');
     let avaliacao: any;
     try { logger.info('🧪 [AVALIACAO] DB detection', { dbType, nodeEnv: process.env.NODE_ENV, isSqliteEval }); } catch (_) { }
     if (isSqliteEval) {

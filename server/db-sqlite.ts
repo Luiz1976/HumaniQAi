@@ -1,22 +1,38 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
+import { createRequire } from 'module';
 import { randomUUID } from 'crypto';
 import * as schema from '../shared/schema';
 import { hashPassword } from './utils/auth';
-import path from 'path';
 
-// Criar banco SQLite local para desenvolvimento
-const sqlite = new Database('humaniq-dev.db');
-export { sqlite };
+const require = createRequire(import.meta.url);
 
-// Configurar WAL mode para melhor performance
-sqlite.pragma('journal_mode = WAL');
+let sqlite: any;
+let db: any;
 
-// Função compatível com defaults de Drizzle (Postgres) usada no schema compartilhado
-// Emula gen_random_uuid() para evitar erros em inserts executados via Drizzle em ambiente SQLite
-sqlite.function('gen_random_uuid', () => randomUUID());
+try {
+  // Tentar carregar dependências do SQLite apenas se disponíveis
+  // Isso evita erros em produção onde essas libs não estão instaladas
+  const Database = require('better-sqlite3');
+  const { drizzle } = require('drizzle-orm/better-sqlite3');
 
-export const db = drizzle(sqlite, { schema });
+  // Criar banco SQLite local para desenvolvimento
+  sqlite = new Database('humaniq-dev.db');
+  
+  // Configurar WAL mode para melhor performance
+  sqlite.pragma('journal_mode = WAL');
+
+  // Função compatível com defaults de Drizzle (Postgres) usada no schema compartilhado
+  sqlite.function('gen_random_uuid', () => randomUUID());
+
+  db = drizzle(sqlite, { schema });
+} catch (error) {
+  // Em produção, é esperado que isso falhe se as deps não estiverem presentes
+  // O erro só deve ser logado se estivermos tentando usar SQLite explicitamente
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('⚠️ [SQLite] Dependências não encontradas ou erro ao inicializar. (Isso é normal em produção usando Postgres)', (error as any)?.message);
+  }
+}
+
+export { sqlite, db };
 
 // Função para executar migrações
 export async function runMigrations() {
