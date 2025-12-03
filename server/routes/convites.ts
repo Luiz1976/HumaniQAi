@@ -25,6 +25,10 @@ router.post('/empresa', authenticateToken, requireAdmin, async (req: AuthRequest
     }).safeParse(req.body);
 
     if (!validationResult.success) {
+      logger.warn('⚠️ [Convites/Empresa] Falha na validação:', {
+        errors: validationResult.error.issues,
+        body: req.body
+      });
       return res.status(400).json({ error: 'Dados inválidos', details: validationResult.error.issues });
     }
 
