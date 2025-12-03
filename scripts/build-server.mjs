@@ -27,12 +27,12 @@ try {
     logLevel: 'info',
     banner: {
       js: `
-        import { createRequire } from 'module';
-        const require = createRequire(import.meta.url);
-        import { fileURLToPath } from 'url';
-        import { dirname } from 'path';
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = dirname(__filename);
+        import { createRequire as topLevelCreateRequire } from 'module';
+        const require = topLevelCreateRequire(import.meta.url);
+        import { fileURLToPath as topLevelFileURLToPath } from 'url';
+        import { dirname as topLevelDirname } from 'path';
+        const __filename = topLevelFileURLToPath(import.meta.url);
+        const __dirname = topLevelDirname(__filename);
       `,
     },
   });
