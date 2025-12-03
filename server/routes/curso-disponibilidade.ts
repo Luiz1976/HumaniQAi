@@ -1,6 +1,5 @@
 import express from 'express';
 import { db, dbType } from '../db-config';
-import { sqlite } from '../db-sqlite';
 import { randomUUID } from 'crypto';
 import { cursoDisponibilidade, cursoAvaliacoes, colaboradores, insertCursoDisponibilidadeSchema, updateCursoDisponibilidadeSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest, requireEmpresa, requireColaborador } from '../middleware/auth';
@@ -288,6 +287,7 @@ router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/liberar', auth
       ];
 
       if (isSqlite) {
+        const { sqlite } = await import('../db-sqlite');
         const proxima = disponibilidadeExistente.periodicidadeDias
           ? new Date(agora.getTime() + disponibilidadeExistente.periodicidadeDias * 24 * 60 * 60 * 1000).toISOString()
           : null;
@@ -339,6 +339,7 @@ router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/liberar', auth
       let novo: any;
       if (isSqlite) {
         console.log('🪵 [CURSO-DISPONIBILIDADE/LIBERAR] Inserindo via SQLite prepare');
+        const { sqlite } = await import('../db-sqlite');
         const id = randomUUID();
         const stmt = sqlite.prepare(`
           INSERT INTO curso_disponibilidade (
@@ -435,6 +436,7 @@ router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/bloquear', aut
     if (disponibilidadeExistente) {
       // Atualizar registro existente
       if (isSqlite) {
+        const { sqlite } = await import('../db-sqlite');
         const stmt = sqlite.prepare(`
           UPDATE curso_disponibilidade
           SET disponivel = 0,
@@ -469,6 +471,7 @@ router.post('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/bloquear', aut
       let novo: any;
       if (isSqlite) {
         console.log('🪵 [CURSO-DISPONIBILIDADE/BLOQUEAR] Inserindo via SQLite prepare');
+        const { sqlite } = await import('../db-sqlite');
         const id = randomUUID();
         const stmt = sqlite.prepare(`
           INSERT INTO curso_disponibilidade (
@@ -585,6 +588,7 @@ router.patch('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/periodicidade
     if (disponibilidadeExistente) {
       // Atualizar registro existente
       if (isSqlite) {
+        const { sqlite } = await import('../db-sqlite');
         const metadadosAtualizados = {
           ...(disponibilidadeExistente.metadados as any || {}),
           periodicidadeConfiguradaEm: agora.toISOString(),

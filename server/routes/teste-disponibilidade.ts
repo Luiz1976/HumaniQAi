@@ -1,6 +1,5 @@
 import express from 'express';
 import { db, dbType } from '../db-config';
-import { sqlite as sqliteDb } from '../db-sqlite';
 import { testeDisponibilidade, testes, resultados, colaboradores, insertTesteDisponibilidadeSchema, updateTesteDisponibilidadeSchema } from '../../shared/schema';
 import { authenticateToken, AuthRequest, requireEmpresa, requireColaborador, requireRole } from '../middleware/auth';
 import { eq, and, or, desc, sql } from 'drizzle-orm';
@@ -408,6 +407,7 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/liberar', authen
 
     if ((dbType || '').toLowerCase().includes('sqlite')) {
       const id = (await import('crypto')).randomUUID();
+      const { sqlite: sqliteDb } = await import('../db-sqlite');
       const proxima = null;
       const historico = JSON.stringify([{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'liberacao_manual' }]);
       const stmt = sqliteDb.prepare(`
@@ -556,6 +556,7 @@ router.post('/empresa/colaborador/:colaboradorId/testes/bloquear', authenticateT
       } else {
         if ((dbType || '').toLowerCase().includes('sqlite')) {
           const id = (await import('crypto')).randomUUID();
+          const { sqlite: sqliteDb } = await import('../db-sqlite');
           const stmt = sqliteDb.prepare(`
             INSERT INTO teste_disponibilidade (
               id, colaborador_id, teste_id, empresa_id, disponivel,
