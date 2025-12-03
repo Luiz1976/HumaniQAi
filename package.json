@@ -84,7 +84,6 @@
     "drizzle-orm": "^0.44.6",
     "drizzle-zod": "^0.8.3",
     "embla-carousel-react": "^8.6.0",
-    "esbuild": "^0.21.5",
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.0",
     "framer-motion": "^12.23.22",
@@ -120,7 +119,8 @@
     "winston": "^3.18.3",
     "winston-daily-rotate-file": "^5.0.0",
     "xlsx": "^0.18.5",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "esbuild": "^0.21.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
