@@ -69,17 +69,6 @@ export const getDb = () => {
   return db;
 };
 
-// Legacy exports for backward compatibility - but these will initialize on access
-Object.defineProperty(exports, 'sqlite', {
-  get: getSQLite,
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'db', {
-  get: getDb,
-  enumerable: true
-});
-
 // Named exports for convenience
 export { getSQLite as sqlite, getDb as db };
 
