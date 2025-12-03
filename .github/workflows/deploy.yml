@@ -30,7 +30,7 @@ jobs:
         run: pnpm run build
 
       - name: Deploy to Vercel
-        if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != '' }}
+        if: secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != ''
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -40,13 +40,13 @@ jobs:
           prod: true
 
       - name: Verify post-deploy
-        if: ${{ secrets.DEPLOY_BASE_URL != '' }}
+        if: secrets.DEPLOY_BASE_URL != ''
         env:
           DEPLOY_BASE_URL: ${{ secrets.DEPLOY_BASE_URL }}
         run: pnpm run verify:deploy
 
       - name: Rollback on failure
-        if: ${{ failure() && secrets.VERCEL_TOKEN != '' }}
+        if: failure() && secrets.VERCEL_TOKEN != ''
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: npx vercel rollback production --token "$VERCEL_TOKEN"

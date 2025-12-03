@@ -497,6 +497,46 @@ router.post('/empresa/colaborador/:colaboradorId/teste/:testeId/bloquear', authe
         and(
           eq(testeDisponibilidade.colaboradorId, colaboradorId),
           eq(testeDisponibilidade.testeId, teste.id)
+        )
+      )
+      .limit(1);
+
+    if (disponibilidadeExistente) {
+      await db
+        .update(testeDisponibilidade)
+        .set({
+          disponivel: false,
+          updatedAt: agora,
+          historicoLiberacoes: [
+            ...(disponibilidadeExistente.historicoLiberacoes as any[] || []),
+            { data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'bloqueio_manual' }
+          ]
+        })
+        .where(eq(testeDisponibilidade.id, disponibilidadeExistente.id));
+
+      logger.info('BLOQUEAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: disponibilidadeExistente.id, ts: agora.toISOString() });
+      return res.json({ success: true, message: 'Teste bloqueado com sucesso' });
+    } else {
+      const [novo] = await db
+        .insert(testeDisponibilidade)
+        .values({
+          colaboradorId,
+          testeId: teste.id,
+          empresaId,
+          disponivel: false,
+          ultimaLiberacao: null,
+          proximaDisponibilidade: null,
+          historicoLiberacoes: [{ data: agora.toISOString(), liberadoPor: req.user!.userId, motivo: 'bloqueio_manual_criacao' }],
+        })
+        .returning();
+
+      logger.info('BLOQUEAR_TESTE_SUCESSO', { requestId, empresaId, colaboradorId, testeId, disponibilidadeId: novo.id, ts: agora.toISOString() });
+      return res.json({ success: true, message: 'Teste bloqueado com sucesso', disponibilidade: novo });
+    }
+  } catch (error) {
+    console.error('Erro ao bloquear teste:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
 });
 
 router.post('/empresa/colaborador/:colaboradorId/testes/bloquear', authenticateToken, requireRole('empresa', 'admin'), async (req: AuthRequest, res) => {
