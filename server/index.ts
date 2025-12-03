@@ -28,47 +28,108 @@ console.log('📦 Carregando logger...');
 import logger, { logRequest } from './utils/logger';
 
 console.log('📦 Carregando rotas...');
-import authRoutes from './routes/auth';
-console.log('✅ Rota importada: auth');
-import testesRoutes from './routes/testes';
-console.log('✅ Rota importada: testes');
-import empresasRoutes from './routes/empresas';
-console.log('✅ Rota importada: empresas');
-import colaboradoresRoutes from './routes/colaboradores';
-console.log('✅ Rota importada: colaboradores');
-import convitesRoutes from './routes/convites';
-console.log('✅ Rota importada: convites');
-import adminRoutes from './routes/admin';
-console.log('✅ Rota importada: admin');
-import adminIndicadoresRoutes from './routes/admin-indicadores';
-console.log('✅ Rota importada: admin-indicadores');
-import chatbotRoutes from './routes/chatbot';
-console.log('✅ Rota importada: chatbot');
-import stripeRoutes from './routes/stripe';
-console.log('✅ Rota importada: stripe');
-// import erpRoutes from './routes/erp'; // ERP functionality removed
-import testeDisponibilidadeRoutes from './routes/teste-disponibilidade';
-console.log('✅ Rota importada: teste-disponibilidade');
-import cursoDisponibilidadeRoutes from './routes/curso-disponibilidade';
-console.log('✅ Rota importada: curso-disponibilidade');
-import cursosRoutes from './routes/cursos';
-console.log('✅ Rota importada: cursos');
-import emailTestRoutes from './routes/email-test';
-console.log('✅ Rota importada: email-test');
-import analyticsRoutes from './routes/analytics';
-console.log('✅ Rota importada: analytics');
-import notificationsRoutes from './routes/notifications';
-console.log('✅ Rota importada: notifications');
-import exportRoutes from './routes/export';
-console.log('✅ Rota importada: export');
+
+async function loadRoutesAndStart() {
+  try {
+    console.log('🔄 Importando authRoutes...');
+    const authRoutes = (await import('./routes/auth')).default;
+    app.use('/api/auth', authRoutes);
+    console.log('✅ authRoutes importado');
+
+    console.log('🔄 Importando testesRoutes...');
+    const testesRoutes = (await import('./routes/testes')).default;
+    app.use('/api/testes', cacheMiddleware(30), testesRoutes);
+    console.log('✅ testesRoutes importado');
+
+    console.log('🔄 Importando empresasRoutes...');
+    const empresasRoutes = (await import('./routes/empresas')).default;
+    app.use('/api/empresas', empresasRoutes);
+    console.log('✅ empresasRoutes importado');
+
+    console.log('🔄 Importando colaboradoresRoutes...');
+    const colaboradoresRoutes = (await import('./routes/colaboradores')).default;
+    app.use('/api/colaboradores', colaboradoresRoutes);
+    console.log('✅ colaboradoresRoutes importado');
+
+    console.log('🔄 Importando convitesRoutes...');
+    const convitesRoutes = (await import('./routes/convites')).default;
+    app.use('/api/convites', cacheMiddleware(15), convitesRoutes);
+    console.log('✅ convitesRoutes importado');
+
+    console.log('🔄 Importando adminRoutes...');
+    const adminRoutes = (await import('./routes/admin')).default;
+    app.use('/api/admin', adminRoutes);
+    console.log('✅ adminRoutes importado');
+
+    console.log('🔄 Importando adminIndicadoresRoutes...');
+    const adminIndicadoresRoutes = (await import('./routes/admin-indicadores')).default;
+    app.use('/api/admin', adminIndicadoresRoutes);
+    console.log('✅ adminIndicadoresRoutes importado');
+
+    console.log('🔄 Importando chatbotRoutes...');
+    const chatbotRoutes = (await import('./routes/chatbot')).default;
+    app.use('/api/chatbot', cacheMiddleware(10), chatbotRoutes);
+    console.log('✅ chatbotRoutes importado');
+
+    console.log('🔄 Importando stripeRoutes...');
+    const stripeRoutes = (await import('./routes/stripe')).default;
+    app.use('/api/stripe', stripeRoutes);
+    console.log('✅ stripeRoutes importado');
+
+    console.log('🔄 Importando testeDisponibilidadeRoutes...');
+    const testeDisponibilidadeRoutes = (await import('./routes/teste-disponibilidade')).default;
+    app.use('/api/teste-disponibilidade', testeDisponibilidadeRoutes);
+    console.log('✅ testeDisponibilidadeRoutes importado');
+
+    console.log('🔄 Importando cursoDisponibilidadeRoutes...');
+    const cursoDisponibilidadeRoutes = (await import('./routes/curso-disponibilidade')).default;
+    app.use('/api/curso-disponibilidade', cursoDisponibilidadeRoutes);
+    console.log('✅ cursoDisponibilidadeRoutes importado');
+
+    console.log('🔄 Importando cursosRoutes...');
+    const cursosRoutes = (await import('./routes/cursos')).default;
+    app.use('/api/cursos', cacheMiddleware(20), cursosRoutes);
+    console.log('✅ cursosRoutes importado');
+
+    console.log('🔄 Importando emailTestRoutes...');
+    const emailTestRoutes = (await import('./routes/email-test')).default;
+    app.use('/api/email-test', emailTestRoutes);
+    console.log('✅ emailTestRoutes importado');
+
+    console.log('🔄 Importando analyticsRoutes...');
+    const analyticsRoutes = (await import('./routes/analytics')).default;
+    app.use('/api/analytics', analyticsRoutes);
+    console.log('✅ analyticsRoutes importado');
+
+    console.log('🔄 Importando notificationsRoutes...');
+    const notificationsRoutes = (await import('./routes/notifications')).default;
+    app.use('/api/notifications', notificationsRoutes);
+    console.log('✅ notificationsRoutes importado');
+
+    console.log('🔄 Importando exportRoutes...');
+    const exportRoutes = (await import('./routes/export')).default;
+    app.use('/api/export', exportRoutes);
+    console.log('✅ exportRoutes importado');
+
+    console.log('✅ Todas as rotas carregadas.');
+
+    // Continuação do bootstrap
+    bootstrap();
+
+  } catch (error) {
+    console.error('❌ ERRO FATAL AO CARREGAR ROTAS:', error);
+    process.exit(1);
+  }
+}
+
+// ... (rest of imports that are safe)
 import { scheduleBackupFromEnv } from './utils/backup';
 import { cacheMiddleware } from './utils/cache';
 import requireApiKey from './middleware/apiKey';
 import postgres from 'postgres';
 
-console.log('✅ Todas as rotas carregadas.');
-
 const app = express();
+// ... middlewares ...
 // Desabilitar ETag para evitar 304 em desenvolvimento (garante dados atualizados)
 app.set('etag', false);
 
@@ -310,10 +371,12 @@ async function bootstrap() {
   });
 }
 
-bootstrap().catch(err => {
-  console.error('❌ Erro fatal no bootstrap:', err);
+// Chamar a função de carregamento e inicialização
+loadRoutesAndStart().catch(err => {
+  console.error('❌ Erro fatal no carregamento:', err);
 });
 
+// bootstrap é chamado dentro de loadRoutesAndStart
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM recebido. Encerrando servidor graciosamente...');
