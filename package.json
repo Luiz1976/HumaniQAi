@@ -2,12 +2,13 @@
   "type": "module",
   "scripts": {
     "start": "npm run server & npm run dev:strict",
-    "start:prod": "NODE_ENV=production tsx --trace-uncaught server/index.ts",
+    "start:prod": "node dist/server.js",
+    "build:server": "node scripts/build-server.mjs",
     "dev": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1",
     "dev:strict": "vite --port 5000 --host 0.0.0.0",
     "dev:ps": "powershell -ExecutionPolicy Bypass -File scripts/start-frontend.ps1",
     "server": "tsx server/index.ts",
-    "build": "vite build",
+    "build": "vite build && npm run build:server",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -121,6 +122,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "esbuild": "^0.21.5",
     "@eslint/js": "^9.32.0",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/jest-dom": "^6.9.1",
