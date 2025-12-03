@@ -9,6 +9,8 @@ const __dirname = path.dirname(__filename);
 // Ler package.json para obter dependências externas
 const packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json'), 'utf-8'));
 const dependencies = Object.keys(packageJson.dependencies || {});
+// Adicionar dependências opcionais/dev que podem ser importadas condicionalmente mas não devem ser bundladas
+dependencies.push('better-sqlite3');
 
 console.log('🚀 Iniciando build do servidor com esbuild...');
 
