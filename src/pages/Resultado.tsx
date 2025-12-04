@@ -83,7 +83,7 @@ export default function Resultado() {
     if (resultado?.nomeTest) return resultado.nomeTest;
     if (dadosResultado?.metadados?.tipo_teste) {
       const tipo = dadosResultado.metadados.tipo_teste;
-      if (tipo === 'clima-organizacional') return 'Pesquisa de Clima Organizacional';
+      if (tipo === 'clima-organizacional') return 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa';
       if (tipo === 'rpo') return 'Riscos Psicossociais Ocupacionais';
       if (tipo === 'qvt') return 'Qualidade de Vida no Trabalho';
       if (tipo === 'karasek-siegrist') return 'Karasek-Siegrist';

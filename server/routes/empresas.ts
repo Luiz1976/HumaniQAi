@@ -356,7 +356,7 @@ router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, a
       const nomeTeste = String(resultado.testeNome || metadadosBase.teste_nome || '').toLowerCase();
 
       const MAX_BY_TEST: Record<string, number> = {
-        'clima-organizacional': 280,
+        'clima-organizacional': 390,
         'karasek-siegrist': 250,
         'estresse-ocupacional': 200,
       };

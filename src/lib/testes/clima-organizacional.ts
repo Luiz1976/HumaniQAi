@@ -27,6 +27,14 @@ export interface ResultadoClimaOrganizacional {
   mediaGeral: number;
   classificacaoGeral: string;
   nivelGeral: 'critico' | 'ruim' | 'regular' | 'bom' | 'excelente';
+  indices?: {
+    clima: number;
+    bemestar: number;
+    justica: number;
+    classificacaoClima?: string;
+    classificacaoBemestar?: string;
+    classificacaoJustica?: string;
+  };
 }
 
 // Escala Likert de 5 pontos
@@ -161,6 +169,44 @@ export const dimensoesClimaOrganizacional: DimensaoClimaOrganizacional[] = [
       { id: 56, texto: "Meus valores pessoais são respeitados aqui.", dimensao: "engajamento" }
     ]
   }
+  ,
+  {
+    id: "bemestar",
+    nome: "Bem-Estar Psicológico",
+    descricao: "Avalia saúde mental percebida, emoções positivas e estresse",
+    perguntas: [
+      { id: 57, texto: "Sinto que minha saúde mental é bem cuidada pela organização.", dimensao: "bemestar" },
+      { id: 58, texto: "Tenho energia suficiente para desempenhar minhas tarefas diárias.", dimensao: "bemestar" },
+      { id: 59, texto: "Costumo sentir emoções positivas ao trabalhar.", dimensao: "bemestar" },
+      { id: 60, texto: "Minha carga emocional no trabalho é manejável.", dimensao: "bemestar" },
+      { id: 61, texto: "Tenho apoio quando enfrento dificuldades psicológicas.", dimensao: "bemestar" },
+      { id: 62, texto: "Consigo me recuperar bem após períodos de alta demanda.", dimensao: "bemestar" },
+      { id: 63, texto: "Raramente me sinto esgotado(a) emocionalmente devido ao trabalho.", dimensao: "bemestar" },
+      { id: 64, texto: "Minha rotina favorece hábitos saudáveis.", dimensao: "bemestar" },
+      { id: 65, texto: "Sinto satisfação com meu dia de trabalho.", dimensao: "bemestar" },
+      { id: 66, texto: "Tenho acesso a iniciativas de promoção de bem-estar.", dimensao: "bemestar" },
+      { id: 67, texto: "Percebo equilíbrio emocional na maior parte do tempo.", dimensao: "bemestar" },
+      { id: 68, texto: "O ambiente favorece relações de apoio e respeito.", dimensao: "bemestar" }
+    ]
+  }
+  ,
+  {
+    id: "justica",
+    nome: "Justiça Corporativa",
+    descricao: "Avalia percepções de justiça distributiva, procedimental e interacional",
+    perguntas: [
+      { id: 69, texto: "As decisões são tomadas com critérios claros e aplicados igualmente.", dimensao: "justica" },
+      { id: 70, texto: "Sou tratado(a) com respeito em processos de avaliação.", dimensao: "justica" },
+      { id: 71, texto: "As recompensas são proporcionais ao esforço e resultados.", dimensao: "justica" },
+      { id: 72, texto: "Tenho oportunidade de voz em decisões que me afetam.", dimensao: "justica" },
+      { id: 73, texto: "Percebo transparência na comunicação de decisões.", dimensao: "justica" },
+      { id: 74, texto: "Os procedimentos internos são consistentes e imparciais.", dimensao: "justica" },
+      { id: 75, texto: "Feedbacks são oferecidos de forma respeitosa e construtiva.", dimensao: "justica" },
+      { id: 76, texto: "Conflitos são mediados com equidade.", dimensao: "justica" },
+      { id: 77, texto: "Promoções e oportunidades são distribuídas de forma justa.", dimensao: "justica" },
+      { id: 78, texto: "Sinto que a organização valoriza a integridade e ética.", dimensao: "justica" }
+    ]
+  }
 ];
 
 // Função para calcular resultado do teste
@@ -213,6 +259,29 @@ export function calcularResultadoClimaOrganizacional(
     resultado.mediaGeral = Number((somaTotalPontuacao / totalPerguntas).toFixed(2));
     resultado.nivelGeral = obterNivelPorMedia(resultado.mediaGeral);
     resultado.classificacaoGeral = classificacaoMedia[resultado.nivelGeral].label;
+    const idsClima = [
+      "comunicacao","lideranca","relacionamento","reconhecimento","desenvolvimento","condicoes","equilibrio","engajamento"
+    ];
+    const idsBemestar = ["bemestar"];
+    const idsJustica = ["justica"];
+    const medias = (ids: string[]) => {
+      const vals = ids
+        .map(id => resultado.dimensoes[id]?.media)
+        .filter((v): v is number => typeof v === 'number');
+      if (vals.length === 0) return 0;
+      return Number((vals.reduce((a,b)=>a+b,0) / vals.length).toFixed(2));
+    };
+    const clima = medias(idsClima);
+    const bemestar = medias(idsBemestar);
+    const justica = medias(idsJustica);
+    resultado.indices = {
+      clima,
+      bemestar,
+      justica,
+      classificacaoClima: classificacaoMedia[obterNivelPorMedia(clima)].label,
+      classificacaoBemestar: classificacaoMedia[obterNivelPorMedia(bemestar)].label,
+      classificacaoJustica: classificacaoMedia[obterNivelPorMedia(justica)].label
+    };
   }
 
   return resultado;
@@ -235,10 +304,10 @@ export function obterTodasPerguntas(): PerguntaClimaOrganizacional[] {
 // Informações do teste
 export const infoTesteClimaOrganizacional = {
   id: "clima-organizacional",
-  nome: "Pesquisa de Clima Organizacional",
-  descricao: "Avalia a percepção dos colaboradores sobre o ambiente de trabalho através de 8 dimensões fundamentais baseadas em modelos científicos validados.",
+  nome: "HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa",
+  descricao: "Avalia clima organizacional, bem-estar psicológico e justiça corporativa em dimensões integradas com base científica.",
   duracao: "12-18 min",
-  questoes: 56,
+  questoes: 78,
   categoria: "Organizacional",
   dimensoes: dimensoesClimaOrganizacional.length,
   basesCientificas: [
@@ -249,11 +318,13 @@ export const infoTesteClimaOrganizacional = {
     "Desenvolvimento Profissional (Maslow, 1954)",
     "Condições de Trabalho (Litwin & Stringer, 1968)",
     "Equilíbrio Trabalho-Vida (Greenhaus & Beutell, 1985)",
-    "Engajamento (Schaufeli & Bakker, 2004)"
+    "Engajamento (Schaufeli & Bakker, 2004)",
+    "Bem-Estar Psicológico (Diener & Seligman, 2002; Ryff, 1989)",
+    "Justiça Organizacional (Greenberg, 1987; Colquitt, 2001; Adams, 1965)"
   ],
   objetivos: [
     "Identificar pontos fortes e oportunidades de melhoria no clima organizacional",
-    "Medir a percepção dos colaboradores sobre diferentes aspectos do ambiente de trabalho",
+    "Medir clima, bem-estar psicológico e justiça na organização",
     "Fornecer insights para ações de melhoria organizacional",
     "Acompanhar a evolução do clima ao longo do tempo"
   ],

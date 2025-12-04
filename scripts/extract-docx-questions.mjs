@@ -6,6 +6,7 @@ const DOCX_DIR = path.resolve('public', 'Testes');
 
 const mapaArquivosParaSlug = {
   'HumaniQ - Clima.docx': 'clima-organizacional',
+  'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa.docx': 'clima-organizacional',
   'HumaniQ - KS.docx': 'ks',
   'HumaniQ EO.docx': 'eo',
   'HumaniQ Insight.docx': 'insight',

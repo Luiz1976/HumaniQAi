@@ -74,7 +74,8 @@ export class ClimaOrganizacionalService {
           interpretacao,
           recomendacoes,
           analise_completa: analiseClima,
-          versao_teste: '1.0',
+          indices: analiseClima.indices,
+          versao_teste: '2.0',
           timestamp_processamento: new Date().toISOString()
         }
       };
@@ -129,6 +130,9 @@ export class ClimaOrganizacionalService {
     const { mediaGeral, classificacaoGeral, nivelGeral } = analise;
     
     let interpretacao = `Seu resultado geral de Clima Organizacional foi de ${mediaGeral.toFixed(2)} pontos, classificado como "${classificacaoGeral}". `;
+    if (analise.indices) {
+      interpretacao += `Índices integrados: Clima ${analise.indices.clima.toFixed(2)} (${analise.indices.classificacaoClima}), Bem-Estar ${analise.indices.bemestar.toFixed(2)} (${analise.indices.classificacaoBemestar}), Justiça ${analise.indices.justica.toFixed(2)} (${analise.indices.classificacaoJustica}). `;
+    }
     
     // Análise por nível
     switch (nivelGeral) {

@@ -11,13 +11,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/AuthContext';
-import { 
-  Search, 
-  Filter, 
-  Calendar, 
-  BarChart3, 
-  Clock, 
-  Users, 
+import {
+  Search,
+  Filter,
+  Calendar,
+  BarChart3,
+  Clock,
+  Users,
   TrendingUp,
   Eye,
   AlertCircle,
@@ -71,7 +71,7 @@ const ITENS_POR_PAGINA = 20;
 export default function TodosResultados() {
   const navigate = useNavigate();
   const { user } = useAuth(); // Hook no nível do componente
-  
+
   // Estados principais
   const [resultados, setResultados] = useState<any[]>([]);
   const [estatisticas, setEstatisticas] = useState<EstatisticasGerais>({
@@ -84,7 +84,7 @@ export default function TodosResultados() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recomendacoes, setRecomendacoes] = useState<{ titulo: string; descricao: string; prioridade: 'alta' | 'media' | 'baixa'; categoria?: string }[]>([]);
-  
+
   // Estados de paginação e filtros
   const [filtros, setFiltros] = useState<FiltrosTodosResultados>({
     limite: ITENS_POR_PAGINA,
@@ -106,12 +106,12 @@ export default function TodosResultados() {
     try {
       setLoading(true);
       setError(null);
-      
+
       console.log('🔍 [TODOS-RESULTADOS] Carregando resultados do usuário:', user?.email);
-      
+
       // Buscar resultados via API local
       const response = await apiService.obterMeusResultados();
-      
+
       console.log('✅ [TODOS-RESULTADOS] Resultados recebidos:', response.resultados.length);
       console.log('📊 [TODOS-RESULTADOS] Dados:', response.resultados);
 
@@ -142,24 +142,24 @@ export default function TodosResultados() {
             usuario: user?.email,
             timestamp: new Date().toISOString()
           })
-        }).catch(() => {});
-      } catch (_) {}
+        }).catch(() => { });
+      } catch (_) { }
       setTotalResultados(response.total || response.resultados.length);
-      
+
       // Calcular estatísticas
       if (response.resultados && response.resultados.length > 0) {
         const pontuacoes = response.resultados
           .map(r => r.pontuacaoTotal)
           .filter(p => p !== null && p !== undefined);
-        
+
         const tempos = response.resultados
           .map(r => r.tempoGasto)
           .filter(t => t !== null && t !== undefined);
-        
-        const pontuacaoMedia = pontuacoes.length > 0 
+
+        const pontuacaoMedia = pontuacoes.length > 0
           ? Math.round(pontuacoes.reduce((a, b) => a + b, 0) / pontuacoes.length)
           : 0;
-          
+
         const somaTempos = tempos.length > 0 ? tempos.reduce((a, b) => a + b, 0) : 0;
         const tempoMedio = somaTempos > 0
           ? Math.round(somaTempos / tempos.length)
@@ -170,10 +170,10 @@ export default function TodosResultados() {
           pontuacaoMedia,
           tempoMedio,
           tempoTotal: Math.round(somaTempos),
-          testeMaisRealizado: 'Pesquisa de Clima Organizacional'
+          testeMaisRealizado: 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa'
         });
       }
-      
+
     } catch (error) {
       console.error('❌ [TODOS-RESULTADOS] Erro ao carregar dados:', error);
       setError(`Erro ao carregar resultados. ${error instanceof Error ? error.message : 'Tente novamente.'}`);
@@ -207,23 +207,23 @@ export default function TodosResultados() {
 
   const visualizarResultado = (resultado: Resultado) => {
     // Verificar se é um resultado do teste Karasek-Siegrist
-    const isKarasekSiegrist = 
+    const isKarasekSiegrist =
       resultado.teste_id === 'karasek-siegrist' ||
       resultado.metadados?.tipo_teste === 'karasek-siegrist' ||
       resultado.metadados?.teste_nome?.includes('Karasek-Siegrist') ||
       resultado.testes?.nome?.includes('Karasek-Siegrist');
-    
+
     // Verificar se é um resultado do teste de Estresse Ocupacional (HumaniQ EO)
-    const isEstresseOcupacional = 
+    const isEstresseOcupacional =
       resultado.teste_id === 'estresse-ocupacional' ||
       resultado.metadados?.tipo_teste === 'estresse-ocupacional' ||
       resultado.metadados?.teste_nome?.includes('Estresse Ocupacional') ||
       resultado.metadados?.teste_nome?.includes('HumaniQ EO') ||
       resultado.testes?.nome?.includes('Estresse Ocupacional') ||
       resultado.testes?.nome?.includes('HumaniQ EO');
-    
+
     // Verificar se é um resultado do teste MGRP (Maturidade em Gestão de Riscos Psicossociais)
-    const isMGRP = 
+    const isMGRP =
       resultado.teste_id === 'maturidade-riscos-psicossociais' ||
       resultado.teste_id === 'mgrp' ||
       resultado.metadados?.tipo_teste === 'maturidade-riscos-psicossociais' ||
@@ -231,18 +231,18 @@ export default function TodosResultados() {
       resultado.metadados?.teste_nome?.includes('Maturidade') ||
       resultado.testes?.nome?.includes('MGRP') ||
       resultado.testes?.nome?.includes('Maturidade');
-    
+
     // Verificar se é um resultado do teste PAS (Percepção de Assédio Moral e Sexual)
-    const isPAS = 
+    const isPAS =
       resultado.teste_id === 'percepcao-assedio' ||
       resultado.metadados?.tipo_teste === 'percepcao-assedio' ||
       resultado.metadados?.teste_nome?.includes('PAS') ||
       resultado.metadados?.teste_nome?.includes('Percepção de Assédio') ||
       resultado.testes?.nome?.includes('PAS') ||
       resultado.testes?.nome?.includes('Percepção de Assédio');
-    
+
     // Verificar se é um resultado do teste QVT (Qualidade de Vida no Trabalho)
-    const isQVT = 
+    const isQVT =
       resultado.teste_id === 'qualidade-vida-trabalho' ||
       resultado.metadados?.tipo_teste === 'qualidade-vida-trabalho' ||
       resultado.metadados?.teste_nome?.includes('QVT') ||
@@ -254,9 +254,9 @@ export default function TodosResultados() {
       resultado.satisfacao_funcao !== undefined;
 
 
-    
+
     // Verificar se é um resultado do teste RPO (Riscos Psicossociais Ocupacionais)
-    const isRPO = 
+    const isRPO =
       resultado.teste_id === 'rpo' ||
       resultado.metadados?.tipo_teste === 'rpo' ||
       resultado.metadados?.teste_nome?.includes('RPO') ||
@@ -264,7 +264,7 @@ export default function TodosResultados() {
       resultado.metadados?.teste_nome?.includes('HumaniQ RPO') ||
       resultado.testes?.nome?.includes('RPO') ||
       resultado.testes?.nome?.includes('Riscos Psicossociais Ocupacionais');
-    
+
     if (isKarasekSiegrist) {
       navigate(`/resultado/karasek-siegrist/${resultado.id}`);
     } else if (isEstresseOcupacional) {
@@ -561,16 +561,16 @@ export default function TodosResultados() {
   const ultimoResultado = resultados[0];
   const ultimaPontuacao = ultimoResultado
     ? (typeof ultimoResultado.pontuacao_total === 'number'
-        ? ultimoResultado.pontuacao_total
-        : ((ultimoResultado as any).indice_geral ?? (ultimoResultado.metadados?.analise_completa?.pontuacaoGeral as number | undefined)))
+      ? ultimoResultado.pontuacao_total
+      : ((ultimoResultado as any).indice_geral ?? (ultimoResultado.metadados?.analise_completa?.pontuacaoGeral as number | undefined)))
     : undefined;
   const anteriorMesmoTeste = ultimoResultado
     ? resultados.slice(1).find((r) => (r.testes?.nome || r.teste_id) === (ultimoResultado.testes?.nome || ultimoResultado.teste_id))
     : undefined;
   const pontuacaoAnterior = anteriorMesmoTeste
     ? (typeof anteriorMesmoTeste.pontuacao_total === 'number'
-        ? anteriorMesmoTeste.pontuacao_total
-        : ((anteriorMesmoTeste as any).indice_geral ?? (anteriorMesmoTeste.metadados?.analise_completa?.pontuacaoGeral as number | undefined)))
+      ? anteriorMesmoTeste.pontuacao_total
+      : ((anteriorMesmoTeste as any).indice_geral ?? (anteriorMesmoTeste.metadados?.analise_completa?.pontuacaoGeral as number | undefined)))
     : undefined;
   const variacaoPontuacao =
     ultimaPontuacao !== undefined && pontuacaoAnterior !== undefined
@@ -616,7 +616,7 @@ export default function TodosResultados() {
           <Skeleton className="h-8 w-64" />
           <Skeleton className="h-10 w-32" />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <Card key={i}>
@@ -627,7 +627,7 @@ export default function TodosResultados() {
             </Card>
           ))}
         </div>
-        
+
         <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
             <Card key={i}>
@@ -652,7 +652,7 @@ export default function TodosResultados() {
             Visualize e explore todos os resultados de testes realizados na plataforma
           </p>
         </div>
-        
+
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -662,7 +662,7 @@ export default function TodosResultados() {
             <Filter className="h-4 w-4" />
             Filtros
           </Button>
-          
+
           <Button
             onClick={carregarDados}
             disabled={loading}
@@ -704,7 +704,7 @@ export default function TodosResultados() {
           </CardContent>
         </Card>
 
-        
+
       </div>
 
       {/* Insights Adicionais */}
@@ -1001,7 +1001,7 @@ export default function TodosResultados() {
                             {resultado.testes?.categoria || 'Geral'}
                           </Badge>
                         </div>
-                        
+
                         <div className="flex items-center gap-4 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
@@ -1011,20 +1011,20 @@ export default function TodosResultados() {
                             <Clock className="h-4 w-4" />
                             {formatarHora(String(resultado.data_realizacao))}
                           </div>
-                          
+
                           {resultado.tempo_gasto && (
                             <div className="flex items-center gap-1">
                               <Timer className="h-4 w-4" />
                               {formatarDuracao(resultado.tempo_gasto)}
                             </div>
                           )}
-                          
+
                           <div className="text-xs text-gray-500">
                             ID: {resultado.id.slice(0, 8)}...
                           </div>
                         </div>
                       </div>
-                      
+
                       <Button variant="ghost" size="sm" className="flex items-center gap-2">
                         <Eye className="h-4 w-4" />
                         Ver Detalhes
@@ -1045,7 +1045,7 @@ export default function TodosResultados() {
             Mostrando {((paginaAtual - 1) * (filtros.limite || 20)) + 1} a{' '}
             {Math.min(paginaAtual * (filtros.limite || 20), totalResultados)} de {totalResultados} resultados
           </p>
-          
+
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -1054,7 +1054,7 @@ export default function TodosResultados() {
             >
               Anterior
             </Button>
-            
+
             <div className="flex gap-1">
               {[...Array(Math.min(5, totalPaginas))].map((_, i) => {
                 const pagina = i + 1;
@@ -1071,7 +1071,7 @@ export default function TodosResultados() {
                 );
               })}
             </div>
-            
+
             <Button
               variant="outline"
               onClick={() => mudarPagina(paginaAtual + 1)}
@@ -1113,24 +1113,24 @@ export function normalizarPontuacaoResultado(resultado: Resultado): { valor5: nu
     const mediaFromAnalise = (
       typeof m.analise_completa?.mediaGeral === 'number' ? m.analise_completa.mediaGeral : undefined
     ) ?? (
-      typeof m.mediaGeral === 'number' ? m.mediaGeral : undefined
-    );
+        typeof m.mediaGeral === 'number' ? m.mediaGeral : undefined
+      );
 
     const percentualOrigem = (
       typeof resultado.pontuacao_total === 'number'
         ? (resultado.pontuacao_total <= 100 ? Math.round(resultado.pontuacao_total) : undefined)
         : undefined
     ) ?? (
-      typeof m.pontuacao_total === 'number'
-        ? (m.pontuacao_total <= 100 ? Math.round(m.pontuacao_total) : undefined)
-        : undefined
-    ) ?? (
-      typeof mediaFromAnalise === 'number' ? Math.round(mediaFromAnalise * 20) : undefined
-    ) ?? (
-      typeof m.pontuacaoGeral === 'number' && typeof m.totalPerguntas === 'number'
-        ? Math.round((m.pontuacaoGeral / m.totalPerguntas) * 20)
-        : undefined
-    ) ?? 0;
+        typeof m.pontuacao_total === 'number'
+          ? (m.pontuacao_total <= 100 ? Math.round(m.pontuacao_total) : undefined)
+          : undefined
+      ) ?? (
+        typeof mediaFromAnalise === 'number' ? Math.round(mediaFromAnalise * 20) : undefined
+      ) ?? (
+        typeof m.pontuacaoGeral === 'number' && typeof m.totalPerguntas === 'number'
+          ? Math.round((m.pontuacaoGeral / m.totalPerguntas) * 20)
+          : undefined
+      ) ?? 0;
 
     const valor5 = Number((percentualOrigem / 20).toFixed(1));
     const valorPercentual = percentualOrigem;

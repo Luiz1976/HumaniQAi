@@ -47,11 +47,11 @@ export default function TesteClimaOrganizacionalIntroducao() {
   // Renderizar animação de carregamento
   if (isLoading) {
     return (
-      <LoadingAnimation 
-        onComplete={handleLoadingComplete}
-        testName="Clima Organizacional"
-        duration={8000}
-      />
+        <LoadingAnimation 
+          onComplete={handleLoadingComplete}
+          testName="HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa"
+          duration={8000}
+        />
     );
   }
 
@@ -131,7 +131,7 @@ export default function TesteClimaOrganizacionalIntroducao() {
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent">
-            Pesquisa de Clima Organizacional
+            HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa
           </h1>
           <p className="text-xl text-blue-700 mb-2 font-medium">
             Avaliação Completa do Ambiente de Trabalho
@@ -212,7 +212,7 @@ export default function TesteClimaOrganizacionalIntroducao() {
                 <Puzzle className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-slate-800 mb-2">Questões</h3>
-              <p className="text-slate-600">56 questões objetivas</p>
+              <p className="text-slate-600">78 questões objetivas</p>
             </div>
             <div>
               <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">

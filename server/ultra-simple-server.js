@@ -183,7 +183,7 @@ const server = http.createServer((req, res) => {
 
     const base = [
       // Clima Organizacional (clássico)
-      makeTeste('clima-organizacional', 'Pesquisa de Clima Organizacional', 'Organizacional', 15, 'Avaliação do clima e satisfação dos colaboradores'),
+      makeTeste('clima-organizacional', 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa', 'Organizacional', 15, 'Avaliação do clima e satisfação dos colaboradores'),
       // Karasek-Siegrist
       makeTeste('karasek-siegrist', 'HumaniQ - Karasek-Siegrist', 'Psicossocial', 25, 'Avaliação de risco psicossocial (demanda-controle, esforço-recompensa)'),
       // Estresse Ocupacional
@@ -546,7 +546,7 @@ const server = http.createServer((req, res) => {
           dataRealizacao: toISO(new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000)),
           metadados: {
             tipo_teste: 'clima-organizacional',
-            teste_nome: 'Pesquisa de Clima Organizacional',
+            teste_nome: 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa',
             versao_teste: '1.0',
             timestamp_processamento: toISO(now),
             pontuacoes_dimensoes: {
@@ -592,7 +592,7 @@ const server = http.createServer((req, res) => {
       {
         id: 'res-001',
         testeId: 'clima-organizacional',
-        nomeTest: 'Pesquisa de Clima Organizacional',
+        nomeTest: 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa',
         categoria: 'Organizacional',
         pontuacao: 210,
         pontuacaoMaxima: 280,
@@ -647,7 +647,7 @@ const server = http.createServer((req, res) => {
     const testes = [
       {
         id: 'clima-organizacional',
-        nome: 'Pesquisa de Clima Organizacional',
+        nome: 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa',
         descricao: 'Avaliação do clima e satisfação dos colaboradores',
         categoria: 'Organizacional',
         tempoEstimado: 15,
@@ -1230,13 +1230,13 @@ const server = http.createServer((req, res) => {
       {
         id: 'res-001',
         testeId: 'clima-organizacional',
-        nomeTeste: 'Pesquisa de Clima Organizacional',
+        nomeTeste: 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa',
         pontuacaoTotal: 75,
         dataRealizacao: mkDate(1),
         status: 'concluido',
         metadados: {
           tipo_teste: 'clima-organizacional',
-          teste_nome: 'Pesquisa de Clima Organizacional',
+          teste_nome: 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa',
           analise_completa: {
             pontuacaoGeral: 210,
             mediaGeral: 3.75,

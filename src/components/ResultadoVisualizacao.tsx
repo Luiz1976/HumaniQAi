@@ -170,7 +170,7 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
       <div className="space-y-6">
         {/* Resumo Executivo */}
         <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200/60">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Pesquisa de Clima Organizacional</h3>
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
               <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">

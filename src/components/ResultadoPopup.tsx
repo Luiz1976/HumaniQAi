@@ -106,7 +106,7 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
     if (dadosResultado?.metadados?.teste_nome) return dadosResultado.metadados.teste_nome;
     if (dadosResultado?.metadados?.tipo_teste) {
       const tipo = dadosResultado.metadados.tipo_teste;
-      if (tipo === 'clima-organizacional') return 'Pesquisa de Clima Organizacional';
+      if (tipo === 'clima-organizacional') return 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa';
       if (tipo === 'rpo') return 'Riscos Psicossociais Ocupacionais';
       if (tipo === 'qvt') return 'Qualidade de Vida no Trabalho';
       if (tipo === 'karasek-siegrist') return 'Karasek-Siegrist';
