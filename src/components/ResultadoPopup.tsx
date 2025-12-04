@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Eye, Download, Share2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Eye, Download, Share2, Loader2, Check, Copy } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { apiService } from '@/services/apiService';
 import { ResultadoVisualizacao } from '@/components/ResultadoVisualizacao';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { toast } from 'sonner';
 
 interface ResultadoTeste {
   id: string;
@@ -25,6 +28,8 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
   const [dadosResultado, setDadosResultado] = useState<any>(null);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [baixando, setBaixando] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen && resultado && resultado.id) {
@@ -60,10 +65,10 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
 
       // Verificar se é teste Karasek-Siegrist e tem análise completa
       const tipoTeste = dadosCompletos.metadados?.tipo_teste?.toLowerCase() || '';
-      const isKarasek = tipoTeste === 'karasek-siegrist' || 
-                        resultado.nomeTest?.toLowerCase().includes('karasek') ||
-                        resultado.nomeTest?.toLowerCase().includes('siegrist');
-                        
+      const isKarasek = tipoTeste === 'karasek-siegrist' ||
+        resultado.nomeTest?.toLowerCase().includes('karasek') ||
+        resultado.nomeTest?.toLowerCase().includes('siegrist');
+
       if (isKarasek && dadosCompletos.metadados?.analise_completa) {
         console.log('✅ [ResultadoPopup] Teste Karasek-Siegrist com análise completa encontrada');
         setDadosResultado(dadosCompletos.metadados.analise_completa);
@@ -114,6 +119,76 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
     return 'Resultado do Teste';
   };
 
+  const handleDownloadPDF = async () => {
+    if (!contentRef.current) return;
+
+    setBaixando(true);
+    try {
+      const canvas = await html2canvas(contentRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        scrollY: -window.scrollY,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+
+      const nomeArquivo = `resultado-${obterNomeTeste().toLowerCase().replace(/\s+/g, '-')}.pdf`;
+      pdf.save(nomeArquivo);
+      toast.success('PDF baixado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast.error('Erro ao gerar o PDF. Tente novamente.');
+    } finally {
+      setBaixando(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: obterNomeTeste(),
+      text: `Confira meu resultado no teste: ${obterNomeTeste()}`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        toast.success('Compartilhado com sucesso!');
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copiado para a área de transferência!');
+      }
+    } catch (error) {
+      console.error('Erro ao compartilhar:', error);
+      toast.error('Erro ao compartilhar.');
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
@@ -124,8 +199,8 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
           </DialogTitle>
         </DialogHeader>
 
-        <div className="mt-4">
-          <ResultadoVisualizacao 
+        <div className="mt-4" ref={contentRef}>
+          <ResultadoVisualizacao
             resultado={resultado}
             dadosResultado={dadosResultado}
             carregando={carregando}
@@ -137,11 +212,25 @@ export function ResultadoPopup({ isOpen, onClose, resultado }: ResultadoPopupPro
           <Button variant="outline" onClick={onClose}>
             Fechar
           </Button>
-          <Button variant="outline" className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
-            Baixar PDF
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={handleDownloadPDF}
+            disabled={baixando || carregando || !!erro}
+          >
+            {baixando ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            {baixando ? 'Gerando PDF...' : 'Baixar PDF'}
           </Button>
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={handleShare}
+            disabled={carregando || !!erro}
+          >
             <Share2 className="h-4 w-4" />
             Compartilhar
           </Button>

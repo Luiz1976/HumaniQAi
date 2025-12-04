@@ -119,7 +119,7 @@ manual-sql-instructions.md
 *.njsproj
 *.sln
 *.sw?
-package-lock.json
+
 
 # Node modules
 node_modules/
