@@ -105,7 +105,13 @@ export default function ColaboradorTestes() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-        {testes.map((teste) => (
+        {testes.filter(t => {
+          const nomeNorm = String(t.nome || '').toLowerCase();
+          const catNorm = String(t.categoria || '').toLowerCase();
+          if (nomeNorm.includes('insight')) return false;
+          if (catNorm.includes('clima-bem-estar')) return false;
+          return true;
+        }).map((teste) => (
           <Card
             key={teste.id}
             className={`${!teste.disponivel ? 'bg-gray-50 dark:bg-gray-800/50 opacity-75' : 'bg-white dark:bg-gray-800'

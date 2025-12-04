@@ -43,10 +43,20 @@ router.get('/colaborador/testes', authenticateToken, requireColaborador, async (
     console.log('🔍 [DISPONIBILIDADE]', requestId, 'Buscando testes para colaborador:', colaboradorId, 'da empresa:', empresaId);
 
     const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
-    const todosTestes = await db
+    const todosTestesRaw = await db
       .select()
       .from(testes)
       .where(eq(testes.ativo, isSqlite ? 1 : true));
+
+    const todosTestes = todosTestesRaw.filter((t: any) => {
+      const nome = String(t.nome || '').toLowerCase();
+      const categoria = String(t.categoria || '').toLowerCase();
+      const id = String(t.id || '').toLowerCase();
+      if (nome.includes('insight')) return false;
+      if (categoria.includes('clima-bem-estar')) return false;
+      if (id.includes('clima-bem-estar')) return false;
+      return true;
+    });
 
     console.log('📊 [DISPONIBILIDADE]', requestId, 'Total de testes ativos encontrados:', todosTestes.length);
 
@@ -241,10 +251,20 @@ router.get('/empresa/colaborador/:colaboradorId/testes', authenticateToken, requ
 
     // Buscar todos os testes (compatível com SQLite e Postgres)
     const isSqlite = (dbType || '').toLowerCase().includes('sqlite');
-    const todosTestes = await db
+    const todosTestesRaw = await db
       .select()
       .from(testes)
       .where(eq(testes.ativo, isSqlite ? 1 : true));
+
+    const todosTestes = todosTestesRaw.filter((t: any) => {
+      const nome = String(t.nome || '').toLowerCase();
+      const categoria = String(t.categoria || '').toLowerCase();
+      const id = String(t.id || '').toLowerCase();
+      if (nome.includes('insight')) return false;
+      if (categoria.includes('clima-bem-estar')) return false;
+      if (id.includes('clima-bem-estar')) return false;
+      return true;
+    });
 
     // Buscar disponibilidade e resultados para cada teste
     const testesComInfo = await Promise.all(
