@@ -94,18 +94,6 @@ export default function Testes() {
   });
 
 
-  // Logging quando os dados mudam
-  if (data) {
-    console.log('🔍 [TESTES-FRONTEND] Dados recebidos da API:', data);
-    console.log('📊 [TESTES-FRONTEND] Total de testes:', data.testes?.length || 0);
-    console.log('📋 [TESTES-FRONTEND] Resumo dos testes:', data.testes?.map((t: any) => ({
-      nome: t.nome,
-      disponivel: t.disponivel,
-      motivo: t.motivo,
-      dataConclusao: t.dataConclusao
-    })));
-  }
-
   // Mostrar erro se houver
   if (error) {
     console.error('❌ [TESTES] Erro ao carregar testes:', error);
@@ -388,8 +376,25 @@ export default function Testes() {
 
       {/* Grid de Testes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        {isColaborador && testes.length > 0 ? (
-          testes.map(teste => renderTesteCard(teste))
+        {isColaborador ? (
+          testes.length > 0 ? (
+            testes.map(teste => renderTesteCard(teste))
+          ) : (
+            <div className="col-span-full text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Todos os testes concluídos!
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                  Parabéns! Você completou todos os testes disponíveis no momento. 
+                  Novos testes aparecerão aqui quando forem atribuídos a você.
+                </p>
+              </div>
+            </div>
+          )
         ) : (
           testesEstaticos.map((testeConfig, index) => (
             <Card
