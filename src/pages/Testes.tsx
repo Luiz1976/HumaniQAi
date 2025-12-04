@@ -90,13 +90,6 @@ export default function Testes() {
     if (t.motivo === 'teste_concluido' && !t.disponivel) {
       return false;
     }
-    // Filtro removido para permitir a exibição do HumaniQ Insight
-    // if (nomeNorm.includes('humaniq') && nomeNorm.includes('insight')) {
-    //   return false;
-    // }
-    // if (nomeNorm.includes('humaniq-insight') || nomeNorm.includes('insight')) {
-    //   return false;
-    // }
     return true;
   });
 
