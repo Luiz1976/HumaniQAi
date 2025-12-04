@@ -87,7 +87,8 @@ export default function Testes() {
 
   let testes = (data?.testes || []).filter(t => {
     const nomeNorm = (t.nome || '').toLowerCase();
-    if (t.motivo === 'teste_concluido' && !t.disponivel) {
+    // Ocultar cards de testes já concluídos, independentemente do motivo, quando indisponíveis
+    if ((t.motivo === 'teste_concluido' || !!t.dataConclusao) && !t.disponivel) {
       return false;
     }
     return true;
