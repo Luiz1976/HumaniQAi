@@ -333,6 +333,10 @@ async function bootstrap() {
     console.log('🔄 Executando migrações...');
     await runMigrations();
     console.log('✅ Migrações concluídas.');
+
+    // Sincronizar definições de testes (garantir nomes corretos em produção)
+    const { syncTestDefinitions } = await import('./utils/sync-tests');
+    await syncTestDefinitions();
   } catch (err) {
     console.error('❌ Falha ao executar migrações no startup:', err);
     // Não falhar o startup por causa de migrações, para permitir debug
