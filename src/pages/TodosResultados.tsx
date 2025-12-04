@@ -93,7 +93,7 @@ export default function TodosResultados() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalResultados, setTotalResultados] = useState(0);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
-  const [tiposTeste, setTiposTeste] = useState<string[]>(['QVT', 'RPO', 'Clima e Bem-Estar', 'Estresse Ocupacional', 'Karasek-Siegrist', 'PAS', 'MGRP']);
+  const [tiposTeste, setTiposTeste] = useState<string[]>(['QVT', 'RPO', 'Estresse Ocupacional', 'Karasek-Siegrist', 'PAS', 'MGRP']);
 
   // Carregar dados iniciais
   useEffect(() => {
@@ -253,12 +253,7 @@ export default function TodosResultados() {
       resultado.indice_geral !== undefined ||
       resultado.satisfacao_funcao !== undefined;
 
-    // Verificar se é um resultado do teste Clima e Bem-Estar
-    const isClimaBemEstar =
-      resultado.teste_id === 'clima-bem-estar' ||
-      resultado.metadados?.tipo_teste === '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5' ||
-      (typeof resultado.metadados?.teste_nome === 'string' && resultado.metadados.teste_nome.includes('Clima e Bem-Estar')) ||
-      (typeof resultado.testes?.nome === 'string' && resultado.testes.nome.includes('Clima e Bem-Estar'));
+
     
     // Verificar se é um resultado do teste RPO (Riscos Psicossociais Ocupacionais)
     const isRPO = 
@@ -280,8 +275,7 @@ export default function TodosResultados() {
       navigate(`/resultado/percepcao-assedio/${resultado.id}`);
     } else if (isQVT) {
       navigate(`/resultado/qualidade-vida-trabalho/${resultado.id}`);
-    } else if (isClimaBemEstar) {
-      navigate(`/resultado/clima-bem-estar/${resultado.id}`);
+
     } else if (isRPO) {
       navigate(`/resultado/rpo/${resultado.id}`);
     } else {

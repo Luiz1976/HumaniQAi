@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { infoTesteClimaOrganizacional } from "@/lib/testes/clima-organizacional";
 import { infoTesteKarasekSiegrist } from "@/lib/testes/karasek-siegrist";
 import { infoTesteEstresseOcupacional } from "@/lib/testes/estresse-ocupacional";
-import { infoTesteClimaBemEstar } from "@/lib/testes/clima-bem-estar";
 import { infoTesteMaturidadeRiscosPsicossociais } from "@/lib/testes/maturidade-riscos-psicossociais";
 import { configPercepacaoAssedio } from "@/lib/testes/percepcao-assedio";
 import { configQualidadeVidaTrabalho } from "@/lib/testes/qualidade-vida-trabalho";
@@ -105,12 +104,10 @@ export default function Testes() {
     const nomeNorm = nome.toLowerCase();
 
 
-    if (nomeNorm.includes('insight')) return infoTesteClimaBemEstar;
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return infoTesteClimaOrganizacional;
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return infoTesteClimaOrganizacional;
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return infoTesteKarasekSiegrist;
     if (nomeNorm.includes('estresse ocupacional') || nomeNorm.includes('estresse-ocupacional')) return infoTesteEstresseOcupacional;
-    if (nomeNorm.includes('clima e bem-estar') || nomeNorm.includes('clima-bem-estar')) return infoTesteClimaBemEstar;
     if (nomeNorm.includes('maturidade') || nomeNorm.includes('mgrp')) return infoTesteMaturidadeRiscosPsicossociais;
     if (nomeNorm.includes('assédio') || nomeNorm.includes('assedio') || nomeNorm.includes('pas')) return configPercepacaoAssedio;
     if (nomeNorm.includes('qualidade de vida') || nomeNorm.includes('qvt')) return configQualidadeVidaTrabalho;
@@ -122,12 +119,10 @@ export default function Testes() {
     const nomeNorm = nome.toLowerCase();
 
 
-    if (nomeNorm.includes('insight')) return '/teste/clima-bem-estar';
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('clima organizacional') || nomeNorm.includes('clima-organizacional')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return '/teste/karasek-siegrist';
     if (nomeNorm.includes('estresse ocupacional') || nomeNorm.includes('estresse-ocupacional')) return '/teste/estresse-ocupacional';
-    if (nomeNorm.includes('clima e bem-estar') || nomeNorm.includes('clima-bem-estar')) return '/teste/clima-bem-estar';
     if (nomeNorm.includes('maturidade') || nomeNorm.includes('mgrp')) return '/teste/maturidade-riscos-psicossociais';
     if (nomeNorm.includes('assédio') || nomeNorm.includes('assedio') || nomeNorm.includes('pas')) return '/teste/percepcao-assedio';
     if (nomeNorm.includes('qualidade de vida') || nomeNorm.includes('qvt')) return '/teste/qualidade-vida-trabalho';
@@ -139,12 +134,10 @@ export default function Testes() {
     const nomeNorm = nome.toLowerCase();
 
 
-    if (nomeNorm.includes('insight')) return <Users className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return <Building2 className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('clima organizacional')) return <Building2 className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return <Scale className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('estresse')) return <Heart className="h-8 w-8 text-white" />;
-    if (nomeNorm.includes('clima e bem-estar')) return <Users className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('maturidade') || nomeNorm.includes('mgrp')) return <Shield className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('assédio') || nomeNorm.includes('assedio')) return <AlertTriangle className="h-8 w-8 text-white" />;
     if (nomeNorm.includes('qualidade de vida') || nomeNorm.includes('qvt')) return <Star className="h-8 w-8 text-white" />;
@@ -155,12 +148,10 @@ export default function Testes() {
   const getTesteColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
 
-    if (nomeNorm.includes('insight')) return 'bg-green-500';
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return 'bg-blue-500';
     if (nomeNorm.includes('clima organizacional')) return 'bg-blue-500';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'bg-purple-500';
     if (nomeNorm.includes('estresse')) return 'bg-blue-500';
-    if (nomeNorm.includes('clima e bem-estar')) return 'bg-green-500';
     if (nomeNorm.includes('maturidade') || nomeNorm.includes('mgrp')) return 'bg-orange-500';
     if (nomeNorm.includes('assédio') || nomeNorm.includes('assedio')) return 'bg-red-500';
     if (nomeNorm.includes('qualidade de vida') || nomeNorm.includes('qvt')) return 'bg-yellow-500';
@@ -171,12 +162,10 @@ export default function Testes() {
   const getTesteBadgeColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
 
-    if (nomeNorm.includes('insight')) return 'text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800';
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
     if (nomeNorm.includes('clima organizacional')) return 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800';
     if (nomeNorm.includes('estresse')) return 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
-    if (nomeNorm.includes('clima e bem-estar')) return 'text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800';
     if (nomeNorm.includes('maturidade') || nomeNorm.includes('mgrp')) return 'text-orange-600 border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800';
     if (nomeNorm.includes('assédio') || nomeNorm.includes('assedio')) return 'text-red-600 border-red-200 bg-red-50 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
     if (nomeNorm.includes('qualidade de vida') || nomeNorm.includes('qvt')) return 'text-yellow-600 border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800';
@@ -187,12 +176,10 @@ export default function Testes() {
   const getTesteButtonColor = (nome: string) => {
     const nomeNorm = nome.toLowerCase();
 
-    if (nomeNorm.includes('insight')) return 'bg-green-600 hover:bg-green-700';
     if (nomeNorm.includes('humaniq') && nomeNorm.includes('clima')) return 'bg-blue-600 hover:bg-blue-700';
     if (nomeNorm.includes('clima organizacional')) return 'bg-blue-600 hover:bg-blue-700';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return 'bg-purple-600 hover:bg-purple-700';
     if (nomeNorm.includes('estresse')) return 'bg-blue-600 hover:bg-blue-700';
-    if (nomeNorm.includes('clima e bem-estar')) return 'bg-green-600 hover:bg-green-700';
     if (nomeNorm.includes('maturidade') || nomeNorm.includes('mgrp')) return 'bg-orange-600 hover:bg-orange-700';
     if (nomeNorm.includes('assédio') || nomeNorm.includes('assedio')) return 'bg-red-600 hover:bg-red-700';
     if (nomeNorm.includes('qualidade de vida') || nomeNorm.includes('qvt')) return 'bg-yellow-600 hover:bg-yellow-700';
@@ -345,7 +332,6 @@ export default function Testes() {
     { info: infoTesteClimaOrganizacional, route: '/teste/clima-organizacional', icon: <Building2 className="h-8 w-8 text-white" />, color: 'bg-blue-500', badgeColor: 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800', buttonColor: 'bg-blue-600 hover:bg-blue-700', questoes: 56 },
     { info: infoTesteKarasekSiegrist, route: '/teste/karasek-siegrist', icon: <Scale className="h-8 w-8 text-white" />, color: 'bg-purple-500', badgeColor: 'text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800', buttonColor: 'bg-purple-600 hover:bg-purple-700', badges: ['OMS', 'OIT'], questoes: 50 },
     { info: infoTesteEstresseOcupacional, route: '/teste/estresse-ocupacional', icon: <Heart className="h-8 w-8 text-white" />, color: 'bg-blue-500', badgeColor: 'text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800', buttonColor: 'bg-blue-600 hover:bg-blue-700' },
-    { info: infoTesteClimaBemEstar, route: '/teste/clima-bem-estar', icon: <Users className="h-8 w-8 text-white" />, color: 'bg-green-500', badgeColor: 'text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800', buttonColor: 'bg-green-600 hover:bg-green-700' },
     { info: infoTesteMaturidadeRiscosPsicossociais, route: '/teste/maturidade-riscos-psicossociais', icon: <Shield className="h-8 w-8 text-white" />, color: 'bg-orange-500', badgeColor: 'text-orange-600 border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800', buttonColor: 'bg-orange-600 hover:bg-orange-700', badges: ['Organizacional', 'Gestão'] },
     { info: configPercepacaoAssedio, route: '/teste/percepcao-assedio', icon: <AlertTriangle className="h-8 w-8 text-white" />, color: 'bg-red-500', badgeColor: 'text-red-600 border-red-200 bg-red-50 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800', buttonColor: 'bg-red-600 hover:bg-red-700', questoes: 48, badges: ['Proteção', 'Assédio'], buttonText: 'Iniciar Avaliação' },
     { info: configQualidadeVidaTrabalho, route: '/teste/qualidade-vida-trabalho', icon: <Star className="h-8 w-8 text-white" />, color: 'bg-yellow-500', badgeColor: 'text-yellow-600 border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800', buttonColor: 'bg-yellow-600 hover:bg-yellow-700', questoes: configQualidadeVidaTrabalho.numeroPerguntas, badges: ['Qualidade', 'Bem-estar'] },

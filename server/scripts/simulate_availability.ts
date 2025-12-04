@@ -102,17 +102,7 @@ async function main() {
   );
 
   console.log('\n📋 Resultado da Simulação:');
-  const insightTest = testesComDisponibilidade.find(t => t.nome.includes('Insight'));
-  console.log('🎯 HumaniQ Insight:', insightTest);
-  
-  // Verificar filtro do frontend
-  if (insightTest) {
-      const deveSerExcluido = insightTest.motivo === 'teste_concluido' && !insightTest.disponivel;
-      console.log(`\n🧪 Teste de Filtro Frontend:`);
-      console.log(`   - motivo === 'teste_concluido': ${insightTest.motivo === 'teste_concluido'}`);
-      console.log(`   - !disponivel: ${!insightTest.disponivel}`);
-      console.log(`   - Resultado Final (deve ser excluído?): ${deveSerExcluido}`);
-  }
+
 }
 
 main();

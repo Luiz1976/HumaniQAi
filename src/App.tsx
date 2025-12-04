@@ -43,10 +43,6 @@ import TesteIntroducao from "./pages/TesteIntroducao";
 import TesteKarasekSiegristIntroducao from "./pages/TesteKarasekSiegristIntroducao";
 import TesteClimaOrganizacionalIntroducao from "./pages/TesteClimaOrganizacionalIntroducao";
 import TesteEstresseOcupacionalIntroducao from "./pages/TesteEstresseOcupacionalIntroducao";
-import TesteClimaBemEstarIntroducao from "./pages/TesteClimaBemEstarIntroducao";
-import TesteClimaBemEstarPerguntas from "./pages/TesteClimaBemEstarPerguntas";
-
-import ResultadoClimaBemEstar from "./pages/ResultadoClimaBemEstar";
 import FinalizacaoAmigavel from "./pages/FinalizacaoAmigavel";
 import TesteMGRPIntroducao from "./pages/TesteMGRPIntroducao";
 import TesteMGRPPerguntas from "./pages/TesteMGRPPerguntas";
@@ -385,30 +381,6 @@ function App() {
                         <FinalizacaoAmigavel />
                       </MainLayout>
                     </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/teste/clima-bem-estar"
-                  element={
-                    <MainLayout>
-                      <TesteClimaBemEstarIntroducao />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/teste/clima-bem-estar/perguntas"
-                  element={
-                    <MainLayout>
-                      <TesteClimaBemEstarPerguntas />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/resultado/clima-bem-estar/:resultadoId"
-                  element={
-                    <MainLayout>
-                      <FinalizacaoAmigavel />
-                    </MainLayout>
                   }
                 />
                 <Route

@@ -77,7 +77,6 @@ export default function ColaboradorTestes() {
     if (nomeNorm.includes('clima organizacional')) return '/teste/clima-organizacional';
     if (nomeNorm.includes('karasek') || nomeNorm.includes('siegrist')) return '/teste/karasek-siegrist';
     if (nomeNorm.includes('estresse ocupacional')) return '/teste/estresse-ocupacional';
-    if (nomeNorm.includes('clima e bem-estar')) return '/teste/clima-bem-estar';
     if (nomeNorm.includes('maturidade')) return '/teste/maturidade-riscos-psicossociais';
     if (nomeNorm.includes('assédio')) return '/teste/percepcao-assedio';
     if (nomeNorm.includes('qualidade de vida')) return '/teste/qualidade-vida-trabalho';

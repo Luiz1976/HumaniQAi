@@ -225,7 +225,7 @@ const Colaborador = () => {
               </CardTitle>
 
               <CardDescription className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-8 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
-                Acesse nossa biblioteca de testes psicológicos validados cientificamente. Avalie aspectos como estresse ocupacional, qualidade de vida no trabalho, clima organizacional e muito mais.
+                Acesse nossa biblioteca de testes psicológicos validados cientificamente. Avalie aspectos como estresse ocupacional, qualidade de vida no trabalho e muito mais.
               </CardDescription>
 
               {/* Botão de ação */}

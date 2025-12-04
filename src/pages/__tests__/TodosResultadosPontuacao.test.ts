@@ -67,25 +67,5 @@ describe('normalizarPontuacaoResultado', () => {
     expect(valor5).toBe(3.5);
   });
 
-  it('converte Clima e Bem-Estar de percentual em media 0-5 e vice-versa', () => {
-    const resultadoPercentual: any = {
-      pontuacao_total: 55,
-      testes: { nome: 'HumaniQ Insight – Clima Organizacional e Bem-Estar Psicológico' },
-      metadados: { tipo_teste: '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5' }
-    };
-    const r1 = normalizarPontuacaoResultado(resultadoPercentual);
-    expect(r1.valorPercentual).toBe(55);
-    expect(r1.valor5).toBe(2.8);
 
-    const resultadoMedia: any = {
-      metadados: {
-        tipo_teste: '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5',
-        analise_completa: { mediaGeral: 2.75 },
-        teste_nome: 'HumaniQ Insight – Clima Organizacional e Bem-Estar Psicológico'
-      }
-    };
-    const r2 = normalizarPontuacaoResultado(resultadoMedia);
-    expect(r2.valorPercentual).toBe(55);
-    expect(r2.valor5).toBe(2.8);
-  });
 });

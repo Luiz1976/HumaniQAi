@@ -410,7 +410,6 @@ export const resultadosService = {
               'rpo': 'Riscos Psicossociais Ocupacionais (RPO)',
               'qvt': 'Qualidade de Vida no Trabalho (QVT)',
               'estresse-ocupacional': 'Estresse Ocupacional',
-              '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5': 'Clima e Bem-Estar',
               'mgrp': 'MGRP - Modelo de Gestão de Riscos Psicossociais'
             };
             nomeTeste = tiposConhecidos[resultado.metadados.tipo_teste] || resultado.metadados.tipo_teste;
@@ -745,12 +744,10 @@ export const analiseService = {
 
 // Mapeamento de slugs para UUIDs dos testes no banco de dados
 const TESTE_SLUG_TO_UUID: Record<string, string> = {
-  'clima-organizacional': '55fc21f9-cc10-4b4a-8765-3f5087eaf1f5',
   'karasek-siegrist': '9b7d4c8e-1a2b-4f3e-9d7a-5e6f7a8b9c0d',
   'estresse-ocupacional': '2c8e3f9a-4b5d-6e7a-8c9d-0e1f2a3b4c5d',
   'pas': '4e0a5b1c-6d7f-8e9a-0f1a-2b3c4d5e6f7a',
-  'mgrp': '5f1a6c2d-7e8f-9a0b-1c2d-3e4f5a6b7c8d',
-
+  'mgrp': '5f1a6c2d-7e8f-9a0b-1c2d-3e4f5a6b7c8d'
 };
 
 export const processamentoService = {
