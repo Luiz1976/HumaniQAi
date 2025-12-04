@@ -227,6 +227,11 @@ export default function EmpresaColaboradorResultados() {
     const searchTerm = (filtroTeste || '').toLowerCase();
     const testeName = (resultado.nomeTest || '').toLowerCase();
     const category = (resultado.categoria || '').toLowerCase();
+
+    // Filtro para remover permanentemente o teste "HumaniQ Insight" dos resultados
+    if (testeName.includes('insight') || category.includes('clima-bem-estar')) {
+      return false;
+    }
     
     const matchesSearch = testeName.includes(searchTerm) || category.includes(searchTerm);
     const matchesStatus = filtroStatus === 'todos' || resultado.status === filtroStatus;
