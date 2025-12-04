@@ -191,18 +191,7 @@ export function GerenciamentoTestesColaborador({
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base font-semibold flex-1">
-                  {(() => {
-                    const nome = (teste.nome || '').toLowerCase();
-                    if (
-                      nome.includes('insight') ||
-                      nome.includes('clima e bem-estar') ||
-                      nome.includes('clima-bem-estar') ||
-                      nome === 'humaniq - clima'
-                    ) {
-                      return 'HumaniQ Insight – Clima Organizacional e Bem-Estar Psicológico';
-                    }
-                    return teste.nome;
-                  })()}
+                  {teste.nome}
                 </CardTitle>
                 {teste.foiConcluido && (
                   <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
