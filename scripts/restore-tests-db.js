@@ -1,9 +1,11 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
 
 const db = new Database('humaniq-dev.db');
 
 const tests = [
-  { nome: 'HumaniQ - Clima', categoria: 'clima-organizacional', descricao: 'Avaliação do clima organizacional e satisfação dos colaboradores', tempo_estimado: 15 },
+  { nome: 'HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa', categoria: 'clima-organizacional', descricao: 'Avaliação do clima organizacional e satisfação dos colaboradores', tempo_estimado: 15 },
   { nome: 'HumaniQ - Karasek-Siegrist', categoria: 'karasek-siegrist', descricao: 'Modelo demanda-controle e recompensa-esforço', tempo_estimado: 20 },
   { nome: 'HumaniQ EO – Estresse Ocupacional, Burnout e Resiliência', categoria: 'estresse-ocupacional', descricao: 'Estresse ocupacional e fatores de resiliência', tempo_estimado: 20 },
 
