@@ -1,10 +1,10 @@
 // Serviço para integração do teste HumaniQ Insight – Clima Organizacional e Bem-Estar Psicológico
-import { 
-  calcularResultadoClimaBemEstar, 
+import {
+  calcularResultadoClimaBemEstar,
   dimensoesClimaBemEstar,
   obterTodasPerguntasInsight,
   infoTesteClimaBemEstar,
-  type ResultadoClimaBemEstar 
+  type ResultadoClimaBemEstar
 } from '../testes/clima-bem-estar';
 import { resultadosService } from '../database';
 import { sessionService } from './session-service';
@@ -22,13 +22,13 @@ export class ClimaBemEstarService {
   ): Promise<void> {
     try {
       console.log(`[ClimaBemEstar] Salvando resposta individual - Pergunta: ${perguntaId}, Resposta: ${resposta}`);
-      
+
       // Garantir que o session_id seja sempre um UUID v4 válido
       const candidate = sessionId || sessionService.getSessionId();
       const isValidUUIDv4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(candidate);
       const session = isValidUUIDv4 ? candidate : sessionService.getSessionId();
       console.log('[ClimaBemEstar] session_id usado para salvar resposta:', session);
-      
+
       await resultadosService.salvarResposta({
         teste_id: infoTesteClimaBemEstar.id,
         usuario_id: usuarioId || null,
@@ -37,7 +37,7 @@ export class ClimaBemEstarService {
         resposta: resposta,
         timestamp: new Date().toISOString()
       });
-      
+
       console.log(`[ClimaBemEstar] Resposta individual salva com sucesso`);
     } catch (error) {
       console.error(`[ClimaBemEstar] Erro ao salvar resposta individual:`, error);
@@ -49,7 +49,7 @@ export class ClimaBemEstarService {
    * Processa o resultado completo do teste e salva no banco
    */
   async processarResultadoCompleto(
-    usuarioId: string, 
+    usuarioId: string,
     respostas: Record<number, number>,
     tempoGasto: number = 0,
     sessionId?: string
@@ -57,7 +57,7 @@ export class ClimaBemEstarService {
     try {
       console.log(`[ClimaBemEstar] Iniciando processamento do resultado completo`);
       console.log(`[ClimaBemEstar] Total de respostas recebidas: ${Object.keys(respostas).length}`);
-      
+
       // Calcular resultado usando a função específica do teste
       const analiseClima = calcularResultadoClimaBemEstar(respostas);
       console.log(`[ClimaBemEstar] Análise calculada:`, {
@@ -66,14 +66,14 @@ export class ClimaBemEstarService {
         classificacaoGeral: analiseClima.classificacaoGeral,
         totalDimensoes: Object.keys(analiseClima.dimensoes).length
       });
-      
+
       // Obter session_id para persistência
       // Garantir que o session_id seja sempre um UUID v4 válido
       const candidate = sessionId || sessionService.getSessionId();
       const isValidUUIDv4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(candidate);
       const session = isValidUUIDv4 ? candidate : sessionService.getSessionId();
       console.log('[ClimaBemEstar] session_id usado para salvar resultado:', session);
-      
+
       // Preparar dados para salvar no banco (compatível com schema)
       const dadosResultado = {
         teste_id: infoTesteClimaBemEstar.id,
@@ -94,19 +94,62 @@ export class ClimaBemEstarService {
           timestamp_processamento: new Date().toISOString()
         }
       };
-      
+
       console.log(`[ClimaBemEstar] Salvando resultado no banco de dados`);
-      
+
       // Salvar no banco
       const resultadoSalvo = await resultadosService.salvarResultado(dadosResultado);
-      
+
       console.log(`[ClimaBemEstar] Resultado salvo com ID: ${resultadoSalvo.id}`);
-      
+
+      // Marcar teste como concluído para colaboradores
+      const token = localStorage.getItem('authToken');
+      const user = localStorage.getItem('currentUser');
+
+      if (token && user) {
+        try {
+          const userData = JSON.parse(user);
+
+          // Apenas marcar como concluído se for um colaborador
+          if (userData.role === 'colaborador') {
+            console.log('🔒 [ClimaBemEstar] Marcando teste como concluído para colaborador...');
+
+            const response = await fetch('/api/teste-disponibilidade/marcar-concluido', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                testeId: infoTesteClimaBemEstar.id,
+                colaboradorId: userData.userId
+              })
+            });
+
+            if (response.ok) {
+              console.log('✅ [ClimaBemEstar] Teste marcado como indisponível com sucesso');
+
+              // Disparar evento customizado para invalidar cache no frontend
+              window.dispatchEvent(new CustomEvent('teste-concluido', {
+                detail: { testeId: infoTesteClimaBemEstar.id }
+              }));
+              console.log('🔄 [ClimaBemEstar] Evento teste-concluido disparado');
+            } else {
+              const error = await response.json();
+              console.error('⚠️ [ClimaBemEstar] Erro ao marcar teste como indisponível:', error);
+            }
+          }
+        } catch (error) {
+          // Não bloquear o fluxo se falhar ao marcar como indisponível
+          console.error('⚠️ [ClimaBemEstar] Erro ao processar marcação de disponibilidade:', error);
+        }
+      }
+
       // Converter para formato de análise
       const analise = this.converterParaAnaliseResultado(analiseClima);
-      
+
       console.log(`[ClimaBemEstar] Processamento completo finalizado com sucesso`);
-      
+
       return { resultado: resultadoSalvo, analise };
     } catch (error) {
       console.error(`[ClimaBemEstar] Erro no processamento do resultado completo:`, error);
@@ -119,11 +162,11 @@ export class ClimaBemEstarService {
    */
   private formatarPontuacoesDimensoes(analise: ResultadoClimaBemEstar): Record<string, number> {
     const pontuacoes: Record<string, number> = {};
-    
+
     Object.entries(analise.dimensoes).forEach(([dimensaoId, dados]) => {
       pontuacoes[dimensaoId] = dados.pontuacao;
     });
-    
+
     return pontuacoes;
   }
 
@@ -132,7 +175,7 @@ export class ClimaBemEstarService {
    */
   private gerarInterpretacao(analise: ResultadoClimaBemEstar): string {
     let interpretacao = `Seu resultado geral de Clima Organizacional e Bem-Estar Psicológico foi de ${analise.pontuacaoGeral.toFixed(2)} pontos, classificado como "${analise.classificacaoGeral}". `;
-    
+
     // Análise por nível geral
     switch (analise.nivelGeral) {
       case 'problematico':
@@ -145,21 +188,21 @@ export class ClimaBemEstarService {
         interpretacao += "Excelente! Você percebe o clima organizacional como saudável e favorável ao seu bem-estar psicológico.";
         break;
     }
-    
+
     // Destacar dimensões mais fortes e mais fracas
     const dimensoesOrdenadas = Object.entries(analise.dimensoes)
-      .sort(([,a], [,b]) => b.pontuacao - a.pontuacao);
-    
+      .sort(([, a], [, b]) => b.pontuacao - a.pontuacao);
+
     if (dimensoesOrdenadas.length > 0) {
       const melhorDimensao = dimensoesOrdenadas[0];
       const piorDimensao = dimensoesOrdenadas[dimensoesOrdenadas.length - 1];
-      
+
       const nomeMelhor = dimensoesClimaBemEstar.find(d => d.id === melhorDimensao[0])?.nome;
       const nomePior = dimensoesClimaBemEstar.find(d => d.id === piorDimensao[0])?.nome;
-      
+
       interpretacao += ` Sua área mais forte é "${nomeMelhor}" (${melhorDimensao[1].pontuacao.toFixed(2)} pontos), enquanto "${nomePior}" apresenta maior necessidade de atenção (${piorDimensao[1].pontuacao.toFixed(2)} pontos).`;
     }
-    
+
     return interpretacao;
   }
 
@@ -168,7 +211,7 @@ export class ClimaBemEstarService {
    */
   private gerarRecomendacoes(analise: ResultadoClimaBemEstar): string[] {
     const recomendacoes: string[] = [];
-    
+
     // Recomendações baseadas no nível geral
     switch (analise.nivelGeral) {
       case 'saudavel':
@@ -187,7 +230,7 @@ export class ClimaBemEstarService {
         recomendacoes.push("Considere estratégias de enfrentamento e autocuidado");
         break;
     }
-    
+
     // Recomendações específicas por dimensão
     Object.entries(analise.dimensoes).forEach(([dimensaoId, dados]) => {
       if (dados.nivel === 'problematico') {
@@ -211,14 +254,14 @@ export class ClimaBemEstarService {
         }
       }
     });
-    
+
     // Garantir que sempre há pelo menos algumas recomendações
     if (recomendacoes.length === 0) {
       recomendacoes.push("Mantenha monitoramento regular do clima organizacional");
       recomendacoes.push("Pratique autocuidado e técnicas de bem-estar no trabalho");
       recomendacoes.push("Busque equilíbrio entre demandas profissionais e pessoais");
     }
-    
+
     return recomendacoes.slice(0, 8); // Limitar a 8 recomendações
   }
 
@@ -227,7 +270,7 @@ export class ClimaBemEstarService {
    */
   private converterParaAnaliseResultado(analise: ResultadoClimaBemEstar): AnaliseResultado {
     const dimensoes: Record<string, { pontuacao: number; percentil: number; interpretacao: string }> = {};
-    
+
     Object.entries(analise.dimensoes).forEach(([dimensaoId, dados]) => {
       const dimensao = dimensoesClimaBemEstar.find(d => d.id === dimensaoId);
       dimensoes[dimensaoId] = {
@@ -236,7 +279,7 @@ export class ClimaBemEstarService {
         interpretacao: `${dimensao?.nome}: ${dados.classificacao}`
       };
     });
-    
+
     return {
       dimensoes,
       pontuacao_geral: analise.pontuacaoGeral,
@@ -261,29 +304,29 @@ export class ClimaBemEstarService {
 
   private identificarPontosFortes(analise: ResultadoClimaBemEstar): string[] {
     const pontosFortes: string[] = [];
-    
+
     Object.entries(analise.dimensoes).forEach(([dimensaoId, dados]) => {
       const dimensao = dimensoesClimaBemEstar.find(d => d.id === dimensaoId);
-      
+
       if (dados.nivel === 'saudavel') {
         pontosFortes.push(dimensao?.nome || dimensaoId);
       }
     });
-    
+
     return pontosFortes.slice(0, 3);
   }
 
   private identificarAreasDesenvolvimento(analise: ResultadoClimaBemEstar): string[] {
     const areasDesenvolvimento: string[] = [];
-    
+
     Object.entries(analise.dimensoes).forEach(([dimensaoId, dados]) => {
       const dimensao = dimensoesClimaBemEstar.find(d => d.id === dimensaoId);
-      
+
       if (dados.nivel === 'problematico') {
         areasDesenvolvimento.push(dimensao?.nome || dimensaoId);
       }
     });
-    
+
     return areasDesenvolvimento.slice(0, 3);
   }
 }
