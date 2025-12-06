@@ -1259,9 +1259,25 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
     const metadados = dados.metadados || dados;
     const analiseCompleta = metadados.analise_completa || {};
 
-    // Extrair dados principais
-    const pontuacaoTotal = metadados.pontuacaoTotal || metadados.pontuacao_total || 0;
-    const classificacao = analiseCompleta.classificacao || metadados.classificacao || 'Não definido';
+    // Extrair dados principais com fallback robusto
+    let pontuacaoTotal = metadados.pontuacaoTotal || metadados.pontuacao_total || analiseCompleta.percentualGeral || 0;
+
+    // Se pontuação for 0, tentar calcular das dimensões
+    if ((!pontuacaoTotal || pontuacaoTotal === 0) && analiseCompleta.dimensoes && Array.isArray(analiseCompleta.dimensoes)) {
+      const dimensoes = analiseCompleta.dimensoes;
+      if (dimensoes.length > 0) {
+        const soma = dimensoes.reduce((acc: number, d: any) => acc + (d.pontuacao || 0), 0);
+        pontuacaoTotal = Math.round(soma / dimensoes.length);
+      }
+    } else if ((!pontuacaoTotal || pontuacaoTotal === 0) && metadados.pontuacoes_dimensoes) {
+      const valores = Object.values(metadados.pontuacoes_dimensoes) as number[];
+      if (valores.length > 0) {
+        const soma = valores.reduce((a, b) => a + b, 0);
+        pontuacaoTotal = Math.round(soma / valores.length);
+      }
+    }
+
+    const classificacao = analiseCompleta.classificacao || metadados.classificacao || analiseCompleta.classificacaoGeral || 'Não definido';
     const interpretacao = metadados.interpretacao || analiseCompleta.interpretacao || '';
     const recomendacoes = metadados.recomendacoes || analiseCompleta.recomendacoes || [];
     const areasAtencao = analiseCompleta.areasAtencao || [];
