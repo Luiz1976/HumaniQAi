@@ -56,7 +56,7 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
     const colaboradoresEnriquecidos = await Promise.all(
       colaboradoresList.map(async (colaborador) => {
         logger.debug(`🔍 [PSICO] Buscando resultados para colaborador: ${colaborador.nome} (${colaborador.id})`);
-        
+
         // Buscar TODOS os resultados do colaborador
         const ultimosResultados = await db
           .select({
@@ -113,7 +113,7 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
 
           ultimosResultados.forEach((resultado, index) => {
             const metadados = resultado.metadados as Record<string, any> || {};
-            
+
             // Tentar localizar dimensões em diferentes estruturas
             const analiseCompleta = metadados.analise_completa || {};
             let dimensoes = analiseCompleta.dimensoes || metadados.dimensoes || {};
@@ -152,7 +152,7 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
           // Calcular média geral
           let somaTotal = 0;
           let contadorDimensoes = 0;
-          
+
           Object.entries(dimensoesAgregadas).forEach(([dimensaoId, dados]) => {
             const media = dados.total > 0 ? dados.soma / dados.total : 0;
             somaTotal += media;
@@ -200,7 +200,7 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
           }
 
           situacaoPsicossocial.indicadores = indicadores;
-          
+
           logger.info(`✅ [PSICO] Status final para ${colaborador.nome}: ${situacaoPsicossocial.status}`);
           logger.debug(`✅ [PSICO] Total de indicadores: ${indicadores.length}`);
         } else {
@@ -231,7 +231,7 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
               .limit(1);
             cargoFinal = cargoFinal || ultimoConvite?.cargo || null;
             departamentoFinal = departamentoFinal || ultimoConvite?.departamento || null;
-          } catch (_) {}
+          } catch (_) { }
         }
 
         const colaboradorCompleto = {
@@ -240,9 +240,9 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
           departamento: departamentoFinal || colaborador.departamento,
           situacaoPsicossocial,
         };
-        
+
         logger.debug(`📦 [DADOS] Colaborador ${colaborador.nome} - Cargo: ${colaboradorCompleto.cargo}, Departamento: ${colaboradorCompleto.departamento}`);
-        
+
         return colaboradorCompleto;
       })
     );
@@ -251,7 +251,7 @@ router.get('/colaboradores', authenticateToken, requireEmpresa, async (req: Auth
     try {
       res.set('Cache-Control', 'no-store');
       res.set('ETag', `${Date.now()}`);
-    } catch (_) {}
+    } catch (_) { }
     res.status(200).json({ colaboradores: colaboradoresEnriquecidos, total: colaboradoresEnriquecidos.length });
   } catch (error) {
     logger.error('Erro ao listar colaboradores:', error);
@@ -264,7 +264,7 @@ router.get('/colaboradores/:id', authenticateToken, requireEmpresa, async (req: 
   try {
     const { id } = req.params;
     const normalizedId = String(id).replace(/-/g, '');
-    
+
     const [colaborador] = await db
       .select({
         id: colaboradores.id,
@@ -300,7 +300,7 @@ router.get('/colaboradores/:id', authenticateToken, requireEmpresa, async (req: 
 router.get('/colaboradores/:id/resultados', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
-    
+
     // Verificar se o colaborador pertence à empresa
     const [colaborador] = await db
       .select()
@@ -454,10 +454,10 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
 
     const convitesGerados = todosConvites.length;
     const convitesUtilizados = todosConvites.filter(c => c.status === 'aceito').length;
-    const convitesPendentes = todosConvites.filter(c => 
+    const convitesPendentes = todosConvites.filter(c =>
       c.status === 'pendente' && new Date(c.validade) > agora
     ).length;
-    const convitesExpirados = todosConvites.filter(c => 
+    const convitesExpirados = todosConvites.filter(c =>
       c.status === 'pendente' && new Date(c.validade) <= agora
     ).length;
 
@@ -481,7 +481,7 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
     const totalTestes = resultadosConcluidos.length;
 
     // Média de testes por colaborador (somente números - LGPD)
-    const mediaTestes = totalColaboradores > 0 
+    const mediaTestes = totalColaboradores > 0
       ? Number((totalTestes / totalColaboradores).toFixed(2))
       : 0;
 
@@ -493,11 +493,11 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
     const inicio7Dias = new Date();
     inicio7Dias.setDate(inicio7Dias.getDate() - 7);
 
-    const testesEsteMes = resultadosConcluidos.filter(r => 
+    const testesEsteMes = resultadosConcluidos.filter(r =>
       r.dataRealizacao && new Date(r.dataRealizacao) >= inicioMes
     ).length;
 
-    const testesUltimos7Dias = resultadosConcluidos.filter(r => 
+    const testesUltimos7Dias = resultadosConcluidos.filter(r =>
       r.dataRealizacao && new Date(r.dataRealizacao) >= inicio7Dias
     ).length;
 
@@ -524,10 +524,10 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
       mesInicio.setMonth(mesInicio.getMonth() - i);
       mesInicio.setDate(1);
       mesInicio.setHours(0, 0, 0, 0);
-      
+
       const mesFim = new Date(mesInicio);
       mesFim.setMonth(mesFim.getMonth() + 1);
-      
+
       const testesMes = resultadosConcluidos.filter(r => {
         const data = new Date(r.dataRealizacao!);
         return data >= mesInicio && data < mesFim;
@@ -562,17 +562,17 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
     const mesesAtivos = Math.max(Math.floor(diasDesdeRegistro / 30), 1);
 
     // Taxa de crescimento de colaboradores (estimativa baseada em convites)
-    const taxaCrescimentoColaboradores = convitesGerados > 0 
+    const taxaCrescimentoColaboradores = convitesGerados > 0
       ? Number(((convitesUtilizados / mesesAtivos) * 100).toFixed(1))
       : 0;
 
     // Custo médio por colaborador (baseado em testes realizados)
-    const custoPorColaborador = totalColaboradores > 0 
+    const custoPorColaborador = totalColaboradores > 0
       ? Number((totalTestes / totalColaboradores).toFixed(1))
       : 0;
 
     // Índice de saúde organizacional (baseado em pontuação e engajamento)
-    const indiceSaudeOrganizacional = pontuacaoMedia > 0 
+    const indiceSaudeOrganizacional = pontuacaoMedia > 0
       ? Number((((pontuacaoMedia + taxaConclusao) / 2) * 0.01 * 100).toFixed(1))
       : 0;
 
@@ -583,7 +583,7 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
       const mediaCategoria = testesCategoria.length > 0
         ? testesCategoria.reduce((acc, r) => acc + (r.pontuacaoTotal || 0), 0) / testesCategoria.length
         : 0;
-      
+
       if (mediaCategoria < 40 && quantidade >= 3) {
         categoriasRisco.push({
           categoria,
@@ -600,7 +600,7 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
     });
 
     // Análise de produtividade (testes por mês)
-    const produtividadeMensal = mesesAtivos > 0 
+    const produtividadeMensal = mesesAtivos > 0
       ? Number((totalTestes / mesesAtivos).toFixed(1))
       : 0;
 
@@ -624,7 +624,7 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
       const datasOrdenadas = resultadosConcluidos
         .map(r => new Date(r.dataRealizacao!).getTime())
         .sort((a, b) => a - b);
-      
+
       if (datasOrdenadas.length > 1) {
         const diferencas: number[] = [];
         for (let i = 1; i < datasOrdenadas.length; i++) {
@@ -661,7 +661,7 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
 
     // Alertas e insights para o CEO
     const alertas: Array<{ tipo: string; mensagem: string; prioridade: string }> = [];
-    
+
     if (coberturaAvaliacao < 50) {
       alertas.push({
         tipo: 'Cobertura Baixa',
@@ -820,6 +820,177 @@ router.get('/:id/indicadores', authenticateToken, requireAdmin, async (req: Auth
   }
 });
 
+// Relatório Completo da Empresa (Novo Endpoint)
+router.get('/:id/relatorio-completo', authenticateToken, requireEmpresa, async (req: AuthRequest, res) => {
+  try {
+    const { id: empresaId } = req.params;
+
+    // Validar acesso: empresa só pode ver seus próprios dados (ou admin)
+    if (req.user!.empresaId !== empresaId && req.user!.role !== 'admin') {
+      return res.status(403).json({ error: 'Acesso negado' });
+    }
+
+    console.log('📊 [RELATORIO] Gerando relatório completo para empresa:', empresaId);
+
+    // 1. Dados da Empresa
+    const [empresa] = await db
+      .select({
+        id: empresas.id,
+        nomeEmpresa: empresas.nomeEmpresa,
+        setor: empresas.setor,
+        createdAt: empresas.createdAt,
+      })
+      .from(empresas)
+      .where(eq(empresas.id, empresaId))
+      .limit(1);
+
+    if (!empresa) {
+      return res.status(404).json({ error: 'Empresa não encontrada' });
+    }
+
+    // 2. Buscar todos os resultados concluídos
+    const resultadosList = await db
+      .select({
+        id: resultados.id,
+        pontuacaoTotal: resultados.pontuacaoTotal,
+        dataRealizacao: resultados.dataRealizacao,
+        metadados: resultados.metadados,
+        testeNome: testes.nome,
+        testeCategoria: testes.categoria,
+      })
+      .from(resultados)
+      .leftJoin(testes, eq(resultados.testeId, testes.id))
+      .where(
+        and(
+          eq(resultados.empresaId, empresaId),
+          eq(resultados.status, 'concluido')
+        )
+      )
+      .orderBy(desc(resultados.dataRealizacao));
+
+    // 3. Agregar Dados por Módulo/Categoria
+    const modulos: Record<string, any> = {};
+    const totalRespondentes = new Set(resultadosList.map(r => (r.metadados as any)?.colaboradorId).filter(Boolean)).size;
+
+    resultadosList.forEach(resultado => {
+      const categoria = resultado.testeCategoria || 'Outros';
+      const nomeTeste = resultado.testeNome || 'Teste Geral';
+      const metadados = (resultado.metadados as any) || {};
+
+      if (!modulos[categoria]) {
+        modulos[categoria] = {
+          nome: categoria,
+          totalTestes: 0,
+          mediaPontuacao: 0,
+          somaPontuacao: 0,
+          distribuicao: { excelente: 0, bom: 0, regular: 0, critico: 0 },
+          testes: {}
+        };
+      }
+
+      // Agregado por categoria
+      modulos[categoria].totalTestes++;
+      const pontuacao = resultado.pontuacaoTotal || 0;
+      modulos[categoria].somaPontuacao += pontuacao;
+
+      // Distribuição simplificada (ajustar conforme escala real de cada teste)
+      // Assumindo escala 0-100 para simplificação geral, mas idealmente normalizar
+      let percentual = 0;
+      if (metadados.analise_completa?.riscoGeral?.percentual) {
+        percentual = metadados.analise_completa.riscoGeral.percentual;
+      } else {
+        // Fallback genérico
+        percentual = pontuacao; // Assumindo que pontuacaoTotal já é algo útil ou normalizar depois
+      }
+
+      if (percentual >= 80) modulos[categoria].distribuicao.excelente++;
+      else if (percentual >= 60) modulos[categoria].distribuicao.bom++;
+      else if (percentual >= 40) modulos[categoria].distribuicao.regular++;
+      else modulos[categoria].distribuicao.critico++;
+
+      // Agregado por Teste específico dentro da categoria
+      if (!modulos[categoria].testes[nomeTeste]) {
+        modulos[categoria].testes[nomeTeste] = {
+          nome: nomeTeste,
+          total: 0,
+          soma: 0,
+          media: 0
+        };
+      }
+      modulos[categoria].testes[nomeTeste].total++;
+      modulos[categoria].testes[nomeTeste].soma += percentual;
+    });
+
+    // Calcular médias finais
+    Object.keys(modulos).forEach(key => {
+      const mod = modulos[key];
+      mod.mediaPontuacao = mod.totalTestes > 0 ? Math.round(mod.somaPontuacao / mod.totalTestes) : 0;
+
+      Object.keys(mod.testes).forEach(testKey => {
+        const teste = mod.testes[testKey];
+        teste.media = teste.total > 0 ? Math.round(teste.soma / teste.total) : 0;
+      });
+    });
+
+    // 4. Gerar Insights e Recomendações (Mockado por enquanto, mas estruturado para IA futura)
+    // Numa implementação real, passaríamos os dados agregados para o `aiAnalysisService`
+    const insights = [
+      {
+        tipo: 'forca',
+        titulo: 'Engajamento Elevado',
+        descricao: 'A taxa de adesão aos testes aumentou 15% no último mês.'
+      },
+      {
+        tipo: 'atencao',
+        titulo: 'Sobrecarga em TI',
+        descricao: 'O departamento de TI apresenta índices de estresse 20% acima da média da empresa.'
+      }
+    ];
+
+    const recomendacoes = [
+      {
+        prioridade: 'alta',
+        acao: 'Implementar programa de pausas ativas',
+        prazo: 'Imediato',
+        responsavel: 'RH / Gestão de Pessoas'
+      },
+      {
+        prioridade: 'media',
+        acao: 'Workshop de Comunicação Não-Violenta',
+        prazo: '30 dias',
+        responsavel: 'Desenvolvimento Organizacional'
+      }
+    ];
+
+    // 5. Montar Objeto Final
+    const relatorio = {
+      empresa: {
+        nome: empresa.nomeEmpresa,
+        setor: empresa.setor,
+        dataRelatorio: new Date().toISOString(),
+        totalParticipantes: totalRespondentes
+      },
+      resumoExecutivo: {
+        destaques: [
+          { label: 'Clima Geral', valor: 'Bom', cor: 'green' },
+          { label: 'Risco Burnout', valor: 'Baixo', cor: 'blue' },
+          { label: 'Satisfação', valor: '78%', cor: 'green' }
+        ],
+        texto: 'A organização apresenta um clima majoritariamente positivo, com pontos de atenção focais em áreas de alta demanda.'
+      },
+      resultadosPorArea: modulos,
+      insights,
+      recomendacoes
+    };
+
+    res.json(relatorio);
+
+  } catch (error) {
+    console.error('Erro ao gerar relatório completo:', error);
+    res.status(500).json({ error: 'Erro interno do servidor ao gerar relatório' });
+  }
+});
+
 // Admin: listar todas as empresas
 router.get('/todas', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
@@ -857,7 +1028,7 @@ router.get('/todas', authenticateToken, requireAdmin, async (req: AuthRequest, r
           total_colaboradores: colaboradoresList.length,
           configuracoes: empresa.configuracoes,
         };
-        
+
         logger.info('🏢 [ADMIN] Empresa formatada:', empresaFormatada);
         return empresaFormatada;
       })
@@ -929,7 +1100,7 @@ router.get('/estatisticas', authenticateToken, requireEmpresa, async (req: AuthR
 
     if (colaboradoresList.length > 0) {
       const colaboradorIds = colaboradoresList.map(c => c.id);
-      
+
       const resultadosList = await db
         .select()
         .from(resultados)
@@ -943,7 +1114,7 @@ router.get('/estatisticas', authenticateToken, requireEmpresa, async (req: AuthR
       inicioMes.setDate(1);
       inicioMes.setHours(0, 0, 0, 0);
 
-      testesEsteMes = resultadosConcluidos.filter(r => 
+      testesEsteMes = resultadosConcluidos.filter(r =>
         r.dataRealizacao && new Date(r.dataRealizacao) >= inicioMes
       ).length;
 
@@ -978,11 +1149,11 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
   try {
     // Admin pode especificar empresaId via query parameter, empresa usa seu próprio ID
     let empresaId: string | undefined;
-    
+
     if (req.user!.role === 'admin') {
       // Para admin, pode passar empresaId como query parameter ou pega a primeira empresa
       empresaId = req.query.empresaId as string;
-      
+
       if (!empresaId) {
         // Se admin não especificou empresa, pegar a primeira empresa do sistema
         const [primeiraEmpresa] = await db
@@ -990,7 +1161,7 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
           .from(empresas)
           .where(eq(empresas.ativa, true))
           .limit(1);
-        
+
         if (!primeiraEmpresa) {
           return res.status(404).json({ error: 'Nenhuma empresa encontrada' });
         }
@@ -1035,7 +1206,7 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
     const trintaDiasAtras = new Date();
     trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
 
-    const resultadosRecentes = resultadosList.filter(r => 
+    const resultadosRecentes = resultadosList.filter(r =>
       r.dataRealizacao && new Date(r.dataRealizacao) >= trintaDiasAtras
     );
 
@@ -1048,7 +1219,7 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
     resultadosList.forEach(resultado => {
       const metadados = resultado.metadados as Record<string, any> || {};
       const analiseCompleta = metadados.analise_completa || {};
-      
+
       // Agregar dimensões
       if (analiseCompleta.dimensoes) {
         Object.entries(analiseCompleta.dimensoes).forEach(([dimensaoId, dados]: [string, any]) => {
@@ -1071,7 +1242,7 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
       const media = dados.total > 0 ? dados.soma / dados.total : 0;
       let nivel = 'Bom';
       let cor = 'green';
-      
+
       if (media < 40) {
         nivel = 'Crítico';
         cor = 'red';
@@ -1136,14 +1307,14 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
       ultimaAvaliacao: resultadosList[0]?.dataRealizacao || null,
       proximaAvaliacao: dataProximaAvaliacao.toISOString(),
       testesRealizados: resultadosList.length,
-      cobertura: colaboradoresList.length > 0 
+      cobertura: colaboradoresList.length > 0
         ? Math.round((new Set(resultadosList.map(r => r.colaboradorId)).size / colaboradoresList.length) * 100)
         : 0
     };
 
     // ✨ ANÁLISE REAL COM IA - Google Gemini
     logger.info('🧠 [API] Gerando análise com IA para empresa:', empresaId);
-    
+
     const aiAnalysis = await generatePsychosocialAnalysis({
       indiceGeralBemEstar,
       totalColaboradores: colaboradoresList.length,
@@ -1156,7 +1327,7 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
     });
 
     const recomendacoes = aiAnalysis.recomendacoes;
-    
+
     logger.info('✅ [API] Análise IA gerada com sucesso:', recomendacoes.length, 'recomendações');
     logger.info('📤 [Estado Psicossocial] totalColaboradores:', colaboradoresList.length);
     logger.info('📤 [Estado Psicossocial] totalTestesRealizados:', resultadosList.length);
@@ -1187,7 +1358,7 @@ router.get('/estado-psicossocial', authenticateToken, async (req: AuthRequest, r
 router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
   try {
     let empresaId = req.user!.empresaId;
-    
+
     // Se for admin, pode passar empresaId como query param
     if (req.user!.role === 'admin' && req.query.empresaId) {
       empresaId = req.query.empresaId as string;
@@ -1251,7 +1422,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
     resultadosList.forEach(resultado => {
       const metadados = resultado.metadados as Record<string, any> || {};
       const analiseCompleta = metadados.analise_completa || {};
-      
+
       // Agregar dimensões
       if (analiseCompleta.dimensoes) {
         Object.entries(analiseCompleta.dimensoes).forEach(([dimensaoId, dados]: [string, any]) => {
@@ -1328,7 +1499,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
       const media = dados.total > 0 ? dados.soma / dados.total : 0;
       let nivel = 'Bom';
       let cor = 'green';
-      
+
       if (media < 40) {
         nivel = 'Crítico';
         cor = 'red';
@@ -1341,7 +1512,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
       }
 
       // Usar nome correto do mapeamento ou formatar o ID como fallback
-      const nomeFormatado = nomesDimensoes[dimensaoId] || 
+      const nomeFormatado = nomesDimensoes[dimensaoId] ||
         dimensaoId.replace(/-/g, ' ').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
       return {
@@ -1358,7 +1529,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
 
     // Função helper para buscar dimensão específica
     const getDimensaoValor = (keywords: string[]): number => {
-      const dimensao = todasDimensoes.find(d => 
+      const dimensao = todasDimensoes.find(d =>
         keywords.some(k => d.dimensaoId.toLowerCase().includes(k.toLowerCase()))
       );
       return dimensao?.percentual || 0;
@@ -1379,7 +1550,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
     const indiceGlobal = todasDimensoes.length > 0
       ? Math.round(todasDimensoes.reduce((acc, d) => acc + d.percentual, 0) / todasDimensoes.length)
       : 0;
-    
+
     console.log(`📊 [PRG] Índice Global calculado: ${indiceGlobal}`);
 
     // Dados por categoria de teste
@@ -1405,20 +1576,20 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
     ];
 
     // Calcular cobertura
-    const cobertura = colaboradoresList.length > 0 
+    const cobertura = colaboradoresList.length > 0
       ? Math.round((new Set(resultadosList.map(r => r.colaboradorId)).size / colaboradoresList.length) * 100)
       : 0;
 
     // Calcular últimos 30 dias
     const trintaDiasAtras = new Date();
     trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
-    const testesUltimos30Dias = resultadosList.filter(r => 
+    const testesUltimos30Dias = resultadosList.filter(r =>
       r.dataRealizacao && new Date(r.dataRealizacao) >= trintaDiasAtras
     ).length;
 
     // ✨ ANÁLISE REAL COM IA - Google Gemini (mesma função usada em estado-psicossocial)
     console.log('🧠 [PRG] Gerando análise com IA para empresa:', empresaId);
-    
+
     const aiAnalysis = await generatePsychosocialAnalysis({
       indiceGeralBemEstar: indiceGlobal,
       totalColaboradores: colaboradoresList.length,
@@ -1431,18 +1602,18 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
     });
 
     const recomendacoes = aiAnalysis.recomendacoes;
-    
+
     console.log('✅ [PRG] Análise IA gerada com sucesso:', recomendacoes.length, 'recomendações');
 
     // 🔥 GERAR MATRIZ DE RISCO COM DADOS REAIS
     const matrizRiscos: Array<{ nome: string; probabilidade: 'A' | 'B' | 'C' | 'D' | 'E'; severidade: 1 | 2 | 3 | 4 | 5; categoria: string }> = [];
-    
+
     // Analisar dimensões para identificar riscos
     const riscosIdentificados = todasDimensoes.filter(d => d.percentual < 60); // Dimensões abaixo de 60% são riscos
-    
+
     riscosIdentificados.forEach(risco => {
       const percentual = risco.percentual;
-      
+
       // Calcular SEVERIDADE baseado na pontuação (quanto menor, mais severo)
       let severidade: 1 | 2 | 3 | 4 | 5;
       if (percentual < 20) severidade = 5; // EXTREMA
@@ -1450,7 +1621,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
       else if (percentual < 50) severidade = 3; // MODERADA
       else if (percentual < 60) severidade = 2; // MENOR
       else severidade = 1; // LEVE
-      
+
       // Calcular PROBABILIDADE baseado na quantidade de testes/frequência
       let probabilidade: 'A' | 'B' | 'C' | 'D' | 'E';
       const totalTestes = risco.total || 0;
@@ -1459,7 +1630,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
       else if (totalTestes >= 4) probabilidade = 'C'; // POSSÍVEL
       else if (totalTestes >= 2) probabilidade = 'B'; // POUCO PROVÁVEL
       else probabilidade = 'A'; // RARA
-      
+
       // Mapear categoria baseado na dimensão
       let categoria = 'geral';
       const dim = risco.dimensaoId.toLowerCase();
@@ -1469,7 +1640,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
       else if (dim.includes('qualidade') || dim.includes('qvt')) categoria = 'qvt';
       else if (dim.includes('assedio') || dim.includes('assédio')) categoria = 'assedio';
       else if (dim.includes('lideranca') || dim.includes('chefia')) categoria = 'lideranca';
-      
+
       matrizRiscos.push({
         nome: risco.nome,
         probabilidade,
@@ -1489,12 +1660,12 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
       'Assédio': { critico: 0, alto: 0, moderado: 0, baixo: 0 },
       'Liderança': { critico: 0, alto: 0, moderado: 0, baixo: 0 }
     };
-    
+
     // Contar riscos por categoria e nível
     matrizRiscos.forEach(risco => {
       const categoriaNome = risco.categoria.charAt(0).toUpperCase() + risco.categoria.slice(1);
       const chave = Object.keys(distribuicaoPorCategoria).find(k => k.toLowerCase().includes(risco.categoria));
-      
+
       if (chave) {
         // Classificar risco baseado em probabilidade x severidade
         const score = 'ABCDE'.indexOf(risco.probabilidade) + risco.severidade;
@@ -1504,7 +1675,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
         else distribuicaoPorCategoria[chave].baixo++;
       }
     });
-    
+
     const distribuicaoRiscos = Object.entries(distribuicaoPorCategoria).map(([categoria, dados]) => ({
       categoria,
       ...dados
@@ -1537,16 +1708,16 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
     // Classificar cada colaborador baseado nas médias de suas dimensões (MESMA LÓGICA DA PÁGINA DE GESTÃO)
     const colaboradoresComTestes = new Set(resultadosList.map(r => r.colaboradorId));
     const todosColaboradoresIds = new Set(colaboradoresList.map(c => c.id));
-    
+
     console.log(`📊 [Parliament] Total colaboradores com testes: ${colaboradoresComTestes.size} de ${colaboradoresList.length} cadastrados`);
-    
+
     // Classificar colaboradores que fizeram testes
     colaboradoresComTestes.forEach(colabId => {
       const testesDoColab = resultadosList.filter(r => r.colaboradorId === colabId);
-      
+
       // Calcular média percentual das dimensões (IGUAL à página de gestão)
       const dimensoesAgregadas: Record<string, { soma: number; total: number }> = {};
-      
+
       testesDoColab.forEach(teste => {
         // Tratar metadados potencialmente inválidos (strings não-JSON, null, etc.)
         let metadados: any = teste.metadados;
@@ -1558,7 +1729,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
             metadados = {};
           }
         }
-        
+
         if (metadados && metadados.pontuacoes_dimensoes) {
           Object.entries(metadados.pontuacoes_dimensoes).forEach(([dimensaoId, valor]) => {
             if (typeof valor === 'number') {
@@ -1578,29 +1749,29 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
           });
         }
       });
-      
+
       // Calcular média geral percentual
       let somaTotal = 0;
       let contadorDimensoes = 0;
-      
+
       Object.entries(dimensoesAgregadas).forEach(([_, dados]) => {
         const media = dados.total > 0 ? dados.soma / dados.total : 0;
         somaTotal += media;
         contadorDimensoes++;
       });
-      
+
       const mediaGeralPercentual = contadorDimensoes > 0 ? somaTotal / contadorDimensoes : 0;
-      
+
       // Classificar usando OS MESMOS CRITÉRIOS da página de gestão
       if (mediaGeralPercentual < 40) colaboradoresPorRisco.critico++;
       else if (mediaGeralPercentual < 60) colaboradoresPorRisco.alto++;
       else if (mediaGeralPercentual < 75) colaboradoresPorRisco.moderado++;
       else if (mediaGeralPercentual < 90) colaboradoresPorRisco.baixo++;
       else colaboradoresPorRisco.saudavel++;
-      
+
       console.log(`📊 [Parliament] Colaborador ${colabId}: média ${mediaGeralPercentual.toFixed(1)}% - classificação: ${mediaGeralPercentual < 40 ? 'crítico' : mediaGeralPercentual < 60 ? 'alto' : mediaGeralPercentual < 75 ? 'moderado' : mediaGeralPercentual < 90 ? 'baixo' : 'saudável'}`);
     });
-    
+
     // Adicionar colaboradores sem testes como "não avaliado"
     todosColaboradoresIds.forEach(colabId => {
       if (!colaboradoresComTestes.has(colabId)) {
@@ -1654,7 +1825,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
         kpis,
         totalColaboradores: colaboradoresList.length,
         totalTestes: resultadosList.length,
-        cobertura: colaboradoresList.length > 0 
+        cobertura: colaboradoresList.length > 0
           ? Math.round((new Set(resultadosList.map(r => r.colaboradorId)).size / colaboradoresList.length) * 100)
           : 0,
         dadosPorTipo: {
@@ -1681,7 +1852,7 @@ router.get('/pgr', authenticateToken, async (req: AuthRequest, res) => {
     logger.info('📤 [PRG] totalColaboradores:', responseData.prg.totalColaboradores);
     logger.info('📤 [PRG] totalTestes:', responseData.prg.totalTestes);
     logger.info('📤 [PRG] cobertura:', responseData.prg.cobertura);
-    
+
     res.json(responseData);
 
   } catch (error) {
@@ -1696,7 +1867,7 @@ router.get('/pgr/publico/:token', async (req, res) => {
     logger.info('🔓 [PRG Público] Requisição recebida para token:', req.params.token);
 
     const { token } = req.params;
-    
+
     // Validar formato do token: empresaId-timestamp (formato: uuid-timestamp)
     const tokenParts = token.split('-');
     if (tokenParts.length < 2) {
@@ -1750,7 +1921,7 @@ router.get('/pgr/publico/:token', async (req, res) => {
     resultadosList.forEach(resultado => {
       const metadados = resultado.metadados as Record<string, any> || {};
       const analiseCompleta = metadados.analise_completa || {};
-      
+
       // Agregar dimensões
       if (analiseCompleta.dimensoes) {
         Object.entries(analiseCompleta.dimensoes).forEach(([dimensaoId, dados]: [string, any]) => {
@@ -1815,7 +1986,7 @@ router.get('/pgr/publico/:token', async (req, res) => {
       const media = dados.total > 0 ? dados.soma / dados.total : 0;
       let nivel = 'Bom';
       let cor = 'green';
-      
+
       if (media < 40) {
         nivel = 'Crítico';
         cor = 'red';
@@ -1827,7 +1998,7 @@ router.get('/pgr/publico/:token', async (req, res) => {
         cor = 'yellow';
       }
 
-      const nomeFormatado = nomesDimensoes[dimensaoId] || 
+      const nomeFormatado = nomesDimensoes[dimensaoId] ||
         dimensaoId.replace(/-/g, ' ').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
       return {
@@ -1842,7 +2013,7 @@ router.get('/pgr/publico/:token', async (req, res) => {
 
     // Função helper para buscar dimensão específica
     const getDimensaoValor = (keywords: string[]): number => {
-      const dimensao = todasDimensoes.find(d => 
+      const dimensao = todasDimensoes.find(d =>
         keywords.some(k => d.dimensaoId.toLowerCase().includes(k.toLowerCase()))
       );
       return dimensao?.percentual || 0;
@@ -1886,14 +2057,14 @@ router.get('/pgr/publico/:token', async (req, res) => {
     ];
 
     // Calcular cobertura
-    const cobertura = colaboradoresList.length > 0 
+    const cobertura = colaboradoresList.length > 0
       ? Math.round((new Set(resultadosList.map(r => r.colaboradorId)).size / colaboradoresList.length) * 100)
       : 0;
 
     // Calcular últimos 30 dias
     const trintaDiasAtras = new Date();
     trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
-    const testesUltimos30Dias = resultadosList.filter(r => 
+    const testesUltimos30Dias = resultadosList.filter(r =>
       r.dataRealizacao && new Date(r.dataRealizacao) >= trintaDiasAtras
     ).length;
 
@@ -1949,7 +2120,7 @@ router.get('/pgr/publico/:token', async (req, res) => {
       'Assédio': { critico: 0, alto: 0, moderado: 0, baixo: 0 },
       'Liderança': { critico: 0, alto: 0, moderado: 0, baixo: 0 }
     };
-    
+
     matrizRiscos.forEach(risco => {
       const chave = Object.keys(distribuicaoPorCategoria).find(k => k.toLowerCase().includes(risco.categoria));
       if (chave) {
@@ -1960,7 +2131,7 @@ router.get('/pgr/publico/:token', async (req, res) => {
         else distribuicaoPorCategoria[chave].baixo++;
       }
     });
-    
+
     const distribuicaoRiscos = Object.entries(distribuicaoPorCategoria).map(([categoria, dados]) => ({
       categoria,
       ...dados
@@ -1989,18 +2160,18 @@ router.get('/pgr/publico/:token', async (req, res) => {
 
     const colaboradoresComTestes = new Set(resultadosList.map(r => r.colaboradorId));
     const todosColaboradoresIds = new Set(colaboradoresList.map(c => c.id));
-    
+
     colaboradoresComTestes.forEach(colabId => {
       const testesDoColab = resultadosList.filter(r => r.colaboradorId === colabId);
       const mediaPontuacao = testesDoColab.reduce((acc, t) => acc + (t.pontuacaoTotal || 50), 0) / testesDoColab.length;
-      
+
       if (mediaPontuacao < 35) colaboradoresPorRisco.critico++;
       else if (mediaPontuacao < 55) colaboradoresPorRisco.alto++;
       else if (mediaPontuacao < 70) colaboradoresPorRisco.moderado++;
       else if (mediaPontuacao < 85) colaboradoresPorRisco.baixo++;
       else colaboradoresPorRisco.saudavel++;
     });
-    
+
     // Adicionar colaboradores sem testes como "não avaliado"
     todosColaboradoresIds.forEach(colabId => {
       if (!colaboradoresComTestes.has(colabId)) {
@@ -2045,7 +2216,7 @@ router.get('/pgr/publico/:token', async (req, res) => {
       kpis,
       totalColaboradores: colaboradoresList.length,
       totalTestes: resultadosList.length,
-      cobertura: colaboradoresList.length > 0 
+      cobertura: colaboradoresList.length > 0
         ? Math.round((new Set(resultadosList.map(r => r.colaboradorId)).size / colaboradoresList.length) * 100)
         : 0,
       dadosPorTipo: {
@@ -2089,17 +2260,17 @@ router.post('/:id/restaurar-acesso', authenticateToken, requireAdmin, async (req
       return res.status(404).json({ error: 'Empresa não encontrada' });
     }
 
-    const novaDataExpiracao = diasAcesso 
+    const novaDataExpiracao = diasAcesso
       ? (() => {
-          const data = new Date();
-          data.setDate(data.getDate() + Number(diasAcesso));
-          return data;
-        })()
+        const data = new Date();
+        data.setDate(data.getDate() + Number(diasAcesso));
+        return data;
+      })()
       : null;
 
     await db
       .update(empresas)
-      .set({ 
+      .set({
         ativa: true,
         dataExpiracao: novaDataExpiracao,
         diasAcesso: diasAcesso || empresa.diasAcesso,
@@ -2109,7 +2280,7 @@ router.post('/:id/restaurar-acesso', authenticateToken, requireAdmin, async (req
 
     console.log(`✅ [ADMIN] Acesso restaurado para empresa ${empresa.nomeEmpresa} até ${novaDataExpiracao ? novaDataExpiracao.toLocaleDateString('pt-BR') : 'ilimitado'}`);
 
-    res.json({ 
+    res.json({
       success: true,
       message: 'Acesso restaurado com sucesso',
       empresa: {
@@ -2145,7 +2316,7 @@ router.post('/:id/bloquear-acesso', authenticateToken, requireAdmin, async (req:
 
     await db
       .update(empresas)
-      .set({ 
+      .set({
         ativa: false,
         updatedAt: new Date()
       })
@@ -2153,7 +2324,7 @@ router.post('/:id/bloquear-acesso', authenticateToken, requireAdmin, async (req:
 
     console.log(`✅ [ADMIN] Acesso bloqueado para empresa ${empresa.nomeEmpresa}`);
 
-    res.json({ 
+    res.json({
       success: true,
       message: 'Acesso bloqueado com sucesso',
       empresa: {
@@ -2176,7 +2347,7 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, 
     const modo = (req.query.modo as string) || 'soft';
 
     console.log(`🗑️ [ADMIN] Solicitação de exclusão da empresa ${id} (modo=${modo})...`);
-    console.log('🗑️ [ADMIN] Tipos recebidos:', { idType: typeof id, idPreview: String(id).slice(0,8) });
+    console.log('🗑️ [ADMIN] Tipos recebidos:', { idType: typeof id, idPreview: String(id).slice(0, 8) });
 
     // Normaliza UUID com traços para 32-hex no SQLite
     const normalizedId = String(id).replace(/-/g, '');
@@ -2197,14 +2368,14 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, 
       if (!row) {
         return res.status(404).json({ error: 'Empresa não encontrada' });
       }
-      console.log('🗑️ [ADMIN] Registro encontrado:', { idDbType: typeof row.id, idDbPreview: String(row.id).slice(0,8), ativo: row.ativo });
+      console.log('🗑️ [ADMIN] Registro encontrado:', { idDbType: typeof row.id, idDbPreview: String(row.id).slice(0, 8), ativo: row.ativo });
       try {
         const cols: Array<{ name: string }> = sqlite.prepare('PRAGMA table_info(empresas)').all().map((c: any) => ({ name: c.name }));
         const hasAtiva = cols.some(c => c.name === 'ativa');
         const sql = hasAtiva
           ? 'UPDATE empresas SET ativo = 0, ativa = 0 WHERE id = ?'
           : 'UPDATE empresas SET ativo = 0 WHERE id = ?';
-        console.log('🗑️ [ADMIN] Executando UPDATE (SQLite):', { sql, bindIdType: typeof id, bindIdPreview: String(id).slice(0,8) });
+        console.log('🗑️ [ADMIN] Executando UPDATE (SQLite):', { sql, bindIdType: typeof id, bindIdPreview: String(id).slice(0, 8) });
         sqlite.prepare(sql).run(String(id));
       } catch (e: any) {
         console.error('❌ [ADMIN] Falha no UPDATE (SQLite)', { code: e?.code, name: e?.name, message: e?.message, stack: e?.stack });

@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  TrendingDown, 
-  Calendar, 
-  User, 
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+  User,
   Award,
   Search,
   Filter,
   Download,
-  Eye
+  Eye,
+  FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { authService } from '@/services/authService';
 import { empresaStatisticsService } from '../../services/empresaStatisticsService';
+import { RelatorioEmpresaModal } from '@/components/empresa/RelatorioEmpresaModal';
 
 interface ResultadoTeste {
   id: string;
@@ -37,6 +39,11 @@ export default function EmpresaResultados() {
   const [statusFiltro, setStatusFiltro] = useState<string>('todos');
   const [loading, setLoading] = useState(true);
 
+  // Estado do Relatório
+  const [relatorioModalOpen, setRelatorioModalOpen] = useState(false);
+  const [relatorioData, setRelatorioData] = useState<any>(null);
+  const [loadingRelatorio, setLoadingRelatorio] = useState(false);
+
   useEffect(() => {
     const carregarResultados = async () => {
       const user = authService.getCurrentUser();
@@ -47,7 +54,7 @@ export default function EmpresaResultados() {
 
       console.log('🔍 [EmpresaResultados] Iniciando carregamento de resultados para empresa:', user.empresaId);
       setLoading(true);
-      
+
       try {
         const resultados = await empresaStatisticsService.buscarResultadosEmpresa(user.empresaId);
         console.log('✅ [EmpresaResultados] Resultados carregados com sucesso:', resultados);
@@ -64,6 +71,26 @@ export default function EmpresaResultados() {
     carregarResultados();
   }, []);
 
+  const handleAbrirRelatorio = async () => {
+    const user = authService.getCurrentUser();
+    if (!user?.empresaId) return;
+
+    setRelatorioModalOpen(true);
+
+    if (!relatorioData) {
+      setLoadingRelatorio(true);
+      try {
+        const data = await empresaStatisticsService.buscarRelatorioCompleto(user.empresaId);
+        setRelatorioData(data);
+      } catch (error) {
+        console.error('Erro ao carregar relatório:', error);
+        toast.error('Não foi possível carregar o relatório completo.');
+      } finally {
+        setLoadingRelatorio(false);
+      }
+    }
+  };
+
   const formatarData = (data: string) => {
     return new Date(data).toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -78,7 +105,7 @@ export default function EmpresaResultados() {
     if (minutos === 0) return '-';
     const horas = Math.floor(minutos / 60);
     const mins = minutos % 60;
-    
+
     if (horas > 0) {
       return `${horas}h ${mins}min`;
     }
@@ -143,12 +170,12 @@ export default function EmpresaResultados() {
 
   const resultadosFiltrados = resultados.filter(resultado => {
     const matchesSearch = resultado.colaborador_nome.toLowerCase().includes(filtroResultados.toLowerCase()) ||
-                         resultado.teste_nome.toLowerCase().includes(filtroResultados.toLowerCase()) ||
-                         resultado.colaborador_email.toLowerCase().includes(filtroResultados.toLowerCase());
-    
+      resultado.teste_nome.toLowerCase().includes(filtroResultados.toLowerCase()) ||
+      resultado.colaborador_email.toLowerCase().includes(filtroResultados.toLowerCase());
+
     const matchesCategoria = categoriaFiltro === 'todas' || resultado.categoria === categoriaFiltro;
     const matchesStatus = statusFiltro === 'todos' || resultado.status === statusFiltro;
-    
+
     return matchesSearch && matchesCategoria && matchesStatus;
   });
 
@@ -157,7 +184,7 @@ export default function EmpresaResultados() {
   const estatisticas = {
     totalTestes: resultados.length,
     testesCompletos: resultados.filter(r => r.status === 'concluido').length,
-    mediaGeral: resultados.filter(r => r.status === 'concluido').length > 0 
+    mediaGeral: resultados.filter(r => r.status === 'concluido').length > 0
       ? Math.round(resultados.filter(r => r.status === 'concluido').reduce((acc, r) => acc + r.percentual, 0) / resultados.filter(r => r.status === 'concluido').length)
       : 0,
     tempoMedio: resultados.filter(r => r.status === 'concluido' && r.tempo_conclusao > 0).length > 0
@@ -189,12 +216,21 @@ export default function EmpresaResultados() {
           <h1 className="text-2xl font-bold text-gray-900">Resultados dos Testes</h1>
           <p className="text-gray-600">Acompanhe o desempenho dos colaboradores nos testes</p>
         </div>
-        <button
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
-        >
-          <Download className="w-4 h-4" />
-          <span>Exportar</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleAbrirRelatorio}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+          >
+            <FileText className="w-4 h-4" />
+            <span>Relatório Completo</span>
+          </button>
+          <button
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+          >
+            <Download className="w-4 h-4" />
+            <span>Exportar</span>
+          </button>
+        </div>
       </div>
 
       {/* Estatísticas */}
@@ -210,7 +246,7 @@ export default function EmpresaResultados() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -222,7 +258,7 @@ export default function EmpresaResultados() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -234,7 +270,7 @@ export default function EmpresaResultados() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -401,12 +437,19 @@ export default function EmpresaResultados() {
             <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhum resultado encontrado</h3>
             <p className="mt-1 text-sm text-gray-500">
               {filtroResultados || categoriaFiltro !== 'todas' || statusFiltro !== 'todos'
-                ? 'Tente ajustar os filtros de busca.' 
+                ? 'Tente ajustar os filtros de busca.'
                 : 'Nenhum teste foi realizado ainda.'}
             </p>
           </div>
         )}
       </div>
+
+      <RelatorioEmpresaModal
+        isOpen={relatorioModalOpen}
+        onClose={() => setRelatorioModalOpen(false)}
+        dados={relatorioData}
+        loading={loadingRelatorio}
+      />
     </div>
   );
 }

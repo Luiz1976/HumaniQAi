@@ -16,7 +16,7 @@ class EmpresaStatisticsService {
       return response.estatisticas;
     } catch (error) {
       console.error('Erro ao buscar estatísticas da empresa:', error);
-      
+
       return {
         total_colaboradores: 0,
         colaboradores_ativos: 0,
@@ -25,6 +25,15 @@ class EmpresaStatisticsService {
         testes_este_mes: 0,
         media_pontuacao: 0
       };
+    }
+  }
+  async buscarRelatorioCompleto(empresaId: string): Promise<any> {
+    try {
+      const response = await apiService.get(`/empresas/${empresaId}/relatorio-completo`);
+      return response;
+    } catch (error) {
+      console.error('Erro ao buscar relatório completo:', error);
+      throw error;
     }
   }
 }

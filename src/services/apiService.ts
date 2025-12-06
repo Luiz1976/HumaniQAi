@@ -12,7 +12,7 @@ const getApiBase = () => {
     if (host === 'www.humaniqai.com.br') {
       return 'https://api.humaniqai.com.br';
     }
-  } catch (_) {}
+  } catch (_) { }
   return trimmed;
 };
 const API_BASE_URL = getApiBase();
@@ -80,7 +80,7 @@ function getAuthToken(): string | null {
 
 class ApiService {
   private async makeRequest<T>(
-    endpoint: string, 
+    endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
     const buildUrl = (base: string) => `${base}${endpoint}`;
@@ -140,18 +140,22 @@ class ApiService {
         console.warn(`⚠️ [ApiService] Erro em '${primaryUrl}' → tentando fallback '${fallbackUrl}'`);
         try {
           return await tryFetch(fallbackUrl);
-        } catch (_) {}
+        } catch (_) { }
       }
 
       if (isNetworkError || (error?.status && error.status >= 500)) {
         const relativeUrl = endpoint;
         try {
           return await tryFetch(relativeUrl);
-        } catch (_) {}
+        } catch (_) { }
       }
 
       throw error;
     }
+  }
+
+  public async get<T>(endpoint: string): Promise<T> {
+    return this.makeRequest<T>(endpoint);
   }
 
   // Health check da API
@@ -301,7 +305,7 @@ class ApiService {
           if (item) {
             return { resultado: item, respostas: [] };
           }
-        } catch (_) {}
+        } catch (_) { }
       }
       throw err;
     }
