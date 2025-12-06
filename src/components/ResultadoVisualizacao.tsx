@@ -78,9 +78,25 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
       testeNome.includes('pesquisa de clima');
   };
 
+  // Função para identificar se é um teste MGRP (Maturidade em Gestão de Riscos Psicossociais)
+  const isMGRP = (resultado: ResultadoTeste | null): boolean => {
+    if (!resultado) return false;
+
+    const nomeTest = resultado.nomeTest?.toLowerCase() || '';
+    const tipoTeste = dadosResultado?.metadados?.tipo_teste?.toLowerCase() || '';
+    const testeNome = dadosResultado?.metadados?.teste_nome?.toLowerCase() || '';
+
+    return nomeTest.includes('mgrp') ||
+      nomeTest.includes('maturidade') ||
+      tipoTeste === 'maturidade-gestao-riscos' ||
+      testeNome.includes('mgrp') ||
+      testeNome.includes('maturidade');
+  };
+
   // Função para identificar se é um teste RPO (Riscos Psicossociais Ocupacionais)
   const isRPO = (resultado: ResultadoTeste | null): boolean => {
     if (!resultado) return false;
+    if (isMGRP(resultado)) return false; // Excluir MGRP
 
     const nomeTest = resultado.nomeTest?.toLowerCase() || '';
     const tipoTeste = dadosResultado?.metadados?.tipo_teste?.toLowerCase() || '';
@@ -111,6 +127,153 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
       tipoTeste === 'qvt' ||
       tipoMetadados === 'qvt' ||
       testeNome.includes('qualidade de vida');
+  };
+
+  // Função para identificar se é um teste de Estresse Ocupacional
+  const isEstresseOcupacional = (resultado: ResultadoTeste | null): boolean => {
+    if (!resultado) return false;
+
+    const nomeTest = resultado.nomeTest?.toLowerCase() || '';
+    const tipoTeste = dadosResultado?.metadados?.tipo_teste?.toLowerCase() || '';
+    const testeNome = dadosResultado?.metadados?.teste_nome?.toLowerCase() || '';
+
+    return nomeTest.includes('estresse ocupacional') ||
+      nomeTest.includes('burnout') ||
+      tipoTeste === 'estresse-ocupacional' ||
+      testeNome.includes('estresse ocupacional');
+  };
+
+  const renderMGRPContent = (dados: any) => {
+    const metadados = dados.metadados || dados;
+    const analiseCompleta = metadados.analise_completa || {};
+
+    // Tentar extrair dados da estrutura nova ou antiga
+    const maturidadeGeral = analiseCompleta.maturidadeGeral || {
+      percentual: metadados.pontuacao_total || 0,
+      nivel: analiseCompleta.nivelGeral || 'inicial',
+      classificacao: analiseCompleta.classificacaoGeral || 'Maturidade Inicial'
+    };
+
+    const dimensoes = analiseCompleta.dimensoes || {};
+    const recomendacoes = analiseCompleta.recomendacoes || metadados.recomendacoes || [];
+    const interpretacao = analiseCompleta.interpretacao || metadados.interpretacao || '';
+
+    const obterCorPorNivel = (nivel: string) => {
+      switch (nivel?.toLowerCase()) {
+        case 'otimizado': return 'text-green-700 bg-green-100 border-green-300';
+        case 'estruturado': return 'text-blue-700 bg-blue-100 border-blue-300';
+        case 'em-desenvolvimento': return 'text-yellow-700 bg-yellow-100 border-yellow-300';
+        case 'inicial': return 'text-red-700 bg-red-100 border-red-300';
+        default: return 'text-gray-700 bg-gray-100 border-gray-300';
+      }
+    };
+
+    return (
+      <div className="space-y-6">
+        {/* Resumo Executivo */}
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200/60">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">Maturidade em Gestão de Riscos Psicossociais</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-white rounded-xl border border-blue-100 shadow-sm">
+              <div className="text-4xl font-bold text-blue-600 mb-1">
+                {maturidadeGeral.percentual}%
+              </div>
+              <div className="text-sm font-medium text-slate-600">Maturidade Geral</div>
+            </div>
+            <div className="text-center p-4 bg-white rounded-xl border border-blue-100 shadow-sm">
+              <Badge className={`${obterCorPorNivel(maturidadeGeral.nivel)} text-sm font-medium px-3 py-1 border mb-2`}>
+                {maturidadeGeral.classificacao}
+              </Badge>
+              <div className="text-sm font-medium text-slate-600">Classificação</div>
+            </div>
+            <div className="text-center p-4 bg-white rounded-xl border border-blue-100 shadow-sm">
+              <div className="text-lg font-bold text-slate-700 mb-1 capitalize">
+                {maturidadeGeral.nivel?.replace('-', ' ')}
+              </div>
+              <div className="text-sm font-medium text-slate-600">Nível</div>
+            </div>
+          </div>
+
+          {/* Barra de Progresso */}
+          <div className="mt-6 bg-white p-4 rounded-xl border border-blue-100">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-slate-700">Progresso de Maturidade</span>
+              <span className="text-sm font-bold text-blue-600">{maturidadeGeral.percentual}%</span>
+            </div>
+            <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+              <div
+                className="bg-blue-600 h-3 rounded-full transition-all duration-1000"
+                style={{ width: `${maturidadeGeral.percentual}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dimensões */}
+        {Object.keys(dimensoes).length > 0 && (
+          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Dimensões Avaliadas</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(dimensoes).map(([chave, dimensao]: [string, any]) => {
+                const nomeDimensao = chave
+                  .replace(/-/g, ' ')
+                  .replace(/\b\w/g, l => l.toUpperCase());
+
+                return (
+                  <div key={chave} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-medium text-slate-800">{nomeDimensao}</h4>
+                      <Badge className={`${obterCorPorNivel(dimensao.nivel)} text-xs border`}>
+                        {dimensao.nivel?.replace('-', ' ')}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-blue-500 h-2 rounded-full"
+                          style={{ width: `${dimensao.percentual}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs font-bold text-slate-600">{dimensao.percentual}%</span>
+                    </div>
+                    {dimensao.descricao && (
+                      <p className="text-xs text-slate-500 mt-2 line-clamp-2" title={dimensao.descricao}>
+                        {dimensao.descricao}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Interpretação */}
+        {interpretacao && (
+          <div className="bg-slate-50 p-6 rounded-xl border border-slate-200/60">
+            <h3 className="text-lg font-semibold text-slate-800 mb-3">Interpretação</h3>
+            <p className="text-slate-700 leading-relaxed text-sm">
+              {interpretacao}
+            </p>
+          </div>
+        )}
+
+        {/* Recomendações */}
+        {recomendacoes.length > 0 && (
+          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Recomendações</h3>
+            <ul className="space-y-2">
+              {recomendacoes.map((rec: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
+                  <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0"></div>
+                  <span>{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderKarasekSiegristContent = (dados: ResultadoKarasekSiegrist) => (
@@ -967,6 +1130,89 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
 
 
 
+  const renderEstresseOcupacionalContent = (dados: any) => {
+    const metadados = dados.metadados || dados;
+    const analiseCompleta = metadados.analise_completa || {};
+    const dimensoes = analiseCompleta.dimensoes || {};
+
+    const obterCorNivel = (nivel: string) => {
+      switch (nivel?.toLowerCase()) {
+        case 'baixo': return 'text-green-700 bg-green-100 border-green-200';
+        case 'moderado': return 'text-yellow-700 bg-yellow-100 border-yellow-200';
+        case 'alto': return 'text-orange-700 bg-orange-100 border-orange-200';
+        case 'muito alto': return 'text-red-700 bg-red-100 border-red-200';
+        default: return 'text-slate-700 bg-slate-100 border-slate-200';
+      }
+    };
+
+    return (
+      <div className="space-y-6">
+        {/* Resumo Executivo */}
+        <div className="bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-xl border border-orange-200/60">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">Estresse Ocupacional, Burnout e Resiliência</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="text-center p-4 bg-white rounded-xl border border-orange-100 shadow-sm">
+              <div className="text-4xl font-bold text-orange-600 mb-1">
+                {metadados.pontuacao_total || analiseCompleta.pontuacaoTotal || 0}%
+              </div>
+              <div className="text-sm font-medium text-slate-600">Nível Geral de Risco</div>
+            </div>
+            <div className="text-center p-4 bg-white rounded-xl border border-orange-100 shadow-sm">
+              <Badge className={`${obterCorNivel(analiseCompleta.nivelGeral)} text-sm font-medium px-3 py-1 border mb-2`}>
+                {(analiseCompleta.nivelGeral || 'Não definido').replace('_', ' ')}
+              </Badge>
+              <div className="text-sm font-medium text-slate-600">Classificação Geral</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dimensões */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {Object.entries(dimensoes).map(([chave, dimensao]: [string, any]) => {
+            const nomeDimensao = chave.charAt(0).toUpperCase() + chave.slice(1);
+            const cor = obterCorNivel(dimensao.nivel);
+
+            return (
+              <div key={chave} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
+                <h4 className="text-lg font-semibold text-slate-800 mb-3">{nomeDimensao}</h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-slate-600">Nível:</span>
+                    <Badge className={`${cor} text-xs border capitalize`}>
+                      {dimensao.nivel}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-slate-600">Pontuação:</span>
+                    <span className="font-bold text-slate-700">{dimensao.pontuacao?.toFixed(1) || 0}</span>
+                  </div>
+                  <div className="text-xs text-slate-500 italic mt-2">
+                    {dimensao.classificacao}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Recomendações */}
+        {metadados.recomendacoes && metadados.recomendacoes.length > 0 && (
+          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Recomendações</h3>
+            <ul className="space-y-3">
+              {metadados.recomendacoes.map((rec: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 bg-slate-50 p-3 rounded-lg">
+                  <div className="mt-1 w-2 h-2 rounded-full bg-orange-500 flex-shrink-0"></div>
+                  <span className="leading-relaxed">{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderGenericContent = (dados: any) => {
     // Verificar se é um resultado QVT com dados específicos
     if (dados.indice_geral !== undefined || dados.satisfacao_funcao !== undefined) {
@@ -1064,11 +1310,15 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
         renderKarasekSiegristContent(dadosResultado) :
         isClimaOrganizacional(resultado!) ?
           renderClimaOrganizacionalContent(dadosResultado) :
-          isRPO(resultado!) ?
-            renderRPOContent(dadosResultado) :
-            isQVT(resultado!) ?
-              renderQVTContent(dadosResultado) :
-              renderGenericContent(dadosResultado)
+          isMGRP(resultado!) ?
+            renderMGRPContent(dadosResultado) :
+            isEstresseOcupacional(resultado!) ?
+              renderEstresseOcupacionalContent(dadosResultado) :
+              isRPO(resultado!) ?
+                renderRPOContent(dadosResultado) :
+                isQVT(resultado!) ?
+                  renderQVTContent(dadosResultado) :
+                  renderGenericContent(dadosResultado)
       }
     </>
   );
