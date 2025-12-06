@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  User, 
-  Mail, 
-  Calendar, 
-  FileText, 
-  TrendingUp, 
+import {
+  ArrowLeft,
+  User,
+  Mail,
+  Calendar,
+  FileText,
+  TrendingUp,
   Clock,
   CheckCircle,
   AlertCircle,
@@ -53,7 +53,7 @@ interface ResultadoTeste {
 export default function EmpresaColaboradorResultados() {
   const { colaboradorId } = useParams<{ colaboradorId: string }>();
   const navigate = useNavigate();
-  
+
   const [colaborador, setColaborador] = useState<Colaborador | null>(null);
   const [resultados, setResultados] = useState<ResultadoTeste[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,7 +61,7 @@ export default function EmpresaColaboradorResultados() {
   const [filtroTeste, setFiltroTeste] = useState('');
   const [filtroStatus, setFiltroStatus] = useState('todos');
   const [colaboradorInfo, setColaboradorInfo] = useState<any>(null);
-  
+
   // Estados para o popup
   const [popupAberto, setPopupAberto] = useState(false);
   const [resultadoSelecionado, setResultadoSelecionado] = useState<ResultadoTeste | null>(null);
@@ -69,15 +69,15 @@ export default function EmpresaColaboradorResultados() {
   useEffect(() => {
     console.log('🔄 [EmpresaColaboradorResultados] useEffect executado');
     console.log('🔍 [EmpresaColaboradorResultados] colaboradorId:', colaboradorId);
-    
+
     const initializeAndLoad = async () => {
       try {
         // Aguardar a inicialização do authService
         console.log('⏳ [EmpresaColaboradorResultados] Aguardando inicialização do authService...');
         await authService.waitForInitialization();
-        
+
         console.log('👤 [EmpresaColaboradorResultados] Usuário atual após inicialização:', authService.getCurrentUser());
-        
+
         if (colaboradorId) {
           console.log('✅ [EmpresaColaboradorResultados] Iniciando carregamento de dados...');
           await carregarDadosColaborador();
@@ -93,14 +93,14 @@ export default function EmpresaColaboradorResultados() {
         navigate('/empresa/gestao-colaboradores');
       }
     };
-    
+
     initializeAndLoad();
   }, [colaboradorId]);
 
   const carregarDadosColaborador = async () => {
     try {
       console.log('🔍 [EmpresaColaboradorResultados] Iniciando carregamento do colaborador:', colaboradorId);
-      
+
       if (!colaboradorId) {
         console.error('❌ [EmpresaColaboradorResultados] ID do colaborador não fornecido');
         toast.error('ID do colaborador não fornecido');
@@ -110,7 +110,7 @@ export default function EmpresaColaboradorResultados() {
 
       const response = await authService.getColaboradorById(colaboradorId);
       console.log('📋 [EmpresaColaboradorResultados] Resposta do getColaboradorById:', response);
-      
+
       if (response.success && response.data) {
         console.log('✅ [EmpresaColaboradorResultados] Colaborador carregado com sucesso:', response.data);
         setColaborador(response.data);
@@ -132,10 +132,10 @@ export default function EmpresaColaboradorResultados() {
       console.log('👤 [EmpresaColaboradorResultados] Usuário atual:', authService.getCurrentUser());
       console.log('🏢 [EmpresaColaboradorResultados] Empresa atual:', authService.getCurrentUser()?.empresaId);
       setLoading(true);
-      
+
       const response = await authService.getResultadosColaborador(colaboradorId!);
       console.log('📊 [EmpresaColaboradorResultados] Resposta COMPLETA do getResultadosColaborador:', JSON.stringify(response, null, 2));
-      
+
       if (response.success && response.data) {
         console.log('✅ [EmpresaColaboradorResultados] Resultados carregados:', response.data.length, 'resultados');
         console.log('📋 [EmpresaColaboradorResultados] Detalhes dos resultados:', response.data);
@@ -197,7 +197,7 @@ export default function EmpresaColaboradorResultados() {
 
   const handleViewResult = (resultado: ResultadoTeste) => {
     console.log('🔍 [EmpresaColaboradorResultados] handleViewResult chamado com:', resultado);
-    
+
     // Verificar se o resultado é válido antes de abrir o popup
     if (!resultado || !resultado.id) {
       console.error('❌ [EmpresaColaboradorResultados] Resultado inválido:', resultado);
@@ -223,22 +223,11 @@ export default function EmpresaColaboradorResultados() {
     return 'text-red-600';
   };
 
-  const resultadosFiltrados = resultadosVisiveis.filter(resultado => {
-    const searchTerm = (filtroTeste || '').toLowerCase();
-    const testeName = (resultado.nomeTest || '').toLowerCase();
-    const category = (resultado.categoria || '').toLowerCase();
-    
-    const matchesSearch = testeName.includes(searchTerm) || category.includes(searchTerm);
-    const matchesStatus = filtroStatus === 'todos' || resultado.status === filtroStatus;
-    
-    return matchesSearch && matchesStatus;
-  });
-
   // Filtro base para remover testes ocultos (Insight e Clima)
   const resultadosVisiveis = resultados.filter(resultado => {
     const testeName = (resultado.nomeTest || '').toLowerCase();
     const category = (resultado.categoria || '').toLowerCase();
-    
+
     // Filtro para remover permanentemente o teste "HumaniQ Insight" e "Clima" dos resultados
     if (testeName.includes('insight') || category.includes('clima-bem-estar')) {
       return false;
@@ -246,11 +235,22 @@ export default function EmpresaColaboradorResultados() {
     return true;
   });
 
+  const resultadosFiltrados = resultadosVisiveis.filter(resultado => {
+    const searchTerm = (filtroTeste || '').toLowerCase();
+    const testeName = (resultado.nomeTest || '').toLowerCase();
+    const category = (resultado.categoria || '').toLowerCase();
+
+    const matchesSearch = testeName.includes(searchTerm) || category.includes(searchTerm);
+    const matchesStatus = filtroStatus === 'todos' || resultado.status === filtroStatus;
+
+    return matchesSearch && matchesStatus;
+  });
+
   const estatisticas = {
     total: resultadosVisiveis.length,
     concluidos: resultadosVisiveis.filter(r => r.status === 'concluido').length,
     emAndamento: resultadosVisiveis.filter(r => r.status === 'em_andamento').length,
-    mediaPercentual: resultadosVisiveis.length > 0 
+    mediaPercentual: resultadosVisiveis.length > 0
       ? Math.round(resultadosVisiveis.reduce((acc, r) => acc + r.percentual, 0) / resultadosVisiveis.length)
       : 0
   };
@@ -292,8 +292,8 @@ export default function EmpresaColaboradorResultados() {
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-4">
               <Avatar className="h-16 w-16">
-                <AvatarImage 
-                  src={colaborador.avatar} 
+                <AvatarImage
+                  src={colaborador.avatar}
                   alt={colaborador.nome}
                 />
                 <AvatarFallback className="bg-blue-100 text-blue-600 text-xl font-semibold">
@@ -327,11 +327,10 @@ export default function EmpresaColaboradorResultados() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                colaborador.ativo 
-                  ? 'bg-green-100 text-green-800' 
+              <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${colaborador.ativo
+                  ? 'bg-green-100 text-green-800'
                   : 'bg-red-100 text-red-800'
-              }`}>
+                }`}>
                 {colaborador.ativo ? 'Ativo' : 'Inativo'}
               </span>
             </div>
@@ -352,7 +351,7 @@ export default function EmpresaColaboradorResultados() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -364,7 +363,7 @@ export default function EmpresaColaboradorResultados() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -376,7 +375,7 @@ export default function EmpresaColaboradorResultados() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -446,19 +445,19 @@ export default function EmpresaColaboradorResultados() {
                       <span className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(resultado.status)}`}>
                         {getStatusIcon(resultado.status)}
                         <span className="ml-1">
-                          {resultado.status === 'concluido' ? 'Concluído' : 
-                           resultado.status === 'em_andamento' ? 'Em Andamento' : 'Não Iniciado'}
+                          {resultado.status === 'concluido' ? 'Concluído' :
+                            resultado.status === 'em_andamento' ? 'Em Andamento' : 'Não Iniciado'}
                         </span>
                       </span>
                       {resultado.tipoTabela && (
                         <span className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
-                          {resultado.tipoTabela === 'resultados_qvt' ? 'QVT' : 
-                           resultado.tipoTabela === 'resultados_rpo' ? 'RPO' : 
-                           resultado.tipoTabela === 'resultados' ? 'Padrão' : resultado.tipoTabela}
+                          {resultado.tipoTabela === 'resultados_qvt' ? 'QVT' :
+                            resultado.tipoTabela === 'resultados_rpo' ? 'RPO' :
+                              resultado.tipoTabela === 'resultados' ? 'Padrão' : resultado.tipoTabela}
                         </span>
                       )}
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                       <div>
                         <p className="text-sm text-gray-500">Pontuação</p>
@@ -466,19 +465,19 @@ export default function EmpresaColaboradorResultados() {
                           {resultado.pontuacao}/{resultado.pontuacaoMaxima}
                         </p>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-gray-500">Percentual</p>
                         <p className={`text-lg font-semibold ${getNivelColor(resultado.percentual)}`}>
                           {resultado.percentual}%
                         </p>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-gray-500">Data de Realização</p>
                         <p className="text-sm text-gray-900">{formatarData(resultado.dataRealizacao)}</p>
                       </div>
-                      
+
                       {resultado.tempoDuracao && (
                         <div>
                           <p className="text-sm text-gray-500">Tempo Gasto</p>
@@ -501,7 +500,7 @@ export default function EmpresaColaboradorResultados() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex items-center space-x-2 ml-4">
                     <button
                       onClick={() => handleViewResult(resultado)}
@@ -526,8 +525,8 @@ export default function EmpresaColaboradorResultados() {
                 <FileText className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhum resultado encontrado</h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  {filtroTeste || filtroStatus !== 'todos' 
-                    ? 'Tente ajustar os filtros de busca.' 
+                  {filtroTeste || filtroStatus !== 'todos'
+                    ? 'Tente ajustar os filtros de busca.'
                     : 'Este colaborador ainda não realizou nenhum teste.'}
                 </p>
               </div>
