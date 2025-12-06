@@ -223,15 +223,10 @@ export default function EmpresaColaboradorResultados() {
     return 'text-red-600';
   };
 
-  const resultadosFiltrados = resultados.filter(resultado => {
+  const resultadosFiltrados = resultadosVisiveis.filter(resultado => {
     const searchTerm = (filtroTeste || '').toLowerCase();
     const testeName = (resultado.nomeTest || '').toLowerCase();
     const category = (resultado.categoria || '').toLowerCase();
-
-    // Filtro para remover permanentemente o teste "HumaniQ Insight" dos resultados
-    if (testeName.includes('insight') || category.includes('clima-bem-estar')) {
-      return false;
-    }
     
     const matchesSearch = testeName.includes(searchTerm) || category.includes(searchTerm);
     const matchesStatus = filtroStatus === 'todos' || resultado.status === filtroStatus;
@@ -239,12 +234,24 @@ export default function EmpresaColaboradorResultados() {
     return matchesSearch && matchesStatus;
   });
 
+  // Filtro base para remover testes ocultos (Insight e Clima)
+  const resultadosVisiveis = resultados.filter(resultado => {
+    const testeName = (resultado.nomeTest || '').toLowerCase();
+    const category = (resultado.categoria || '').toLowerCase();
+    
+    // Filtro para remover permanentemente o teste "HumaniQ Insight" e "Clima" dos resultados
+    if (testeName.includes('insight') || category.includes('clima-bem-estar')) {
+      return false;
+    }
+    return true;
+  });
+
   const estatisticas = {
-    total: resultados.length,
-    concluidos: resultados.filter(r => r.status === 'concluido').length,
-    emAndamento: resultados.filter(r => r.status === 'em_andamento').length,
-    mediaPercentual: resultados.length > 0 
-      ? Math.round(resultados.reduce((acc, r) => acc + r.percentual, 0) / resultados.length)
+    total: resultadosVisiveis.length,
+    concluidos: resultadosVisiveis.filter(r => r.status === 'concluido').length,
+    emAndamento: resultadosVisiveis.filter(r => r.status === 'em_andamento').length,
+    mediaPercentual: resultadosVisiveis.length > 0 
+      ? Math.round(resultadosVisiveis.reduce((acc, r) => acc + r.percentual, 0) / resultadosVisiveis.length)
       : 0
   };
 
