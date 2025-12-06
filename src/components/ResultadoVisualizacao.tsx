@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader2, AlertTriangle, Eye, Download, Share2, Clock, Target, TrendingUp, Award, Lightbulb, CheckCircle, BarChart3, User, Calendar } from 'lucide-react';
+import { Loader2, AlertTriangle, Eye, Download, Share2, Clock, Target, TrendingUp, Award, Lightbulb, CheckCircle, BarChart3, User, Calendar, Info } from 'lucide-react';
 import Logo from "@/components/Logo";
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -48,6 +48,24 @@ interface ResultadoVisualizacaoProps {
   carregando?: boolean;
   erro?: string | null;
 }
+
+const ScoreGuide = ({ title, description, scale }: { title: string, description: string, scale: { label: string, color: string, range: string }[] }) => (
+  <div className="mt-8 bg-slate-50 p-6 rounded-xl border border-slate-200">
+    <div className="flex items-center gap-2 mb-4">
+      <Info className="h-5 w-5 text-blue-600" />
+      <h3 className="text-lg font-semibold text-slate-800">{title}</h3>
+    </div>
+    <p className="text-sm text-slate-600 mb-6">{description}</p>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {scale.map((item, idx) => (
+        <div key={idx} className="bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
+          <div className={`text-xs font-bold uppercase mb-1 ${item.color}`}>{item.label}</div>
+          <div className="text-sm text-slate-500">{item.range}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = false, erro = null }: ResultadoVisualizacaoProps) {
 
@@ -327,6 +345,18 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
             </Card>
           )}
         </div>
+
+        <ScoreGuide
+          title="Entenda seu Resultado"
+          description="O Nível de Maturidade indica o quão desenvolvidos estão os processos de gestão de riscos. Quanto maior o nível, mais robusta é a gestão."
+          scale={[
+            { label: 'Inicial', color: 'text-red-600', range: '0 - 20%' },
+            { label: 'Em Desenvolvimento', color: 'text-orange-600', range: '21 - 40%' },
+            { label: 'Definido', color: 'text-yellow-600', range: '41 - 60%' },
+            { label: 'Gerenciado', color: 'text-blue-600', range: '61 - 80%' },
+            { label: 'Otimizado', color: 'text-green-600', range: '81 - 100%' },
+          ]}
+        />
       </div>
     );
   };
@@ -375,6 +405,17 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
 
       {/* Plano de Ação */}
       <KarasekActionPlan resultado={dados} />
+
+      <ScoreGuide
+        title="Entenda seu Resultado"
+        description="O Nível de Risco é calculado com base na interação entre Demanda, Controle e Apoio Social. Quanto maior a pontuação, maior o risco de desgaste."
+        scale={[
+          { label: 'Baixo Risco', color: 'text-emerald-600', range: '0 - 25%' },
+          { label: 'Risco Moderado', color: 'text-amber-600', range: '26 - 50%' },
+          { label: 'Alto Risco', color: 'text-orange-600', range: '51 - 75%' },
+          { label: 'Risco Crítico', color: 'text-red-600', range: '76 - 100%' },
+        ]}
+      />
     </div>
   );
 
@@ -567,6 +608,17 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
             )}
           </div>
         )}
+
+        <ScoreGuide
+          title="Entenda seu Resultado"
+          description="O Score Geral varia de 0 a 100 e reflete a percepção média do clima organizacional. Quanto maior a pontuação, mais positivo é o ambiente de trabalho."
+          scale={[
+            { label: 'Crítico', color: 'text-red-600', range: '0 - 59' },
+            { label: 'Regular', color: 'text-orange-600', range: '60 - 74' },
+            { label: 'Bom', color: 'text-blue-600', range: '75 - 89' },
+            { label: 'Excelente', color: 'text-emerald-600', range: '90 - 100' },
+          ]}
+        />
       </div>
     );
   };
@@ -838,6 +890,17 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
             )}
           </div>
         </div>
+
+        <ScoreGuide
+          title="Entenda seu Resultado"
+          description="O Índice de Risco varia de 1.0 a 5.0. Quanto MENOR a pontuação, menor é o risco psicossocial identificado."
+          scale={[
+            { label: 'Baixo Risco', color: 'text-emerald-600', range: '1.0 - 1.9' },
+            { label: 'Risco Moderado', color: 'text-amber-600', range: '2.0 - 2.9' },
+            { label: 'Alto Risco', color: 'text-orange-600', range: '3.0 - 3.9' },
+            { label: 'Risco Crítico', color: 'text-red-600', range: '4.0 - 5.0' },
+          ]}
+        />
       </div>
     );
   };
@@ -1200,6 +1263,19 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
             </div>
           </div>
         </div>
+
+        <ScoreGuide
+          title="Entenda seu Resultado"
+          description="O Índice Geral de QVT varia de 0 a 5.0. Quanto maior a pontuação, melhor a Qualidade de Vida no Trabalho."
+          scale={[
+            { label: 'Crítico', color: 'text-red-600', range: '0 - 2.4' },
+            { label: 'Baixo', color: 'text-orange-600', range: '2.5 - 2.9' },
+            { label: 'Regular', color: 'text-yellow-600', range: '3.0 - 3.4' },
+            { label: 'Bom', color: 'text-lime-600', range: '3.5 - 3.9' },
+            { label: 'Muito Bom', color: 'text-green-600', range: '4.0 - 4.4' },
+            { label: 'Excelente', color: 'text-emerald-600', range: '4.5 - 5.0' },
+          ]}
+        />
       </div>
     );
   };
@@ -1392,6 +1468,17 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
             </CardContent>
           </Card>
         )}
+
+        <ScoreGuide
+          title="Entenda seu Resultado"
+          description="O Nível de Estresse varia de 0 a 100%. Quanto MENOR a pontuação, menor o nível de estresse identificado."
+          scale={[
+            { label: 'Baixo', color: 'text-green-600', range: '0 - 25%' },
+            { label: 'Moderado', color: 'text-yellow-600', range: '26 - 50%' },
+            { label: 'Alto', color: 'text-orange-600', range: '51 - 75%' },
+            { label: 'Muito Alto', color: 'text-red-600', range: '76 - 100%' },
+          ]}
+        />
       </div>
     );
   };
@@ -1554,6 +1641,17 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
             </CardContent>
           </Card>
         )}
+
+        <ScoreGuide
+          title="Entenda seu Resultado"
+          description="O Índice de Percepção varia de 0 a 100%. Quanto MENOR a pontuação, menor a percepção de assédio no ambiente."
+          scale={[
+            { label: 'Baixo', color: 'text-green-600', range: '0 - 25%' },
+            { label: 'Moderado', color: 'text-yellow-600', range: '26 - 50%' },
+            { label: 'Alto', color: 'text-orange-600', range: '51 - 75%' },
+            { label: 'Crítico', color: 'text-red-600', range: '76 - 100%' },
+          ]}
+        />
       </div>
     );
   };
