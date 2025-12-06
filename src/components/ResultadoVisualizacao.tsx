@@ -143,9 +143,26 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
       testeNome.includes('estresse ocupacional');
   };
 
+  // Função para identificar se é um teste PAS (Percepção de Assédio)
+  const isPAS = (resultado: ResultadoTeste | null): boolean => {
+    if (!resultado) return false;
+
+    const nomeTest = resultado.nomeTest?.toLowerCase() || '';
+    const tipoTeste = dadosResultado?.metadados?.tipo_teste?.toLowerCase() || '';
+    const testeNome = dadosResultado?.metadados?.teste_nome?.toLowerCase() || '';
+
+    return nomeTest.includes('pas') ||
+      nomeTest.includes('assédio') ||
+      nomeTest.includes('assedio') ||
+      tipoTeste === 'percepcao-assedio' ||
+      testeNome.includes('pas') ||
+      testeNome.includes('assédio');
+  };
+
   const renderMGRPContent = (dados: any) => {
     const metadados = dados.metadados || dados;
     const analiseCompleta = metadados.analise_completa || {};
+    const dimensoes = analiseCompleta.dimensoes || {};
 
     // Tentar extrair dados da estrutura nova ou antiga
     const maturidadeGeral = analiseCompleta.maturidadeGeral || {
@@ -154,7 +171,15 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
       classificacao: analiseCompleta.classificacaoGeral || 'Maturidade Inicial'
     };
 
-    const dimensoes = analiseCompleta.dimensoes || {};
+    // CORREÇÃO: Se o percentual geral for 0 mas houver dimensões, calcular média
+    if ((!maturidadeGeral.percentual || maturidadeGeral.percentual === 0) && Object.keys(dimensoes).length > 0) {
+      const valores = Object.values(dimensoes).map((d: any) => d.percentual || d.pontuacao || 0);
+      if (valores.length > 0) {
+        const soma = valores.reduce((a: number, b: number) => a + b, 0);
+        maturidadeGeral.percentual = Math.round(soma / valores.length);
+      }
+    }
+
     const recomendacoes = analiseCompleta.recomendacoes || metadados.recomendacoes || [];
     const interpretacao = analiseCompleta.interpretacao || metadados.interpretacao || '';
 
@@ -219,6 +244,9 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
                   .replace(/-/g, ' ')
                   .replace(/\b\w/g, l => l.toUpperCase());
 
+                // Garantir valor numérico
+                const percentual = dimensao.percentual !== undefined ? dimensao.percentual : (dimensao.pontuacao || 0);
+
                 return (
                   <div key={chave} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-2">
@@ -231,10 +259,10 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
                       <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
                         <div
                           className="bg-blue-500 h-2 rounded-full"
-                          style={{ width: `${dimensao.percentual}%` }}
+                          style={{ width: `${percentual}%` }}
                         ></div>
                       </div>
-                      <span className="text-xs font-bold text-slate-600">{dimensao.percentual}%</span>
+                      <span className="text-xs font-bold text-slate-600">{percentual}%</span>
                     </div>
                     {dimensao.descricao && (
                       <p className="text-xs text-slate-500 mt-2 line-clamp-2" title={dimensao.descricao}>
@@ -1135,6 +1163,20 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
     const analiseCompleta = metadados.analise_completa || {};
     const dimensoes = analiseCompleta.dimensoes || {};
 
+    // CORREÇÃO: Calcular pontuação geral se não existir
+    let pontuacaoTotal = metadados.pontuacao_total || analiseCompleta.pontuacaoTotal || 0;
+
+    if ((!pontuacaoTotal || pontuacaoTotal === 0) && Object.keys(dimensoes).length > 0) {
+      // Calcular média das dimensões (convertendo escala 1-5 para %)
+      const valores = Object.values(dimensoes).map((d: any) => d.pontuacao || 0);
+      if (valores.length > 0) {
+        const soma = valores.reduce((a: number, b: number) => a + b, 0);
+        const media = soma / valores.length;
+        // Converter escala 1-5 para 0-100%
+        pontuacaoTotal = Math.round((media / 5) * 100);
+      }
+    }
+
     const obterCorNivel = (nivel: string) => {
       switch (nivel?.toLowerCase()) {
         case 'baixo': return 'text-green-700 bg-green-100 border-green-200';
@@ -1153,7 +1195,7 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="text-center p-4 bg-white rounded-xl border border-orange-100 shadow-sm">
               <div className="text-4xl font-bold text-orange-600 mb-1">
-                {metadados.pontuacao_total || analiseCompleta.pontuacaoTotal || 0}%
+                {pontuacaoTotal}%
               </div>
               <div className="text-sm font-medium text-slate-600">Nível Geral de Risco</div>
             </div>
@@ -1203,6 +1245,90 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
               {metadados.recomendacoes.map((rec: string, idx: number) => (
                 <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 bg-slate-50 p-3 rounded-lg">
                   <div className="mt-1 w-2 h-2 rounded-full bg-orange-500 flex-shrink-0"></div>
+                  <span className="leading-relaxed">{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderPASContent = (dados: any) => {
+    const metadados = dados.metadados || dados;
+    const analiseCompleta = metadados.analise_completa || {};
+
+    // Extrair dados principais
+    const pontuacaoTotal = metadados.pontuacaoTotal || metadados.pontuacao_total || 0;
+    const classificacao = analiseCompleta.classificacao || metadados.classificacao || 'Não definido';
+    const interpretacao = metadados.interpretacao || analiseCompleta.interpretacao || '';
+    const recomendacoes = metadados.recomendacoes || analiseCompleta.recomendacoes || [];
+    const areasAtencao = analiseCompleta.areasAtencao || [];
+
+    const obterCorNivel = (nivel: string) => {
+      // Para PAS, pontuação alta geralmente é ruim (percepção de assédio)
+      // Mas depende da escala. Assumindo escala 0-100 onde maior é pior.
+      const nivelLower = nivel?.toLowerCase() || '';
+      if (nivelLower.includes('baixo') || nivelLower.includes('seguro')) return 'text-green-700 bg-green-100 border-green-200';
+      if (nivelLower.includes('moderado') || nivelLower.includes('alerta')) return 'text-yellow-700 bg-yellow-100 border-yellow-200';
+      if (nivelLower.includes('alto') || nivelLower.includes('crítico')) return 'text-red-700 bg-red-100 border-red-200';
+      return 'text-slate-700 bg-slate-100 border-slate-200';
+    };
+
+    return (
+      <div className="space-y-6">
+        {/* Resumo Executivo */}
+        <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200/60">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">Percepção de Assédio Moral e Sexual</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="text-center p-4 bg-white rounded-xl border border-purple-100 shadow-sm">
+              <div className="text-4xl font-bold text-purple-600 mb-1">
+                {pontuacaoTotal}%
+              </div>
+              <div className="text-sm font-medium text-slate-600">Índice de Percepção</div>
+            </div>
+            <div className="text-center p-4 bg-white rounded-xl border border-purple-100 shadow-sm">
+              <Badge className="text-sm font-medium px-3 py-1 bg-purple-100 text-purple-800 border border-purple-200 mb-2">
+                {classificacao}
+              </Badge>
+              <div className="text-sm font-medium text-slate-600">Classificação</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Interpretação */}
+        {interpretacao && (
+          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
+            <h3 className="text-lg font-semibold text-slate-800 mb-3">Análise do Resultado</h3>
+            <p className="text-slate-700 leading-relaxed text-sm bg-slate-50 p-4 rounded-lg border border-slate-100">
+              {interpretacao}
+            </p>
+          </div>
+        )}
+
+        {/* Áreas de Atenção (se houver no texto de interpretação ou separado) */}
+        {interpretacao.includes('As áreas que requerem maior atenção são:') && (
+          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
+            <h3 className="text-lg font-semibold text-slate-800 mb-3">Áreas de Atenção</h3>
+            <div className="flex flex-wrap gap-2">
+              {interpretacao.split('As áreas que requerem maior atenção são:')[1]?.split('.')[0].split(',').map((area: string, idx: number) => (
+                <Badge key={idx} variant="outline" className="text-red-600 border-red-200 bg-red-50">
+                  {area.trim()}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recomendações */}
+        {recomendacoes.length > 0 && (
+          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Recomendações e Medidas Preventivas</h3>
+            <ul className="space-y-3">
+              {recomendacoes.map((rec: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 hover:border-purple-200 transition-colors">
+                  <div className="mt-1 w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></div>
                   <span className="leading-relaxed">{rec}</span>
                 </li>
               ))}
@@ -1314,11 +1440,13 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
             renderMGRPContent(dadosResultado) :
             isEstresseOcupacional(resultado!) ?
               renderEstresseOcupacionalContent(dadosResultado) :
-              isRPO(resultado!) ?
-                renderRPOContent(dadosResultado) :
-                isQVT(resultado!) ?
-                  renderQVTContent(dadosResultado) :
-                  renderGenericContent(dadosResultado)
+              isPAS(resultado!) ?
+                renderPASContent(dadosResultado) :
+                isRPO(resultado!) ?
+                  renderRPOContent(dadosResultado) :
+                  isQVT(resultado!) ?
+                    renderQVTContent(dadosResultado) :
+                    renderGenericContent(dadosResultado)
       }
     </>
   );
