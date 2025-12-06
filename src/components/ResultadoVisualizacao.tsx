@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader2, AlertTriangle, Eye, Download, Share2, Clock, Target, TrendingUp, Award, Lightbulb, CheckCircle } from 'lucide-react';
+import { Loader2, AlertTriangle, Eye, Download, Share2, Clock, Target, TrendingUp, Award, Lightbulb, CheckCircle, BarChart3, User, Calendar } from 'lucide-react';
 import Logo from "@/components/Logo";
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -24,7 +24,12 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell
+  Cell,
+  PieChart,
+  Pie,
+  RadialBarChart,
+  RadialBar,
+  Legend
 } from 'recharts';
 
 interface ResultadoTeste {
@@ -193,113 +198,135 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
       }
     };
 
+    // Dados para o Radar Chart
+    const dataRadar = Object.entries(dimensoes).map(([chave, dimensao]: [string, any]) => ({
+      subject: chave.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      A: dimensao.percentual !== undefined ? dimensao.percentual : (dimensao.pontuacao || 0),
+      fullMark: 100,
+    }));
+
     return (
-      <div className="space-y-6">
-        {/* Resumo Executivo */}
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200/60">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Maturidade em Gestão de Riscos Psicossociais</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-white rounded-xl border border-blue-100 shadow-sm">
-              <div className="text-4xl font-bold text-blue-600 mb-1">
-                {maturidadeGeral.percentual}%
+      <div className="space-y-8 font-sans">
+        {/* Header Premium */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-8 text-white shadow-2xl">
+          <div className="absolute top-0 right-0 -mt-20 -mr-20 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl"></div>
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-blue-200 backdrop-blur-md border border-white/10 mb-4">
+                <Target className="h-4 w-4" />
+                HumaniQ MGRP
               </div>
-              <div className="text-sm font-medium text-slate-600">Maturidade Geral</div>
+              <h2 className="text-3xl font-bold tracking-tight mb-2">Maturidade em Gestão de Riscos</h2>
+              <p className="text-blue-200 max-w-xl">
+                Avaliação do nível de maturidade da organização na gestão de riscos psicossociais.
+              </p>
             </div>
-            <div className="text-center p-4 bg-white rounded-xl border border-blue-100 shadow-sm">
-              <Badge className={`${obterCorPorNivel(maturidadeGeral.nivel)} text-sm font-medium px-3 py-1 border mb-2`}>
+
+            <div className="flex flex-col items-center justify-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl min-w-[200px]">
+              <span className="text-5xl font-black text-white mb-1">{maturidadeGeral.percentual}%</span>
+              <Badge className={`${obterCorPorNivel(maturidadeGeral.nivel)} border-none px-3 py-1`}>
                 {maturidadeGeral.classificacao}
               </Badge>
-              <div className="text-sm font-medium text-slate-600">Classificação</div>
-            </div>
-            <div className="text-center p-4 bg-white rounded-xl border border-blue-100 shadow-sm">
-              <div className="text-lg font-bold text-slate-700 mb-1 capitalize">
-                {maturidadeGeral.nivel?.replace('-', ' ')}
-              </div>
-              <div className="text-sm font-medium text-slate-600">Nível</div>
-            </div>
-          </div>
-
-          {/* Barra de Progresso */}
-          <div className="mt-6 bg-white p-4 rounded-xl border border-blue-100">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-slate-700">Progresso de Maturidade</span>
-              <span className="text-sm font-bold text-blue-600">{maturidadeGeral.percentual}%</span>
-            </div>
-            <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-              <div
-                className="bg-blue-600 h-3 rounded-full transition-all duration-1000"
-                style={{ width: `${maturidadeGeral.percentual}%` }}
-              ></div>
             </div>
           </div>
         </div>
 
-        {/* Dimensões */}
-        {Object.keys(dimensoes).length > 0 && (
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Dimensões Avaliadas</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(dimensoes).map(([chave, dimensao]: [string, any]) => {
-                const nomeDimensao = chave
-                  .replace(/-/g, ' ')
-                  .replace(/\b\w/g, l => l.toUpperCase());
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Radar Chart */}
+          <Card className="border-none shadow-xl bg-white overflow-hidden">
+            <CardHeader>
+              <CardTitle>Dimensões de Maturidade</CardTitle>
+              <CardDescription>Visualização comparativa das áreas avaliadas</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={350}>
+                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={dataRadar}>
+                  <PolarGrid stroke="#e2e8f0" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 12 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                  <Radar
+                    name="Maturidade"
+                    dataKey="A"
+                    stroke="#2563eb"
+                    fill="#3b82f6"
+                    fillOpacity={0.5}
+                  />
+                  <Tooltip
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-                // Garantir valor numérico
+          {/* Detalhamento por Dimensão */}
+          <Card className="border-none shadow-xl bg-white overflow-hidden">
+            <CardHeader>
+              <CardTitle>Detalhamento por Dimensão</CardTitle>
+              <CardDescription>Análise detalhada de cada pilar da gestão</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              {Object.entries(dimensoes).map(([chave, dimensao]: [string, any]) => {
+                const nomeDimensao = chave.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 const percentual = dimensao.percentual !== undefined ? dimensao.percentual : (dimensao.pontuacao || 0);
 
                 return (
-                  <div key={chave} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-medium text-slate-800">{nomeDimensao}</h4>
-                      <Badge className={`${obterCorPorNivel(dimensao.nivel)} text-xs border`}>
-                        {dimensao.nivel?.replace('-', ' ')}
-                      </Badge>
+                  <div key={chave} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-slate-700">{nomeDimensao}</span>
+                      <span className="font-bold text-slate-800">{percentual}%</span>
                     </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="bg-blue-500 h-2 rounded-full"
-                          style={{ width: `${percentual}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-xs font-bold text-slate-600">{percentual}%</span>
+                    <Progress value={percentual} className="h-2" />
+                    <div className="flex justify-between items-center text-xs text-slate-500">
+                      <span>{dimensao.nivel?.replace('-', ' ')}</span>
                     </div>
-                    {dimensao.descricao && (
-                      <p className="text-xs text-slate-500 mt-2 line-clamp-2" title={dimensao.descricao}>
-                        {dimensao.descricao}
-                      </p>
-                    )}
                   </div>
                 );
               })}
-            </div>
-          </div>
-        )}
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Interpretação */}
-        {interpretacao && (
-          <div className="bg-slate-50 p-6 rounded-xl border border-slate-200/60">
-            <h3 className="text-lg font-semibold text-slate-800 mb-3">Interpretação</h3>
-            <p className="text-slate-700 leading-relaxed text-sm">
-              {interpretacao}
-            </p>
-          </div>
-        )}
+        {/* Interpretação e Recomendações */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {interpretacao && (
+            <Card className="border-none shadow-lg bg-slate-50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg text-slate-800">
+                  <Lightbulb className="h-5 w-5 text-blue-600" />
+                  Interpretação
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600 leading-relaxed text-sm">
+                  {interpretacao}
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Recomendações */}
-        {recomendacoes.length > 0 && (
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Recomendações</h3>
-            <ul className="space-y-2">
-              {recomendacoes.map((rec: string, idx: number) => (
-                <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
-                  <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0"></div>
-                  <span>{rec}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+          {recomendacoes.length > 0 && (
+            <Card className="border-none shadow-lg bg-white">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg text-slate-800">
+                  <CheckCircle className="h-5 w-5 text-blue-600" />
+                  Recomendações
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  {recomendacoes.map((rec: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <div className="mt-1 w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
+                      <span className="leading-relaxed">{rec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     );
   };
@@ -357,168 +384,189 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
     const analiseCompleta = metadados.analise_completa || {};
     const pontuacoesDimensoes = metadados.pontuacoes_dimensoes || {};
 
+    // Preparar dados para o gráfico de Radar
+    const dataRadar = Object.entries(pontuacoesDimensoes).map(([key, value]) => ({
+      subject: key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim(),
+      A: typeof value === 'number' ? value : 0,
+      fullMark: 100,
+    }));
+
+    const pontuacaoGeral = metadados.pontuacao_total || analiseCompleta.pontuacaoGeral || analiseCompleta.mediaGeral || 0;
+    const classificacao = analiseCompleta.classificacaoGeral || analiseCompleta.nivelGeral || 'Não definido';
+
     return (
-      <div className="space-y-6">
-        {/* Resumo Executivo */}
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200/60">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">HumaniQ 360 – Clima Organizacional, Bem-Estar Psicológico e Justiça Corporativa</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-              <div className="text-2xl font-bold text-blue-600 mb-1">
-                {metadados.pontuacao_total || analiseCompleta.pontuacaoGeral || analiseCompleta.mediaGeral || 'N/A'}
+      <div className="space-y-8 font-sans">
+        {/* Header Premium com Gradiente e Score */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 p-8 text-white shadow-2xl">
+          <div className="absolute top-0 right-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 -mb-10 -ml-10 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl"></div>
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex-1 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-indigo-200 backdrop-blur-md border border-white/10 mb-4">
+                <Target className="h-4 w-4" />
+                HumaniQ 360
               </div>
-              <div className="text-sm font-medium text-slate-600">Pontuação Geral</div>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">Clima Organizacional</h2>
+              <p className="text-indigo-200 max-w-xl text-lg">
+                Análise completa do ambiente de trabalho, bem-estar psicológico e justiça corporativa.
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-4 justify-center md:justify-start">
+                <div className="flex items-center gap-2 text-sm text-slate-300">
+                  <User className="h-4 w-4" />
+                  {metadados.usuario_nome || 'Colaborador'}
+                </div>
+                <div className="flex items-center gap-2 text-sm text-slate-300">
+                  <Calendar className="h-4 w-4" />
+                  {metadados.timestamp_processamento ? new Date(metadados.timestamp_processamento).toLocaleDateString('pt-BR') : 'Data N/A'}
+                </div>
+              </div>
             </div>
-            <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
-              <Badge className="text-sm font-medium px-3 py-1 bg-emerald-100 text-emerald-800 border border-emerald-200">
-                {analiseCompleta.classificacaoGeral || analiseCompleta.nivelGeral || 'Não definido'}
+
+            <div className="flex flex-col items-center justify-center bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 min-w-[200px]">
+              <div className="text-5xl font-black tracking-tighter mb-1 bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">
+                {typeof pontuacaoGeral === 'number' ? pontuacaoGeral.toFixed(0) : pontuacaoGeral}
+              </div>
+              <div className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-3">Score Geral</div>
+              <Badge className="bg-indigo-500 hover:bg-indigo-600 text-white border-none px-4 py-1 text-base">
+                {classificacao}
               </Badge>
-              <div className="text-sm font-medium text-slate-600 mt-1">Classificação</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl border border-purple-100">
-              <div className="text-lg font-bold text-purple-600">
-                {metadados.usuario_nome || 'Usuário'}
-              </div>
-              <div className="text-sm font-medium text-slate-600">Avaliado</div>
             </div>
           </div>
         </div>
 
-        {/* Dimensões do Clima Organizacional - MODERNIZADO */}
-        {pontuacoesDimensoes && Object.keys(pontuacoesDimensoes).length > 0 && (
-          <div className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl border-2 border-slate-200 shadow-xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg">
-                <Logo size="sm" showText={false} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Gráfico de Radar */}
+          <Card className="border-none shadow-xl bg-white overflow-hidden">
+            <CardHeader className="border-b border-slate-100 bg-slate-50/50 pb-4">
+              <CardTitle className="flex items-center gap-2 text-xl text-slate-800">
+                <TrendingUp className="h-5 w-5 text-indigo-600" />
+                Radar de Dimensões
+              </CardTitle>
+              <CardDescription>Visualização comparativa das áreas avaliadas</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 flex justify-center items-center min-h-[400px]">
+              <div className="w-full h-[350px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={dataRadar}>
+                    <PolarGrid stroke="#e2e8f0" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 12 }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                    <Radar
+                      name="Pontuação"
+                      dataKey="A"
+                      stroke="#6366f1"
+                      strokeWidth={3}
+                      fill="#818cf8"
+                      fillOpacity={0.5}
+                    />
+                    <Tooltip
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                      itemStyle={{ color: '#4f46e5', fontWeight: 'bold' }}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
               </div>
-              <h3 className="text-2xl font-bold text-slate-800">Dimensões Avaliadas</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </CardContent>
+          </Card>
+
+          {/* Lista de Dimensões Detalhada */}
+          <Card className="border-none shadow-xl bg-white overflow-hidden">
+            <CardHeader className="border-b border-slate-100 bg-slate-50/50 pb-4">
+              <CardTitle className="flex items-center gap-2 text-xl text-slate-800">
+                <BarChart3 className="h-5 w-5 text-indigo-600" />
+                Detalhamento por Área
+              </CardTitle>
+              <CardDescription>Pontuação detalhada de cada dimensão</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
               {Object.entries(pontuacoesDimensoes).map(([dimensao, pontuacao]) => {
                 const pontuacaoNum = typeof pontuacao === 'number' ? pontuacao : 0;
                 const percentual = Math.min(100, Math.max(0, pontuacaoNum));
-                const obterCor = (valor: number) => {
-                  if (valor >= 70) return {
-                    bg: 'from-emerald-500 to-teal-500',
-                    text: 'text-emerald-600',
-                    bgCard: 'from-emerald-50 to-teal-50',
-                    border: 'border-emerald-200'
-                  };
-                  if (valor >= 40) return {
-                    bg: 'from-amber-500 to-yellow-500',
-                    text: 'text-amber-600',
-                    bgCard: 'from-amber-50 to-yellow-50',
-                    border: 'border-amber-200'
-                  };
-                  return {
-                    bg: 'from-red-500 to-orange-500',
-                    text: 'text-red-600',
-                    bgCard: 'from-red-50 to-orange-50',
-                    border: 'border-red-200'
-                  };
-                };
-                const cores = obterCor(percentual);
+
+                let colorClass = 'bg-indigo-600';
+                let textClass = 'text-indigo-700';
+                let bgClass = 'bg-indigo-50';
+
+                if (percentual >= 80) {
+                  colorClass = 'bg-emerald-500';
+                  textClass = 'text-emerald-700';
+                  bgClass = 'bg-emerald-50';
+                } else if (percentual < 60) {
+                  colorClass = 'bg-amber-500';
+                  textClass = 'text-amber-700';
+                  bgClass = 'bg-amber-50';
+                }
 
                 return (
-                  <div
-                    key={dimensao}
-                    className={`relative overflow-hidden bg-gradient-to-br ${cores.bgCard} p-6 rounded-2xl border-2 ${cores.border} shadow-lg hover:shadow-2xl transition-all duration-300 group`}
-                  >
-                    {/* Círculo decorativo */}
-                    <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/30 rounded-full blur-2xl"></div>
-
-                    <div className="relative">
-                      <div className="text-sm font-bold text-slate-600 mb-3 uppercase tracking-wide">
+                  <div key={dimensao} className="group">
+                    <div className="flex justify-between items-end mb-2">
+                      <span className="font-semibold text-slate-700 text-sm uppercase tracking-wide">
                         {dimensao.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim()}
-                      </div>
-
-                      <div className="flex items-baseline gap-2 mb-4">
-                        <div className={`text-5xl font-black ${cores.text}`}>
-                          {pontuacaoNum.toFixed(1)}
-                        </div>
-                        <div className="text-lg text-slate-500 font-medium">/ 100</div>
-                      </div>
-
-                      {/* Barra de progresso moderna */}
-                      <div className="relative">
-                        <div className="w-full bg-slate-300/50 rounded-full h-4 overflow-hidden shadow-inner">
-                          <div
-                            className={`bg-gradient-to-r ${cores.bg} h-4 rounded-full transition-all duration-1000 ease-out shadow-lg relative overflow-hidden`}
-                            style={{ width: `${percentual}%` }}
-                          >
-                            {/* Shine effect */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
-                          </div>
-                        </div>
-                        <div className={`text-right text-xs font-bold ${cores.text} mt-2`}>
-                          {percentual.toFixed(0)}%
-                        </div>
-                      </div>
+                      </span>
+                      <span className={`font-bold ${textClass}`}>
+                        {pontuacaoNum.toFixed(1)} <span className="text-xs text-slate-400 font-normal">/ 100</span>
+                      </span>
+                    </div>
+                    <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${colorClass} rounded-full transition-all duration-1000 ease-out group-hover:opacity-90`}
+                        style={{ width: `${percentual}%` }}
+                      />
                     </div>
                   </div>
                 );
               })}
-            </div>
-          </div>
-        )}
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Interpretação e Recomendações */}
+        {/* Análise e Recomendações */}
         {(metadados.interpretacao || metadados.recomendacoes) && (
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Análise e Recomendações</h3>
-            <div className="space-y-4">
-              {metadados.interpretacao && (
-                <div>
-                  <div className="text-sm font-medium text-blue-600 mb-2">Interpretação:</div>
-                  <div className="text-sm text-slate-700 bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {metadados.interpretacao && (
+              <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-l-blue-500">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg text-blue-900">
+                    <Lightbulb className="h-5 w-5 text-blue-600" />
+                    Interpretação
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-700 leading-relaxed text-sm">
                     {Array.isArray(metadados.interpretacao)
                       ? metadados.interpretacao.join(' ')
                       : metadados.interpretacao}
-                  </div>
-                </div>
-              )}
-              {metadados.recomendacoes && (
-                <div>
-                  <div className="text-sm font-medium text-green-600 mb-2">Recomendações:</div>
-                  <div className="text-sm text-slate-700 bg-green-50 p-4 rounded-lg border border-green-200">
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {metadados.recomendacoes && (
+              <Card className="border-none shadow-lg bg-gradient-to-br from-emerald-50 to-teal-50 border-l-4 border-l-emerald-500">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg text-emerald-900">
+                    <CheckCircle className="h-5 w-5 text-emerald-600" />
+                    Recomendações
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
                     {Array.isArray(metadados.recomendacoes)
                       ? metadados.recomendacoes.map((rec: string, index: number) => (
-                        <div key={index} className="mb-2 last:mb-0">• {rec}</div>
+                        <li key={index} className="flex items-start gap-3 text-sm text-slate-700">
+                          <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                          <span>{rec}</span>
+                        </li>
                       ))
-                      : metadados.recomendacoes}
-                  </div>
-                </div>
-              )}
-            </div>
+                      : <li className="text-sm text-slate-700">{metadados.recomendacoes}</li>}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
-
-        {/* Informações Técnicas */}
-        <div className="bg-slate-50 p-6 rounded-xl border border-slate-200/60">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Informações da Avaliação</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-slate-600">Versão do Teste:</span>
-              <span className="ml-2 font-medium">{metadados.versao_teste || '1.0'}</span>
-            </div>
-            <div>
-              <span className="text-slate-600">Data de Processamento:</span>
-              <span className="ml-2 font-medium">
-                {metadados.timestamp_processamento
-                  ? new Date(metadados.timestamp_processamento).toLocaleDateString('pt-BR')
-                  : 'N/A'}
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-600">E-mail:</span>
-              <span className="ml-2 font-medium">{metadados.usuario_email || 'N/A'}</span>
-            </div>
-            <div>
-              <span className="text-slate-600">Tipo de Teste:</span>
-              <span className="ml-2 font-medium capitalize">{metadados.tipo_teste || 'clima-organizacional'}</span>
-            </div>
-          </div>
-        </div>
       </div>
     );
   };
@@ -1177,6 +1225,10 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
       }
     }
 
+    const classificacao = analiseCompleta.classificacaoGeral || analiseCompleta.nivelGeral || 'Moderado';
+    const interpretacao = metadados.interpretacao || analiseCompleta.interpretacao || '';
+    const recomendacoes = metadados.recomendacoes || analiseCompleta.recomendacoes || [];
+
     const obterCorNivel = (nivel: string) => {
       switch (nivel?.toLowerCase()) {
         case 'baixo': return 'text-green-700 bg-green-100 border-green-200';
@@ -1187,69 +1239,158 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
       }
     };
 
+    // Dados para o gráfico Radial
+    const dataRadial = [
+      {
+        name: 'Nível de Estresse',
+        uv: pontuacaoTotal,
+        fill: '#f97316',
+      },
+    ];
+
     return (
-      <div className="space-y-6">
-        {/* Resumo Executivo */}
-        <div className="bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-xl border border-orange-200/60">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Estresse Ocupacional, Burnout e Resiliência</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-white rounded-xl border border-orange-100 shadow-sm">
-              <div className="text-4xl font-bold text-orange-600 mb-1">
-                {pontuacaoTotal}%
+      <div className="space-y-8 font-sans">
+        {/* Header Premium */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900 p-8 text-white shadow-2xl">
+          <div className="absolute top-0 left-0 -mt-10 -ml-10 h-64 w-64 rounded-full bg-orange-500/20 blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 -mb-10 -mr-10 h-64 w-64 rounded-full bg-red-500/20 blur-3xl"></div>
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex-1 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-orange-200 backdrop-blur-md border border-white/10 mb-4">
+                <Target className="h-4 w-4" />
+                HumaniQ Stress
               </div>
-              <div className="text-sm font-medium text-slate-600">Nível Geral de Risco</div>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">Estresse Ocupacional</h2>
+              <p className="text-orange-200 max-w-xl text-lg">
+                Avaliação de níveis de estresse, risco de burnout e resiliência.
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-4 justify-center md:justify-start">
+                <Badge variant="outline" className="text-orange-200 border-orange-400/30 bg-orange-400/10">
+                  Burnout Check
+                </Badge>
+                <Badge variant="outline" className="text-orange-200 border-orange-400/30 bg-orange-400/10">
+                  Resiliência
+                </Badge>
+              </div>
             </div>
-            <div className="text-center p-4 bg-white rounded-xl border border-orange-100 shadow-sm">
-              <Badge className={`${obterCorNivel(analiseCompleta.nivelGeral)} text-sm font-medium px-3 py-1 border mb-2`}>
-                {(analiseCompleta.nivelGeral || 'Não definido').replace('_', ' ')}
-              </Badge>
-              <div className="text-sm font-medium text-slate-600">Classificação Geral</div>
+
+            <div className="flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-full p-4 border border-white/10 shadow-2xl relative">
+              <div className="absolute inset-0 flex items-center justify-center flex-col">
+                <span className="text-4xl font-black text-white">{pontuacaoTotal}%</span>
+                <span className="text-[10px] uppercase tracking-widest text-orange-300">Nível</span>
+              </div>
+              <div className="w-[180px] h-[180px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadialBarChart
+                    innerRadius="80%"
+                    outerRadius="100%"
+                    barSize={10}
+                    data={dataRadial}
+                    startAngle={90}
+                    endAngle={-270}
+                  >
+                    <RadialBar
+                      background
+                      dataKey="uv"
+                      cornerRadius={10}
+                    />
+                  </RadialBarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card Classificação */}
+          <Card className="md:col-span-1 border-none shadow-lg bg-white overflow-hidden relative group">
+            <div className="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
+            <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
+              <div className="p-3 bg-orange-100 rounded-full mb-4 group-hover:scale-110 transition-transform">
+                <Award className="h-8 w-8 text-orange-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-700 mb-1">Classificação</h3>
+              <Badge className="text-base px-4 py-1 bg-orange-100 text-orange-800 hover:bg-orange-200 border-none mt-2">
+                {classificacao}
+              </Badge>
+            </CardContent>
+          </Card>
+
+          {/* Card Interpretação */}
+          <Card className="md:col-span-2 border-none shadow-lg bg-white overflow-hidden">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg text-slate-800">
+                <Lightbulb className="h-5 w-5 text-orange-600" />
+                Análise do Resultado
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-slate-600 leading-relaxed text-sm">
+                {interpretacao || "Nenhuma interpretação disponível para este resultado."}
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Dimensões */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Object.entries(dimensoes).map(([chave, dimensao]: [string, any]) => {
-            const nomeDimensao = chave.charAt(0).toUpperCase() + chave.slice(1);
-            const cor = obterCorNivel(dimensao.nivel);
+        {Object.keys(dimensoes).length > 0 && (
+          <Card className="border-none shadow-lg bg-white overflow-hidden">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg text-slate-800">
+                <BarChart3 className="h-5 w-5 text-orange-600" />
+                Dimensões Avaliadas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Object.entries(dimensoes).map(([chave, dimensao]: [string, any]) => {
+                  const nomeDimensao = chave.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                  const pontuacao = dimensao.pontuacao || 0;
+                  const percentual = Math.round((pontuacao / 5) * 100);
 
-            return (
-              <div key={chave} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
-                <h4 className="text-lg font-semibold text-slate-800 mb-3">{nomeDimensao}</h4>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-slate-600">Nível:</span>
-                    <Badge className={`${cor} text-xs border capitalize`}>
-                      {dimensao.nivel}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-slate-600">Pontuação:</span>
-                    <span className="font-bold text-slate-700">{dimensao.pontuacao?.toFixed(1) || 0}</span>
-                  </div>
-                  <div className="text-xs text-slate-500 italic mt-2">
-                    {dimensao.classificacao}
-                  </div>
-                </div>
+                  return (
+                    <div key={chave} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-slate-700">{nomeDimensao}</span>
+                        <span className="font-bold text-slate-800">{pontuacao.toFixed(1)} <span className="text-xs text-slate-400 font-normal">/ 5.0</span></span>
+                      </div>
+                      <Progress value={percentual} className="h-2" />
+                      <div className="flex justify-between items-center text-xs text-slate-500">
+                        <span>{dimensao.nivel?.replace('-', ' ')}</span>
+                        <span>{percentual}%</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Recomendações */}
-        {metadados.recomendacoes && metadados.recomendacoes.length > 0 && (
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Recomendações</h3>
-            <ul className="space-y-3">
-              {metadados.recomendacoes.map((rec: string, idx: number) => (
-                <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 bg-slate-50 p-3 rounded-lg">
-                  <div className="mt-1 w-2 h-2 rounded-full bg-orange-500 flex-shrink-0"></div>
-                  <span className="leading-relaxed">{rec}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {recomendacoes.length > 0 && (
+          <Card className="border-none shadow-lg bg-gradient-to-br from-slate-50 to-white border-l-4 border-l-orange-500">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg text-slate-800">
+                <CheckCircle className="h-5 w-5 text-orange-600" />
+                Recomendações e Medidas Preventivas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {recomendacoes.map((rec: string, idx: number) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                    <div className="mt-1 flex-shrink-0 h-6 w-6 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs">
+                      {idx + 1}
+                    </div>
+                    <span className="text-sm text-slate-600 leading-relaxed">{rec}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     );
@@ -1280,76 +1421,138 @@ export function ResultadoVisualizacao({ resultado, dadosResultado, carregando = 
     const classificacao = analiseCompleta.classificacao || metadados.classificacao || analiseCompleta.classificacaoGeral || 'Não definido';
     const interpretacao = metadados.interpretacao || analiseCompleta.interpretacao || '';
     const recomendacoes = metadados.recomendacoes || analiseCompleta.recomendacoes || [];
-    const areasAtencao = analiseCompleta.areasAtencao || [];
 
-    const obterCorNivel = (nivel: string) => {
-      // Para PAS, pontuação alta geralmente é ruim (percepção de assédio)
-      // Mas depende da escala. Assumindo escala 0-100 onde maior é pior.
-      const nivelLower = nivel?.toLowerCase() || '';
-      if (nivelLower.includes('baixo') || nivelLower.includes('seguro')) return 'text-green-700 bg-green-100 border-green-200';
-      if (nivelLower.includes('moderado') || nivelLower.includes('alerta')) return 'text-yellow-700 bg-yellow-100 border-yellow-200';
-      if (nivelLower.includes('alto') || nivelLower.includes('crítico')) return 'text-red-700 bg-red-100 border-red-200';
-      return 'text-slate-700 bg-slate-100 border-slate-200';
-    };
+    // Dados para o gráfico Radial
+    const dataRadial = [
+      {
+        name: 'Percepção',
+        uv: pontuacaoTotal,
+        fill: '#8b5cf6',
+      },
+    ];
 
     return (
-      <div className="space-y-6">
-        {/* Resumo Executivo */}
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200/60">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Percepção de Assédio Moral e Sexual</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-white rounded-xl border border-purple-100 shadow-sm">
-              <div className="text-4xl font-bold text-purple-600 mb-1">
-                {pontuacaoTotal}%
+      <div className="space-y-8 font-sans">
+        {/* Header Premium com Radial Chart */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-8 text-white shadow-2xl">
+          <div className="absolute top-0 left-0 -mt-10 -ml-10 h-64 w-64 rounded-full bg-purple-500/20 blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 -mb-10 -mr-10 h-64 w-64 rounded-full bg-pink-500/20 blur-3xl"></div>
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex-1 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-purple-200 backdrop-blur-md border border-white/10 mb-4">
+                <Target className="h-4 w-4" />
+                HumaniQ PAS
               </div>
-              <div className="text-sm font-medium text-slate-600">Índice de Percepção</div>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">Percepção de Assédio</h2>
+              <p className="text-purple-200 max-w-xl text-lg">
+                Monitoramento sensível de assédio moral e sexual no ambiente corporativo.
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-4 justify-center md:justify-start">
+                <Badge variant="outline" className="text-purple-200 border-purple-400/30 bg-purple-400/10">
+                  Confidencial
+                </Badge>
+                <Badge variant="outline" className="text-purple-200 border-purple-400/30 bg-purple-400/10">
+                  Anônimo
+                </Badge>
+              </div>
             </div>
-            <div className="text-center p-4 bg-white rounded-xl border border-purple-100 shadow-sm">
-              <Badge className="text-sm font-medium px-3 py-1 bg-purple-100 text-purple-800 border border-purple-200 mb-2">
-                {classificacao}
-              </Badge>
-              <div className="text-sm font-medium text-slate-600">Classificação</div>
+
+            <div className="flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-full p-4 border border-white/10 shadow-2xl relative">
+              <div className="absolute inset-0 flex items-center justify-center flex-col">
+                <span className="text-4xl font-black text-white">{pontuacaoTotal}%</span>
+                <span className="text-[10px] uppercase tracking-widest text-purple-300">Índice</span>
+              </div>
+              <div className="w-[180px] h-[180px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadialBarChart
+                    innerRadius="80%"
+                    outerRadius="100%"
+                    barSize={10}
+                    data={dataRadial}
+                    startAngle={90}
+                    endAngle={-270}
+                  >
+                    <RadialBar
+                      background
+                      dataKey="uv"
+                      cornerRadius={10}
+                    />
+                  </RadialBarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Interpretação */}
-        {interpretacao && (
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
-            <h3 className="text-lg font-semibold text-slate-800 mb-3">Análise do Resultado</h3>
-            <p className="text-slate-700 leading-relaxed text-sm bg-slate-50 p-4 rounded-lg border border-slate-100">
-              {interpretacao}
-            </p>
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card Classificação */}
+          <Card className="md:col-span-1 border-none shadow-lg bg-white overflow-hidden relative group">
+            <div className="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+            <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
+              <div className="p-3 bg-purple-100 rounded-full mb-4 group-hover:scale-110 transition-transform">
+                <Award className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-700 mb-1">Classificação</h3>
+              <Badge className="text-base px-4 py-1 bg-purple-100 text-purple-800 hover:bg-purple-200 border-none mt-2">
+                {classificacao}
+              </Badge>
+            </CardContent>
+          </Card>
 
-        {/* Áreas de Atenção (se houver no texto de interpretação ou separado) */}
-        {interpretacao.includes('As áreas que requerem maior atenção são:') && (
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
-            <h3 className="text-lg font-semibold text-slate-800 mb-3">Áreas de Atenção</h3>
-            <div className="flex flex-wrap gap-2">
-              {interpretacao.split('As áreas que requerem maior atenção são:')[1]?.split('.')[0].split(',').map((area: string, idx: number) => (
-                <Badge key={idx} variant="outline" className="text-red-600 border-red-200 bg-red-50">
-                  {area.trim()}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
+          {/* Card Interpretação */}
+          <Card className="md:col-span-2 border-none shadow-lg bg-white overflow-hidden">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg text-slate-800">
+                <Lightbulb className="h-5 w-5 text-purple-600" />
+                Análise do Resultado
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-slate-600 leading-relaxed text-sm">
+                {interpretacao || "Nenhuma interpretação disponível para este resultado."}
+              </p>
+
+              {/* Áreas de Atenção Detectadas */}
+              {interpretacao.includes('As áreas que requerem maior atenção são:') && (
+                <div className="mt-4 pt-4 border-t border-slate-100">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Áreas de Atenção</span>
+                  <div className="flex flex-wrap gap-2">
+                    {interpretacao.split('As áreas que requerem maior atenção são:')[1]?.split('.')[0].split(',').map((area: string, idx: number) => (
+                      <Badge key={idx} variant="outline" className="text-red-600 border-red-200 bg-red-50 hover:bg-red-100">
+                        {area.trim()}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Recomendações */}
         {recomendacoes.length > 0 && (
-          <div className="bg-white p-6 rounded-xl border border-slate-200/60">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Recomendações e Medidas Preventivas</h3>
-            <ul className="space-y-3">
-              {recomendacoes.map((rec: string, idx: number) => (
-                <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 hover:border-purple-200 transition-colors">
-                  <div className="mt-1 w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></div>
-                  <span className="leading-relaxed">{rec}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Card className="border-none shadow-lg bg-gradient-to-br from-slate-50 to-white border-l-4 border-l-purple-500">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg text-slate-800">
+                <CheckCircle className="h-5 w-5 text-purple-600" />
+                Recomendações e Medidas Preventivas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {recomendacoes.map((rec: string, idx: number) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                    <div className="mt-1 flex-shrink-0 h-6 w-6 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">
+                      {idx + 1}
+                    </div>
+                    <span className="text-sm text-slate-600 leading-relaxed">{rec}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     );
