@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
-import { 
-  DollarSign, TrendingUp, Users, Building2, ShoppingCart, Target, 
-  Percent, Activity, ArrowUpRight, ArrowDownRight, BarChart3, 
+import {
+  DollarSign, TrendingUp, Users, Building2, ShoppingCart, Target,
+  Percent, Activity, ArrowUpRight, ArrowDownRight, BarChart3,
   Calendar, CheckCircle, XCircle, AlertCircle, Zap, Award,
   Eye, MousePointer, ShoppingBag, CreditCard, Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { 
-  LineChart, Line, BarChart, Bar, PieChart as RechartsPie, Pie, Cell, 
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
-  AreaChart, Area 
+import {
+  LineChart, Line, BarChart, Bar, PieChart as RechartsPie, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  AreaChart, Area, ComposedChart
 } from 'recharts';
 import { apiService } from '@/services/apiService';
 
@@ -47,6 +47,7 @@ interface DashboardMetrics {
     taxaDemoParaCheckout: number;
     taxaCheckoutParaCompra: number;
     taxaConversaoGeral: number;
+    funilDiario?: Array<{ data: string; visitantes: number; demos: number; checkouts: number; vendas: number }>;
   };
   planos: {
     distribuicao: Array<{ plano: string; quantidade: number; receita: number }>;
@@ -231,77 +232,66 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Funil de Conversão */}
+      {/* Funil de Conversão Moderno - DIÁRIO */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-          <MousePointer className="w-5 h-5 mr-2 text-purple-600" />
-          Funil de Conversão
+        <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center justify-between">
+          <div className="flex items-center">
+            <MousePointer className="w-5 h-5 mr-2 text-purple-600" />
+            Funil de Conversão (Diário - 30 dias)
+          </div>
+          <div className="flex space-x-2 text-sm">
+            <div className="flex items-center"><div className="w-3 h-3 bg-blue-500 rounded-full mr-1"></div> Visitantes</div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-green-500 rounded-full mr-1"></div> Demos</div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-yellow-500 rounded-full mr-1"></div> Checkouts</div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-red-500 rounded-full mr-1"></div> Vendas</div>
+          </div>
         </h3>
+
+        {/* Gráfico de Tendência Diária */}
+        <div className="mb-8">
+          <ResponsiveContainer width="100%" height={300}>
+            <ComposedChart data={metrics.conversao.funilDiario || []}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+              <XAxis
+                dataKey="data"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+                interval={4}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+              />
+              <Tooltip
+                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+              />
+              <Area type="monotone" dataKey="visitantes" name="Visitantes" fill="#3b82f6" fillOpacity={0.1} stroke="#3b82f6" strokeWidth={2} />
+              <Bar dataKey="demos" name="Demos" barSize={20} fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Line type="monotone" dataKey="checkouts" name="Checkouts" stroke="#f59e0b" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="vendas" name="Vendas" stroke="#ef4444" strokeWidth={2} dot={{ r: 4, strokeWidth: 2 }} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Cards Resumo do Funil (Estilo Moderno) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Visitantes Landing */}
-          <div className="relative">
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-5 border-2 border-blue-200">
-              <div className="flex items-center justify-between mb-2">
-                <Eye className="w-6 h-6 text-blue-600" />
-                <span className="text-xs font-medium text-blue-700">100%</span>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">{metrics.conversao.visitantesLanding}</p>
-              <p className="text-xs text-gray-600 mt-1">Visitantes Landing</p>
-            </div>
-            <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 text-blue-400 hidden md:block">
-              <ArrowUpRight className="w-6 h-6" />
-            </div>
+          <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+            <p className="text-sm text-blue-600 font-medium mb-1">Visitantes Landing</p>
+            <p className="text-2xl font-bold text-gray-900">{metrics.conversao.visitantesLanding}</p>
           </div>
-
-          {/* Testes Demo */}
-          <div className="relative">
-            <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-5 border-2 border-green-200">
-              <div className="flex items-center justify-between mb-2">
-                <Activity className="w-6 h-6 text-green-600" />
-                <span className="text-xs font-medium text-green-700">
-                  {metrics.conversao.taxaLandingParaDemo}%
-                </span>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">{metrics.conversao.testesDemonstracao}</p>
-              <p className="text-xs text-gray-600 mt-1">Testes de Demonstração</p>
-            </div>
-            <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 text-green-400 hidden md:block">
-              <ArrowUpRight className="w-6 h-6" />
-            </div>
+          <div className="bg-green-50/50 p-4 rounded-xl border border-green-100">
+            <p className="text-sm text-green-600 font-medium mb-1">Testes Demo</p>
+            <p className="text-2xl font-bold text-gray-900">{metrics.conversao.testesDemonstracao}</p>
           </div>
-
-          {/* Checkouts Iniciados */}
-          <div className="relative">
-            <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg p-5 border-2 border-yellow-200">
-              <div className="flex items-center justify-between mb-2">
-                <ShoppingBag className="w-6 h-6 text-yellow-600" />
-                <span className="text-xs font-medium text-yellow-700">
-                  {metrics.conversao.taxaDemoParaCheckout}%
-                </span>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">{metrics.conversao.checkoutsIniciados}</p>
-              <p className="text-xs text-gray-600 mt-1">Checkouts Iniciados</p>
-            </div>
-            <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 text-yellow-400 hidden md:block">
-              <ArrowUpRight className="w-6 h-6" />
-            </div>
+          <div className="bg-yellow-50/50 p-4 rounded-xl border border-yellow-100">
+            <p className="text-sm text-yellow-600 font-medium mb-1">Checkouts</p>
+            <p className="text-2xl font-bold text-gray-900">{metrics.conversao.checkoutsIniciados}</p>
           </div>
-
-          {/* Compras Finalizadas */}
-          <div className="relative">
-            <div className="bg-gradient-to-r from-red-50 to-red-100 rounded-lg p-5 border-2 border-red-200">
-              <div className="flex items-center justify-between mb-2">
-                <ShoppingCart className="w-6 h-6 text-red-600" />
-                <span className="text-xs font-medium text-red-700">
-                  {metrics.conversao.taxaCheckoutParaCompra}%
-                </span>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">{metrics.conversao.comprasFinalizadas}</p>
-              <p className="text-xs text-gray-600 mt-1">Compras Finalizadas</p>
-            </div>
-            <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 text-red-400 hidden md:block">
-              <ArrowUpRight className="w-6 h-6" />
-            </div>
+          <div className="bg-red-50/50 p-4 rounded-xl border border-red-100">
+            <p className="text-sm text-red-600 font-medium mb-1">Vendas</p>
+            <p className="text-2xl font-bold text-gray-900">{metrics.conversao.comprasFinalizadas}</p>
           </div>
         </div>
       </div>
@@ -316,8 +306,8 @@ export default function AdminDashboard() {
           <AreaChart data={metrics.tendencias.receitaMensal}>
             <defs>
               <linearGradient id="colorReceita" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" />

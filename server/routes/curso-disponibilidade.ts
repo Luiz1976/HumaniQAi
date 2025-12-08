@@ -22,7 +22,7 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
 
     // Importar lista de cursos estáticos
     const { cursos } = await import('../../src/data/cursosData');
-    
+
     console.log('📊 [CURSO-DISPONIBILIDADE] Total de cursos encontrados:', cursos.length);
 
     // Buscar disponibilidade para cada curso
@@ -39,6 +39,11 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
             )
           )
           .limit(1);
+
+        console.log(`[DEBUG] Curso: ${curso.slug}, Colaborador: ${colaboradorId}, Disponibilidade Found:`, disponibilidade ? 'YES' : 'NO');
+        if (disponibilidade) {
+          console.log(`[DEBUG] Disponibilidade Record for ${curso.slug}:`, JSON.stringify(disponibilidade));
+        }
 
         // Verificar se já completou o curso (avaliação concluída)
         const [avaliacao] = await db
@@ -61,21 +66,22 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
 
         if (disponibilidade) {
           // Se existe configuração, usar ela
-          disponivel = disponibilidade.disponivel;
-          
+          // FORCE BOOLEAN logic if it's coming as number 1/0 from sqlite
+          disponivel = !!disponibilidade.disponivel;
+
           if (!disponivel && disponibilidade.periodicidadeDias && disponibilidade.proximaDisponibilidade) {
             const agora = new Date();
             const proxima = new Date(disponibilidade.proximaDisponibilidade);
-            
+
             if (agora >= proxima) {
               // Período expirou, liberar automaticamente
               disponivel = true;
               // Atualizar registro
               await db
                 .update(cursoDisponibilidade)
-                .set({ 
+                .set({
                   disponivel: true,
-                  updatedAt: new Date() 
+                  updatedAt: new Date()
                 })
                 .where(eq(cursoDisponibilidade.id, disponibilidade.id));
             } else {
@@ -115,11 +121,10 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
           periodicidadeDias: disponibilidade?.periodicidadeDias || null,
         };
 
-        console.log(`📋 [CURSO-DISPONIBILIDADE] Curso "${(curso as any)['título']}" - Colaborador: ${colaboradorId}:`, {
+        console.log(`📋 [CURSO-DISPONIBILIDADE] Curso "${(curso as any)['título']}" - Result:`, {
           disponivel,
           motivo,
-          temDisponibilidade: !!disponibilidade,
-          temAvaliacao: !!avaliacao,
+          temDisponibilidade: !!disponibilidade
         });
 
         return cursoInfo;
@@ -132,9 +137,9 @@ router.get('/colaborador/cursos', authenticateToken, requireColaborador, async (
       bloqueados: cursosComDisponibilidade.filter(c => !c.disponivel).length
     });
 
-    res.json({ 
+    res.json({
       cursos: cursosComDisponibilidade,
-      total: cursosComDisponibilidade.length 
+      total: cursosComDisponibilidade.length
     });
   } catch (error) {
     console.error('Erro ao buscar cursos disponíveis:', error);
@@ -216,9 +221,9 @@ router.get('/empresa/colaborador/:colaboradorId/cursos', authenticateToken, requ
       })
     );
 
-    res.json({ 
+    res.json({
       cursos: cursosComInfo,
-      total: cursosComInfo.length 
+      total: cursosComInfo.length
     });
   } catch (error) {
     console.error('Erro ao buscar informações de cursos:', error);
@@ -530,9 +535,9 @@ router.patch('/empresa/colaborador/:colaboradorId/curso/:cursoSlug/periodicidade
     }).safeParse(req.body);
 
     if (!validationResult.success) {
-      return res.status(400).json({ 
-        error: 'Dados inválidos', 
-        details: validationResult.error.issues 
+      return res.status(400).json({
+        error: 'Dados inválidos',
+        details: validationResult.error.issues
       });
     }
 
