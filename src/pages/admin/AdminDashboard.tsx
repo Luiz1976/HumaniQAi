@@ -278,7 +278,7 @@ export default function AdminDashboard() {
         {/* Cards Resumo do Funil (Estilo Moderno) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
-            <p className="text-sm text-blue-600 font-medium mb-1">Visitantes Landing</p>
+            <p className="text-sm text-blue-600 font-medium mb-1">Visitantes</p>
             <p className="text-2xl font-bold text-gray-900">{metrics.conversao.visitantesLanding}</p>
           </div>
           <div className="bg-green-50/50 p-4 rounded-xl border border-green-100">

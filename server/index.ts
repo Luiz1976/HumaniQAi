@@ -101,6 +101,13 @@ async function loadRoutesAndStart() {
     app.use('/api/analytics', analyticsRoutes);
     console.log('✅ analyticsRoutes importado');
 
+    console.log('🔄 Importando trackingRoutes...');
+    const trackingRoutes = (await import('./routes/tracking')).default;
+    app.use('/api/tracking', trackingRoutes);
+    console.log('✅ trackingRoutes importado');
+    app.use('/api/analytics', analyticsRoutes);
+    console.log('✅ analyticsRoutes importado');
+
     console.log('🔄 Importando notificationsRoutes...');
     const notificationsRoutes = (await import('./routes/notifications')).default;
     app.use('/api/notifications', notificationsRoutes);

@@ -298,6 +298,17 @@ async function createTables() {
   sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_empresa_id ON convites_colaborador(empresa_id);`);
   sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_convites_colaborador_status ON convites_colaborador(status);`);
 
+  // Criar tabela visitas_landing
+  sqliteInstance.exec(`
+    CREATE TABLE IF NOT EXISTS visitas_landing (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      user_agent TEXT,
+      origem TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  sqliteInstance.exec(`CREATE INDEX IF NOT EXISTS idx_visitas_landing_created_at ON visitas_landing(created_at);`);
+
 
   sqliteInstance.exec(`
     CREATE TABLE IF NOT EXISTS curso_disponibilidade (

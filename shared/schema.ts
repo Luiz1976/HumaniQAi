@@ -533,7 +533,15 @@ export const updateCursoDisponibilidadeSchema = z.object({
   periodicidadeDias: z.number().optional().nullable(),
   ultimaLiberacao: z.date().optional().nullable(),
   proximaDisponibilidade: z.date().optional().nullable(),
-  liberadoPor: z.string().uuid().optional().nullable(),
   historicoLiberacoes: z.any().optional(),
   metadados: z.any().optional(),
 });
+
+export const visitas_landing = pgTable('visitas_landing', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  userAgent: text('user_agent'),
+  origem: varchar('origem', { length: 255 }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  createdAtIdx: index('idx_visitas_landing_created_at').on(table.createdAt),
+}));

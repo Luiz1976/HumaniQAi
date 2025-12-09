@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../db-config';
-import { empresas, colaboradores, resultados } from '../../shared/schema';
+import { empresas, colaboradores, resultados, visitas_landing } from '../../shared/schema';
 import { authenticateToken, requireAdmin, AuthRequest } from '../middleware/auth';
 import { parseDateSeguro } from '../utils/dateUtils';
 import logger from '../utils/logger';
@@ -74,6 +74,17 @@ router.get('/dashboard', authenticateToken, requireAdmin, async (req: AuthReques
     } finally {
       const durationMs = Date.now() - resultadosQueryStart;
       logger.info('⏱️ [ADMIN DASHBOARD] Tempo consulta resultados', { durationMs, count: todosResultados.length });
+    }
+
+    // Buscar visualizações de landing (NEW REAL TRACKING)
+    let todasVisitas: any[] = [];
+    try {
+      todasVisitas = await db
+        .select()
+        .from(visitas_landing)
+        .where(gte(visitas_landing.createdAt, DATA_INICIO_METRICAS));
+    } catch (err) {
+      logger.warn('⚠️ [ADMIN DASHBOARD] Falha ao buscar visitas', { error: (err as any)?.message });
     }
 
     // Observabilidade de datas
@@ -159,11 +170,14 @@ router.get('/dashboard', authenticateToken, requireAdmin, async (req: AuthReques
     let testesDemonstracao = 0;
     let checkoutsIniciados = 0;
     let comprasFinalizadas = 0;
+
     try {
-      // Remover simulações de piso (ex: 200) para zerar se não houver dados novos
-      visitantesLanding = Math.max(todosColaboradores.length * 5, empresasAtivas.length * 50, 0);
-      testesDemonstracao = Math.floor(visitantesLanding * 0.15); // Taxa estimada
-      checkoutsIniciados = Math.floor(testesDemonstracao * 0.4); // Taxa estimada
+      // USAR DADOS REAIS DE RASTREAMENTO
+      visitantesLanding = todasVisitas.length;
+
+      // Se não houver visitas reais ainda (primeiro deploy), manter 0 para consistência
+      testesDemonstracao = Math.floor(visitantesLanding * 0.15); // Taxa estimada PROVISÓRIA (até ter tracking real de demo)
+      checkoutsIniciados = Math.floor(testesDemonstracao * 0.4); // Taxa estimada PROVISÓRIA
       comprasFinalizadas = empresasAtivas.length; // Real
     } catch (err) {
       logger.warn('📈 [ADMIN DASHBOARD] Erro ao calcular métricas de conversão', { error: (err as any)?.message });

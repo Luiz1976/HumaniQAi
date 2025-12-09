@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { 
-  Shield, CheckCircle, TrendingUp, Users, FileCheck, Zap, 
+import {
+  Shield, CheckCircle, TrendingUp, Users, FileCheck, Zap,
   Award, Clock, AlertTriangle, BarChart3, Sparkles, Target, Star,
   ChevronRight, Download, Play, ArrowRight, Check, X, GraduationCap,
   BookOpen, Scale, Brain, HeartPulse, UserCheck, FileBarChart, TrendingDown, QrCode,
@@ -69,34 +69,55 @@ export default function LandingPage() {
     if (video) {
       console.log('🎬 Vídeo encontrado, tentando reproduzir...');
       console.log('📹 Vídeo selecionado: Pessoas olhando para computador - ID 3248994');
-      
+
       const sources = video.querySelectorAll('source');
       console.log('📋 Sources disponíveis:', sources.length);
       sources.forEach((source, index) => {
         console.log(`🔗 Source ${index + 1}:`, (source as HTMLSourceElement).src);
       });
-      
+
       video.play().catch(error => {
         console.log('🚫 Autoplay bloqueado, tentando reproduzir com interação:', error);
         document.addEventListener('click', () => {
           video.play().catch(e => console.log('❌ Erro ao reproduzir vídeo:', e));
         }, { once: true });
       });
-      
+
       video.addEventListener('loadeddata', () => {
         console.log('✅ Vídeo carregado com sucesso!');
         console.log('📺 Vídeo atual:', video.currentSrc);
       });
-      
+
       video.addEventListener('error', (e) => {
         console.log('❌ Erro ao carregar vídeo:', e);
         console.log('🔄 URL tentada:', video.currentSrc);
       });
-      
+
       video.addEventListener('loadstart', () => {
         console.log('⏳ Iniciando carregamento do vídeo...');
       });
     }
+  }, []);
+
+  useEffect(() => {
+    // RASTREAMENTO DE VISITA (REAL)
+    const trackVisit = async () => {
+      try {
+        const visited = sessionStorage.getItem('humaniq_visited');
+        if (!visited) {
+          await fetch('/api/tracking/visit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ origem: document.referrer || 'direct' })
+          });
+          sessionStorage.setItem('humaniq_visited', 'true');
+          console.log('📡 Visita registrada com sucesso');
+        }
+      } catch (err) {
+        console.warn('Falha ao registrar visita', err);
+      }
+    };
+    trackVisit();
   }, []);
 
   const scrollToSection = (id: string) => {
@@ -107,10 +128,9 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header Fixo */}
-      <header 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg' : 'bg-white/10 backdrop-blur-md border-b border-white/20'
-        }`}
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg' : 'bg-white/10 backdrop-blur-md border-b border-white/20'
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex md:items-center md:flex-row flex-col gap-2">
@@ -144,15 +164,15 @@ export default function LandingPage() {
               >
                 Chatbot
               </button>
-              <Button 
-                onClick={() => navigate('/quick-check')} 
+              <Button
+                onClick={() => navigate('/quick-check')}
                 className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                 data-testid="button-diagnostico-header"
               >
                 Diagnóstico Gratuito
               </Button>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 onClick={() => navigate('/login')}
                 data-testid="button-login"
               >
@@ -187,16 +207,16 @@ export default function LandingPage() {
                 >
                   Chatbot
                 </button>
-                <Button 
-                  onClick={() => navigate('/quick-check')} 
+                <Button
+                  onClick={() => navigate('/quick-check')}
                   size="sm"
                   className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-xs px-3 py-1"
                   data-testid="button-diagnostico-header"
                 >
                   Diagnóstico Gratuito
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => navigate('/login')}
                   className="text-xs px-3 py-1"
@@ -243,14 +263,14 @@ export default function LandingPage() {
             <Badge className="mb-6 bg-red-600 text-white px-4 py-2 text-sm font-semibold shadow-md relative z-30" data-testid="badge-prazo">
               ⚠️ URGENTE: Prazo NR-01 - Fiscalização ativa a partir de 25/05/2026
             </Badge>
-            
+
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
               Sua empresa está <span className="text-yellow-400">protegida</span> contra os riscos psicossociais?
             </h1>
-            
+
             <p className="text-base sm:text-lg md:text-2xl text-white mb-8 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
-              A partir de maio de 2026, mapear e controlar riscos psicossociais será obrigatório. 
-              Empresas sem evidências documentadas enfrentarão multas de até <strong className="text-yellow-400 font-semibold">R$ 6.708</strong> e 
+              A partir de maio de 2026, mapear e controlar riscos psicossociais será obrigatório.
+              Empresas sem evidências documentadas enfrentarão multas de até <strong className="text-yellow-400 font-semibold">R$ 6.708</strong> e
               passivos trabalhistas que podem ultrapassar <strong className="text-yellow-400 font-semibold">R$ 100 mil</strong> por caso.
             </p>
 
@@ -262,7 +282,7 @@ export default function LandingPage() {
                     Dado alarmante que exige sua atenção
                   </p>
                   <p className="text-gray-800">
-                    <strong className="text-xl text-red-600">472 mil afastamentos</strong> por transtornos mentais foram registrados no Brasil em 2024 — 
+                    <strong className="text-xl text-red-600">472 mil afastamentos</strong> por transtornos mentais foram registrados no Brasil em 2024 —
                     um aumento de <strong className="text-red-700">68% em relação a 2023</strong>.
                   </p>
                 </div>
@@ -270,8 +290,8 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 onClick={() => scrollToSection('diagnostico')}
                 className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 shadow-lg hover:shadow-xl transition-all text-gray-900 font-bold relative z-30"
                 data-testid="button-diagnostico-hero"
@@ -279,8 +299,8 @@ export default function LandingPage() {
                 <Sparkles className="mr-2 h-5 w-5" />
                 Faça seu Diagnóstico Gratuito em 5 Minutos
               </Button>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="outline"
                 onClick={() => scrollToSection('demo')}
                 className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 border-2 border-indigo-400 text-indigo-700 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 font-semibold transition-all bg-white shadow-lg hover:shadow-xl group relative z-30"
@@ -485,7 +505,7 @@ export default function LandingPage() {
               🚨 Empresas que começarem apenas em maio de 2026 estarão <strong className="text-yellow-300 bg-red-800 px-2 py-1 rounded">12 MESES ATRASADAS</strong> na construção de evidências
             </p>
             <p className="text-base sm:text-lg text-orange-100 font-medium">
-              Auditores avaliarão o <strong className="text-white">histórico completo de ações</strong>, não apenas a situação presente. 
+              Auditores avaliarão o <strong className="text-white">histórico completo de ações</strong>, não apenas a situação presente.
               Com a <strong className="text-yellow-300">HumaniQ AI</strong>, você constrói esse histórico <strong className="text-white">automaticamente desde o primeiro dia</strong>.
             </p>
           </div>
@@ -504,7 +524,7 @@ export default function LandingPage() {
               HumaniQ AI: A Única Plataforma Completa para Gestão de Riscos Psicossociais
             </h2>
             <p className="text-base sm:text-lg md:text-2xl text-indigo-200 max-w-5xl mx-auto font-medium">
-              A <span className="text-yellow-300 font-bold">única solução integrada</span> que entrega <span className="text-white font-bold">tudo o que a NR-01 exige</span> — do mapeamento online à capacitação de lideranças — 
+              A <span className="text-yellow-300 font-bold">única solução integrada</span> que entrega <span className="text-white font-bold">tudo o que a NR-01 exige</span> — do mapeamento online à capacitação de lideranças —
               em um sistema <span className="text-emerald-300 font-bold">totalmente automatizado e auditável</span>.
             </p>
           </div>
@@ -613,13 +633,13 @@ export default function LandingPage() {
       <section className="py-12 md:py-20 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] -z-0" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          
+
           {/* Cabeçalho com Âncora e Urgência */}
           <div className="text-center mb-16">
             <Badge className="mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-6 py-3 text-base font-bold animate-pulse" data-testid="badge-capacitacao">
               🎓 EXCLUSIVO: Trilha Completa NR-01 + Certificação Digital
             </Badge>
-            
+
             <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               Capacite Suas Lideranças com a{' '}
               <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
@@ -627,10 +647,10 @@ export default function LandingPage() {
               </span>{' '}
               para Gestão de Riscos Psicossociais
             </h2>
-            
+
             <p className="text-base sm:text-lg md:text-2xl text-indigo-200 max-w-4xl mx-auto mb-8">
-              <strong className="text-yellow-300">8 cursos profissionais</strong> baseados nas exigências da NR-01, 
-              com <strong className="text-yellow-300">certificação digital reconhecida</strong> que comprova a capacitação 
+              <strong className="text-yellow-300">8 cursos profissionais</strong> baseados nas exigências da NR-01,
+              com <strong className="text-yellow-300">certificação digital reconhecida</strong> que comprova a capacitação
               de suas lideranças perante auditores do MTE e processos trabalhistas.
             </p>
 
@@ -653,7 +673,7 @@ export default function LandingPage() {
               <div className="flex items-start">
                 <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" />
                 <p className="text-sm font-semibold">
-                  <span className="text-amber-600">ESCASSEZ:</span> Turmas limitadas a 50 empresas por trimestre. 
+                  <span className="text-amber-600">ESCASSEZ:</span> Turmas limitadas a 50 empresas por trimestre.
                   Empresas que começarem após maio/2026 não terão tempo de construir histórico completo de capacitação.
                 </p>
               </div>
@@ -693,7 +713,7 @@ export default function LandingPage() {
                 },
                 {
                   icon: Shield,
-  titulo: 'Gestão de Riscos PGR',
+                  titulo: 'Gestão de Riscos PGR',
                   duracao: '12h',
                   nivel: 'Estratégico',
                   topicos: ['PGR Psicossocial', 'ISO 45003', 'GRO Integrado'],
@@ -737,20 +757,20 @@ export default function LandingPage() {
                     <div className={`bg-gradient-to-br ${curso.cor} w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
                       <curso.icon className="h-7 w-7 text-white" />
                     </div>
-                    
+
                     <Badge className="mb-3 bg-yellow-400 text-gray-900 text-xs font-bold">
                       {curso.nivel}
                     </Badge>
-                    
+
                     <h4 className="text-lg font-bold mb-2 text-white group-hover:text-yellow-300 transition-colors">
                       {curso.titulo}
                     </h4>
-                    
+
                     <div className="flex items-center gap-2 mb-3 text-sm text-indigo-200">
                       <Clock className="h-4 w-4" />
                       <span className="font-semibold">{curso.duracao} de conteúdo</span>
                     </div>
-                    
+
                     <ul className="space-y-1 text-sm text-gray-300">
                       {curso.topicos.map((topico, idx) => (
                         <li key={idx} className="flex items-start">
@@ -764,7 +784,7 @@ export default function LandingPage() {
               ))}
             </div>
 
-            
+
           </div>
 
           {/* Seção de Certificação Digital */}
@@ -777,19 +797,19 @@ export default function LandingPage() {
                 Certificados Reconhecidos e Auditáveis
               </h3>
               <p className="text-base sm:text-lg text-indigo-200 max-w-3xl mx-auto">
-                Cada curso concluído gera um <strong className="text-white">certificado digital profissional</strong> com 
+                Cada curso concluído gera um <strong className="text-white">certificado digital profissional</strong> com
                 validade jurídica, aceito em auditorias do MTE e processos trabalhistas.
               </p>
             </div>
 
             <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-[2px] rounded-3xl shadow-2xl mb-12 flex justify-center">
               <div className="bg-white rounded-[28px] p-0">
-                <div 
+                <div
                   className="relative inline-block bg-white rounded-2xl border border-gray-200 mx-auto group cursor-zoom-in overflow-hidden"
                   onClick={() => window.open('/Captura%20de%20tela%202025-11-18%20102806.png', '_blank')}
                   role="button"
                 >
-                  <img 
+                  <img
                     src="/Captura%20de%20tela%202025-11-18%20102806.png"
                     alt="Modelo de Certificado HumaniQ AI"
                     className="block h-auto w-auto max-h-[80vh] max-w-[92vw] transition-transform duration-300 ease-out group-hover:scale-[1.01]"
@@ -866,7 +886,7 @@ export default function LandingPage() {
                 INCLUSO em todos os planos HumaniQ AI
               </p>
               <p className="text-lg text-gray-300">
-                Economize <strong className="text-white">R$ 12.800</strong> em capacitação externa + 
+                Economize <strong className="text-white">R$ 12.800</strong> em capacitação externa +
                 elimine custos de consultoria para elaboração de PGR Psicossocial
               </p>
             </div>
@@ -898,11 +918,10 @@ export default function LandingPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-6 py-3 rounded-full font-semibold transition-all ${
-                    activeTab === tab.id
+                  className={`px-6 py-3 rounded-full font-semibold transition-all ${activeTab === tab.id
                       ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
                       : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                    }`}
                   data-testid={`tab-${tab.id}`}
                 >
                   {tab.label}
@@ -1003,7 +1022,7 @@ export default function LandingPage() {
               Empresas que já transformaram sua gestão de riscos
             </h2>
             <div className="flex justify-center items-center gap-2 text-yellow-500">
-              {[1,2,3,4,5].map(i => <Star key={i} className="h-6 w-6 fill-current" />)}
+              {[1, 2, 3, 4, 5].map(i => <Star key={i} className="h-6 w-6 fill-current" />)}
             </div>
           </div>
 
@@ -1031,7 +1050,7 @@ export default function LandingPage() {
               <Card key={index} className="border-2 border-gray-100 hover:border-indigo-300 hover:shadow-xl transition-all" data-testid={`card-depoimento-${index}`}>
                 <CardContent className="pt-6">
                   <div className="flex mb-4">
-                    {[1,2,3,4,5].map(i => <Star key={i} className="h-5 w-5 fill-current text-yellow-500" />)}
+                    {[1, 2, 3, 4, 5].map(i => <Star key={i} className="h-5 w-5 fill-current text-yellow-500" />)}
                   </div>
                   <p className="text-gray-700 mb-6 italic">"{item.depoimento}"</p>
                   <div className="border-t pt-4">
@@ -1101,8 +1120,8 @@ export default function LandingPage() {
                 </div>
 
                 <div className="text-center pt-4">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     onClick={() => scrollToSection('diagnostico')}
                     className="bg-white text-green-600 hover:bg-gray-100 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 shadow-xl"
                     data-testid="button-diagnostico-roi"
@@ -1145,7 +1164,7 @@ export default function LandingPage() {
                   </div>
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-sm text-gray-700">
-                      <strong>Mínimo:</strong> 10 colaboradores<br/>
+                      <strong>Mínimo:</strong> 10 colaboradores<br />
                       <strong>Ticket:</strong> R$ 150/mês
                     </p>
                   </div>
@@ -1178,12 +1197,12 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-start">
                     <X className="h-5 w-5 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-  <span className="text-gray-500">Módulo PGR</span>
+                    <span className="text-gray-500">Módulo PGR</span>
                   </li>
                 </ul>
 
-                <Button 
-                  className="w-full bg-gray-600 hover:bg-gray-700" 
+                <Button
+                  className="w-full bg-gray-600 hover:bg-gray-700"
                   data-testid="button-plano-essencial"
                   onClick={() => window.location.href = '/checkout/essencial'}
                 >
@@ -1199,7 +1218,7 @@ export default function LandingPage() {
                   ⭐ MAIS POPULAR
                 </Badge>
               </div>
-              
+
               <CardContent className="pt-12 pb-8">
                 <div className="text-center mb-6">
                   <h3 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
@@ -1214,7 +1233,7 @@ export default function LandingPage() {
                   </div>
                   <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-3 rounded-lg border-2 border-indigo-200">
                     <p className="text-sm text-indigo-900 font-semibold">
-                      <strong>Mínimo:</strong> 20 colaboradores<br/>
+                      <strong>Mínimo:</strong> 20 colaboradores<br />
                       <strong>Ticket:</strong> R$ 500/mês
                     </p>
                   </div>
@@ -1239,7 +1258,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-start">
                     <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
-  <span className="text-gray-700"><strong>Módulo PGR completo</strong></span>
+                    <span className="text-gray-700"><strong>Módulo PGR completo</strong></span>
                   </li>
                   <li className="flex items-start">
                     <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
@@ -1255,8 +1274,8 @@ export default function LandingPage() {
                   </li>
                 </ul>
 
-                <Button 
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-base sm:text-lg py-4 sm:py-6" 
+                <Button
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-base sm:text-lg py-4 sm:py-6"
                   data-testid="button-plano-profissional"
                   onClick={() => window.location.href = '/checkout/profissional'}
                 >
@@ -1278,7 +1297,7 @@ export default function LandingPage() {
                   </div>
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-sm text-gray-700">
-                      <strong>Mínimo:</strong> 100 colaboradores<br/>
+                      <strong>Mínimo:</strong> 100 colaboradores<br />
                       <strong>Ticket:</strong> R$ 3.500/mês
                     </p>
                   </div>
@@ -1323,8 +1342,8 @@ export default function LandingPage() {
                   </li>
                 </ul>
 
-                <Button 
-                  className="w-full bg-purple-600 hover:bg-purple-700" 
+                <Button
+                  className="w-full bg-purple-600 hover:bg-purple-700"
                   data-testid="button-plano-enterprise"
                   onClick={() => window.location.href = '/checkout/enterprise'}
                 >
@@ -1381,16 +1400,16 @@ export default function LandingPage() {
               </span> — investimento que se paga
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 onClick={() => scrollToSection('diagnostico')}
                 className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                 data-testid="button-testar-planos"
               >
                 Testar Gratuitamente
               </Button>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="outline"
                 onClick={() => setShowComparison(true)}
                 className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50"
@@ -1409,13 +1428,13 @@ export default function LandingPage() {
           <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
             Comece Hoje. Proteja Sua Empresa Amanhã.
           </h2>
-          
+
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 md:p-8 mb-8 border border-white/20">
             <div className="flex items-center justify-center mb-6">
               <Sparkles className="h-12 w-12 text-yellow-400" />
             </div>
             <h3 className="text-2xl sm:text-3xl font-bold mb-6">Diagnóstico Gratuito Completo + Demo da Plataforma</h3>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div className="bg-white/10 p-6 rounded-xl">
                 <h4 className="font-bold text-xl mb-4">O que você recebe sem custo:</h4>
@@ -1457,8 +1476,8 @@ export default function LandingPage() {
           </div>
 
           <div className="flex justify-center mb-6">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               onClick={() => navigate('/quick-check')}
               className="bg-white text-indigo-600 hover:bg-gray-100 text-xl px-12 py-8 shadow-2xl hover:shadow-3xl transition-all"
               data-testid="button-diagnostico-final"
@@ -1524,7 +1543,7 @@ export default function LandingPage() {
                   { feature: 'Análise com IA (Google Gemini)', essencial: false, profissional: true, enterprise: true },
                   { feature: 'Dashboard de resultados', essencial: 'Básico', profissional: 'Avançado', enterprise: 'Avançado' },
                   { feature: 'Relatórios de compliance (NR-1, ISO 45003)', essencial: false, profissional: true, enterprise: true },
-  { feature: 'Módulo PGR completo', essencial: false, profissional: true, enterprise: true },
+                  { feature: 'Módulo PGR completo', essencial: false, profissional: true, enterprise: true },
                   { feature: 'Exportação PDF e Excel', essencial: false, profissional: true, enterprise: true },
                   { feature: 'API para integração', essencial: false, profissional: false, enterprise: true },
                   { feature: 'Múltiplas empresas/unidades', essencial: false, profissional: false, enterprise: true },
@@ -1579,7 +1598,7 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
+            <Button
               onClick={() => {
                 setShowComparison(false);
                 scrollToSection('diagnostico');
@@ -1588,7 +1607,7 @@ export default function LandingPage() {
             >
               Começar Teste Gratuito
             </Button>
-            <Button 
+            <Button
               variant="outline"
               onClick={() => setShowComparison(false)}
             >
@@ -1651,7 +1670,7 @@ export default function LandingPage() {
               Imagine sua diretoria visualizando, em poucos minutos, o mapa real de riscos psicossociais da empresa. Decida agora: uma conversa rápida pode evitar meses de incerteza.
             </p>
           </div>
-            <div className="bg-white rounded-2xl shadow-2xl border-2 border-amber-200 p-6 md:p-8">
+          <div className="bg-white rounded-2xl shadow-2xl border-2 border-amber-200 p-6 md:p-8">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
                 <div className="flex items-center gap-3 mb-4">
@@ -1679,7 +1698,7 @@ export default function LandingPage() {
               <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-xl p-6">
                 <p className="text-gray-900 text-lg font-bold mb-4">Escolha seu canal preferido</p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
+                  <Button
                     className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
                     data-testid="button-contato-whatsapp"
                     onClick={() => window.open('https://wa.me/5519983835867?text=Olá%2C%20quero%20agendar%20uma%20demonstração%20do%20HumaniQ%20AI.', '_blank')}
@@ -1688,7 +1707,7 @@ export default function LandingPage() {
                     <MessageCircle className="mr-2 h-5 w-5" />
                     WhatsApp
                   </Button>
-                  <Button 
+                  <Button
                     variant="outline"
                     className="flex-1 border-2 border-indigo-600 text-indigo-700 hover:bg-indigo-50"
                     data-testid="button-contato-email"
