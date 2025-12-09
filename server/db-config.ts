@@ -105,6 +105,7 @@ export async function runMigrations() {
       }
     } else if (dbType.includes('PostgreSQL')) {
       await pingPostgresWithRetry(3, 5000);
+      await ensureTablesPostgres();
       console.log('✅ PostgreSQL disponível');
     } else {
       console.warn('⚠️ Banco de dados indisponível, migrações ignoradas');
@@ -132,4 +133,25 @@ async function pingPostgresWithRetry(retries: number, delayMs: number) {
     }
   }
   throw lastError;
+}
+
+async function ensureTablesPostgres() {
+  if (!process.env.DATABASE_URL) return;
+  try {
+    const client = postgres(normalizeDatabaseUrl(process.env.DATABASE_URL), { max: 1 });
+    // Criar tabela visitas_landing se não existir (auto-fix para produção)
+    await client`
+      CREATE TABLE IF NOT EXISTS visitas_landing (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_agent text,
+        origem varchar(255),
+        created_at timestamp with time zone DEFAULT now() NOT NULL
+      );
+    `;
+    await client`CREATE INDEX IF NOT EXISTS idx_visitas_landing_created_at ON visitas_landing(created_at);`;
+    await client.end();
+    console.log('✅ Tabela visitas_landing verificada/criada no PostgreSQL');
+  } catch (err) {
+    console.warn('⚠️ Falha ao criar tabelas automáticas no Postgres:', err);
+  }
 }
