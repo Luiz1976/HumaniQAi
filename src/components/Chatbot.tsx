@@ -28,7 +28,7 @@ const getApiBase = () => {
     if (host === 'www.humaniqai.com.br') {
       return 'https://api.humaniqai.com.br';
     }
-  } catch (_) {}
+  } catch (_) { }
   return trimmed;
 };
 
@@ -41,7 +41,7 @@ const formatDate = (date: Date) => {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
+
   if (date.toDateString() === today.toDateString()) {
     return 'Hoje';
   } else if (date.toDateString() === yesterday.toDateString()) {
@@ -53,7 +53,7 @@ const formatDate = (date: Date) => {
 
 const groupMessagesByDate = (messages: Message[]): DateGroup[] => {
   const groups: { [key: string]: Message[] } = {};
-  
+
   messages.forEach(message => {
     const dateKey = message.timestamp.toDateString();
     if (!groups[dateKey]) {
@@ -77,9 +77,6 @@ export function Chatbot() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const path = typeof window !== 'undefined' ? window.location.pathname : '';
-  // Oculta o gatilho flutuante especificamente na Landing (/ e /landing)
-  const hideFloatingTriggerOnThisPage = path === '/' || path === '/landing';
 
   const emojis = ['😀', '😂', '😍', '🥰', '😊', '🤔', '👍', '👎', '❤️', '🎉', '🔥', '✅', '👋', '🙏', '💪', '🎯'];
 
@@ -145,7 +142,7 @@ export function Chatbot() {
       }
 
       const data = await response.json();
-      
+
       setMessages([{
         role: 'assistant',
         content: data.message,
@@ -158,7 +155,7 @@ export function Chatbot() {
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!inputMessage.trim() || isLoading) return;
 
     const userMessage: Message = {
@@ -201,13 +198,13 @@ export function Chatbot() {
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
-      
+
       const errorMessage: Message = {
         role: 'assistant',
         content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.',
         timestamp: new Date(),
       };
-      
+
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -215,19 +212,16 @@ export function Chatbot() {
   };
 
   if (!isOpen) {
-    // Na LandingPage, o gatilho será fornecido pelo header; aqui não renderizamos o botão flutuante
-    if (hideFloatingTriggerOnThisPage) {
-      return null;
-    }
     return (
       <button
         onClick={() => setIsOpen(true)}
         data-testid="button-open-chat"
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9998] flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-110 transition-all duration-300"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9998] flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-blue-500/50"
         aria-label="Abrir chat"
+        title="Converse com nosso assistente virtual"
       >
-        <Lottie 
-          animationData={robotWaving} 
+        <Lottie
+          animationData={robotWaving}
           loop={true}
           className="w-full h-full"
         />
@@ -244,8 +238,8 @@ export function Chatbot() {
           className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300"
         >
           <div className="w-7 h-7 sm:w-8 sm:h-8">
-            <Lottie 
-              animationData={robotWaving} 
+            <Lottie
+              animationData={robotWaving}
               loop={true}
               className="w-full h-full"
             />
@@ -262,7 +256,7 @@ export function Chatbot() {
   }
 
   return (
-    <div 
+    <div
       className="fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6 z-[10000]
                  w-full h-[100dvh] sm:w-[380px] sm:h-auto sm:max-h-[85vh] md:w-[400px] lg:w-[420px]
                  bg-[#ece5dd] dark:bg-[#0b141a]
@@ -276,8 +270,8 @@ export function Chatbot() {
       <div className="bg-[#075e54] dark:bg-[#202c33] p-3 sm:p-4 flex items-center justify-between text-white flex-shrink-0 relative z-[10001]">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 relative">
-            <Lottie 
-              animationData={robotWaving} 
+            <Lottie
+              animationData={robotWaving}
               loop={true}
               className="w-full h-full rounded-full"
             />
@@ -315,16 +309,16 @@ export function Chatbot() {
           <svg width="100%" height="100%" className="absolute inset-0">
             <defs>
               <pattern id="whatsapp-bg" x="0" y="0" width="400" height="400" patternUnits="userSpaceOnUse">
-                <rect width="400" height="400" fill="#e5ddd5"/>
-                <circle cx="50" cy="50" r="50" fill="#d4ccc4" opacity="0.5"/>
-                <circle cx="250" cy="150" r="70" fill="#d4ccc4" opacity="0.5"/>
-                <circle cx="350" cy="350" r="40" fill="#d4ccc4" opacity="0.5"/>
+                <rect width="400" height="400" fill="#e5ddd5" />
+                <circle cx="50" cy="50" r="50" fill="#d4ccc4" opacity="0.5" />
+                <circle cx="250" cy="150" r="70" fill="#d4ccc4" opacity="0.5" />
+                <circle cx="350" cy="350" r="40" fill="#d4ccc4" opacity="0.5" />
               </pattern>
             </defs>
-            <rect width="100%" height="100%" fill="url(#whatsapp-bg)"/>
+            <rect width="100%" height="100%" fill="url(#whatsapp-bg)" />
           </svg>
         </div>
-        
+
         <div className="relative z-10 p-3 sm:p-4 space-y-1">
           {groupMessagesByDate(messages).map((group, groupIndex) => (
             <div key={groupIndex} className="space-y-1">
@@ -334,7 +328,7 @@ export function Chatbot() {
                   <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">{group.date}</span>
                 </div>
               </div>
-              
+
               {group.messages.map((message, index) => (
                 <div
                   key={index}
@@ -344,8 +338,8 @@ export function Chatbot() {
                   <div className={`max-w-[70%] sm:max-w-[65%] ${message.role === 'user' ? 'order-2' : 'order-1'}`}>
                     <div className={`
                       relative px-3 py-2 rounded-lg shadow-sm
-                      ${message.role === 'user' 
-                        ? 'bg-[#dcf8c6] dark:bg-[#005c4b] text-slate-900 dark:text-white rounded-tr-none' 
+                      ${message.role === 'user'
+                        ? 'bg-[#dcf8c6] dark:bg-[#005c4b] text-slate-900 dark:text-white rounded-tr-none'
                         : 'bg-white dark:bg-[#202c33] text-slate-900 dark:text-white rounded-tl-none'
                       }
                     `}>
@@ -356,7 +350,7 @@ export function Chatbot() {
                         </span>
                         {message.role === 'user' && (
                           <svg width="16" height="16" viewBox="0 0 16 16" className="text-blue-500">
-                            <path fill="currentColor" d="M8 0L10.5 3L16 5L13 8L16 11L10.5 13L8 16L5.5 13L0 11L3 8L0 5L5.5 3L8 0Z"/>
+                            <path fill="currentColor" d="M8 0L10.5 3L16 5L13 8L16 11L10.5 13L8 16L5.5 13L0 11L3 8L0 5L5.5 3L8 0Z" />
                           </svg>
                         )}
                       </div>
@@ -366,16 +360,16 @@ export function Chatbot() {
               ))}
             </div>
           ))}
-          
+
           {isLoading && (
             <div className="flex gap-2 justify-start">
               <div className="max-w-[65%]">
                 <div className="bg-white dark:bg-[#202c33] px-3 py-2 rounded-lg rounded-tl-none shadow-sm">
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
-                      <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
-                      <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+                      <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                     </div>
                     <span className="text-xs text-slate-500">digitando</span>
                   </div>
@@ -390,13 +384,13 @@ export function Chatbot() {
       {/* Input Area - Estilo WhatsApp */}
       <div className="bg-white dark:bg-[#202c33] p-3 flex items-center gap-2 border-t border-slate-200 dark:border-slate-700">
         <div className="relative">
-          <button 
+          <button
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
           >
             <Smile className="w-5 h-5" />
           </button>
-          
+
           {showEmojiPicker && (
             <div className="absolute bottom-12 left-0 bg-white dark:bg-[#2a3942] rounded-lg shadow-lg p-3 grid grid-cols-4 gap-2 z-50">
               {emojis.map((emoji, index) => (
@@ -411,15 +405,15 @@ export function Chatbot() {
             </div>
           )}
         </div>
-        
+
         <button className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
           <Paperclip className="w-5 h-5" />
         </button>
-        
+
         <button className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
           <Camera className="w-5 h-5" />
         </button>
-        
+
         <div className="flex-1 relative">
           <Input
             value={inputMessage}
@@ -436,7 +430,7 @@ export function Chatbot() {
             }}
           />
         </div>
-        
+
         {inputMessage.trim() ? (
           <Button
             type="submit"
