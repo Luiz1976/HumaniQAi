@@ -1304,13 +1304,7 @@ export default function LandingPage() {
                       variant="outline"
                       className="w-full border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 py-3"
                       data-testid="button-falar-especialista"
-                      onClick={() => {
-                        try {
-                          window.dispatchEvent(new CustomEvent('chatbot:open'));
-                        } catch (e) {
-                          console.warn('Falha ao abrir chatbot', e);
-                        }
-                      }}
+                      onClick={() => window.location.href = 'mailto:luizcarlos.bastos@gmail.com?subject=Solicitar Informações - HumaniQ AI'}
                     >
                       <MessageCircle className="mr-2 h-5 w-5" />
                       Falar com Especialista
