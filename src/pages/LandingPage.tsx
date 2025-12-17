@@ -265,13 +265,13 @@ export default function LandingPage() {
             </Badge>
 
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-              Sua empresa está <span className="text-yellow-400">protegida</span> contra os riscos psicossociais?
+              A solução definitiva para riscos psicossociais e compliance com a NR-01.<br />
+              <span className="text-yellow-400">Tudo em um único plano por R$ 35 por colaborador/mês.</span>
             </h1>
 
             <p className="text-base sm:text-lg md:text-2xl text-white mb-8 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
-              A partir de maio de 2026, mapear e controlar riscos psicossociais será obrigatório.
-              Empresas sem evidências documentadas enfrentarão multas de até <strong className="text-yellow-400 font-semibold">R$ 6.708</strong> e
-              passivos trabalhistas que podem ultrapassar <strong className="text-yellow-400 font-semibold">R$ 100 mil</strong> por caso.
+              Elimine planilhas, reduza riscos legais e tome decisões estratégicas com dados reais,
+              inteligência artificial e total conformidade normativa.
             </p>
 
             <div className="bg-white border-l-4 border-red-500 p-6 mb-8 rounded-lg shadow-lg relative z-30" data-testid="card-estatistica">
@@ -919,8 +919,8 @@ export default function LandingPage() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-6 py-3 rounded-full font-semibold transition-all ${activeTab === tab.id
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                      : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-900'
                     }`}
                   data-testid={`tab-${tab.id}`}
                 >
@@ -1136,288 +1136,217 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SEÇÃO 12: PLANOS E PREÇOS */}
+      {/* SEÇÃO 12: PLANO ÚNICO */}
       <section id="planos" className="py-12 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <Badge className="mb-4 bg-indigo-100 text-indigo-800 border-indigo-200 px-4 py-2">
-              Investimento Transparente
+            <Badge className="mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 text-lg font-bold shadow-xl">
+              PLANO ÚNICO — HUMANIQ AI
             </Badge>
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-              Escolha o Plano Ideal para Sua Empresa
+              R$ 35 por colaborador / mês
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
-              Preços claros, sem surpresas. Pague apenas pelo que usar, com todos os recursos para manter sua empresa em compliance.
+            <p className="text-base sm:text-lg text-gray-600 max-w-4xl mx-auto mb-4">
+              A plataforma completa para gestão de riscos psicossociais, compliance com a NR-01 e inteligência organizacional,
+              desenvolvida para empresas que não podem operar no escuro.
+            </p>
+            <p className="text-xl font-bold text-indigo-600 max-w-3xl mx-auto">
+              Tudo incluso. Sem módulos bloqueados. Sem surpresas.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6 md:gap-8 mb-12">
-            {/* PLANO ESSENCIAL */}
-            <Card className="border-2 border-gray-200 hover:border-gray-300 transition-all hover:shadow-xl" data-testid="card-plano-essencial">
-              <CardContent className="pt-8 pb-8">
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Essencial</h3>
-                  <p className="text-gray-600 mb-4">Para pequenas empresas começando</p>
-                  <div className="mb-6">
-                    <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">R$ 15</span>
-                    <span className="text-gray-600">/colaborador/mês</span>
-                  </div>
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-700">
-                      <strong>Mínimo:</strong> 10 colaboradores<br />
-                      <strong>Ticket:</strong> R$ 150/mês
-                    </p>
-                  </div>
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">3 testes psicológicos básicos (QVT, Estresse, Clima)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Dashboard básico de resultados</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Relatórios individuais e agregados</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Até 50 colaboradores</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Suporte por email</span>
-                  </li>
-                  <li className="flex items-start">
-                    <X className="h-5 w-5 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-500">Análise com IA</span>
-                  </li>
-                  <li className="flex items-start">
-                    <X className="h-5 w-5 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-500">Módulo PGR</span>
-                  </li>
-                </ul>
-
-                <Button
-                  className="w-full bg-gray-600 hover:bg-gray-700"
-                  data-testid="button-plano-essencial"
-                  onClick={() => window.location.href = '/checkout/essencial'}
-                >
-                  Começar com Essencial
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* PLANO PROFISSIONAL - DESTAQUE */}
-            <Card className="border-4 border-indigo-500 relative hover:border-indigo-600 transition-all hover:shadow-2xl transform lg:-translate-y-4" data-testid="card-plano-profissional">
+          {/* Card Único Centralizado */}
+          <div className="max-w-4xl mx-auto">
+            <Card className="border-4 border-indigo-500 relative hover:border-indigo-600 transition-all hover:shadow-2xl" data-testid="card-plano-unico">
               <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 text-sm font-bold shadow-lg">
-                  ⭐ MAIS POPULAR
+                <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-2 text-sm font-bold shadow-lg">
+                  ✅ TUDO INCLUÍDO
                 </Badge>
               </div>
 
               <CardContent className="pt-12 pb-8">
-                <div className="text-center mb-6">
-                  <h3 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                    Profissional
-                  </h3>
-                  <p className="text-gray-600 mb-4">Para empresas com foco em compliance</p>
+                <div className="text-center mb-8">
                   <div className="mb-6">
                     <span className="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      R$ 25
+                      R$ 35
                     </span>
-                    <span className="text-gray-600">/colaborador/mês</span>
+                    <span className="text-gray-600 text-xl"> por colaborador/mês</span>
                   </div>
-                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-3 rounded-lg border-2 border-indigo-200">
-                    <p className="text-sm text-indigo-900 font-semibold">
-                      <strong>Mínimo:</strong> 20 colaboradores<br />
-                      <strong>Ticket:</strong> R$ 500/mês
-                    </p>
+                  <p className="text-lg text-gray-700 font-medium">
+                    Plataforma completa sem limitações
+                  </p>
+                </div>
+
+                {/* Recursos em 2 colunas */}
+                <div className="grid md:grid-cols-2 gap-4 mb-8">
+                  <div>
+                    <h4 className="font-bold text-lg text-indigo-600 mb-4">🧠 Avaliações e Testes</h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Todos os testes psicossociais disponíveis</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">QVT, RPO, Clima Organizacional</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Estresse, Karasek-Siegrist, PAS e MGR</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-lg text-indigo-600 mb-4">📊 Análises e Dashboards</h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Análises avançadas com IA</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Dashboards executivos interativos</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Relatórios individuais e setoriais</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-lg text-indigo-600 mb-4">📋 Compliance e Relatórios</h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Relatórios NR-01 e ISO 45003</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">PGR Psicossocial completo</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Exportação PDF e Excel</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-lg text-indigo-600 mb-4">🚀 Recursos Avançados</h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Colaboradores ilimitados</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Múltiplas empresas e unidades</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">API para integração ERP</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-lg text-indigo-600 mb-4">🎨 Personalização</h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">White-label personalizável</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Relatórios customizados</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Branding da sua empresa</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-lg text-indigo-600 mb-4">👥 Suporte Premium</h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Consultoria incluída (1h/mês)</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Gestor de conta dedicado</span>
+                      </li>
+                      <li className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">Suporte prioritário com SLA</span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
 
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700"><strong>Todos os 7 testes psicológicos</strong> (QVT, RPO, Clima, Estresse, Karasek-Siegrist, PAS, MGRP)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700"><strong>Análise com IA</strong> (Google Gemini)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Dashboard avançado com gráficos interativos</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700"><strong>Relatórios de compliance</strong> (NR-1, ISO 45003)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700"><strong>Módulo PGR completo</strong></span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Até 200 colaboradores</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Exportação PDF e Excel</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Suporte prioritário (email + chat)</span>
-                  </li>
-                </ul>
+                {/* CTAs */}
+                <div className="space-y-4">
+                  <Button
+                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-lg py-6"
+                    data-testid="button-solicitar-acesso"
+                    onClick={() => window.location.href = '/checkout'}
+                  >
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Solicitar Acesso
+                  </Button>
 
-                <Button
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-base sm:text-lg py-4 sm:py-6"
-                  data-testid="button-plano-profissional"
-                  onClick={() => window.location.href = '/checkout/profissional'}
-                >
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  Escolher Profissional
-                </Button>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <Button
+                      variant="outline"
+                      className="w-full border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 py-3"
+                      data-testid="button-falar-especialista"
+                      onClick={() => {
+                        try {
+                          window.dispatchEvent(new CustomEvent('chatbot:open'));
+                        } catch (e) {
+                          console.warn('Falha ao abrir chatbot', e);
+                        }
+                      }}
+                    >
+                      <MessageCircle className="mr-2 h-5 w-5" />
+                      Falar com Especialista
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="w-full border-2 border-purple-600 text-purple-600 hover:bg-purple-50 py-3"
+                      data-testid="button-ver-plataforma"
+                      onClick={() => scrollToSection('demo')}
+                    >
+                      <Play className="mr-2 h-5 w-5" />
+                      Ver Plataforma em Funcionamento
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Garantia */}
+                <div className="mt-6 bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                  <div className="flex items-center justify-center gap-2 text-green-700">
+                    <Shield className="h-5 w-5" />
+                    <p className="font-semibold">Setup gratuito • Sem fidelidade • Cancele quando quiser</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-
-            {/* PLANO ENTERPRISE */}
-            <Card className="border-2 border-gray-200 hover:border-gray-300 transition-all hover:shadow-xl" data-testid="card-plano-enterprise">
-              <CardContent className="pt-8 pb-8">
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
-                  <p className="text-gray-600 mb-4">Para grandes empresas</p>
-                  <div className="mb-6">
-                    <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">R$ 35</span>
-                    <span className="text-gray-600">/colaborador/mês</span>
-                  </div>
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-700">
-                      <strong>Mínimo:</strong> 100 colaboradores<br />
-                      <strong>Ticket:</strong> R$ 3.500/mês
-                    </p>
-                  </div>
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700"><strong>Tudo do Profissional +</strong></span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Colaboradores ilimitados</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">API para integração (SAP, TOTVS)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Múltiplas empresas/unidades</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">White-label personalizado</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Consultoria especializada (1h/mês)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Relatórios customizados</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">SLA de suporte (4h úteis)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Check className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Gestor de contas dedicado</span>
-                  </li>
-                </ul>
-
-                <Button
-                  className="w-full bg-purple-600 hover:bg-purple-700"
-                  data-testid="button-plano-enterprise"
-                  onClick={() => window.location.href = '/checkout/enterprise'}
-                >
-                  Falar com Especialista
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Benefícios Inclusos em Todos os Planos */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border-2 border-indigo-100">
-            <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
-              Incluído em Todos os Planos
-            </h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="flex items-start">
-                <div className="bg-indigo-100 p-2 rounded-lg mr-3">
-                  <Shield className="h-6 w-6 text-indigo-600" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-1">Setup Gratuito</h4>
-                  <p className="text-sm text-gray-600">Onboarding completo sem custo adicional</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-indigo-100 p-2 rounded-lg mr-3">
-                  <TrendingUp className="h-6 w-6 text-indigo-600" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-1">Atualizações Incluídas</h4>
-                  <p className="text-sm text-gray-600">Novos recursos sem custo extra</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-indigo-100 p-2 rounded-lg mr-3">
-                  <Award className="h-6 w-6 text-indigo-600" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-1">Desconto Anual</h4>
-                  <p className="text-sm text-gray-600">10% OFF no pagamento anual</p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Proposta de Valor */}
           <div className="text-center mt-12">
-            <p className="text-2xl font-bold text-gray-900 mb-2">
-              Gestão de Riscos Psicossociais com IA por menos de R$ 1 por dia
+            <p className="text-2xl font-bold text-gray-900 mb-4">
+              Compliance completa por menos de <span className="text-indigo-600">R$ 1,20 por dia</span> por colaborador
             </p>
-            <p className="text-lg text-gray-600 mb-6">
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent font-bold">
-                R$ 25/mês = R$ 0,83/dia por colaborador
-              </span> — investimento que se paga
+            <p className="text-lg text-gray-600">
+              Um investimento que se paga evitando uma única multa ou processo trabalhista
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                onClick={() => scrollToSection('diagnostico')}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                data-testid="button-testar-planos"
-              >
-                Testar Gratuitamente
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => setShowComparison(true)}
-                className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50"
-                data-testid="button-comparar-planos"
-              >
-                Comparar Planos em Detalhes
-              </Button>
-            </div>
           </div>
         </div>
       </section>
