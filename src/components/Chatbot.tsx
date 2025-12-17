@@ -216,7 +216,7 @@ export function Chatbot() {
       <button
         onClick={() => setIsOpen(true)}
         data-testid="button-open-chat"
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9998] flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-blue-500/50"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9998] flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-110 transition-all duration-300 bg-transparent border-none shadow-none"
         aria-label="Abrir chat"
         title="Converse com nosso assistente virtual"
       >
