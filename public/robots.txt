@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /app/
+Allow: /
+
+# Sitemap
+Sitemap: https://www.humaniqai.com.br/sitemap.xml

@@ -106,6 +106,8 @@ tmp/
 # IDE and documentation
 .trae/
 *.txt
+!robots.txt
+
 resultado-verificacao.txt
 manual-sql-instructions.md
 
