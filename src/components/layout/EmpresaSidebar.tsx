@@ -18,29 +18,29 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
-  { 
-    title: "Home", 
-    url: "/empresa/overview", 
+  {
+    title: "Home",
+    url: "/empresa/overview",
     icon: Home,
   },
-  { 
-    title: "Gerar Convites", 
-    url: "/empresa/gerar-convite", 
+  {
+    title: "Gerar Convites",
+    url: "/empresa/gerar-convite",
     icon: UserPlus,
   },
-  { 
-    title: "Gestão de Colaboradores", 
-    url: "/empresa/gestao-colaboradores", 
+  {
+    title: "Gestão de Colaboradores",
+    url: "/empresa/gestao-colaboradores",
     icon: Users,
   },
-  { 
-    title: "Estado Psicossocial da Empresa", 
-    url: "/empresa/estado-psicossocial", 
+  {
+    title: "Estado Psicossocial da Empresa",
+    url: "/empresa/estado-psicossocial",
     icon: Activity,
   },
-  { 
-    title: "PGR", 
-    url: "/empresa/pgr", 
+  {
+    title: "PGR",
+    url: "/empresa/pgr",
     icon: FileText,
   },
 ];
@@ -114,11 +114,11 @@ export function EmpresaSidebar() {
         {/* Header - Logo e Toggle */}
         <div className="flex h-20 items-center justify-between px-6 border-b border-border/10">
           {!isCollapsed && (
-            <Logo size="xl" showText={true} className="ml-12" />
+            <Logo size="md" showText={true} className="ml-12" />
           )}
           {isCollapsed && (
             <div className="flex items-center justify-center w-full">
-              <Logo size="lg" showText={false} className="ml-12" />
+              <Logo size="sm" showText={false} className="ml-12" />
             </div>
           )}
           <SidebarTrigger className="h-8 w-8 hover:bg-accent/50 transition-colors">
@@ -128,7 +128,7 @@ export function EmpresaSidebar() {
 
         <div className="px-6 pt-4">
           <div className={`flex ${isCollapsed ? 'justify-center' : ''} ml-12`}>
-            <div className="h-24 w-24 rounded-xl border border-gray-200 bg-white flex items-center justify-center overflow-hidden">
+            <div className="h-24 w-24 rounded-xl flex items-center justify-center overflow-hidden">
               {empresaLogo ? (
                 <img src={empresaLogo} alt="Logo da Empresa" className="h-full w-full object-contain" />
               ) : (
@@ -164,17 +164,16 @@ export function EmpresaSidebar() {
                       asChild
                       className={`
                         group relative h-12 w-full justify-start gap-3 rounded-xl px-4 text-sm font-medium transition-all duration-200 hover:bg-accent/50
-                        ${isActive(item.url) 
-                          ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-600 shadow-sm border border-blue-200/20' 
+                        ${isActive(item.url)
+                          ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-600 shadow-sm border border-blue-200/20'
                           : 'text-muted-foreground hover:text-foreground'
                         }
                       `}
                     >
                       <NavLink to={item.url} className="flex items-center gap-3 w-full">
-                        <item.icon 
-                          className={`h-5 w-5 transition-colors ${
-                            isActive(item.url) ? 'text-blue-600' : 'text-muted-foreground group-hover:text-foreground'
-                          }`} 
+                        <item.icon
+                          className={`h-5 w-5 transition-colors ${isActive(item.url) ? 'text-blue-600' : 'text-muted-foreground group-hover:text-foreground'
+                            }`}
                         />
                         {!isCollapsed && (
                           <span className="truncate">{item.title}</span>

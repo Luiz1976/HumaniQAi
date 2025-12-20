@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { 
-  Users, UserPlus, TrendingUp, Award, Calendar, Clock, 
-  Activity, Target, BarChart3, Sparkles, 
+import {
+  Users, UserPlus, TrendingUp, Award, Calendar, Clock,
+  Activity, Target, BarChart3, Sparkles,
   TrendingDown, Zap, Shield, ArrowUp, ArrowDown, X, FileCheck
 } from 'lucide-react';
 import Logo from '@/components/Logo';
@@ -38,7 +38,7 @@ export default function EmpresaOverview() {
 
     console.log('🔍 [EmpresaOverview] Iniciando carregamento de estatísticas para empresa:', user.empresaId);
     setLoading(true);
-    
+
     try {
       const stats = await empresaStatisticsService.buscarEstatisticasEmpresa(user.empresaId);
       console.log('✅ [EmpresaOverview] Estatísticas carregadas com sucesso:', stats);
@@ -77,11 +77,11 @@ export default function EmpresaOverview() {
       });
 
       toast.success('Convite criado com sucesso!');
-      
+
       const urlConvite = `${window.location.origin}/aceitar-convite/${response.token}`;
       navigator.clipboard.writeText(urlConvite);
       toast.info('URL do convite copiada para a área de transferência');
-      
+
       setShowConviteModal(false);
       setNovoConvite({ email: '', nome: '', cargo: '', departamento: '', dias_expiracao: 7 });
       carregarEstatisticas();
@@ -108,14 +108,14 @@ export default function EmpresaOverview() {
           <div className="animate-pulse space-y-6">
             {/* Header Skeleton */}
             <div className="h-24 bg-white/60 backdrop-blur-sm rounded-2xl"></div>
-            
+
             {/* Stats Grid Skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="h-36 bg-white/60 backdrop-blur-sm rounded-2xl"></div>
               ))}
             </div>
-            
+
             {/* Charts Skeleton */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="h-64 bg-white/60 backdrop-blur-sm rounded-2xl"></div>
@@ -195,26 +195,24 @@ export default function EmpresaOverview() {
 
       <div className="relative z-10 p-6 max-w-7xl mx-auto">
         {/* Header */}
-        <div 
+        <div
           className="mb-8 backdrop-blur-xl bg-white/70 rounded-3xl shadow-xl border border-white/20 p-8 overflow-hidden relative"
           style={{ animation: 'slideUp 0.6s ease-out' }}
         >
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-cyan-500/5 pointer-events-none" />
-          
+
           <div className="relative flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-                  <Logo size="sm" showText={false} />
-                </div>
+                <Logo size="sm" showText={false} />
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                   {user?.name ? `${user.name}` : 'Dashboard'}
                 </h1>
               </div>
               <p className="text-gray-600 ml-14">Visão geral do desempenho e estatísticas da sua empresa</p>
             </div>
-            
+
             <button
               data-testid="button-convidar-colaborador"
               onClick={() => setShowConviteModal(true)}
@@ -242,10 +240,10 @@ export default function EmpresaOverview() {
             >
               {/* Gradient Background */}
               <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-              
+
               {/* Gradient Border Glow */}
               <div className={`absolute inset-0 bg-gradient-to-r ${stat.gradient} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300`} />
-              
+
               <div className="relative flex items-start justify-between">
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-600 mb-2">{stat.title}</p>
@@ -254,7 +252,7 @@ export default function EmpresaOverview() {
                   </p>
                   <p className="text-xs text-gray-500">{stat.subtitle}</p>
                 </div>
-                
+
                 <div className={`p-3 rounded-2xl bg-gradient-to-br ${stat.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                   <stat.icon className="w-6 h-6 text-white" />
                 </div>
@@ -269,7 +267,7 @@ export default function EmpresaOverview() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Resumo Mensal */}
-          <div 
+          <div
             className="backdrop-blur-xl bg-white/70 rounded-2xl shadow-lg border border-white/20 p-6 overflow-hidden"
             style={{ animation: 'slideUp 1.2s ease-out' }}
           >
@@ -284,7 +282,7 @@ export default function EmpresaOverview() {
                 Atual
               </div>
             </div>
-            
+
             <div className="space-y-5">
               <div className="group p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100/50 hover:from-blue-50 hover:to-cyan-50 transition-all duration-300">
                 <div className="flex justify-between items-center">
@@ -299,7 +297,7 @@ export default function EmpresaOverview() {
                   </span>
                 </div>
               </div>
-              
+
               <div className="group p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100/50 hover:from-green-50 hover:to-emerald-50 transition-all duration-300">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
@@ -313,7 +311,7 @@ export default function EmpresaOverview() {
                   </span>
                 </div>
               </div>
-              
+
               <div className="group p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100/50 hover:from-amber-50 hover:to-orange-50 transition-all duration-300">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
@@ -331,7 +329,7 @@ export default function EmpresaOverview() {
           </div>
 
           {/* Indicadores de Performance */}
-          <div 
+          <div
             className="backdrop-blur-xl bg-white/70 rounded-2xl shadow-lg border border-white/20 p-6 overflow-hidden"
             style={{ animation: 'slideUp 1.3s ease-out' }}
           >
@@ -344,7 +342,7 @@ export default function EmpresaOverview() {
               </div>
               <Sparkles className="w-5 h-5 text-purple-500" />
             </div>
-            
+
             <div className="space-y-6">
               {/* Média de Testes */}
               <div>
@@ -365,7 +363,7 @@ export default function EmpresaOverview() {
                   </div>
                 </div>
                 <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
-                  <div 
+                  <div
                     className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg transition-all duration-1000 ease-out"
                     style={{ width: `${Math.min(parseFloat(calcularMediaTestesPorColaborador()) * 20, 100)}%` }}
                   >
@@ -373,7 +371,7 @@ export default function EmpresaOverview() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Pontuação Média */}
               <div>
                 <div className="flex justify-between items-center mb-3">
@@ -393,7 +391,7 @@ export default function EmpresaOverview() {
                   </div>
                 </div>
                 <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
-                  <div 
+                  <div
                     className="absolute inset-y-0 left-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg transition-all duration-1000 ease-out"
                     style={{ width: `${estatisticas.media_pontuacao}%` }}
                   >
@@ -401,7 +399,7 @@ export default function EmpresaOverview() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Colaboradores Ativos */}
               <div>
                 <div className="flex justify-between items-center mb-3">
@@ -421,7 +419,7 @@ export default function EmpresaOverview() {
                   </div>
                 </div>
                 <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
-                  <div 
+                  <div
                     className="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg transition-all duration-1000 ease-out"
                     style={{ width: `${calcularTaxaAtivos()}%` }}
                   >
@@ -437,13 +435,13 @@ export default function EmpresaOverview() {
       {/* Modal de Convite */}
       {showConviteModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div 
+          <div
             className="relative backdrop-blur-2xl bg-white/90 rounded-3xl shadow-2xl border border-white/20 w-full max-w-md overflow-hidden"
             style={{ animation: 'slideUp 0.4s ease-out' }}
           >
             {/* Decorative Header Gradient */}
             <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500" />
-            
+
             {/* Close Button */}
             <button
               data-testid="button-fechar-modal"
@@ -452,7 +450,7 @@ export default function EmpresaOverview() {
             >
               <X className="w-5 h-5 text-gray-600" />
             </button>
-            
+
             <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
@@ -460,7 +458,7 @@ export default function EmpresaOverview() {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900">Convidar Colaborador</h3>
               </div>
-              
+
               <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -470,12 +468,12 @@ export default function EmpresaOverview() {
                     data-testid="input-nome"
                     type="text"
                     value={novoConvite.nome}
-                    onChange={(e) => setNovoConvite({...novoConvite, nome: e.target.value})}
+                    onChange={(e) => setNovoConvite({ ...novoConvite, nome: e.target.value })}
                     className="w-full px-4 py-3 bg-white/80 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
                     placeholder="Digite o nome do colaborador"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Email
@@ -484,12 +482,12 @@ export default function EmpresaOverview() {
                     data-testid="input-email-modal"
                     type="email"
                     value={novoConvite.email}
-                    onChange={(e) => setNovoConvite({...novoConvite, email: e.target.value})}
+                    onChange={(e) => setNovoConvite({ ...novoConvite, email: e.target.value })}
                     className="w-full px-4 py-3 bg-white/80 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
                     placeholder="email@colaborador.com"
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -499,12 +497,12 @@ export default function EmpresaOverview() {
                       data-testid="input-cargo"
                       type="text"
                       value={novoConvite.cargo}
-                      onChange={(e) => setNovoConvite({...novoConvite, cargo: e.target.value})}
+                      onChange={(e) => setNovoConvite({ ...novoConvite, cargo: e.target.value })}
                       className="w-full px-4 py-3 bg-white/80 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
                       placeholder="Analista"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Departamento
@@ -513,13 +511,13 @@ export default function EmpresaOverview() {
                       data-testid="input-departamento"
                       type="text"
                       value={novoConvite.departamento}
-                      onChange={(e) => setNovoConvite({...novoConvite, departamento: e.target.value})}
+                      onChange={(e) => setNovoConvite({ ...novoConvite, departamento: e.target.value })}
                       className="w-full px-4 py-3 bg-white/80 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
                       placeholder="RH"
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Dias para Expiração
@@ -527,7 +525,7 @@ export default function EmpresaOverview() {
                   <select
                     data-testid="select-dias-expiracao"
                     value={novoConvite.dias_expiracao}
-                    onChange={(e) => setNovoConvite({...novoConvite, dias_expiracao: parseInt(e.target.value)})}
+                    onChange={(e) => setNovoConvite({ ...novoConvite, dias_expiracao: parseInt(e.target.value) })}
                     className="w-full px-4 py-3 bg-white/80 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   >
                     <option value={3}>3 dias</option>
@@ -537,7 +535,7 @@ export default function EmpresaOverview() {
                   </select>
                 </div>
               </div>
-              
+
               <div className="flex gap-3 mt-8">
                 <button
                   data-testid="button-cancelar"
