@@ -68,11 +68,11 @@ export default function ColaboradorCursos() {
 
   const cursosDisponiveis = responseCursos?.cursos || [];
   const cursosLiberados = cursosDisponiveis.filter((c) => {
-    const concluidoPorCertificado = certificados.some((cert) => cert.cursoSlug === c.slug);
+    const concluidoPorCertificado = Array.isArray(certificados) && certificados.some((cert) => cert.cursoSlug === c.slug);
     // Mostrar cursos mesmo se concluídos por avaliação, para evitar que sumam se não tiverem certificado ainda
     return c.disponivel && !concluidoPorCertificado;
   });
-  const cursosConcluidosSet = new Set(certificados.map(c => c.cursoSlug));
+  const cursosConcluidosSet = new Set(Array.isArray(certificados) ? certificados.map(c => c.cursoSlug) : []);
   cursosDisponiveis.forEach(c => {
     if (c.dataConclusao) cursosConcluidosSet.add(c.slug);
   });
@@ -322,7 +322,7 @@ export default function ColaboradorCursos() {
         </div>
 
         {/* Cursos Concluídos */}
-        {certificados.length > 0 && (
+        {Array.isArray(certificados) && certificados.length > 0 && (
           <div className="space-y-4 pt-8 border-t border-gray-200">
             <div className="flex items-center gap-3">
               <Award className="h-8 w-8 text-green-600" />

@@ -88,7 +88,7 @@ const Colaborador = () => {
                 />
               ) : (
                 <div className="relative mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 via-purple-500 to-green-500 flex items-center justify-center shadow-2xl transform group-hover:scale-105 transition-all duration-300">
-                  <Logo size="md" showText={false} />
+                  <Logo size="xs" showText={false} />
                 </div>
               )}
             </div>

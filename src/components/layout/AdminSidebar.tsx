@@ -2,6 +2,7 @@ import { Building2, Mail, LogOut, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/AuthContext";
+import logoTransparentImage from '@/assets/logo-transparent.png';
 import {
   Sidebar,
   SidebarContent,
@@ -15,20 +16,20 @@ import {
 } from "@/components/ui/sidebar";
 
 const adminMenuItems = [
-  { 
-    title: "Dashboard", 
-    url: "/admin/dashboard", 
-    icon: BarChart3 
+  {
+    title: "Dashboard",
+    url: "/admin/dashboard",
+    icon: BarChart3
   },
-  { 
-    title: "Empresas", 
-    url: "/admin/empresas", 
-    icon: Building2 
+  {
+    title: "Empresas",
+    url: "/admin/empresas",
+    icon: Building2
   },
-  { 
-    title: "Convites", 
-    url: "/admin/convites", 
-    icon: Mail 
+  {
+    title: "Convites",
+    url: "/admin/convites",
+    icon: Mail
   }
 ];
 
@@ -56,9 +57,11 @@ export function AdminSidebar() {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">H</span>
-            </div>
+            <img
+              src={logoTransparentImage}
+              alt="HumaniQ AI"
+              className="h-10 w-auto object-contain transition-transform duration-300 hover:scale-110"
+            />
             {state === "expanded" && (
               <div>
                 <h2 className="font-semibold text-gray-900">HumaniQ</h2>
@@ -79,13 +82,12 @@ export function AdminSidebar() {
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
-                        <NavLink 
-                          to={item.url} 
-                          className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                            active 
-                              ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
+                        <NavLink
+                          to={item.url}
+                          className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${active
+                              ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
                               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                          }`}
+                            }`}
                         >
                           <item.icon className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-gray-400'}`} />
                           <span className="font-medium">{item.title}</span>

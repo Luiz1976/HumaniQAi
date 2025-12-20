@@ -199,7 +199,7 @@ export function AppSidebar() {
           {!isCollapsed ? (
             <>
               <div className="w-full flex justify-center ml-6">
-                <Logo size="xl" showText={true} />
+                <Logo size="md" showText={true} />
               </div>
               <div className="absolute right-6 top-1/2 -translate-y-1/2">
                 <SidebarTrigger className="h-9 w-9 hover:bg-accent/50 rounded-xl transition-colors" />
@@ -207,7 +207,7 @@ export function AppSidebar() {
             </>
           ) : (
             <div className="flex items-center justify-center w-full relative group">
-              <Logo size="lg" showText={false} />
+              <Logo size="sm" showText={false} />
               <div className="absolute -right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <SidebarTrigger className="h-6 w-6" />
               </div>
