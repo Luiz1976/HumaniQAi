@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/AuthContext';
-import HumaniQLogoAnimation from '@/components/HumaniQLogoAnimation';
 
 const PostLoginAnimation: React.FC = () => {
   const navigate = useNavigate();
@@ -13,6 +12,13 @@ const PostLoginAnimation: React.FC = () => {
       navigate('/login', { replace: true });
       return;
     }
+
+    // Configurar timeout para redirecionar após a animação (7.5 segundos)
+    const timer = setTimeout(() => {
+      handleAnimationComplete();
+    }, 7500);
+
+    return () => clearTimeout(timer);
   }, [user, navigate]);
 
   const handleAnimationComplete = () => {
@@ -50,7 +56,19 @@ const PostLoginAnimation: React.FC = () => {
   }
 
   return (
-    <HumaniQLogoAnimation onComplete={handleAnimationComplete} />
+    <iframe
+      src="/Video pós login.html"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        border: 'none',
+        zIndex: 9999
+      }}
+      title="HumaniQ AI Splash Screen"
+    />
   );
 };
 
