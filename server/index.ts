@@ -213,6 +213,9 @@ const erpLimiter = rateLimit({
 // Middleware de segurança
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
+  frameguard: {
+    action: 'sameorigin' // Permite iframes da mesma origem
+  },
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
@@ -220,6 +223,7 @@ app.use(helmet({
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
       connectSrc: ["'self'", "https:", "wss:"], // Added wss: for potential websocket/SSE
+      frameSrc: ["'self'"], // Permite iframes da mesma origem
     },
   },
 }));
