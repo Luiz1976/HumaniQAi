@@ -1561,7 +1561,7 @@ export default function LandingPage() {
           <p className="text-lg text-gray-600 leading-relaxed">
             O HumaniQ AI é um <strong>Software NR-01</strong> completo desenvolvido por especialistas em Saúde e Segurança
             do Trabalho, Psicologia Organizacional e Compliance Trabalhista, com foco exclusivo
-            na gestão de <a href="/riscos-psicossociais" className="text-indigo-600 hover:underline">riscos psicossociais</a> conforme a <a href="/nr01" className="text-indigo-600 hover:underline">NR-01</a> e diretrizes do MTE.
+            na gestão de <a href="/riscos-psicossociais" className="text-indigo-600 hover:underline">riscos psicossociais</a> conforme a <a href="/nr01" className="text-indigo-600 hover:underline">NR-01</a> e diretrizes do Ministério do Trabalho e Emprego (MTE).
           </p>
         </div>
       </section >
