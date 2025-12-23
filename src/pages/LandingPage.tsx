@@ -20,7 +20,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import { VinhedoFooter } from '@/components/VinhedoFooter';
 import { SeoHead } from '@/components/seo/SeoHead';
-import { organizationSchema, softwareApplicationSchema } from '@/lib/seo/schemas';
+import { organizationSchema, softwareApplicationSchema, websiteSchema } from '@/lib/seo/schemas';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -136,7 +136,7 @@ export default function LandingPage() {
         ogImage="https://www.humaniqai.com.br/LOGO%20TRANSPARENTE.png"
         schema={{
           "@context": "https://schema.org",
-          "@graph": [organizationSchema, softwareApplicationSchema]
+          "@graph": [organizationSchema, softwareApplicationSchema, websiteSchema]
         }}
       />
       {/* Header Fixo */}
@@ -799,6 +799,8 @@ export default function LandingPage() {
 
           </div>
 
+
+
           {/* Seção de Certificação Digital */}
           <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border-2 border-white/20">
             <div className="text-center mb-10 md:mb-12">
@@ -905,10 +907,10 @@ export default function LandingPage() {
           </div>
 
         </div>
-      </section>
+      </section >
 
       {/* SEÇÃO 7: BENEFÍCIOS POR PÚBLICO */}
-      <section className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-gray-100">
+      < section className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-gray-100" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -1024,10 +1026,10 @@ export default function LandingPage() {
             )}
           </div>
         </div>
-      </section>
+      </section >
 
       {/* SEÇÃO 10: PROVA SOCIAL */}
-      <section id="depoimentos" className="py-12 md:py-20 bg-white">
+      < section id="depoimentos" className="py-12 md:py-20 bg-white" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -1074,10 +1076,10 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section >
 
       {/* SEÇÃO 11: ROI E ECONOMIA */}
-      <section id="preco" className="py-12 md:py-20 bg-gradient-to-br from-green-50 to-emerald-50">
+      < section id="preco" className="py-12 md:py-20 bg-gradient-to-br from-green-50 to-emerald-50" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -1146,10 +1148,10 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* SEÇÃO 12: PLANO ÚNICO */}
-      <section id="planos" className="py-12 md:py-20 bg-white">
+      < section id="planos" className="py-12 md:py-20 bg-white" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 text-lg font-bold shadow-xl">
@@ -1355,10 +1357,10 @@ export default function LandingPage() {
             </p>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* SEÇÃO 14: CTA FINAL */}
-      <section id="diagnostico" className="py-12 md:py-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 text-white">
+      < section id="diagnostico" className="py-12 md:py-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 text-white" >
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
             Comece Hoje. Proteja Sua Empresa Amanhã.
@@ -1426,10 +1428,10 @@ export default function LandingPage() {
             Junte-se a centenas de empresas que já estão protegidas
           </p>
         </div>
-      </section>
+      </section >
 
       {/* Modal de Comparação Detalhada */}
-      <Dialog open={showComparison} onOpenChange={setShowComparison}>
+      < Dialog open={showComparison} onOpenChange={setShowComparison} >
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -1550,10 +1552,22 @@ export default function LandingPage() {
             </Button>
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog >
+
+      {/* SEÇÃO E-E-A-T: SOBRE O HUMANIQ AI */}
+      < section className="py-12 bg-white border-t border-gray-100" >
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">Sobre o HumaniQ AI</h2>
+          <p className="text-lg text-gray-600 leading-relaxed">
+            O HumaniQ AI é uma plataforma desenvolvida por especialistas em Saúde e Segurança
+            do Trabalho, Psicologia Organizacional e Compliance Trabalhista, com foco exclusivo
+            na gestão de <a href="/riscos-psicossociais" className="text-indigo-600 hover:underline">riscos psicossociais</a> conforme a <a href="/nr01" className="text-indigo-600 hover:underline">NR-01</a> e diretrizes do MTE.
+          </p>
+        </div>
+      </section >
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
+      < footer className="bg-gray-900 text-gray-300 py-12" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -1591,7 +1605,7 @@ export default function LandingPage() {
             <p>&copy; 2025 HumaniQ AI. Todos os direitos reservados.</p>
           </div>
         </div>
-      </footer>
+      </footer >
       <section id="contato-demo" className="py-12 md:py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
@@ -1666,6 +1680,6 @@ export default function LandingPage() {
         </div>
       </section>
       <VinhedoFooter />
-    </div>
+    </div >
   );
 }

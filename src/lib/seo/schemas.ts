@@ -41,6 +41,13 @@ export interface SchemaSoftwareApplication {
     screenshot?: string;
 }
 
+export interface SchemaWebSite {
+    "@context": "https://schema.org";
+    "@type": "WebSite";
+    name: string;
+    url: string;
+}
+
 export interface SchemaArticle {
     "@context": "https://schema.org";
     "@type": "Article";
@@ -124,6 +131,16 @@ export const softwareApplicationSchema: SchemaSoftwareApplication = {
         "Treinamento EAD para Lideranças com Certificação",
         "Histórico Auditável Completo"
     ]
+};
+
+/**
+ * Schema.org WebSite para HumaniQ AI
+ */
+export const websiteSchema: SchemaWebSite = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "HumaniQ AI",
+    url: "https://www.humaniqai.com.br"
 };
 
 /**
