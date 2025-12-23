@@ -79,19 +79,11 @@ export function vitePrerender(): Plugin {
                     );
                 }
 
-                // Adicionar conteúdo SEO básico no body (fallback para crawlers antigos)
-                // Isto garante que mesmo sem JS, há conteúdo textual
-                const seoFallback = `
-          <div style="position:absolute;left:-9999px;top:-9999px;">
-            <h1>${route.title || 'HumaniQ AI'}</h1>
-            <p>${route.description || ''}</p>
-          </div>
-        `;
 
-                processedHtml = processedHtml.replace(
-                    '<div id="root"></div>',
-                    `<div id="root"></div>${seoFallback}`
-                );
+                // NOTA IMPORTANTE: NÃO adicionar hidden text (position:absolute;left:-9999px)
+                // Isso é classificado como BLACK-HAT SEO pelo Google e pode causar penalização.
+                // Para SEO real com conteúdo renderizado, use SSR completo ou ferramentas
+                // de prerender adequadas, não hacks perigosos.
 
                 return processedHtml;
             }
