@@ -87,6 +87,9 @@ import RiscosPsicoPage from "./pages/seo/RiscosPsicoPage";
 import SoftwareNR01Page from "./pages/seo/SoftwareNR01Page";
 import BlogPage from "./pages/seo/BlogPage";
 import FaqPage from "./pages/seo/FaqPage";
+import NR01Artigo from "./pages/seo/blog/NR01Artigo";
+import BurnoutArtigo from "./pages/seo/blog/BurnoutArtigo";
+import IAGestaoArtigo from "./pages/seo/blog/IAGestaoArtigo";
 
 function App() {
   console.log('🔍 [APP] Componente App iniciado');
@@ -116,6 +119,9 @@ function App() {
                   <Route path="/avaliacao-psicossocial" element={<RiscosPsicoPage />} /> {/* Alias */}
                   <Route path="/software-nr01" element={<SoftwareNR01Page />} />
                   <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/blog/nr01-2026" element={<NR01Artigo />} />
+                  <Route path="/blog/sinais-burnout" element={<BurnoutArtigo />} />
+                  <Route path="/blog/ia-gestao-pessoas" element={<IAGestaoArtigo />} />
                   <Route path="/faq" element={<FaqPage />} />
 
                   <Route path="/checkout/:planType" element={<CheckoutPage />} />

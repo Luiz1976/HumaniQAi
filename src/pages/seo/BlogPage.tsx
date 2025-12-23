@@ -24,7 +24,7 @@ const BlogPage = () => {
                             <div className="text-xs font-semibold text-blue-600 uppercase mb-2">NR-01</div>
                             <h2 className="text-xl font-bold mb-3 text-slate-900">Como adequar sua empresa à NR-01 em 2026</h2>
                             <p className="text-slate-600 mb-4 line-clamp-3">Guia completo com o passo a passo para garantir que sua empresa esteja 100% em conformidade com as novas exigências da norma.</p>
-                            <Link to="#" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
+                            <Link to="/blog/nr01-2026" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
                         </div>
                     </article>
 
@@ -35,7 +35,7 @@ const BlogPage = () => {
                             <div className="text-xs font-semibold text-green-600 uppercase mb-2">Saúde Mental</div>
                             <h2 className="text-xl font-bold mb-3 text-slate-900">Sinais de Burnout na equipe: Como identificar?</h2>
                             <p className="text-slate-600 mb-4 line-clamp-3">Aprenda a reconhecer os primeiros sinais de esgotamento profissional nos seus colaboradores e como intervir precocemente.</p>
-                            <Link to="#" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
+                            <Link to="/blog/sinais-burnout" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
                         </div>
                     </article>
 
@@ -46,7 +46,7 @@ const BlogPage = () => {
                             <div className="text-xs font-semibold text-purple-600 uppercase mb-2">Tecnologia</div>
                             <h2 className="text-xl font-bold mb-3 text-slate-900">IA na Gestão de Pessoas: O futuro chegou</h2>
                             <p className="text-slate-600 mb-4 line-clamp-3">Como a inteligência artificial está revolucionando a forma como o RH cuida do ativo mais precioso das empresas: as pessoas.</p>
-                            <Link to="#" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
+                            <Link to="/blog/ia-gestao-pessoas" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
                         </div>
                     </article>
                 </div>
