@@ -19,6 +19,8 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import { VinhedoFooter } from '@/components/VinhedoFooter';
+import { SeoHead } from '@/components/seo/SeoHead';
+import { organizationSchema, softwareApplicationSchema } from '@/lib/seo/schemas';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -127,6 +129,16 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <SeoHead
+        title="HumaniQ AI | Software de Gestão de Riscos Psicossociais conforme NR-01"
+        description="Software completo para gestão de riscos psicossociais e compliance NR-01. Mapeamento automatizado, avaliação individual, relatórios técnicos e capacitação de lideranças. Proteja sua empresa de multas e ações trabalhistas."
+        canonicalUrl="https://www.humaniqai.com.br/"
+        ogImage="https://www.humaniqai.com.br/LOGO%20TRANSPARENTE.png"
+        schema={{
+          "@context": "https://schema.org",
+          "@graph": [organizationSchema, softwareApplicationSchema]
+        }}
+      />
       {/* Header Fixo */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg' : 'bg-white/10 backdrop-blur-md border-b border-white/20'

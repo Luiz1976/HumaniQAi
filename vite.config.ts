@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import type { PluginOption } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { vitePrerender } from "./src/lib/seo/vite-prerender";
 
 // Nota: "lovable-tagger" é ESM-only e pode causar erro quando carregado via require.
 // Para evitar quebra no dev, carregamos opcionalmente via import dinâmico.
@@ -40,7 +41,7 @@ export default defineConfig(async ({ mode }) => {
         },
       },
     },
-    plugins: [react(), taggerPlugin].filter(Boolean),
+    plugins: [react(), vitePrerender(), taggerPlugin].filter(Boolean),
     test: {
       globals: true,
       environment: 'jsdom',
