@@ -301,26 +301,31 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button
-                size="lg"
-                onClick={() => scrollToSection('diagnostico')}
-                className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 shadow-lg hover:shadow-xl transition-all text-gray-900 font-bold relative z-30"
-                data-testid="button-diagnostico-hero"
-              >
-                <Sparkles className="mr-2 h-5 w-5" />
-                Faça seu Diagnóstico Gratuito em 5 Minutos
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => scrollToSection('demo')}
-                className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 border-2 border-indigo-400 text-indigo-700 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 font-semibold transition-all bg-white shadow-lg hover:shadow-xl group relative z-30"
-                data-testid="button-demo"
-              >
-                <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                Ver Demonstração
-              </Button>
+            <div className="flex flex-col items-center">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full">
+                <Button
+                  size="lg"
+                  onClick={() => scrollToSection('diagnostico')}
+                  className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 shadow-lg hover:shadow-xl transition-all text-gray-900 font-bold relative z-30"
+                  data-testid="button-diagnostico-hero"
+                >
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  Fazer Teste Gratuito
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => scrollToSection('demo')}
+                  className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 border-2 border-indigo-400 text-indigo-700 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 font-semibold transition-all bg-white shadow-lg hover:shadow-xl group relative z-30"
+                  data-testid="button-demo"
+                >
+                  <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                  Solicitar Demonstração
+                </Button>
+              </div>
+              <p className="mt-4 text-sm sm:text-base text-gray-300 font-medium tracking-wide shadow-black drop-shadow-md">
+                Sem contrato de fidelidade | Sem cartão de crédito | Implementação imediata
+              </p>
             </div>
           </div>
         </div>
@@ -1669,6 +1674,17 @@ export default function LandingPage() {
                   >
                     <Mail className="mr-2 h-5 w-5" />
                     Email
+                  </Button>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-amber-200/50">
+                  <p className="text-sm text-center text-gray-600 mb-3 font-medium">Ou inicie agora mesmo:</p>
+                  <Button
+                    size="lg"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-md text-lg h-14"
+                    onClick={() => scrollToSection('planos')}
+                  >
+                    Comece agora por <span className="text-yellow-300 font-bold ml-1">R$ 35/colaborador</span>
                   </Button>
                 </div>
                 <div className="mt-6 text-center">
