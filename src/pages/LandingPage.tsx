@@ -1559,7 +1559,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold mb-4 text-gray-900">Sobre o HumaniQ AI</h2>
           <p className="text-lg text-gray-600 leading-relaxed">
-            O HumaniQ AI é uma plataforma desenvolvida por especialistas em Saúde e Segurança
+            O HumaniQ AI é um <strong>Software NR-01</strong> completo desenvolvido por especialistas em Saúde e Segurança
             do Trabalho, Psicologia Organizacional e Compliance Trabalhista, com foco exclusivo
             na gestão de <a href="/riscos-psicossociais" className="text-indigo-600 hover:underline">riscos psicossociais</a> conforme a <a href="/nr01" className="text-indigo-600 hover:underline">NR-01</a> e diretrizes do MTE.
           </p>
