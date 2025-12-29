@@ -196,6 +196,70 @@ export function createFAQSchema(
     };
 }
 
+export interface SchemaBlogPosting {
+    "@context": "https://schema.org";
+    "@type": "BlogPosting";
+    headline: string;
+    description: string;
+    image: string;
+    author: {
+        "@type": "Organization" | "Person";
+        name: string;
+    };
+    publisher: {
+        "@type": "Organization";
+        name: string;
+        logo: {
+            "@type": "ImageObject";
+            url: string;
+        };
+    };
+    datePublished: string;
+    dateModified?: string;
+    mainEntityOfPage: {
+        "@type": "WebPage";
+        "@id": string;
+    };
+}
+
+/**
+ * Gera schema BlogPosting para artigos de blog
+ */
+export function createBlogPostingSchema(
+    headline: string,
+    description: string,
+    image: string,
+    datePublished: string,
+    dateModified: string | undefined, // explicitly typed as string or undefined
+    url: string
+): SchemaBlogPosting {
+    return {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline,
+        description,
+        image,
+        author: {
+            "@type": "Organization",
+            name: "HumaniQ AI"
+        },
+        publisher: {
+            "@type": "Organization",
+            name: "HumaniQ AI",
+            logo: {
+                "@type": "ImageObject",
+                url: "https://www.humaniqai.com.br/LOGO%20TRANSPARENTE.png"
+            }
+        },
+        datePublished,
+        dateModified,
+        mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": url
+        }
+    };
+}
+
 export interface SchemaBreadcrumbList {
     "@context": "https://schema.org";
     "@type": "BreadcrumbList";

@@ -4,7 +4,7 @@ import { Button } from '../../../components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
-import { createBreadcrumbSchema } from '../../../lib/seo/schemas';
+import { createBreadcrumbSchema, createBlogPostingSchema } from '../../../lib/seo/schemas';
 
 const NR01Artigo = () => {
     const breadcrumb = createBreadcrumbSchema([
@@ -13,13 +13,22 @@ const NR01Artigo = () => {
         { name: 'NR-01 e Compliance 2026', url: 'https://www.humaniqai.com.br/blog/nr01-2026' }
     ]);
 
+    const articleSchema = createBlogPostingSchema(
+        "Como adequar sua empresa à NR-01 em 2026",
+        "Guia completo com o passo a passo para garantir que sua empresa esteja 100% em conformidade com as novas exigências da norma.",
+        "https://www.humaniqai.com.br/images/blog/nr01-post.png",
+        "2024-03-20",
+        "2024-03-20",
+        "https://www.humaniqai.com.br/blog/nr01-2026"
+    );
+
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
                 title="Como adequar sua empresa à NR-01 em 2026 | Blog HumaniQ AI"
                 description="Guia completo com o passo a passo para garantir que sua empresa esteja 100% em conformidade com as novas exigências da norma."
                 canonicalUrl="/blog/nr01-2026"
-                schema={breadcrumb}
+                schema={[breadcrumb, articleSchema]}
             />
 
             <div className="container mx-auto px-4 py-12 max-w-4xl">

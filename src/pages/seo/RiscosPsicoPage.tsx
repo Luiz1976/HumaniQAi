@@ -15,13 +15,44 @@ const RiscosPsicoPage = () => {
         "description": "Avaliação completa de fatores de risco psicossocial no trabalho utilizando protocolos validados e IA."
     };
 
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "O que são riscos psicossociais no trabalho?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "São aspectos da organização e gestão do trabalho que podem causar danos à saúde física ou psíquica do trabalhador, como estresse, burnout e ansiedade."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "A avaliação de riscos psicossociais é obrigatória?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Sim. A nova redação da NR-01 exige que o gerenciamento de riscos ocupacionais (GRO) inclua todos os perigos, incluindo os psicossociais."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Como a ISO 45003 ajuda na gestão desses riscos?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A ISO 45003 fornece diretrizes internacionais para gerenciar a saúde psicossocial, propondo intervenções primárias (organizacionais), secundárias (equipes) e terciárias (individuais)."
+                }
+            }
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
                 title="Avaliação de Riscos Psicossociais | Ferramenta Online HumaniQ AI"
                 description="Realize a avaliação de riscos psicossociais da sua empresa de forma digital e automática. Relatórios detalhados e planos de ação."
-                canonicalUrl="/avaliacao-psicossocial"
-                schema={schema}
+                canonicalUrl="/riscos-psicossociais"
+                schema={[schema, faqSchema]}
             />
 
             <div className="container mx-auto px-4 py-12 max-w-4xl">
@@ -89,6 +120,21 @@ const RiscosPsicoPage = () => {
                         <li><strong>Mapa de Calor:</strong> Identificação visual de quais setores estão em "Zona de Perigo".</li>
                         <li><strong>Prescrição Automática:</strong> O sistema sugere ações de intervenção primária baseadas nos riscos específicos encontrados.</li>
                     </ol>
+                    <h2 className="text-2xl font-bold mt-12 mb-6">Perguntas Frequentes</h2>
+                    <div className="space-y-6">
+                        <div className="bg-slate-50 p-6 rounded-lg">
+                            <h3 className="font-bold text-lg mb-2 text-slate-900">O que são riscos psicossociais no trabalho?</h3>
+                            <p>São aspectos da organização e gestão do trabalho que podem causar danos à saúde física ou psíquica do trabalhador, como estresse, burnout e ansiedade.</p>
+                        </div>
+                        <div className="bg-slate-50 p-6 rounded-lg">
+                            <h3 className="font-bold text-lg mb-2 text-slate-900">A avaliação de riscos psicossociais é obrigatória?</h3>
+                            <p>Sim. A nova redação da NR-01 exige que o gerenciamento de riscos ocupacionais (GRO) inclua todos os perigos, incluindo os psicossociais.</p>
+                        </div>
+                        <div className="bg-slate-50 p-6 rounded-lg">
+                            <h3 className="font-bold text-lg mb-2 text-slate-900">Como a ISO 45003 ajuda na gestão desses riscos?</h3>
+                            <p>A ISO 45003 fornece diretrizes internacionais para gerenciar a saúde psicossocial, propondo intervenções primárias (organizacionais), secundárias (equipes) e terciárias (individuais).</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="mt-12 bg-indigo-50 p-8 rounded-xl border border-indigo-100 text-center">
