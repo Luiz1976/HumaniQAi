@@ -21,8 +21,18 @@ const BlogPage = () => {
             />
 
             <div className="container mx-auto px-4 py-12 max-w-6xl">
-                <h1 className="text-4xl font-bold mb-2 text-slate-900">Blog HumaniQ AI</h1>
-                <p className="text-xl text-slate-600 mb-12">Conteúdos sobre saúde mental corporativa e legislação.</p>
+                <h1 className="text-4xl font-bold mb-2 text-slate-900">Blog HumaniQ AI: Saúde Mental, NR-01 e Inovação em RH</h1>
+                <p className="text-xl text-slate-600 mb-6">Conteúdos sobre saúde mental corporativa e legislação.</p>
+                <div className="flex flex-wrap gap-4 mb-12 text-sm font-medium items-center bg-slate-50 p-4 rounded-lg inline-flex border border-slate-100">
+                    <span className="text-slate-500 uppercase text-xs tracking-wider font-bold">Guias Recomendados:</span>
+                    <Link to="/nr01" className="text-blue-600 hover:underline flex items-center">
+                        NR-01 Completa
+                    </Link>
+                    <span className="text-slate-300">|</span>
+                    <Link to="/riscos-psicossociais" className="text-blue-600 hover:underline flex items-center">
+                        Riscos Psicossociais
+                    </Link>
+                </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {/* Placeholder Post 1 */}

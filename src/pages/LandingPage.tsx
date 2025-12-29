@@ -277,7 +277,8 @@ export default function LandingPage() {
             </Badge>
 
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-              A solução definitiva para riscos psicossociais e compliance com a NR-01.<br />
+              Gestão de Riscos Psicossociais e Compliance NR-01 com Inteligência Artificial
+              <br />
               <span className="text-yellow-400">Tudo em um único plano por R$ 35 por colaborador/mês.</span>
             </h1>
 
@@ -541,7 +542,7 @@ export default function LandingPage() {
               HumaniQ AI: A Única Plataforma Completa para Gestão de Riscos Psicossociais
             </h2>
             <p className="text-base sm:text-lg md:text-2xl text-indigo-200 max-w-5xl mx-auto font-medium">
-              A <span className="text-yellow-300 font-bold">única solução integrada</span> que entrega <span className="text-white font-bold">tudo o que a NR-01 exige</span> — do mapeamento online à capacitação de lideranças —
+              A <span className="text-yellow-300 font-bold">única solução integrada</span> que entrega <Link to="/nr01" className="text-white font-bold hover:text-yellow-300 hover:underline transition-colors">tudo o que a NR-01 exige</Link> — do mapeamento online à capacitação de lideranças —
               em um sistema <span className="text-emerald-300 font-bold">totalmente automatizado e auditável</span>.
             </p>
           </div>
@@ -1166,7 +1167,7 @@ export default function LandingPage() {
               R$ 35 por colaborador / mês
             </h2>
             <p className="text-base sm:text-lg text-gray-600 max-w-4xl mx-auto mb-4">
-              A plataforma completa para gestão de riscos psicossociais, compliance com a NR-01 e inteligência organizacional,
+              A plataforma completa para <Link to="/riscos-psicossociais" className="text-indigo-600 hover:underline font-medium">gestão de riscos psicossociais</Link>, compliance com a NR-01 e inteligência organizacional,
               desenvolvida para empresas que não podem operar no escuro.
             </p>
             <p className="text-xl font-bold text-indigo-600 max-w-3xl mx-auto">

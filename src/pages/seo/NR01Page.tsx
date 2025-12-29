@@ -33,50 +33,102 @@ const NR01Page = () => {
             />
 
             <div className="container mx-auto px-4 py-12 max-w-4xl">
-                <h1 className="text-4xl font-bold mb-6 text-slate-900">NR-01 e Riscos Psicossociais</h1>
+                <nav className="mb-8 text-sm text-slate-500">
+                    <Link to="/" className="hover:text-blue-600">Home</Link> &gt; <span className="text-slate-900">NR-01</span>
+                </nav>
+
+                <h1 className="text-4xl font-bold mb-6 text-slate-900">NR-01 e Riscos Psicossociais: Guia Completo para Conformidade</h1>
 
                 <div className="prose prose-lg max-w-none text-slate-700">
                     <p className="lead text-xl mb-8">
-                        A Norma Regulamentadora 01 (NR-01) estabelece as disposições gerais sobre saúde e segurança no trabalho,
-                        incluindo agora a obrigatoriedade de gerenciar riscos ocupacionais, entre eles, os riscos psicossociais.
+                        A Norma Regulamentadora 01 (NR-01) é a base de toda a segurança do trabalho no Brasil. Com sua atualização e a entrada em vigor do Gerenciamento de Riscos Ocupacionais (GRO),
+                        <strong>os riscos psicossociais passaram a ser obrigatórios</strong> na matriz de risco das empresas. Ignorar essa exigência não apenas expõe sua empresa a multas pesadas,
+                        mas também a ações civis públicas e passivos trabalhistas.
                     </p>
 
-                    <h2 className="text-2xl font-bold mt-8 mb-4">O que a NR-01 diz sobre riscos psicossociais?</h2>
+                    <h2 className="text-2xl font-bold mt-8 mb-4">O Novo Texto da NR-01 e a Portaria MTP nº 672/2021</h2>
                     <p>
-                        Com as atualizações recentes, o Gerenciamento de Riscos Ocupacionais (GRO) deve englobar não apenas
-                        riscos físicos, químicos e biológicos, mas também os fatores ergonômicos e psicossociais que afetam
-                        a saúde mental dos colaboradores.
+                        A nova redação da NR-01 trouxe uma mudança de paradigma: deixamos de olhar apenas para "insalubridade e periculosidade" (PPRA) para gerenciar <strong>todos</strong> os riscos ocupacionais (PGR).
+                        O item 1.5.3.1.3 é claro: a organização deve adotar mecanismos para consultar os trabalhadores quanto à percepção de riscos ocupacionais, podendo para este fim ser adotadas as manifestações da CIPA.
                     </p>
-
-                    <h3 className="text-xl font-semibold mt-6 mb-3">Principais pontos de atenção:</h3>
+                    <p className="mt-4">
+                        Além disso, a <strong>ISO 45003</strong>, norma internacional que complementa a gestão de saúde e segurança, serve como balizadora para o que se espera de uma gestão de riscos psicossociais eficiente, citando explicitamente fatores como:
+                    </p>
                     <ul className="list-disc pl-6 mb-6">
-                        <li>Identificação de perigos relacionados à organização do trabalho.</li>
-                        <li>Avaliação dos riscos à saúde mental (estresse, burnout, assédio).</li>
-                        <li>Implementação de medidas de prevenção e controle.</li>
+                        <li>Carga de trabalho excessiva ou mal distribuída;</li>
+                        <li>Falta de autonomia e controle sobre o trabalho;</li>
+                        <li>Relações interpessoais precárias e assédio;</li>
+                        <li>Falta de reconhecimento e recompensa;</li>
+                        <li>Insegurança contratual.</li>
                     </ul>
 
-                    <h2 className="text-2xl font-bold mt-8 mb-4">Como a HumaniQ AI ajuda sua empresa?</h2>
-                    <p className="mb-6">
-                        Nossa plataforma utiliza inteligência artificial e protocolos validados cientificamente para mapear,
-                        analisar e monitorar o clima organizacional e a saúde mental da sua equipe, garantindo conformidade
-                        com a NR-01 e promovendo um ambiente de trabalho mais saudável.
+                    <h2 className="text-2xl font-bold mt-8 mb-4">Checklist de Conformidade NR-01</h2>
+                    <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                        <p className="mb-4 font-semibold">Sua empresa passaria em uma auditoria do MTE hoje? Verifique os itens obrigatórios:</p>
+                        <ul className="space-y-3">
+                            <li className="flex items-start">
+                                <span className="text-green-500 mr-2">✓</span>
+                                Inventário de Riscos (PGR) atualizado incluindo fatores psicossociais?
+                            </li>
+                            <li className="flex items-start">
+                                <span className="text-green-500 mr-2">✓</span>
+                                Plano de Ação com medidas de controle cronogramadas?
+                            </li>
+                            <li className="flex items-start">
+                                <span className="text-green-500 mr-2">✓</span>
+                                Evidências de consulta aos trabalhadores (avaliações, pesquisas)?
+                            </li>
+                            <li className="flex items-start">
+                                <span className="text-green-500 mr-2">✓</span>
+                                Treinamento e orientações repassadas às lideranças?
+                            </li>
+                            <li className="flex items-start">
+                                <span className="text-green-500 mr-2">✓</span>
+                                Monitoramento contínuo da eficácia das medidas?
+                            </li>
+                        </ul>
+                    </div>
+
+                    <h2 className="text-2xl font-bold mt-8 mb-4">Riscos Legais: Multas e Consequências</h2>
+                    <p>
+                        O não cumprimento das disposições da NR-01 acarreta multas que variam conforme o número de empregados e o tipo de infração (segurança ou medicina do trabalho).
                     </p>
+                    <div className="bg-red-50 p-6 rounded-lg border-l-4 border-red-500 my-6">
+                        <h4 className="font-bold text-red-800 mb-2">Atenção aos valores:</h4>
+                        <p className="text-red-700">
+                            As multas podem variar de <strong>R$ 1.799,39 a R$ 6.708,08</strong> por infração. Em caso de reincidência, embaraço à fiscalização ou tentativa de fraude, os valores são multiplicados.
+                            <br /><br />
+                            Entretanto, o custo mais alto costuma vir de <strong>Ações Civis Públicas</strong> movidas pelo Ministério Público do Trabalho (MPT) em casos de denúncias de assédio ou epidemia de burnout, cujas indenizações por Dano Moral Coletivo podem ultrapassar a casa dos milhões de reais.
+                        </p>
+                    </div>
+
+                    <h2 className="text-2xl font-bold mt-8 mb-4">Como a HumaniQ AI Garante sua Conformidade</h2>
+                    <p className="mb-6">
+                        A plataforma HumaniQ AI foi desenhada especificamente para atender a todos os requisitos da NR-01 no que tange aos riscos psicossociais. Não entregamos apenas uma "pesquisa de clima", entregamos um sistema de gestão de conformidade:
+                    </p>
+                    <ul className="list-disc pl-6 mb-6">
+                        <li><strong>Identificação Técnica:</strong> Mapeamento baseado em modelos científicos (Karasek/COPSOQ).</li>
+                        <li><strong>Análise de Risco:</strong> Classificação automática da probabilidade e severidade dos riscos.</li>
+                        <li><strong>Plano de Ação Inteligente:</strong> A IA sugere medidas de controle específicas para os riscos encontrados.</li>
+                        <li><strong>Monitoramento:</strong> Dashboards em tempo real para acompanhar a evolução dos indicadores.</li>
+                        <li><strong>Documentação:</strong> Geração automática do capítulo de Riscos Psicossociais para o seu PGR.</li>
+                    </ul>
                 </div>
 
-                <div className="mt-12 bg-slate-50 p-8 rounded-xl border border-slate-200 text-center">
-                    <h3 className="text-2xl font-bold mb-4">Esteja em conformidade com a NR-01 hoje mesmo</h3>
-                    <p className="mb-6 text-slate-600">
-                        Comece agora a avaliação de riscos psicossociais da sua empresa com nossa solução completa.
+                <div className="mt-12 bg-blue-50 p-8 rounded-xl border border-blue-100 text-center">
+                    <h3 className="text-2xl font-bold mb-4 text-blue-900">Não corra riscos desnecessários</h3>
+                    <p className="mb-6 text-blue-800">
+                        Adequar-se à NR-01 é mais simples e barato do que você imagina. Regularize sua empresa agora.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link to="/quick-check">
-                            <Button size="lg" className="w-full sm:w-auto">
-                                Fazer Teste Gratuito
+                            <Button size="lg" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 font-bold">
+                                Fazer Diagnóstico Gratuito
                             </Button>
                         </Link>
-                        <a href="https://api.whatsapp.com/send/?phone=5519983835867&text=Ol%C3%A1%2C+quero+agendar+uma+demonstra%C3%A7%C3%A3o+do+HumaniQ+AI.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
+                        <a href="https://api.whatsapp.com/send/?phone=5519983835867&text=Ol%C3%A1%2C+vi+o+artigo+sobre+NR-01+e+quero+conhecer+a+plataforma.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
                             <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                                Agendar Demonstração
+                                Falar com Consultor
                             </Button>
                         </a>
                     </div>

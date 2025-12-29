@@ -25,44 +25,86 @@ const RiscosPsicoPage = () => {
             />
 
             <div className="container mx-auto px-4 py-12 max-w-4xl">
-                <h1 className="text-4xl font-bold mb-6 text-slate-900">Avaliação de Riscos Psicossociais</h1>
+                <nav className="mb-8 text-sm text-slate-500">
+                    <Link to="/" className="hover:text-blue-600">Home</Link> &gt; <span className="text-slate-900">Riscos Psicossociais</span>
+                </nav>
+
+                <h1 className="text-4xl font-bold mb-6 text-slate-900">Avaliação de Riscos Psicossociais: Guia Completo e Metodologia</h1>
 
                 <div className="prose prose-lg max-w-none text-slate-700">
                     <p className="lead text-xl mb-8">
-                        Identificar e mitigar riscos psicossociais é fundamental para a saúde dos colaboradores e para a
-                        produtividade da empresa. A Avaliação de Riscos Psicossociais da HumaniQ AI oferece uma visão
-                        clara e acionável do ambiente de trabalho.
+                        Os riscos psicossociais são características das condições de trabalho e, sobretudo, da organização do trabalho, que afetam a saúde das pessoas através de mecanismos psicológicos e fisiológicos.
+                        Diferente do "estresse comum", o risco psicossocial é uma falha na gestão organizacional que pode levar a doenças graves como Burnout, depressão e ansiedade generalizada.
                     </p>
 
-                    <h2 className="text-2xl font-bold mt-8 mb-4">O que é a Avaliação Psicossocial?</h2>
+                    <h2 className="text-2xl font-bold mt-8 mb-4">Diferença entre Estresse e Risco Psicossocial</h2>
                     <p>
-                        É um processo sistemático de coleta e análise de dados sobre fatores organizacionais, relacionais
-                        e individuais que podem impactar a saúde mental e física dos trabalhadores. Fatores como carga de
-                        trabalho excessiva, falta de autonomia, assédio e insegurança no emprego são analisados.
+                        É crucial distinguir a causa da consequência. O <strong>estresse</strong> é a resposta do indivíduo. O <strong>risco psicossocial</strong> é a característica do trabalho que causa esse estresse.
+                        Por exemplo: "Prazos impossíveis de cumprir" é o fator de risco. "Ansiedade e insônia do colaborador" são os danos causados. A NR-01 exige que a empresa atue na CAUSA (o risco), não apenas trate o sintoma.
                     </p>
 
-                    <h3 className="text-xl font-semibold mt-6 mb-3">Nossos diferenciais:</h3>
-                    <ul className="list-disc pl-6 mb-6">
-                        <li><strong>Protocolos Validados:</strong> Utilizamos metodologias reconhecidas (como COPSOQ, Karasek).</li>
-                        <li><strong>Anonimato Garantido:</strong> Segurança total para os colaboradores responderem com sinceridade.</li>
-                        <li><strong>Insights via IA:</strong> Nossa inteligência artificial analisa padrões e sugere intervenções.</li>
+                    <h2 className="text-2xl font-bold mt-8 mb-4">Modelos Teóricos Validados</h2>
+                    <p>
+                        Para uma avaliação ser técnica e aceita juridicamente, ela não pode basear-se em "achismos". A HumaniQ AI utiliza uma combinação dos modelos mais respeitados mundialmente:
+                    </p>
+
+                    <div className="grid md:grid-cols-2 gap-6 my-6">
+                        <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                            <h4 className="font-bold text-lg mb-2 text-indigo-700">Modelo Demanda-Controle (Karasek)</h4>
+                            <p className="text-sm">
+                                Postula que o maior risco para a saúde não é apenas ter muito trabalho (demanda), mas ter muito trabalho com <strong>baixa autonomia</strong> (controle) para decidir como fazê-lo.
+                            </p>
+                        </div>
+                        <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                            <h4 className="font-bold text-lg mb-2 text-indigo-700">Desequilíbrio Esforço-Recompensa (Siegrist)</h4>
+                            <p className="text-sm">
+                                Ocorre quando o colaborador sente que o esforço investido no trabalho é muito maior do que as recompensas recebidas (salário, estima, segurança, promoções).
+                            </p>
+                        </div>
+                    </div>
+
+                    <h2 className="text-2xl font-bold mt-8 mb-4">A Importância da ISO 45003</h2>
+                    <p>
+                        A ISO 45003 é a primeira norma global fornecendo diretrizes práticas para o gerenciamento de riscos psicossociais. Ela recomenda uma abordagem em três níveis, que nossa plataforma segue rigorosamente:
+                    </p>
+                    <ul className="space-y-4 my-6">
+                        <li className="bg-green-50 p-4 rounded-lg">
+                            <strong>Intervenção Primária (Organizacional):</strong> Atuar na fonte do problema. Ex: Redesenhar processos, ajustar cargas de trabalho, clarificar papéis. É a mais eficaz.
+                        </li>
+                        <li className="bg-yellow-50 p-4 rounded-lg">
+                            <strong>Intervenção Secundária (Equipe/Líder):</strong> Capacitar líderes e equipes para lidar melhor com as demandas. Treinamentos de resiliência e comunicação.
+                        </li>
+                        <li className="bg-red-50 p-4 rounded-lg">
+                            <strong>Intervenção Terciária (Individual):</strong> Reabilitação e apoio ao colaborador que já está adoecido. Psicologia clínica e retorno ao trabalho.
+                        </li>
                     </ul>
+
+                    <h2 className="text-2xl font-bold mt-8 mb-4">Metodologia HumaniQ AI</h2>
+                    <p>
+                        Nossa ferramenta operacionaliza toda essa teoria complexa em um fluxo simples para a empresa:
+                    </p>
+                    <ol className="list-decimal pl-6 mb-6 space-y-2">
+                        <li><strong>Coleta Digital:</strong> Links individuais e anônimos enviados aos colaboradores.</li>
+                        <li><strong>Processamento IA:</strong> Algoritmos cruzam os dados das respostas com os modelos teóricos.</li>
+                        <li><strong>Mapa de Calor:</strong> Identificação visual de quais setores estão em "Zona de Perigo".</li>
+                        <li><strong>Prescrição Automática:</strong> O sistema sugere ações de intervenção primária baseadas nos riscos específicos encontrados.</li>
+                    </ol>
                 </div>
 
-                <div className="mt-12 bg-blue-50 p-8 rounded-xl border border-blue-100 text-center">
-                    <h3 className="text-2xl font-bold mb-4">Proteja sua equipe e sua empresa</h3>
-                    <p className="mb-6 text-slate-600">
-                        Planos acessíveis a partir de R$ 35,00 por colaborador para gestão completa.
+                <div className="mt-12 bg-indigo-50 p-8 rounded-xl border border-indigo-100 text-center">
+                    <h3 className="text-2xl font-bold mb-4 text-indigo-900">Leve ciência de dados para seu RH</h3>
+                    <p className="mb-6 text-indigo-800">
+                        Deixe de "apagar incêndios" e comece a gerir riscos com precisão cirúrgica.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link to="/quick-check">
-                            <Button size="lg" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
-                                Assinar Agora
+                            <Button size="lg" className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 font-bold">
+                                Começar Avaliação Agora
                             </Button>
                         </Link>
-                        <a href="https://api.whatsapp.com/send/?phone=5519983835867&text=Ol%C3%A1%2C+quero+agendar+uma+demonstra%C3%A7%C3%A3o+do+HumaniQ+AI.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
+                        <a href="https://api.whatsapp.com/send/?phone=5519983835867&text=Ol%C3%A1%2C+quero+entender+melhor+a+metodologia+de+avalia%C3%A7%C3%A3o+psicossocial.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
                             <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                                Falar com Especialista
+                                Conversar com Especialista
                             </Button>
                         </a>
                     </div>
