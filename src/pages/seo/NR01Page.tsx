@@ -26,24 +26,29 @@ const NR01Page = () => {
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
-                title="NR-01 e Riscos Psicossociais | Plataforma HumaniQ AI"
-                description="Guia completo e atualizado sobre a NR-01 e a gestão de riscos psicossociais. Veja o checklist de conformidade, evite multas de até R$ 6.700 e proteja sua empresa. Leia agora!"
+                title="Guia da NR-01: Gestão de Riscos Psicossociais | HumaniQ AI"
+                description="Guia técnico sobre a NR-01 atualizada. Entenda as obrigatoriedades legais, multas, e como incluir os riscos psicossociais no PGR e GRO."
                 canonicalUrl="/nr01"
                 schema={schema}
             />
 
             <div className="container mx-auto px-4 py-12 max-w-4xl">
                 <nav className="mb-8 text-sm text-slate-500">
-                    <Link to="/" className="hover:text-blue-600">Home</Link> &gt; <span className="text-slate-900">NR-01</span>
+                    <Link to="/" className="hover:text-blue-600">Home</Link> &gt; <span className="text-slate-900">Guia NR-01</span>
                 </nav>
 
-                <h1 className="text-4xl font-bold mb-6 text-slate-900">NR-01 e Riscos Psicossociais: Guia Completo para Conformidade</h1>
+                <h1 className="text-4xl font-bold mb-6 text-slate-900">NR-01 e os Riscos Psicossociais: O que diz a Lei?</h1>
 
                 <div className="prose prose-lg max-w-none text-slate-700">
-                    <p className="lead text-xl mb-8">
-                        A Norma Regulamentadora 01 (NR-01) é a base de toda a segurança do trabalho no Brasil. Com sua atualização e a entrada em vigor do Gerenciamento de Riscos Ocupacionais (GRO),
-                        <strong>os riscos psicossociais passaram a ser obrigatórios</strong> na matriz de risco das empresas. Ignorar essa exigência não apenas expõe sua empresa a multas pesadas,
-                        mas também a ações civis públicas e passivos trabalhistas.
+                    <p className="lead text-xl mb-8 border-l-4 border-blue-600 pl-4 bg-blue-50 py-2 rounded-r">
+                        A Norma Regulamentadora nº 01 (NR-01) determina as disposições gerais sobre saúde e segurança.
+                        <strong>Aviso Legal:</strong> A nova redação torna obrigatória a inclusão dos riscos psicossociais no Gerenciamento de Riscos Ocupacionais (GRO).
+                    </p>
+
+                    <h2 className="text-2xl font-bold mt-8 mb-4">Obrigatoriedade e Fiscalização</h2>
+                    <p>
+                        Não é mais uma recomendação, é lei. As empresas devem identificar perigos e avaliar riscos que afetem a saúde mental.
+                        O não cumprimento pode acarretar multas administrativas pesadas aplicadas pelo Ministério do Trabalho, além de responsabilização civil em casos de doenças ocupacionais.
                     </p>
 
                     <h2 className="text-2xl font-bold mt-8 mb-4">O Novo Texto da NR-01 e a Portaria MTP nº 672/2021</h2>

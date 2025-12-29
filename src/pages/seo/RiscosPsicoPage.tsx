@@ -49,8 +49,8 @@ const RiscosPsicoPage = () => {
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
-                title="Avaliação de Riscos Psicossociais | Ferramenta Online HumaniQ AI"
-                description="Realize a avaliação de riscos psicossociais da sua empresa de forma digital e automática. Relatórios detalhados e planos de ação."
+                title="O que são Riscos Psicossociais no Trabalho? | HumaniQ AI"
+                description="Entenda o impacto do burnout, assédio e estresse na produtividade da sua equipe. Guia completo sobre saúde mental corporativa e clima organizacional."
                 canonicalUrl="/riscos-psicossociais"
                 schema={[schema, faqSchema]}
             />
@@ -60,18 +60,19 @@ const RiscosPsicoPage = () => {
                     <Link to="/" className="hover:text-blue-600">Home</Link> &gt; <span className="text-slate-900">Riscos Psicossociais</span>
                 </nav>
 
-                <h1 className="text-4xl font-bold mb-6 text-slate-900">Avaliação de Riscos Psicossociais: Guia Completo e Metodologia</h1>
+                <h1 className="text-4xl font-bold mb-6 text-slate-900">Definição e Impacto dos Riscos Psicossociais</h1>
 
                 <div className="prose prose-lg max-w-none text-slate-700">
                     <p className="lead text-xl mb-8">
-                        Os riscos psicossociais são características das condições de trabalho e, sobretudo, da organização do trabalho, que afetam a saúde das pessoas através de mecanismos psicológicos e fisiológicos.
-                        Diferente do "estresse comum", o risco psicossocial é uma falha na gestão organizacional que pode levar a doenças graves como Burnout, depressão e ansiedade generalizada.
+                        Mais do que uma exigência legal, os riscos psicossociais são os "assassinos silenciosos" da produtividade.
+                        Eles se manifestam como <strong>Burnout, rotatividade (turnover) e absenteísmo</strong>.
+                        Entender isso é chave para uma gestão de pessoas estratégica.
                     </p>
 
-                    <h2 className="text-2xl font-bold mt-8 mb-4">Diferença entre Estresse e Risco Psicossocial</h2>
+                    <h2 className="text-2xl font-bold mt-8 mb-4">O Lado Humano da Gestão</h2>
                     <p>
-                        É crucial distinguir a causa da consequência. O <strong>estresse</strong> é a resposta do indivíduo. O <strong>risco psicossocial</strong> é a característica do trabalho que causa esse estresse.
-                        Por exemplo: "Prazos impossíveis de cumprir" é o fator de risco. "Ansiedade e insônia do colaborador" são os danos causados. A NR-01 exige que a empresa atue na CAUSA (o risco), não apenas trate o sintoma.
+                        Quando falamos de riscos psicossociais, estamos falando da interação entre o <strong>ambiente de trabalho</strong> (prazos, cobranças, liderança) e a <strong>capacidade humana</strong> de lidar com isso.
+                        Um ambiente tóxico não gera apenas processos trabalhistas; ele gera equipes desengajadas e criatividade nula.
                     </p>
 
                     <h2 className="text-2xl font-bold mt-8 mb-4">Modelos Teóricos Validados</h2>
