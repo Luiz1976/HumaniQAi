@@ -48,7 +48,7 @@ const BlogPage = () => {
 
                     {/* Post 2 - Cluster: Inventário */}
                     <article className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
-                        <div className="bg-slate-200 h-48 w-full flex items-center justify-center text-slate-400 font-medium">Imagem: Inventário</div>
+                        <img src="/images/blog/inventario-post.png" alt="Inventário de Riscos" className="h-48 w-full object-cover bg-slate-100" />
                         <div className="p-6">
                             <div className="text-xs font-semibold text-green-600 uppercase mb-2">PGR & NR-01</div>
                             <h2 className="text-xl font-bold mb-3 text-slate-900">Como Elaborar o Inventário de Riscos Psicossociais</h2>
