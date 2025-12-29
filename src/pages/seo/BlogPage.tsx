@@ -46,14 +46,14 @@ const BlogPage = () => {
                         </div>
                     </article>
 
-                    {/* Placeholder Post 2 */}
+                    {/* Post 2 - Cluster: Inventário */}
                     <article className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
-                        <img src="/images/blog/mapeamento-post.png" alt="Mapeamento Psicossocial" className="h-48 w-full object-contain bg-slate-100" />
+                        <div className="bg-slate-200 h-48 w-full flex items-center justify-center text-slate-400 font-medium">Imagem: Inventário</div>
                         <div className="p-6">
-                            <div className="text-xs font-semibold text-green-600 uppercase mb-2">Saúde Mental</div>
-                            <h2 className="text-xl font-bold mb-3 text-slate-900">Sinais de Burnout na equipe: Como identificar?</h2>
-                            <p className="text-slate-600 mb-4 line-clamp-3">Aprenda a reconhecer os primeiros sinais de esgotamento profissional nos seus colaboradores e como intervir precocemente.</p>
-                            <Link to="/blog/sinais-burnout" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
+                            <div className="text-xs font-semibold text-green-600 uppercase mb-2">PGR & NR-01</div>
+                            <h2 className="text-xl font-bold mb-3 text-slate-900">Como Elaborar o Inventário de Riscos Psicossociais</h2>
+                            <p className="text-slate-600 mb-4 line-clamp-3">Passo a passo prático para incluir os fatores psicossociais no Inventário de Riscos do seu PGR, conforme exigido pela nova NR-01.</p>
+                            <Link to="/blog/inventario-riscos-pgr" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
                         </div>
                     </article>
 
