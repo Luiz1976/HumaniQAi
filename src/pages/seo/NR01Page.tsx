@@ -26,8 +26,8 @@ const NR01Page = () => {
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
-                title="Guia da NR-01: Gestão de Riscos Psicossociais | HumaniQ AI"
-                description="Guia técnico sobre a NR-01 atualizada. Entenda as obrigatoriedades legais, multas, e como incluir os riscos psicossociais no PGR e GRO."
+                title="Software para Gestão de Riscos Psicossociais em Conformidade com a NR-01 | HumaniQ AI"
+                description="Automatize o seu PGR e evite passivos trabalhistas com a HumaniQ AI. Mapeamento sistemático, plano de ação automatizado e prevenção de multas."
                 canonicalUrl="/nr01"
                 schema={schema}
             />
@@ -37,94 +37,58 @@ const NR01Page = () => {
                     <Link to="/" className="hover:text-blue-600">Home</Link> &gt; <span className="text-slate-900">Guia NR-01</span>
                 </nav>
 
-                <h1 className="text-4xl font-bold mb-6 text-slate-900">NR-01 e os Riscos Psicossociais: O que diz a Lei?</h1>
+                <h1 className="text-4xl font-bold mb-2 text-slate-900">Software para Gestão de Riscos Psicossociais em Conformidade com a NR-01</h1>
+                <h2 className="text-xl text-slate-600 mb-8 font-medium">Automatize o seu PGR e evite passivos trabalhistas com a HumaniQ AI.</h2>
 
                 <div className="prose prose-lg max-w-none text-slate-700">
-                    <p className="lead text-xl mb-8 border-l-4 border-blue-600 pl-4 bg-blue-50 py-2 rounded-r">
-                        A Norma Regulamentadora nº 01 (NR-01) determina as disposições gerais sobre saúde e segurança.
-                        <strong>Aviso Legal:</strong> A nova redação torna obrigatória a inclusão dos riscos psicossociais no Gerenciamento de Riscos Ocupacionais (GRO).
+                    <p className="lead text-lg mb-8">
+                        A Norma Regulamentadora 01 (NR-01) estabelece as diretrizes gerais para o <strong>Gerenciamento de Riscos Ocupacionais (GRO)</strong>.
+                        Com as atualizações recentes, a identificação e o controle de <strong>riscos psicossociais</strong> tornaram-se obrigatórios para a composição do <strong>PGR (Programa de Gerenciamento de Riscos)</strong>.
                     </p>
 
-                    <h2 className="text-2xl font-bold mt-8 mb-4">Obrigatoriedade e Fiscalização</h2>
-                    <p>
-                        Não é mais uma recomendação, é lei. As empresas devem identificar perigos e avaliar riscos que afetem a saúde mental.
-                        O não cumprimento pode acarretar multas administrativas pesadas aplicadas pelo Ministério do Trabalho, além de responsabilização civil em casos de doenças ocupacionais.
-                    </p>
-
-                    <h2 className="text-2xl font-bold mt-8 mb-4">O Novo Texto da NR-01 e a Portaria MTP nº 672/2021</h2>
-                    <p>
-                        A nova redação da NR-01 trouxe uma mudança de paradigma: deixamos de olhar apenas para "insalubridade e periculosidade" (PPRA) para gerenciar <strong>todos</strong> os riscos ocupacionais (PGR).
-                        O item 1.5.3.1.3 é claro: a organização deve adotar mecanismos para consultar os trabalhadores quanto à percepção de riscos ocupacionais, podendo para este fim ser adotadas as manifestações da CIPA.
-                    </p>
-                    <p className="mt-4">
-                        Além disso, a <strong>ISO 45003</strong>, norma internacional que complementa a gestão de saúde e segurança, serve como balizadora para o que se espera de uma gestão de riscos psicossociais eficiente, citando explicitamente fatores como:
-                    </p>
-                    <ul className="list-disc pl-6 mb-6">
-                        <li>Carga de trabalho excessiva ou mal distribuída;</li>
-                        <li>Falta de autonomia e controle sobre o trabalho;</li>
-                        <li>Relações interpessoais precárias e assédio;</li>
-                        <li>Falta de reconhecimento e recompensa;</li>
-                        <li>Insegurança contratual.</li>
-                    </ul>
-
-                    <h2 className="text-2xl font-bold mt-8 mb-4">Checklist de Conformidade NR-01</h2>
-                    <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
-                        <p className="mb-4 font-semibold">Sua empresa passaria em uma auditoria do MTE hoje? Verifique os itens obrigatórios:</p>
-                        <ul className="space-y-3">
-                            <li className="flex items-start">
-                                <span className="text-green-500 mr-2">✓</span>
-                                Inventário de Riscos (PGR) atualizado incluindo fatores psicossociais?
-                            </li>
-                            <li className="flex items-start">
-                                <span className="text-green-500 mr-2">✓</span>
-                                Plano de Ação com medidas de controle cronogramadas?
-                            </li>
-                            <li className="flex items-start">
-                                <span className="text-green-500 mr-2">✓</span>
-                                Evidências de consulta aos trabalhadores (avaliações, pesquisas)?
-                            </li>
-                            <li className="flex items-start">
-                                <span className="text-green-500 mr-2">✓</span>
-                                Treinamento e orientações repassadas às lideranças?
-                            </li>
-                            <li className="flex items-start">
-                                <span className="text-green-500 mr-2">✓</span>
-                                Monitoramento contínuo da eficácia das medidas?
-                            </li>
-                        </ul>
-                    </div>
-
-                    <h2 className="text-2xl font-bold mt-8 mb-4">Riscos Legais: Multas e Consequências</h2>
-                    <p>
-                        O não cumprimento das disposições da NR-01 acarreta multas que variam conforme o número de empregados e o tipo de infração (segurança ou medicina do trabalho).
-                    </p>
-                    <div className="bg-red-50 p-6 rounded-lg border-l-4 border-red-500 my-6">
-                        <h4 className="font-bold text-red-800 mb-2">Atenção aos valores:</h4>
-                        <p className="text-red-700">
-                            As multas podem variar de <strong>R$ 1.799,39 a R$ 6.708,08</strong> por infração. Em caso de reincidência, embaraço à fiscalização ou tentativa de fraude, os valores são multiplicados.
-                            <br /><br />
-                            Entretanto, o custo mais alto costuma vir de <strong>Ações Civis Públicas</strong> movidas pelo Ministério Público do Trabalho (MPT) em casos de denúncias de assédio ou epidemia de burnout, cujas indenizações por Dano Moral Coletivo podem ultrapassar a casa dos milhões de reais.
-                        </p>
-                    </div>
-
-                    <h2 className="text-2xl font-bold mt-8 mb-4">Como a HumaniQ AI Garante sua Conformidade</h2>
                     <p className="mb-6">
-                        A plataforma HumaniQ AI foi desenhada especificamente para atender a todos os requisitos da NR-01 no que tange aos riscos psicossociais.
-                        Não entregamos apenas uma "pesquisa de clima", entregamos um <Link to="/software-nr01" className="text-blue-600 hover:underline font-medium">software de gestão de conformidade completo</Link>:
+                        O HumaniQ AI foi desenvolvido especificamente para atender às exigências técnicas do Ministério do Trabalho e Emprego. Nossa plataforma facilita:
                     </p>
-                    <ul className="list-disc pl-6 mb-6">
-                        <li><strong>Identificação Técnica:</strong> Mapeamento baseado em modelos científicos (Karasek/COPSOQ).</li>
-                        <li><strong>Análise de Risco:</strong> Classificação automática da probabilidade e severidade dos riscos.</li>
-                        <li><strong>Plano de Ação Inteligente:</strong> A IA sugere medidas de controle específicas para os riscos encontrados.</li>
-                        <li><strong>Monitoramento:</strong> Dashboards em tempo real para acompanhar a evolução dos indicadores.</li>
-                        <li><strong>Documentação:</strong> Geração automática do capítulo de Riscos Psicossociais para o seu PGR.</li>
+
+                    <ul className="space-y-4 mb-8">
+                        <li className="flex items-start gap-3">
+                            <div className="min-w-6 mt-1 text-green-600">✓</div>
+                            <div>
+                                <strong>Inventário de Riscos:</strong> Mapeamento sistemático de fatores psicossociais conforme exigido pela norma.
+                            </div>
+                        </li>
+                        <li className="flex items-start gap-3">
+                            <div className="min-w-6 mt-1 text-green-600">✓</div>
+                            <div>
+                                <strong>Plano de Ação Automatizado:</strong> Geração de medidas preventivas e corretivas com cronograma de implementação.
+                            </div>
+                        </li>
+                        <li className="flex items-start gap-3">
+                            <div className="min-w-6 mt-1 text-green-600">✓</div>
+                            <div>
+                                <strong>Prevenção de Multas:</strong> Evite sanções que podem variar de R$ 1.799 a R$ 6.708 por infração diária.
+                            </div>
+                        </li>
+                        <li className="flex items-start gap-3">
+                            <div className="min-w-6 mt-1 text-green-600">✓</div>
+                            <div>
+                                <strong>Histórico Auditável:</strong> Mantenha toda a documentação pronta para fiscalizações ativas e auditorias.
+                            </div>
+                        </li>
                     </ul>
+
+                    <div className="mt-12 p-6 bg-slate-50 rounded-lg border border-slate-200 text-center sm:text-left">
+                        <p className="font-medium text-slate-900 mb-2">Continue aprendendo:</p>
+                        <Link to="/riscos-psicossociais" className="text-blue-600 hover:underline font-semibold flex items-center justify-center sm:justify-start gap-2">
+                            Quer saber mais sobre o impacto na saúde mental? Veja nosso guia de Riscos Psicossociais <span aria-hidden="true">→</span>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="mt-12 bg-blue-50 p-8 rounded-xl border border-blue-100 text-center">
-                    <h3 className="text-2xl font-bold mb-4 text-blue-900">Não corra riscos desnecessários</h3>
+                    <h3 className="text-2xl font-bold mb-4 text-blue-900">Evite multas e proteja sua equipe</h3>
                     <p className="mb-6 text-blue-800">
-                        Adequar-se à NR-01 é mais simples e barato do que você imagina. Regularize sua empresa agora.
+                        Faça uma avaliação rápida e veja se sua empresa está em conformidade.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link to="/quick-check">
