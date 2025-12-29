@@ -3,8 +3,10 @@ import { SeoHead } from '../../components/seo/SeoHead';
 import { Button } from '../../components/ui/button';
 import { Link } from 'react-router-dom';
 
+import { createBreadcrumbSchema } from '../../lib/seo/schemas';
+
 const SoftwareNR01Page = () => {
-    const schema = {
+    const softwareSchema = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "HumaniQ AI - Software NR-01",
@@ -19,13 +21,18 @@ const SoftwareNR01Page = () => {
         "description": "Software especializado para gestão de riscos psicossociais e conformidade com a NR-01."
     };
 
+    const breadcrumbSchema = createBreadcrumbSchema([
+        { name: 'Home', url: 'https://www.humaniqai.com.br' },
+        { name: 'Software NR-01', url: 'https://www.humaniqai.com.br/software-nr01' }
+    ]);
+
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
                 title="Software para NR-01 e Saúde Mental | HumaniQ AI"
                 description="O melhor software para gestão da NR-01 e riscos psicossociais. Automatize avaliações, gere relatórios para o PGR e garanta conformidade."
                 canonicalUrl="/software-nr01"
-                schema={schema}
+                schema={[softwareSchema, breadcrumbSchema]}
             />
 
             <div className="container mx-auto px-4 py-12 max-w-4xl">

@@ -3,13 +3,21 @@ import { SeoHead } from '../../components/seo/SeoHead';
 import { Button } from '../../components/ui/button';
 import { Link } from 'react-router-dom';
 
+import { createBreadcrumbSchema } from '../../lib/seo/schemas';
+
 const BlogPage = () => {
+    const breadcrumb = createBreadcrumbSchema([
+        { name: 'Home', url: 'https://www.humaniqai.com.br' },
+        { name: 'Blog', url: 'https://www.humaniqai.com.br/blog' }
+    ]);
+
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
                 title="Blog HumaniQ AI | Saúde Mental e Compliance NR-01"
                 description="Artigos, dicas e novidades sobre saúde mental no trabalho, riscos psicossociais, NR-01 e gestão de pessoas."
                 canonicalUrl="/blog"
+                schema={breadcrumb}
             />
 
             <div className="container mx-auto px-4 py-12 max-w-6xl">

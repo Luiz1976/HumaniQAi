@@ -7,7 +7,7 @@ interface SeoHeadProps {
     canonicalUrl?: string;
     ogType?: 'website' | 'article' | 'profile';
     ogImage?: string;
-    schema?: Record<string, any>;
+    schema?: Record<string, any> | Record<string, any>[];
 }
 
 export const SeoHead: React.FC<SeoHeadProps> = ({
