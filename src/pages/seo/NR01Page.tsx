@@ -27,7 +27,7 @@ const NR01Page = () => {
         <div className="min-h-screen bg-background">
             <SeoHead
                 title="NR-01 e Riscos Psicossociais | Plataforma HumaniQ AI"
-                description="Avalie riscos psicossociais conforme a NR-01 com a HumaniQ AI. Plataforma automática, relatórios inteligentes e conformidade legal."
+                description="Guia completo e atualizado sobre a NR-01 e a gestão de riscos psicossociais. Veja o checklist de conformidade, evite multas de até R$ 6.700 e proteja sua empresa. Leia agora!"
                 canonicalUrl="/nr01"
                 schema={schema}
             />
@@ -104,7 +104,8 @@ const NR01Page = () => {
 
                     <h2 className="text-2xl font-bold mt-8 mb-4">Como a HumaniQ AI Garante sua Conformidade</h2>
                     <p className="mb-6">
-                        A plataforma HumaniQ AI foi desenhada especificamente para atender a todos os requisitos da NR-01 no que tange aos riscos psicossociais. Não entregamos apenas uma "pesquisa de clima", entregamos um sistema de gestão de conformidade:
+                        A plataforma HumaniQ AI foi desenhada especificamente para atender a todos os requisitos da NR-01 no que tange aos riscos psicossociais.
+                        Não entregamos apenas uma "pesquisa de clima", entregamos um <Link to="/software-nr01" className="text-blue-600 hover:underline font-medium">software de gestão de conformidade completo</Link>:
                     </p>
                     <ul className="list-disc pl-6 mb-6">
                         <li><strong>Identificação Técnica:</strong> Mapeamento baseado em modelos científicos (Karasek/COPSOQ).</li>

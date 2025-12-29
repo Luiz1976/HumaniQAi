@@ -30,7 +30,7 @@ const SoftwareNR01Page = () => {
         <div className="min-h-screen bg-background">
             <SeoHead
                 title="Software para NR-01 e Saúde Mental | HumaniQ AI"
-                description="O melhor software para gestão da NR-01 e riscos psicossociais. Automatize avaliações, gere relatórios para o PGR e garanta conformidade."
+                description="Software líder para gestão da NR-01. Digitalize avaliações psicossociais, gere relatórios automáticos para o PGR e garanta o compliance da sua empresa. Faça um teste gratuito!"
                 canonicalUrl="/software-nr01"
                 schema={[softwareSchema, breadcrumbSchema]}
             />
@@ -40,8 +40,9 @@ const SoftwareNR01Page = () => {
 
                 <div className="prose prose-lg max-w-none text-slate-700">
                     <p className="lead text-xl mb-8">
-                        Digitalize o processo de adequação à NR-01 com o software da HumaniQ AI. Centralize avaliações,
-                        documentos e planos de ação em uma única plataforma segura e intuitiva.
+                        Digitalize o processo de adequação à NR-01 com o software da HumaniQ AI.
+                        (Ainda tem dúvidas sobre a lei? <Link to="/nr01" className="text-blue-600 hover:underline">Leia nosso Guia da NR-01</Link>).
+                        Centralize avaliações, documentos e planos de ação em uma única plataforma segura e intuitiva.
                     </p>
 
                     <div className="grid md:grid-cols-2 gap-8 my-10">
