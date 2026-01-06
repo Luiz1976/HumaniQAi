@@ -91,6 +91,7 @@ import NR01Artigo from "./pages/seo/blog/NR01Artigo";
 import InventarioRiscosArtigo from "./pages/seo/blog/InventarioRiscosArtigo";
 import BurnoutArtigo from "./pages/seo/blog/BurnoutArtigo";
 import IAGestaoArtigo from "./pages/seo/blog/IAGestaoArtigo";
+import ChecklistNR01Artigo from "./pages/seo/blog/ChecklistNR01Artigo";
 
 function App() {
   console.log('🔍 [APP] Componente App iniciado');
@@ -121,6 +122,7 @@ function App() {
                   <Route path="/software-nr01" element={<SoftwareNR01Page />} />
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/blog/nr01-2026" element={<NR01Artigo />} />
+                  <Route path="/blog/checklist-multas-nr01" element={<ChecklistNR01Artigo />} />
                   <Route path="/blog/inventario-riscos-pgr" element={<InventarioRiscosArtigo />} />
                   <Route path="/blog/sinais-burnout" element={<BurnoutArtigo />} />
                   <Route path="/blog/ia-gestao-pessoas" element={<IAGestaoArtigo />} />

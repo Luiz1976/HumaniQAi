@@ -40,9 +40,20 @@ const BlogPage = () => {
                         <img src="/images/blog/nr01-post.png" alt="NR-01 Compliance" className="h-48 w-full object-contain bg-slate-100" />
                         <div className="p-6">
                             <div className="text-xs font-semibold text-blue-600 uppercase mb-2">NR-01</div>
-                            <h2 className="text-xl font-bold mb-3 text-slate-900">Como adequar sua empresa à NR-01 em 2026</h2>
-                            <p className="text-slate-600 mb-4 line-clamp-3">Guia completo com o passo a passo para garantir que sua empresa esteja 100% em conformidade com as novas exigências da norma.</p>
+                            <h2 className="text-xl font-bold mb-3 text-slate-900">NR-01 e Riscos Psicossociais: Guia Completo 2026</h2>
+                            <p className="text-slate-600 mb-4 line-clamp-3">Guia definitivo sobre a gestão de riscos psicossociais. Entenda as obrigações e evite multas.</p>
                             <Link to="/blog/nr01-2026" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
+                        </div>
+                    </article>
+
+                    {/* Post New - Checklist */}
+                    <article className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
+                        <img src="/images/blog/mapeamento-post.png" alt="Checklist NR-01" className="h-48 w-full object-cover bg-slate-900" />
+                        <div className="p-6">
+                            <div className="text-xs font-semibold text-emerald-600 uppercase mb-2">Checklist & Multas</div>
+                            <h2 className="text-xl font-bold mb-3 text-slate-900">Como Evitar Multas da NR-01: Checklist Passo a Passo</h2>
+                            <p className="text-slate-600 mb-4 line-clamp-3">Checklist completo de documentação, processos e treinamentos para blindar sua empresa em 2026.</p>
+                            <Link to="/blog/checklist-multas-nr01" className="text-blue-600 font-medium hover:underline">Ler mais →</Link>
                         </div>
                     </article>
 

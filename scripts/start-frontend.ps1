@@ -176,7 +176,7 @@ function Start-FrontendDevelopment {
         # Usar Start-Process para melhor controle
         $processInfo = New-Object System.Diagnostics.ProcessStartInfo
         $processInfo.FileName = "npm.cmd"
-        $processInfo.Arguments = "run dev -- --port 5000 --host 0.0.0.0 --strictPort"
+        $processInfo.Arguments = "run dev:strict -- --strictPort"
         $processInfo.WorkingDirectory = $projectRoot
         $processInfo.UseShellExecute = $false
         $processInfo.RedirectStandardOutput = $true
