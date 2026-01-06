@@ -130,8 +130,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <SeoHead
-        title="HumaniQ AI | Software de Gestão de Riscos Psicossociais e NR-01"
-        description="Plataforma completa para gestão de riscos psicossociais e atendimento à NR-01. Mapeamento, relatórios automáticos e conformidade legal garantida."
+        title="Humaniq AI | Software de NR 01 e Gestão de Riscos Psicossociais"
+        description="Sistema especializado em NR 01, gestão de riscos psicossociais e conformidade trabalhista. Software completo com IA para sua empresa."
         canonicalUrl="/"
         ogImage="https://www.humaniqai.com.br/LOGO%20TRANSPARENTE.png"
         schema={{
@@ -277,7 +277,7 @@ export default function LandingPage() {
             </Badge>
 
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-              Gestão de Riscos Psicossociais e Compliance NR-01 com Inteligência Artificial
+              Software NR 01 Completo com Inteligência Artificial
               <br />
               <span className="text-yellow-400">Tudo em um único plano por R$ 35 por colaborador/mês.</span>
             </h1>

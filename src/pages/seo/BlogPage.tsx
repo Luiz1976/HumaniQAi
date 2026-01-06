@@ -37,7 +37,7 @@ const BlogPage = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {/* Placeholder Post 1 */}
                     <article className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
-                        <img src="/images/blog/nr01-post.png" alt="NR-01 Compliance" className="h-48 w-full object-contain bg-slate-100" />
+                        <img src="/images/blog/nr01-post.webp" alt="NR-01 Compliance" className="h-48 w-full object-contain bg-slate-100" />
                         <div className="p-6">
                             <div className="text-xs font-semibold text-blue-600 uppercase mb-2">NR-01</div>
                             <h2 className="text-xl font-bold mb-3 text-slate-900">NR-01 e Riscos Psicossociais: Guia Completo 2026</h2>
@@ -48,7 +48,7 @@ const BlogPage = () => {
 
                     {/* Post New - Checklist */}
                     <article className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
-                        <img src="/images/blog/mapeamento-post.png" alt="Checklist NR-01" className="h-48 w-full object-cover bg-slate-900" />
+                        <img src="/images/blog/mapeamento-post.webp" alt="Checklist NR-01" className="h-48 w-full object-cover bg-slate-900" />
                         <div className="p-6">
                             <div className="text-xs font-semibold text-emerald-600 uppercase mb-2">Checklist & Multas</div>
                             <h2 className="text-xl font-bold mb-3 text-slate-900">Como Evitar Multas da NR-01: Checklist Passo a Passo</h2>
@@ -59,7 +59,7 @@ const BlogPage = () => {
 
                     {/* Post 2 - Cluster: Inventário */}
                     <article className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
-                        <img src="/images/blog/inventario-post.png" alt="Inventário de Riscos" className="h-48 w-full object-cover bg-slate-100" />
+                        <img src="/images/blog/inventario-post.webp" alt="Inventário de Riscos" className="h-48 w-full object-cover bg-slate-100" />
                         <div className="p-6">
                             <div className="text-xs font-semibold text-green-600 uppercase mb-2">PGR & NR-01</div>
                             <h2 className="text-xl font-bold mb-3 text-slate-900">Como Elaborar o Inventário de Riscos Psicossociais</h2>
@@ -70,7 +70,7 @@ const BlogPage = () => {
 
                     {/* Placeholder Post 3 */}
                     <article className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
-                        <img src="/images/blog/ia-gestao-post.png" alt="IA na Gestão de Pessoas" className="h-48 w-full object-contain bg-slate-100" />
+                        <img src="/images/blog/ia-gestao-post.webp" alt="IA na Gestão de Pessoas" className="h-48 w-full object-contain bg-slate-100" />
                         <div className="p-6">
                             <div className="text-xs font-semibold text-purple-600 uppercase mb-2">Tecnologia</div>
                             <h2 className="text-xl font-bold mb-3 text-slate-900">IA na Gestão de Pessoas: O futuro chegou</h2>

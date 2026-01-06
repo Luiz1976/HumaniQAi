@@ -49,8 +49,8 @@ const RiscosPsicoPage = () => {
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
-                title="Gestão Inteligente de Riscos Psicossociais no Trabalho | HumaniQ AI"
-                description="Proteja sua cultura organizacional e reduza o turnover com dados em tempo real. Identifique burnout, meça o clima e aumente a produtividade."
+                title="Riscos Psicossociais no Trabalho: Identificação e Gestão | HumaniQ AI"
+                description="Mapeie, avalie e gerencie riscos psicossociais na sua empresa. Software completo com metodologia validada. Previna burnout e aumente produtividade."
                 canonicalUrl="/riscos-psicossociais"
                 schema={[schema, faqSchema]}
             />
@@ -60,8 +60,7 @@ const RiscosPsicoPage = () => {
                     <Link to="/" className="hover:text-blue-600">Home</Link> &gt; <span className="text-slate-900">Riscos Psicossociais</span>
                 </nav>
 
-                <h1 className="text-4xl font-bold mb-2 text-slate-900">Gestão Inteligente de Riscos Psicossociais no Trabalho</h1>
-                <h2 className="text-xl text-slate-600 mb-8 font-medium">Proteja sua cultura organizacional e reduza o turnover com dados em tempo real.</h2>
+                <h1 className="text-4xl font-bold mb-6 text-slate-900">Gestão de Riscos Psicossociais no Ambiente de Trabalho</h1>
 
                 <div className="prose prose-lg max-w-none text-slate-700">
                     <p className="lead text-lg mb-8">

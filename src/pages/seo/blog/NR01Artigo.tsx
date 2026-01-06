@@ -16,7 +16,7 @@ const NR01Artigo = () => {
     const articleSchema = createBlogPostingSchema(
         "NR-01 e Riscos Psicossociais: Guia Completo 2026",
         "Guia definitivo sobre a gestão de riscos psicossociais na NR-01 para 2026. Entenda as obrigações, evite multas de até R$ 6.708 e proteja sua empresa.",
-        "https://www.humaniqai.com.br/images/blog/nr01-post.png",
+        "https://www.humaniqai.com.br/images/blog/nr01-post.webp",
         "2026-01-06", // Updated date
         "2026-01-06",
         "https://www.humaniqai.com.br/blog/nr01-2026"
