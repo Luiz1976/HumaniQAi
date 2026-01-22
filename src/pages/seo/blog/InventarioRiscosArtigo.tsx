@@ -3,6 +3,7 @@ import { SeoHead } from '../../../components/seo/SeoHead';
 import { Button } from '../../../components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { SeoFooterCTA } from '../../../components/seo/SeoFooterCTA';
 import { createBreadcrumbSchema, createBlogPostingSchema } from '../../../lib/seo/schemas';
 
 const InventarioRiscosArtigo = () => {
@@ -126,6 +127,8 @@ const InventarioRiscosArtigo = () => {
                         </div>
                     </div>
                 </article>
+
+                <SeoFooterCTA />
             </div>
         </div>
     );

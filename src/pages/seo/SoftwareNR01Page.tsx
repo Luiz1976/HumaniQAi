@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button';
 import { Link } from 'react-router-dom';
 
 import { createBreadcrumbSchema } from '../../lib/seo/schemas';
+import { SeoFooterCTA } from '../../components/seo/SeoFooterCTA';
 
 const SoftwareNR01Page = () => {
     const softwareSchema = {
@@ -75,6 +76,8 @@ const SoftwareNR01Page = () => {
                     </Link>
                     <p className="mt-4 text-sm text-gray-500">Sem compromisso. Cancele quando quiser.</p>
                 </div>
+
+                <SeoFooterCTA />
             </div>
         </div>
     );

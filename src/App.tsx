@@ -80,6 +80,7 @@ import ColaboradorCertificado from "./pages/colaborador/ColaboradorCertificado";
 import ValidarCertificado from "./pages/ValidarCertificado";
 import EmpresaColaboradorCertificado from "./pages/empresa/EmpresaColaboradorCertificado";
 import { Chatbot } from "./components/Chatbot";
+import PremiumSalesAgent from "./components/ia/PremiumSalesAgent";
 import { OnlineStatus } from "./components/OnlineStatus";
 import HomeRoute from "./components/layout/HomeRoute";
 import NR01Page from "./pages/seo/NR01Page";
@@ -108,7 +109,8 @@ function App() {
           <ErrorBoundary>
             <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
               <AuthProvider>
-                <Chatbot />
+                {/* <Chatbot /> */} {/* Substituído pelo PremiumSalesAgent */}
+                <PremiumSalesAgent />
                 <OnlineStatus />
                 <Routes>
                   {/* Rotas públicas - SEM autenticação */}

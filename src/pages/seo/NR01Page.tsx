@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button';
 import { Link } from 'react-router-dom';
 import { CheckCircle, AlertTriangle, FileText, Shield, ArrowRight, HelpCircle } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { SeoFooterCTA } from '../../components/seo/SeoFooterCTA';
 
 const NR01Page = () => {
     return (
@@ -229,6 +230,8 @@ const NR01Page = () => {
                                 <p className="text-slate-600">O PGR deve ser revisto a cada 2 anos, ou sempre que houver mudanças nos processos, novos riscos identificados ou ocorrência de acidentes/doenças. Empresas com sistemas de gestão certificadas podem rever a cada 3 anos.</p>
                             </div>
                         </div>
+
+                        <SeoFooterCTA />
                     </div>
 
                 </div>

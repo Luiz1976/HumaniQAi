@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button';
 import { Link } from 'react-router-dom';
 
 import { createBreadcrumbSchema } from '../../lib/seo/schemas';
+import { SeoFooterCTA } from '../../components/seo/SeoFooterCTA';
 
 const BlogPage = () => {
     const breadcrumb = createBreadcrumbSchema([
@@ -88,6 +89,8 @@ const BlogPage = () => {
                         <Button>Inscrever</Button>
                     </div>
                 </div>
+
+                <SeoFooterCTA />
             </div>
         </div>
     );

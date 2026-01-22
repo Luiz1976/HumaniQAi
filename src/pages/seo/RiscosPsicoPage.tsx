@@ -2,6 +2,7 @@ import React from 'react';
 import { SeoHead } from '../../components/seo/SeoHead';
 import { Button } from '../../components/ui/button';
 import { Link } from 'react-router-dom';
+import { SeoFooterCTA } from '../../components/seo/SeoFooterCTA';
 
 const RiscosPsicoPage = () => {
     const schema = {
@@ -121,6 +122,8 @@ const RiscosPsicoPage = () => {
                             Quer saber mais sobre as exigências da lei? Veja nosso guia da NR-01 <span aria-hidden="true">→</span>
                         </Link>
                     </div>
+
+                    <SeoFooterCTA />
                 </div>
             </div>
         </div>

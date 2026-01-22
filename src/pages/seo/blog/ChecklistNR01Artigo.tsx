@@ -3,6 +3,7 @@ import { SeoHead } from '../../../components/seo/SeoHead';
 import { Button } from '../../../components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, CheckSquare, Shield, AlertCircle, FileCheck, DollarSign } from 'lucide-react';
+import { SeoFooterCTA } from '../../../components/seo/SeoFooterCTA';
 import { createBreadcrumbSchema, createBlogPostingSchema } from '../../../lib/seo/schemas';
 
 const ChecklistNR01Artigo = () => {
@@ -180,6 +181,8 @@ const ChecklistNR01Artigo = () => {
                         </div>
                     </div>
                 </article>
+
+                <SeoFooterCTA />
             </div>
         </div>
     );

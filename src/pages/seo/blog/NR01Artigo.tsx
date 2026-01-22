@@ -3,6 +3,7 @@ import { SeoHead } from '../../../components/seo/SeoHead';
 import { Button } from '../../../components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, AlertTriangle, FileText, ChevronRight } from 'lucide-react';
+import { SeoFooterCTA } from '../../../components/seo/SeoFooterCTA';
 
 import { createBreadcrumbSchema, createBlogPostingSchema } from '../../../lib/seo/schemas';
 
@@ -218,6 +219,8 @@ const NR01Artigo = () => {
                         </div>
                     </div>
                 </article>
+
+                <SeoFooterCTA />
             </div>
         </div>
     );
