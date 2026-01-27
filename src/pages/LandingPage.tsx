@@ -1313,7 +1313,7 @@ export default function LandingPage() {
                   <Button
                     className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-lg py-6"
                     data-testid="button-solicitar-acesso"
-                    onClick={() => window.location.href = 'https://buy.stripe.com/test_3cI5kE3gic0g04U2Cd6sw00'}
+                    onClick={() => window.location.href = 'https://buy.stripe.com/3cI5kE3gic0g04U2Cd6sw00'}
                   >
                     <Sparkles className="mr-2 h-5 w-5" />
                     Solicitar Acesso

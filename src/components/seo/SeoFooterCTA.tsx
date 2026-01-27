@@ -24,7 +24,7 @@ export const SeoFooterCTA = () => {
                 </a>
 
                 <a
-                    href="https://buy.stripe.com/test_3cI5kE3gic0g04U2Cd6sw00"
+                    href="https://buy.stripe.com/3cI5kE3gic0g04U2Cd6sw00"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 px-8 py-4 text-base font-bold rounded-xl text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 w-full md:w-auto min-w-[200px] shadow-lg hover:shadow-emerald-200 hover:-translate-y-1 ring-4 ring-emerald-50/50"
