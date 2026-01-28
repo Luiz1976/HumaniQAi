@@ -1084,77 +1084,7 @@ export default function LandingPage() {
         </div>
       </section >
 
-      {/* SEÇÃO 11: ROI E ECONOMIA */}
-      < section id="preco" className="py-12 md:py-20 bg-gradient-to-br from-green-50 to-emerald-50" >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-              Quanto sua empresa pode <span className="text-green-600">economizar</span> com a HumaniQ AI?
-            </h2>
-          </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="bg-white rounded-2xl p-8 shadow-xl">
-              <h3 className="text-2xl font-bold text-red-600 mb-6">Cenário Atual (sem gestão completa)</h3>
-              <div className="space-y-4">
-                {[
-                  { item: '5 afastamentos/ano × R$ 15.000', valor: 'R$ 75.000' },
-                  { item: '3 turnover/ano × R$ 25.000', valor: 'R$ 75.000' },
-                  { item: '1 ação trabalhista × R$ 120.000', valor: 'R$ 120.000' },
-                  { item: 'Consultoria para PGR × R$ 30.000', valor: 'R$ 30.000' },
-                  { item: 'Treinamentos externos × R$ 20.000', valor: 'R$ 20.000' },
-                  { item: 'Perda de produtividade estimada', valor: 'R$ 80.000' }
-                ].map((item, index) => (
-                  <div key={index} className="flex justify-between items-center pb-3 border-b">
-                    <span className="text-gray-700">{item.item}</span>
-                    <span className="font-bold text-red-600">{item.valor}</span>
-                  </div>
-                ))}
-                <div className="bg-red-100 p-4 rounded-lg mt-6">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-gray-900">Total de custos evitáveis:</span>
-                    <span className="text-3xl font-bold text-red-600">R$ 400.000/ano</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-green-600 to-emerald-600 text-white rounded-2xl p-8 shadow-xl">
-              <h3 className="text-2xl font-bold mb-6">Com HumaniQ AI (Plataforma Completa)</h3>
-              <div className="space-y-6">
-                <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-                  <p className="text-lg mb-2">Investimento Anual</p>
-                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold">R$ 29.900</p>
-                  <p className="text-green-200 mt-2">Tudo incluído. Sem custos extras.</p>
-                </div>
-
-                <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-                  <p className="text-lg mb-2">Economia Potencial</p>
-                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold">R$ 370.000/ano</p>
-                </div>
-
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 p-6 rounded-xl">
-                  <p className="text-lg mb-2 font-semibold">Retorno sobre Investimento</p>
-                  <p className="text-4xl sm:text-5xl md:text-6xl font-bold">1.238%</p>
-                  <p className="text-gray-800 mt-2 font-medium">Para cada R$ 1 investido, você economiza R$ 12,38</p>
-                </div>
-
-                <div className="text-center pt-4">
-                  <Button
-                    size="lg"
-                    onClick={() => scrollToSection('diagnostico')}
-                    className="bg-white text-green-600 hover:bg-gray-100 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 shadow-xl"
-                    data-testid="button-diagnostico-roi"
-                  >
-                    Comece Seu Diagnóstico Gratuito
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section >
 
       {/* SEÇÃO 12: PLANO ÚNICO */}
       < section id="planos" className="py-12 md:py-20 bg-white" >

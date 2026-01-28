@@ -794,7 +794,106 @@ export default function EmpresaEstadoPsicossocial() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <span className="text-white font-bold text-lg">{dimensao.nome}</span>
+                          <span className="text-white font-bold text-lg">
+                            {(() => {
+                              const nome = dimensao.nome;
+
+                              // 1. Mapeamento Numérico
+                              if (/^\d+$/.test(nome)) {
+                                const mapNumerico: Record<string, string> = {
+                                  "0": "Comunicação e Clareza",
+                                  "1": "Liderança e Suporte",
+                                  "2": "Relacionamento Interpessoal",
+                                  "3": "Reconhecimento e Feedback",
+                                  "4": "Condições de Trabalho",
+                                  "5": "Equilíbrio Vida-Trabalho",
+                                  "6": "Engajamento e Pertencimento",
+                                  "7": "Bem-Estar Psicológico",
+                                  "8": "Justiça Organizacional"
+                                };
+                                return mapNumerico[nome] || `Dimensão ${nome}`;
+                              }
+
+                              // 2. Dicionário de Correções (Map raw IDs/slugs to Title Case with Accents)
+                              const mapTexto: Record<string, string> = {
+                                // Termos simples
+                                "lideranca": "Liderança",
+                                "comunicacao": "Comunicação",
+                                "relacionamento": "Relacionamento Interpessoal",
+                                "reconhecimento": "Reconhecimento",
+                                "desenvolvimento": "Desenvolvimento Profissional",
+                                "condicoes": "Condições de Trabalho",
+                                "equilibrio": "Equilíbrio Vida-Trabalho",
+                                "engajamento": "Engajamento",
+                                "bemestar": "Bem-Estar",
+                                "bem-estar": "Bem-Estar",
+                                "justica": "Justiça Organizacional",
+                                "assedio": "Assédio",
+                                "violencia": "Violência",
+                                "estresse": "Estresse Ocupacional",
+                                "burnout": "Burnout",
+                                "resiliencia": "Resiliência",
+                                "recompensas": "Recompensas",
+                                "qvt": "Qualidade de Vida no Trabalho",
+                                "hipercomprometimento": "Hipercomprometimento",
+                                "pertencimento": "Pertencimento e Inclusão",
+
+                                // Termos compostos (com correções de conectivos e acentos)
+                                "prevencao mapeamento": "Prevenção e Mapeamento",
+                                "monitoramento acompanhamento": "Monitoramento e Acompanhamento",
+                                "acolhimento suporte": "Acolhimento e Suporte",
+                                "cultura comunicacao": "Cultura e Comunicação",
+                                "demandas trabalho": "Demandas do Trabalho",
+                                "autonomia controle": "Autonomia e Controle",
+                                "controle autonomia": "Controle e Autonomia",
+                                "seguranca emprego": "Segurança no Emprego",
+                                "conflito trabalho familia": "Conflito Trabalho-Família",
+                                "seguranca psicologica": "Segurança Psicológica",
+                                "comunicacao interna": "Comunicação Interna",
+                                "justica organizacional": "Justiça Organizacional",
+                                "demanda psicologica": "Demanda Psicológica",
+                                "esforco exigido": "Esforço Exigido",
+                                "ambiente fisico": "Ambiente Físico",
+                                "recompensas recebidas": "Recompensas Recebidas",
+                                "apoio social": "Apoio Social",
+                                "cultura organizacional": "Cultura Organizacional",
+                                "assedio violencia": "Assédio e Violência",
+                                "controle trabalho": "Controle sobre o Trabalho",
+
+                                // Variações com underscore (caso o backend envie assim)
+                                "prevencao_mapeamento": "Prevenção e Mapeamento",
+                                "monitoramento_acompanhamento": "Monitoramento e Acompanhamento",
+                                "acolhimento_suporte": "Acolhimento e Suporte",
+                                "cultura_comunicacao": "Cultura e Comunicação",
+                                "demandas_trabalho": "Demandas do Trabalho",
+                                "autonomia_controle": "Autonomia e Controle",
+                                "seguranca_emprego": "Segurança no Emprego",
+                                "conflito_trabalho_familia": "Conflito Trabalho-Família",
+                                "seguranca_psicologica": "Segurança Psicológica",
+                                "comunicacao_interna": "Comunicação Interna",
+                                "justica_organizacional": "Justiça Organizacional",
+                                "demanda_psicologica": "Demanda Psicológica",
+                                "controle_autonomia": "Controle e Autonomia",
+                                "esforco_exigido": "Esforço Exigido"
+                              };
+
+                              const chave = nome.toLowerCase().trim();
+
+                              // Tentar match exato
+                              if (mapTexto[chave]) return mapTexto[chave];
+
+                              // Tentar match sem separadores
+                              const chaveSemSep = chave.replace(/[_-]/g, "");
+                              if (mapTexto[chaveSemSep]) return mapTexto[chaveSemSep];
+
+                              // 3. Fallback: Remover _ e - e Capitalizar
+                              // Corrige palavras comuns manualmente no fallback se necessário
+                              return nome
+                                .replace(/[_-]/g, ' ')
+                                .replace(/\b(de|da|do|e|ou|com|por|em)\b/g, (match) => match.toLowerCase()) // Manter preposições minúsculas
+                                .replace(/\b\w/g, (l) => l.toUpperCase()); // Capitalizar primeira letra de cada palavra
+                            })()}
+                          </span>
                           <Badge className="bg-white/20 text-white border-white/30">
                             {dimensao.nivel}
                           </Badge>
